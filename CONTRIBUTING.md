@@ -28,6 +28,11 @@ volontairement étroit.
 `lint` (ESLint), `typecheck` (TypeScript strict), `test` (Vitest), `audit`
 (vulnérabilités des dépendances), `licenses` (licences autorisées uniquement).
 
+En plus, et à la main : `npm run e2e` joue dans un vrai Chromium le parcours complet
+des passkeys et de la connexion par QR, avec un authenticateur virtuel. Il faut un
+Chromium (`CHROMIUM_PATH=/chemin/vers/chromium`, ou `npx playwright install chromium`).
+Lancez-le avant toute PR qui touche à l'authentification ou au client.
+
 ## Licences des dépendances
 
 Seules MIT, BSD-2/3, Apache-2.0, ISC, 0BSD, CC0 et OFL sont acceptées. Une dépendance

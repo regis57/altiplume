@@ -17,6 +17,11 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser },
   },
   {
+    // Les parcours de bout en bout pilotent un navigateur : du code y tourne des deux côtés.
+    files: ['scripts/e2e-*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+  {
     rules: {
       // Le serveur fait autorité : un `any` qui traverse une frontière réseau
       // est exactement la faille qu'on veut éviter.

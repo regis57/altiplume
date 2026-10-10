@@ -4,6 +4,7 @@ title: Se connecter
   <section>
     <h1 data-i18n="login.title">Reprendre le courrier.</h1>
     <p class="pitch" data-i18n="login.pitch">Indiquez votre adresse ; vous recevrez un lien valable dix minutes. Pas de mot de passe à retenir, rien à perdre.</p>
+    <p class="pitch" data-i18n="login.pitch2">Déjà passé par ici sur ce téléphone ? Une passkey vous ouvre d'un geste. Sur un ordinateur, montrez-lui le QR code.</p>
   </section>
   <section class="enveloppe" aria-labelledby="titre-connexion">
     <div class="cachet cache" id="cachet" aria-hidden="true">
@@ -22,6 +23,23 @@ title: Se connecter
       </div>
       <button class="bouton" type="submit" data-i18n="login.submit">Recevoir mon lien</button>
     </form>
+
+    <div class="autres" id="login-autres">
+      <p class="separateur" aria-hidden="true"><span data-i18n="login.or">ou</span></p>
+      <div class="actions">
+        <button class="bouton secondaire cache" type="button" data-action="passkey-login" data-i18n="login.passkey">Se connecter avec une passkey</button>
+        <button class="bouton secondaire" type="button" data-action="show-qr" data-i18n="login.showQr">Afficher un QR code pour mon téléphone</button>
+      </div>
+      <div class="qr cache" id="qr">
+        <canvas id="qr-canvas" width="196" height="196" role="img" data-i18n-aria="login.qrAlt" aria-label="QR code à lire avec le téléphone déjà connecté"></canvas>
+        <div class="qr-texte">
+          <p data-i18n="login.qrHelp">Avec le téléphone où vous êtes déjà connecté, lisez ce code, puis vérifiez que les chiffres correspondent :</p>
+          <p class="code-appareil" id="qr-code"></p>
+          <p class="bas" id="qr-status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
     <p class="bas" data-i18n-html="login.new">Pas encore d'aérodrome ? <a href="/">En ouvrir un</a>.</p>
   </section>
 </div>

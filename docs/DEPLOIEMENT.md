@@ -97,6 +97,25 @@ version ; la méthode fiable est de repartir de l'image) :
 
 Interruption de service : environ une minute. Validé le 11/10/2026 à 00 h 02.
 
+La base de données se met à jour toute seule au démarrage (migrations versionnées) :
+la version « passkeys » ajoute ses tables sans toucher aux comptes existants.
+
+### Vérifier la version « passkeys »
+
+1. Sur le **téléphone**, connecté : **Mon compte → Passkeys → Ajouter une passkey sur
+   cet appareil**. Le téléphone demande l'empreinte ou le visage ; la clé apparaît
+   dans la liste, avec un nom modifiable.
+2. **Mon compte → Se déconnecter**, puis **Se connecter → Se connecter avec une
+   passkey** : le téléphone demande un geste, et le compte s'ouvre sans email.
+3. Sur le **PC**, page **Se connecter → Afficher un QR code pour mon téléphone**. Lire
+   le QR avec l'appareil photo du téléphone (connecté) : la page « Connecter cet
+   écran ? » montre les mêmes six chiffres. **Oui, c'est mon écran** : le PC passe
+   sur « Mon compte » tout seul.
+
+Les passkeys sont liées au domaine `altiplume.com` : une clé créée sur le site
+public ne fonctionne pas en local, et inversement. C'est une protection contre le
+hameçonnage, pas un défaut.
+
 ## Revenir en arrière
 
 Chaque image porte aussi une étiquette `sha-xxxxxxxxxxxx` correspondant au commit.

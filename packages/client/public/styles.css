@@ -403,6 +403,44 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .bloc .bouton { width: auto; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 
+/* ---- Passkeys et QR ---- */
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.autres { margin-top: 1.4rem; }
+.autres .actions { justify-content: center; }
+.autres .bouton { width: auto; }
+.separateur {
+  display: flex; align-items: center; gap: 0.8rem; margin: 0 0 1rem;
+  color: var(--encre-douce); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.separateur::before, .separateur::after { content: ''; flex: 1; border-top: 1px dashed var(--papier-ombre); }
+
+.qr { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; margin-top: 1.2rem; }
+.qr canvas {
+  flex: 0 0 auto; width: 196px; height: 196px; image-rendering: pixelated;
+  border: 6px solid var(--papier); outline: 1px solid var(--papier-ombre); background: #f6f1e7;
+}
+.qr-texte { flex: 1 1 14rem; }
+.qr-texte p { margin: 0 0 0.6rem; }
+
+/* Le code se compare d'un écran à l'autre : police lisible, pas la police pixel. */
+.code-appareil {
+  font-family: var(--police-texte); font-weight: 700; font-size: 2.1rem; letter-spacing: 0.16em;
+  margin: 0.4rem 0 0.8rem; color: var(--encre); font-variant-numeric: tabular-nums;
+}
+.enveloppe .code-appareil { text-align: center; }
+
+.liste-cles { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 0.8rem; }
+.liste-cles li { border: 1px dashed var(--papier-ombre); border-radius: var(--rayon); padding: 0.8rem; }
+.liste-cles .cle { max-width: none; display: grid; gap: 0.5rem; }
+.liste-cles .cle input { max-width: 22rem; }
+.liste-cles .aide { margin: 0; color: var(--encre-douce); font-size: 0.92rem; }
+.bloc .aide { color: var(--encre-douce); font-size: 0.92rem; }
+
 .cache { display: none !important; }
 
 @media print { .entete nav, .pied, .bouton { display: none; } }

@@ -1,0 +1,24 @@
+title: Connecter un écran
+---
+<div class="accueil">
+  <section>
+    <h1 data-i18n="approve.title">Un écran demande à entrer.</h1>
+    <p class="pitch" data-i18n="approve.pitch">Vous avez lu un QR code sur un ordinateur ou une tablette. Si le code ci-dessous est bien celui qu'il affiche, vous pouvez l'ouvrir à votre compte — sans y taper quoi que ce soit.</p>
+  </section>
+  <section class="enveloppe" aria-labelledby="titre-approuver">
+    <h2 id="titre-approuver" data-i18n="approve.formTitle">Connecter cet écran ?</h2>
+    <div class="message" id="approve-message" role="alert" aria-live="polite"></div>
+    <div id="approve-pending" class="cache">
+      <p class="sous-titre" data-i18n="approve.compare">Le même code doit s'afficher sur l'autre écran :</p>
+      <p class="code-appareil" id="approve-code" aria-live="polite"></p>
+      <div class="actions">
+        <button class="bouton" type="button" data-action="approve" data-i18n="approve.yes">Oui, c'est mon écran</button>
+        <button class="bouton secondaire" type="button" data-action="deny" data-i18n="approve.no">Non</button>
+      </div>
+      <p class="bas" data-i18n="approve.warning">Si vous n'avez pas lu ce QR vous-même, répondez non : quelqu'un essaie peut-être d'entrer dans votre aérodrome.</p>
+    </div>
+    <p class="bas cache" id="approve-login" data-i18n-html="approve.login">Connectez-vous d'abord sur ce téléphone : <a href="/connexion">se connecter</a>. Vous reviendrez ici ensuite.</p>
+    <p class="bas cache" id="approve-done" data-i18n-html="approve.done">C'est fait. Vous pouvez poser le téléphone et <a href="/compte">retourner à votre compte</a>.</p>
+    <noscript><p class="message" data-i18n="verify.noscript">JavaScript est nécessaire pour ouvrir ce lien — et pour jouer.</p></noscript>
+  </section>
+</div>

@@ -43,6 +43,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-10 | Premier déploiement sur le NAS — altiplume.com répond | ~20 min |
 | 2026-10-11 | PR #12 : comptes sans mot de passe, première page, pages légales | ~2 h |
 | 2026-10-11 | Brevo, déploiement de la version comptes, première inscription réelle | ~30 min |
+| 2026-10-11 | PR passkeys + connexion par QR, authenticateur de test, parcours de bout en bout | ~1 h 15 |
 
 ## Revenus (à partir du lancement)
 

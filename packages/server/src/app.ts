@@ -9,6 +9,8 @@ import type { AppContext } from './context.ts';
 import { registerSecurityHeaders } from './http/security.ts';
 import { registerSessionHook } from './auth/session.ts';
 import { registerAuthRoutes } from './auth/routes.ts';
+import { registerPasskeyRoutes } from './auth/passkeys.ts';
+import { registerDeviceRoutes } from './auth/device.ts';
 import { registerAccountRoutes } from './account/routes.ts';
 import { registerHealth } from './routes/health.ts';
 
@@ -63,6 +65,8 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   registerSessionHook(app, ctx);
   registerHealth(app);
   registerAuthRoutes(app, ctx);
+  registerPasskeyRoutes(app, ctx);
+  registerDeviceRoutes(app, ctx);
   registerAccountRoutes(app, ctx);
 
   // Réponses d'erreur uniformes et muettes : jamais de trace, jamais de chemin.

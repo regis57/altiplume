@@ -4,6 +4,8 @@ import { openDatabase } from './db/database.ts';
 import { purgeExpiredLinks } from './db/repos/magicLinks.ts';
 import { purgeExpiredSessions } from './db/repos/sessions.ts';
 import { purgeOldAudit } from './db/repos/audit.ts';
+import { purgeExpiredChallenges } from './db/repos/passkeys.ts';
+import { purgeExpiredDeviceCodes } from './db/repos/deviceCodes.ts';
 import { BrevoMailer, ConsoleMailer, type Mailer } from './mail/mailer.ts';
 import type { AppContext } from './context.ts';
 
@@ -30,6 +32,8 @@ const housekeeping = setInterval(() => {
   purgeExpiredSessions(db, now);
   purgeExpiredLinks(db, now);
   purgeOldAudit(db, now);
+  purgeExpiredChallenges(db, now);
+  purgeExpiredDeviceCodes(db, now);
 }, 3_600_000);
 housekeeping.unref();
 
