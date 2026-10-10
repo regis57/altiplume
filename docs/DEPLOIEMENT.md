@@ -21,21 +21,28 @@ l'image l'est aussi, sans rien faire. Pour s'en assurer : GitHub → ton profil 
 
 ## 2. Préparer le fichier de secrets
 
-Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant le jeton :
+Depuis la version « comptes », l'API envoie des emails de connexion : il faut un
+compte **Brevo** (gratuit, 300 emails/jour) **avant** de déployer. Sans clé, le serveur
+refuse de démarrer — c'est voulu : un jeu où personne ne peut s'inscrire n'a pas à
+tourner. Voir DEMARRAGE.md, section Brevo, pour obtenir la clé et faire reconnaître
+le domaine `altiplume.com` comme expéditeur (DKIM).
+
+Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant les valeurs :
 
 ```
 TUNNEL_TOKEN=eyJ...le jeton du tunnel, en entier, sans espace...
 PUBLIC_ORIGIN=https://altiplume.com
+MAIL_API_KEY=xkeysib-...la clé d'API Brevo...
+MAIL_FROM=courrier@altiplume.com
 ```
 
-C'est tout pour le premier déploiement : l'API n'a encore ni base de données ni
-authentification. `SESSION_SECRET` et `MAIL_API_KEY` seront ajoutés quand la pull
-request qui les utilise arrivera — le mode d'emploi sera mis à jour à ce moment-là.
+`MAIL_FROM` doit être une adresse du domaine déclaré chez Brevo.
 
 Enregistre le fichier sous le nom **`.env`** — avec les guillemets dans la boîte de
 dialogue du Bloc-notes, `".env"`, sinon Windows ajoute `.txt`. Puis dans **File
-Station**, va dans `docker/altiplume` et **téléverse** ce fichier. Il est invisible
-dans la liste tant que l'affichage des fichiers cachés n'est pas activé : c'est normal.
+Station**, va dans `docker/altiplume` et **téléverse** ce fichier (remplace l'ancien
+s'il existe). Il est invisible dans la liste tant que l'affichage des fichiers cachés
+n'est pas activé : c'est normal.
 
 Ce fichier ne quitte jamais le NAS.
 
@@ -61,7 +68,9 @@ Valide. Container Manager télécharge les deux images et démarre les deux cont
 
 ## 5. Vérifier
 
-Dans un navigateur : `https://altiplume.com/healthz` doit afficher `{"status":"ok"}`.
+Dans un navigateur : `https://altiplume.com/healthz` doit afficher `{"status":"ok"}`, et
+`https://altiplume.com/` la page d'accueil avec l'enveloppe d'inscription. Inscris-toi
+avec ta propre adresse : le lien doit arriver en moins d'une minute.
 
 Sur la page du tunnel chez Cloudflare : **Active replicas : 1**, statut **Healthy**.
 
@@ -70,22 +79,23 @@ affiche *Server listening*.
 
 ## Mettre à jour
 
-Chaque fusion sur `main` publie une nouvelle image `latest`. Pour l'appliquer :
+Chaque fusion sur `main` publie une nouvelle image `latest`. Le NAS ne se met pas à
+jour tout seul ; c'est voulu tant que le projet est jeune.
 
-**Container Manager → Projet → altiplume → Action → Arrêter**, puis **Action →
-Nettoyer** (supprime les conteneurs, pas les données), puis **Action → Construire**.
-Container Manager retélécharge `latest` et redémarre. Les données restent dans le
-volume `altiplume-data`.
+Procédure constatée sur DSM 7.3 (il n'y a pas de bouton « Construire » dans cette
+version ; la méthode fiable est de repartir de l'image) :
 
-Pour automatiser : **Panneau de configuration → Planificateur de tâches → Créer →
-Tâche planifiée → Script défini par l'utilisateur**, utilisateur `root`, tous les
-jours à 5 h, script :
+1. **Projet → `altiplume` → Action → Arrêt**, puis **Action → Nettoyer** (supprime les
+   conteneurs, pas le volume de données).
+2. **Image →** sélectionner `ghcr.io/regis57/altiplume` **→ Supprimer**.
+3. **Projet → `altiplume` → Action → Supprimer** (le dossier, le `.env` et le volume
+   restent en place).
+4. **Projet → Créer** : nom `altiplume`, chemin `/docker/altiplume`, source **Utiliser un
+   docker-compose.yml existant**, pas de portail web. Container Manager retélécharge
+   l'image et recrée les conteneurs.
+5. Vérifier `https://altiplume.com/healthz`.
 
-```
-cd /volume1/docker/altiplume && docker compose pull --quiet && docker compose up -d --remove-orphans
-```
-
-À n'activer qu'une fois le premier déploiement validé à la main.
+Interruption de service : environ une minute. Validé le 11/10/2026 à 00 h 02.
 
 ## Revenir en arrière
 

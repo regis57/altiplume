@@ -12,13 +12,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "node --watch packages/server/src/server.ts",
+    "dev": "node --watch --no-warnings=ExperimentalWarning packages/server/src/server.ts",
     "lint": "eslint .",
     "typecheck": "tsc --build --force",
     "test": "vitest run",
     "audit": "npm audit --audit-level=high --omit=dev",
     "licenses": "node scripts/check-licenses.mjs",
-    "check": "npm run lint && npm run typecheck && npm test && npm run audit && npm run licenses"
+    "check": "npm run lint && npm run typecheck && npm run build && npm test && npm run audit && npm run licenses",
+    "build": "npm run build -w @altiplume/client",
+    "start": "node --no-warnings=ExperimentalWarning packages/server/src/server.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

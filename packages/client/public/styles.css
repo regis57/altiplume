@@ -1,0 +1,408 @@
+/* Altiplume — feuille de style du client.
+   Papier et ciel. Un seul objet audacieux : l'enveloppe par avion.
+   Aucun style en ligne nulle part : la CSP l'interdit, et c'est tant mieux. */
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/atkinson-hyperlegible-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pixelify Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/pixelify-sans-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pixelify Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/pixelify-sans-latin-600-normal.woff2') format('woff2');
+}
+
+:root {
+  /* Petit matin sur l'aérodrome */
+  --brume: #cfd8dd;        /* fond : brume bleu-gris */
+  --brume-fonce: #b7c3ca;
+  --papier: #f6f1e7;       /* enveloppe : papier chaud */
+  --papier-ombre: #e3dccd;
+  --encre: #2a2f33;        /* texte : ardoise */
+  --encre-douce: #4a5359;
+  --vert-de-gris: #6e8b7a; /* accents secondaires */
+  --cachet: #b23a2f;       /* rouge du cachet — une seule fois */
+  --cachet-encre: #8e2b22;
+  --avion-bleu: #2f4f7a;   /* chevrons par avion */
+  --laiton: #7d5f17;       /* liens — 5,3:1 sur papier */
+  --laiton-clair: #9a7a2a;
+  --ok: #2f6b4a;
+  --erreur: #a4322a;
+  --focus: #1a4f9f;
+
+  --texte: var(--encre);
+  --fond: var(--brume);
+  --surface: var(--papier);
+
+  --police-texte: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --police-titre: 'Pixelify Sans', 'Atkinson Hyperlegible', system-ui, sans-serif;
+
+  --mesure: 62ch;
+  --rayon: 3px;
+  --gouttiere: 16px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    /* Nuit sur l'aérodrome : lanternes et papier à la lampe */
+    --brume: #1f262c;
+    --brume-fonce: #171d22;
+    --papier: #2e3339;
+    --papier-ombre: #23282d;
+    --encre: #e9ecef;
+    --encre-douce: #b4bcc2;
+    --vert-de-gris: #8fa898;
+    --cachet: #d6584b;
+    --cachet-encre: #e9796c;
+    --avion-bleu: #7ea2d4;
+    --laiton: #d9b35a;
+    --laiton-clair: #e6c67a;
+    --ok: #7cc59d;
+    --erreur: #ef8a81;
+    --focus: #8fb4ff;
+  }
+}
+:root[data-theme='dark'] {
+  --brume: #1f262c;
+  --brume-fonce: #171d22;
+  --papier: #2e3339;
+  --papier-ombre: #23282d;
+  --encre: #e9ecef;
+  --encre-douce: #b4bcc2;
+  --vert-de-gris: #8fa898;
+  --cachet: #d6584b;
+  --cachet-encre: #e9796c;
+  --avion-bleu: #7ea2d4;
+  --laiton: #d9b35a;
+  --laiton-clair: #e6c67a;
+  --ok: #7cc59d;
+  --erreur: #ef8a81;
+  --focus: #8fb4ff;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--police-texte);
+  font-size: 100%;
+  line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--fond);
+  color: var(--texte);
+  /* Un voile de brume : deux nappes très douces, pas un dégradé décoratif. */
+  background-image:
+    radial-gradient(60rem 30rem at 15% -10%, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(40rem 20rem at 100% 100%, rgba(255, 255, 255, 0.18), transparent 60%);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) body {
+    background-image:
+      radial-gradient(60rem 30rem at 15% -10%, rgba(255, 220, 160, 0.06), transparent 60%),
+      radial-gradient(40rem 20rem at 100% 100%, rgba(255, 220, 160, 0.04), transparent 60%);
+  }
+}
+
+a { color: var(--laiton); text-underline-offset: 0.15em; }
+a:hover { color: var(--laiton-clair); }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.skip {
+  position: absolute;
+  left: var(--gouttiere);
+  top: -4rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--papier);
+  color: var(--encre);
+  border-radius: var(--rayon);
+  z-index: 10;
+}
+.skip:focus { top: var(--gouttiere); }
+
+/* ---- Structure ---- */
+
+.page {
+  width: min(100% - 2 * var(--gouttiere), 64rem);
+  margin-inline: auto;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.2rem;
+}
+.marque {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--police-titre);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--encre);
+  text-decoration: none;
+}
+.marque svg { width: 2rem; height: 1rem; }
+.avion { fill: var(--encre); }
+.avion-helice { fill: var(--cachet); }
+
+.entete nav { display: flex; gap: 0.25rem; }
+.entete nav a,
+.entete nav button {
+  font: inherit;
+  color: var(--encre-douce);
+  background: none;
+  border: 0;
+  padding: 0.5rem 0.7rem;
+  min-height: 44px;
+  border-radius: var(--rayon);
+  text-decoration: none;
+  cursor: pointer;
+}
+.entete nav a:hover, .entete nav button:hover { color: var(--encre); background: rgba(0, 0, 0, 0.05); }
+
+main { padding-block: 1rem 3rem; }
+
+.pied {
+  padding-block: 2rem;
+  color: var(--encre-douce);
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+}
+.pied a { color: inherit; }
+
+/* ---- Accueil ---- */
+
+.accueil {
+  display: grid;
+  gap: 2.5rem;
+  align-items: start;
+}
+@media (min-width: 52rem) {
+  .accueil { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; }
+}
+
+h1 {
+  font-family: var(--police-titre);
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  margin: 0.6em 0 0.4em;
+  max-width: 16ch;
+}
+.pitch {
+  font-size: 1.125rem;
+  max-width: 42ch;
+  margin: 0 0 1.2rem;
+}
+.pitch + .pitch { color: var(--encre-douce); }
+
+.promesse {
+  margin-top: 2rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--vert-de-gris);
+  color: var(--encre-douce);
+  max-width: 42ch;
+}
+.promesse strong { color: var(--encre); font-weight: 700; }
+
+/* ---- L'enveloppe par avion ---- */
+
+.enveloppe {
+  position: relative;
+  background: var(--papier);
+  color: var(--encre);
+  padding: 1.6rem 1.4rem 1.5rem;
+  border-radius: var(--rayon);
+  box-shadow: 0 1px 0 var(--papier-ombre), 0 10px 24px -14px rgba(20, 30, 40, 0.5);
+  /* La bordure à chevrons : la signature du courrier aérien de l'époque. */
+  border: 10px solid transparent;
+  border-image: repeating-linear-gradient(
+    -45deg,
+    var(--cachet) 0 14px,
+    var(--papier) 14px 28px,
+    var(--avion-bleu) 28px 42px,
+    var(--papier) 42px 56px
+  ) 10;
+}
+@media (min-width: 40rem) { .enveloppe { padding: 2rem 2rem 1.8rem; } }
+
+.enveloppe h2 {
+  font-family: var(--police-titre);
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin: 0 0 0.3rem;
+}
+.enveloppe .sous-titre { margin: 0 0 1.4rem; color: var(--encre-douce); }
+
+.champ { display: grid; gap: 0.35rem; margin-bottom: 1.1rem; }
+.champ label { font-weight: 700; }
+.champ .aide { color: var(--encre-douce); font-size: 0.92rem; margin: 0; }
+.champ .erreur-champ { color: var(--erreur); font-size: 0.95rem; margin: 0; }
+
+input[type='email'],
+input[type='text'],
+select {
+  font: inherit;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.55rem 0.7rem;
+  color: var(--encre);
+  background: color-mix(in srgb, var(--papier) 70%, white);
+  border: 1.5px solid var(--brume-fonce);
+  border-radius: var(--rayon);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) input[type='email'],
+  :root:not([data-theme='light']) input[type='text'],
+  :root:not([data-theme='light']) select { background: var(--papier-ombre); }
+}
+:root[data-theme='dark'] input[type='email'],
+:root[data-theme='dark'] input[type='text'],
+:root[data-theme='dark'] select { background: var(--papier-ombre); }
+input[aria-invalid='true'] { border-color: var(--erreur); }
+
+.case {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  margin-bottom: 0.9rem;
+}
+.case input { width: 1.25rem; height: 1.25rem; margin-top: 0.2rem; accent-color: var(--avion-bleu); }
+
+.bouton {
+  font: inherit;
+  font-weight: 700;
+  min-height: 48px;
+  padding: 0.7rem 1.3rem;
+  border-radius: var(--rayon);
+  border: 2px solid var(--encre);
+  background: var(--encre);
+  color: var(--papier);
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.4rem;
+}
+.bouton:hover { background: var(--encre-douce); border-color: var(--encre-douce); }
+.bouton[disabled] { opacity: 0.6; cursor: wait; }
+.bouton.secondaire { background: transparent; color: var(--encre); }
+.bouton.secondaire:hover { background: rgba(0, 0, 0, 0.05); }
+.bouton.danger { border-color: var(--cachet); background: transparent; color: var(--cachet-encre); }
+.bouton.danger:hover { background: var(--cachet); color: var(--papier); }
+
+.message {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--rayon);
+  border-left: 4px solid var(--erreur);
+  background: color-mix(in srgb, var(--erreur) 10%, transparent);
+}
+.message.ok { border-left-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.message:empty { display: none; }
+
+.enveloppe .bas { margin: 1.2rem 0 0; color: var(--encre-douce); font-size: 0.95rem; }
+
+/* ---- Le cachet de la poste ---- */
+
+.cachet {
+  --taille: 9.5rem;
+  position: absolute;
+  right: -0.4rem;
+  top: -1.2rem;
+  width: var(--taille);
+  height: var(--taille);
+  border-radius: 50%;
+  border: 3px solid var(--cachet);
+  color: var(--cachet);
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-family: var(--police-titre);
+  font-weight: 600;
+  line-height: 1.1;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .cachet { mix-blend-mode: screen; } }
+:root[data-theme='dark'] .cachet { mix-blend-mode: screen; }
+.cachet::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1.5px solid var(--cachet);
+}
+.cachet .cachet-nom { font-size: 1rem; letter-spacing: 0.04em; }
+.cachet .cachet-date { font-family: var(--police-texte); font-weight: 700; font-size: 0.8rem; margin-top: 0.15rem; }
+.cachet .cachet-mention { font-size: 0.7rem; margin-top: 0.2rem; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cachet.tampon { animation: tamponner 420ms cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+  @keyframes tamponner {
+    from { transform: rotate(-12deg) scale(1.6); opacity: 0; }
+    to   { transform: rotate(-12deg) scale(1); opacity: 0.9; }
+  }
+}
+
+/* ---- Pages de lecture (compte, mentions) ---- */
+
+.lecture { max-width: var(--mesure); }
+.lecture h1 { max-width: none; font-size: clamp(1.8rem, 4vw, 2.4rem); }
+.lecture h2 { font-family: var(--police-titre); font-weight: 600; font-size: 1.4rem; margin-top: 2rem; }
+.lecture p, .lecture li { max-width: var(--mesure); }
+.lecture .relecture {
+  border-left: 3px solid var(--laiton);
+  padding-left: 1rem;
+  color: var(--encre-douce);
+}
+
+/* ---- Compte ---- */
+
+.fiche { display: grid; gap: 0.3rem 1rem; grid-template-columns: max-content 1fr; margin: 1rem 0 1.5rem; }
+.fiche dt { color: var(--encre-douce); }
+.fiche dd { margin: 0; }
+.bloc { background: var(--papier); padding: 1.3rem; border-radius: var(--rayon); margin-bottom: 1.2rem; }
+.bloc h2 { margin-top: 0; }
+.bloc form { max-width: 28rem; }
+.bloc .bouton { width: auto; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+.cache { display: none !important; }
+
+@media print { .entete nav, .pied, .bouton { display: none; } }

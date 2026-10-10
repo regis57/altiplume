@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr" data-page="{{page}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}} — Altiplume</title>
+    <meta name="description" content="Un petit aérodrome postal des années 1930, dans un monde inventé. Jeu web cozy, gratuit, sans mot de passe." />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#cfd8dd" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1f262c" media="(prefers-color-scheme: dark)" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/icone.svg" type="image/svg+xml" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#contenu" data-i18n="skip">Aller au contenu</a>
+    <div class="page">
+      <header class="entete">
+        <a class="marque" href="/" aria-label="Altiplume, accueil">
+          <svg viewBox="0 0 16 8" width="32" height="16" aria-hidden="true" shape-rendering="crispEdges">
+            <rect class="avion" x="2" y="2" width="2" height="2"/>
+            <rect class="avion" x="2" y="4" width="12" height="1"/>
+            <rect class="avion" x="5" y="3" width="7" height="1"/>
+            <rect class="avion" x="5" y="5" width="6" height="1"/>
+            <rect class="avion" x="7" y="6" width="1" height="1"/>
+            <rect class="avion" x="9" y="6" width="1" height="1"/>
+            <rect class="avion" x="14" y="4" width="1" height="1"/>
+            <rect class="avion-helice" x="15" y="3" width="1" height="3"/>
+          </svg>
+          <span>Altiplume</span>
+        </a>
+        <nav aria-label="Compte">
+          <a href="/connexion" data-i18n="nav.login" data-when="anonymous">Se connecter</a>
+          <a href="/compte" data-i18n="nav.account" data-when="player" class="cache">Mon compte</a>
+          <button type="button" data-action="toggle-lang" aria-label="Switch to English">EN</button>
+        </nav>
+      </header>
+      <main id="contenu">
+{{content}}
+      </main>
+      <footer class="pied">
+        <a href="/mentions-legales" data-i18n="footer.legal">Mentions légales</a>
+        <a href="/confidentialite" data-i18n="footer.privacy">Confidentialité</a>
+        <a href="/cgu" data-i18n="footer.terms">Conditions d'utilisation</a>
+        <a href="https://github.com/regis57/altiplume" rel="noopener">Code source (AGPL-3.0)</a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+title: Ouvrir le courrier
+---
+<div class="accueil">
+  <section>
+    <h1 data-i18n="verify.title">Votre courrier est arrivé.</h1>
+    <p class="pitch" data-i18n="verify.pitch">Un dernier geste : ouvrez-le. Ce bouton confirme que c'est bien vous, et pas un robot de messagerie qui pré-visite les liens.</p>
+  </section>
+  <section class="enveloppe" aria-labelledby="titre-verifier">
+    <h2 id="titre-verifier" data-i18n="verify.formTitle">Ouvrir le courrier</h2>
+    <div class="message" id="verify-message" role="alert" aria-live="polite"></div>
+    <form id="verify" novalidate>
+      <button class="bouton" type="submit" data-i18n="verify.submit">Ouvrir</button>
+    </form>
+    <p class="bas cache" id="verify-retry" data-i18n-html="verify.retry">Lien expiré ou déjà utilisé ? <a href="/connexion">Demandez-en un nouveau</a>.</p>
+    <noscript><p class="message" data-i18n="verify.noscript">JavaScript est nécessaire pour ouvrir ce lien — et pour jouer.</p></noscript>
+  </section>
+</div>
