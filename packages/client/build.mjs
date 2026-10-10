@@ -4,7 +4,8 @@
  * polices. Tout est servi depuis notre domaine ; aucune ressource externe.
  */
 import { build } from 'esbuild';
-import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,24 +18,6 @@ mkdirSync(join(dist, 'fonts'), { recursive: true });
 
 // Styles, images, icône.
 cpSync(join(root, 'public'), dist, { recursive: true });
-
-// Pages : un gabarit commun, et pour chaque page un fichier qui ne contient que
-// son titre et son contenu. Pas de duplication d'en-tête ni de pied de page.
-const layout = readFileSync(join(root, 'src/layout.html'), 'utf8');
-const pagesDir = join(root, 'src/pages');
-for (const file of readdirSync(pagesDir)) {
-  if (!file.endsWith('.html')) continue;
-  const source = readFileSync(join(pagesDir, file), 'utf8');
-  const sep = source.indexOf('\n---\n');
-  const title = source.slice(0, sep).replace(/^title:\s*/, '').trim();
-  const content = source.slice(sep + 5);
-  const page = file.replace(/\.html$/, '');
-  const html = layout
-    .replaceAll('{{title}}', title)
-    .replaceAll('{{page}}', page)
-    .replace('{{content}}', content);
-  writeFileSync(join(dist, file), html);
-}
 
 // Polices : seules les graisses utilisées, sous-ensemble latin.
 const fonts = [
@@ -58,5 +41,37 @@ await build({
   sourcemap: watch ? 'inline' : false,
   legalComments: 'none',
 });
+
+
+// Empreinte dans le nom : chaque version a un nom neuf, le cache ne peut pas se
+// tromper. Le serveur sert ces fichiers en « immutable » et le HTML sans cache.
+function fingerprint(file) {
+  const hash = createHash('sha256').update(readFileSync(join(dist, file))).digest('hex').slice(0, 8);
+  const named = file.replace(/\.(js|css)$/, `.${hash}.$1`);
+  renameSync(join(dist, file), join(dist, named));
+  return `/${named}`;
+}
+const appJs = fingerprint('app.js');
+const stylesCss = fingerprint('styles.css');
+
+// Pages : un gabarit commun, et pour chaque page un fichier qui ne contient que
+// son titre et son contenu. Pas de duplication d'en-tête ni de pied de page.
+const layout = readFileSync(join(root, 'src/layout.html'), 'utf8');
+const pagesDir = join(root, 'src/pages');
+for (const file of readdirSync(pagesDir)) {
+  if (!file.endsWith('.html')) continue;
+  const source = readFileSync(join(pagesDir, file), 'utf8');
+  const sep = source.indexOf('\n---\n');
+  const title = source.slice(0, sep).replace(/^title:\s*/, '').trim();
+  const content = source.slice(sep + 5);
+  const page = file.replace(/\.html$/, '');
+  const html = layout
+    .replaceAll('{{title}}', title)
+    .replaceAll('{{page}}', page)
+    .replaceAll('{{app}}', appJs)
+    .replaceAll('{{styles}}', stylesCss)
+    .replace('{{content}}', content);
+  writeFileSync(join(dist, file), html);
+}
 
 console.error(`client construit dans ${dist}`);

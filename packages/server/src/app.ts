@@ -90,7 +90,11 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
       immutable: false,
       setHeaders: (reply, path) => {
         // Les bundles portent une empreinte dans leur nom : cache long, immuable.
+        // Le HTML, lui, doit être revalidé à chaque visite : c'est lui qui désigne
+        // la version courante des bundles. Sinon un navigateur garde une page neuve
+        // avec un script d'il y a une heure — vu en production le 11/10/2026.
         if (/\.[a-f0-9]{8}\.(js|css)$/.test(path)) reply.header('cache-control', 'public, max-age=31536000, immutable');
+        else if (path.endsWith('.html')) reply.header('cache-control', 'no-cache');
       },
     });
   }
