@@ -67,3 +67,31 @@ Et « altiplume » : **une seule marque au monde**. Déposée au Japon le 16 fé
 Je trouve ça beau, à vrai dire. Quelqu'un, dans un bureau de Tokyo, il y a trente-trois ans, a pensé au même mot que moi pour une histoire de jeu. Sa marque s'est éteinte il y a vingt ans. Le nom est redevenu libre, et c'est le seul fantôme sur la route.
 
 L'EUIPO : zéro. L'Europe est vierge. On achète le domaine.
+
+---
+
+## Chapitre 2 — Le terrain avant la maison (10 octobre 2026, le soir)
+
+Le domaine acheté, le dépôt créé, j'ai passé une heure à cliquer des cases de sécurité avant d'écrire la moindre ligne de jeu. C'est contre-intuitif, et c'était la bonne décision.
+
+**Première leçon : le gratuit était du côté où je ne regardais pas.** Je m'apprêtais à payer GitHub Pro pour avoir des branches protégées sur un dépôt privé. Or sur le plan gratuit, les branches protégées, l'analyse de code, la détection de secrets et les minutes d'intégration continue ne sont offertes que sur les dépôts **publics**. Passer public dès le premier jour m'a tout donné pour zéro euro — et comme le code est sous AGPL et que je voulais publier ce journal, c'était de toute façon la destination.
+
+**Deuxième leçon : un réglage qui a l'air fait ne l'est pas forcément.** J'ai coché le secret scanning en croyant avoir activé la protection anti-poussée. Ce sont deux choses différentes : l'une m'alerte *après* qu'une clé est partie sur un dépôt public, l'autre l'empêche *de partir*. La vérification par l'API l'a montré, pas la lecture de la page. Et quand le bouton affiche « Disable », cela signifie que la protection est active — le bouton indique l'action possible, pas l'état.
+
+Trois autres réglages n'étaient pas passés non plus : la résolution des conversations, les méthodes de fusion, le signalement privé de vulnérabilité. **Relire l'interface ne suffit pas ; il faut interroger la source.**
+
+**Troisième leçon, la plus intéressante.** Deux cases de la page des règles portent des noms rassurants et m'auraient bloqué. « Restrict updates » gèle la branche, y compris pour mes propres fusions. Et exiger une approbation est un piège pour quelqu'un qui travaille seul : GitHub interdit d'approuver sa propre pull request. Travaillant sans relecteur humain, ma sécurité ne peut pas venir d'un second regard — elle doit venir de tests qui, eux, ne se fatiguent pas.
+
+D'où la chaîne de cinq vérifications : style, types, tests, failles connues, licences. Rien n'entre dans `main` sans qu'elles passent.
+
+**Ce qui est déjà en place.** Les actions sont épinglées par empreinte, pas par étiquette : une étiquette se déplace, une empreinte non. C'est précisément par là que plusieurs projets se sont fait compromettre ces dernières années.
+
+Et le vérificateur de licences a servi dès sa première exécution : il a attrapé une dépendance sous MPL-2.0 arrivée en transitive. Plutôt que d'élargir la liste à l'aveugle, je l'ai affiné pour distinguer production et développement — le risque juridique naît de la distribution, et un outil de compilation ne part jamais chez les joueurs. Au passage, l'audit a révélé deux failles critiques dans la bibliothèque de tests ; une montée de version les a effacées.
+
+**Ce qui tient déjà debout, côté jeu.** Deux morceaux de code, petits et bien testés, qui portent les décisions de conception.
+
+Le premier calcule l'état d'un vol sans aucune tâche de fond : un vol parti à telle heure pour telle durée est arrivé si l'heure actuelle a dépassé la somme. Le serveur ne consomme rien quand personne ne joue, ce qui est la condition pour tenir sur mon NAS. Un test vérifie noir sur blanc qu'un vol reste arrivé dix ans plus tard : la promesse « une absence ne coûte jamais rien » est devenue une assertion exécutable, pas une intention.
+
+Le second tire les cartes du jour de façon déterministe, à partir du joueur, du jour et de l'usage. Reproductible, vérifiable, et hors de portée du navigateur.
+
+Trente-sept tests, tous verts. Pas encore un gramme de jeu — mais un terrain sur lequel on peut construire sans avoir peur.
