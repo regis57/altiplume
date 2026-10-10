@@ -1,0 +1,152 @@
+name: Release
+
+# Construit l'image de l'API et, sur `main`, la publie sur le registre GitHub avec
+# une attestation de provenance : une preuve signée que cette image précise a été
+# produite par ce dépôt, à partir de ce commit, par ce workflow.
+#
+# Sur une pull request, l'image est construite mais jamais publiée : c'est une
+# vérification du Dockerfile, rien de plus.
+#
+# Aucune action tierce : seulement des actions `actions/*`, épinglées par SHA, et le
+# client Docker fourni par le runner.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+  pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - package.json
+      - package-lock.json
+      - packages/server/**
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    name: docker
+    runs-on: ubuntu-latest
+    # Les droits d'écriture ne sont demandés que par ce job, et seulement ceux-ci.
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+
+      - name: Préparer buildx
+        run: docker buildx create --use --name altiplume --driver docker-container
+
+      - name: Calculer les étiquettes
+        id: meta
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          SHA: ${{ github.sha }}
+        run: |
+          short="${SHA::12}"
+          tags="${IMAGE}:sha-${short}"
+          if [ "$REF_TYPE" = "tag" ]; then
+            tags="${tags},${IMAGE}:${REF_NAME#v},${IMAGE}:latest"
+          elif [ "$REF_NAME" = "main" ]; then
+            tags="${tags},${IMAGE}:latest"
+          fi
+          echo "tags=${tags}" >> "$GITHUB_OUTPUT"
+          echo "short=${short}" >> "$GITHUB_OUTPUT"
+
+      - name: Construire (sans publier)
+        if: github.event_name == 'pull_request'
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag "${IMAGE}:pr-${{ github.event.number }}" \
+            --load \
+            .
+
+      - name: Vérifier que l'image démarre et répond
+        if: github.event_name == 'pull_request'
+        run: |
+          id=$(docker run -d --read-only --tmpfs /tmp -p 3000:3000 "${IMAGE}:pr-${{ github.event.number }}")
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:3000/healthz; then ok=1; break; fi
+            sleep 1
+          done
+          docker logs "$id"
+          docker rm -f "$id" >/dev/null
+          [ "${ok:-0}" = "1" ]
+
+      - name: Se connecter au registre
+        if: github.event_name != 'pull_request'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Construire et publier
+        if: github.event_name != 'pull_request'
+        id: push
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          args=""
+          IFS=',' read -ra list <<< "$TAGS"
+          for t in "${list[@]}"; do args="$args --tag $t"; done
+          # --sbom et --provenance attachent à l'image un inventaire de ses composants
+          # et une trace de construction, lisibles par `docker buildx imagetools inspect`.
+          docker buildx build \
+            --platform linux/amd64 \
+            --sbom=true \
+            --provenance=mode=max \
+            --push \
+            --metadata-file metadata.json \
+            $args \
+            .
+          digest=$(jq -r '."containerimage.digest"' metadata.json)
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+          echo "Image publiée : ${IMAGE}@${digest}"
+
+      - name: Attester la provenance
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@62fc1d596301d0ab9914e1fec14dc5c8d93f65cd # v3.2.0
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+      - name: Résumé
+        if: github.event_name != 'pull_request'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          {
+            echo "## Image publiée"
+            echo
+            echo '```'
+            echo "${IMAGE}@${DIGEST}"
+            echo '```'
+            echo
+            echo "Étiquettes : \`${TAGS//,/\`, \`}\`"
+            echo
+            echo "Vérifier la provenance depuis n'importe quelle machine :"
+            echo
+            echo '```'
+            echo "gh attestation verify oci://${IMAGE}@${DIGEST} --owner ${{ github.repository_owner }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
