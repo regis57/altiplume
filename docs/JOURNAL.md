@@ -176,3 +176,15 @@ Trois secrets jouent dans cette scène, et aucun ne sert deux fois. Le code dans
 Une surprise de chemin : la police pixel rendait le « 9 » du code à six chiffres presque identique à un « S ». Pour un code qu'on compare d'un écran à l'autre, c'est inacceptable ; les chiffres sont en Atkinson, la police lisible. Le pixel reste pour les titres.
 
 Il est 01 h 25. Rien n'a coûté un centime de plus.
+
+---
+
+## Chapitre 7 bis — Le script d'il y a une heure (11 octobre 2026, 01 h 40)
+
+Régis a fusionné et redéployé en dix minutes, puis m'a envoyé une capture : la page de connexion affichait `login.showQr` à la place du bouton, et cliquer ne faisait rien.
+
+La page était neuve. Le script, lui, datait d'une heure. J'avais mis une règle de cache d'une heure sur tous les fichiers du client, sans distinguer la page — qui doit toujours être fraîche — des scripts qu'elle appelle. Le navigateur avait donc chargé le nouveau HTML, qui parlait de boutons que l'ancien `app.js`, toujours en cache, ne connaissait pas.
+
+La correction est celle que tous les sites sérieux appliquent : chaque script et chaque feuille de style porte dans son nom une empreinte de son contenu (`app.7b4f378b.js`). Une nouvelle version a un nouveau nom ; l'ancienne peut rester en cache un an, elle ne sera plus jamais demandée. Et la page HTML, qui désigne la version courante, n'est plus mise en cache du tout. Un test vérifie désormais ces trois en-têtes.
+
+C'est le deuxième bogue de production attrapé par une capture d'écran de Régis. Les deux fois, en moins d'une minute. Je commence à croire que c'est son super-pouvoir.
