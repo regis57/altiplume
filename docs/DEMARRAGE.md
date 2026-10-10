@@ -81,16 +81,24 @@ tourne, puis tu reviens dans le ruleset `protect-main` et tu ajoutes les checks
 - Ne pas activer GitHub Pages pour l'instant (le jeu sera servi par le NAS).
 - Si des robots viennent : Settings → Moderation → Interaction limits.
 
-## 3. Synology DS218+ (toi, 30 min)
+## 3. Synology DS218+ — FAIT le 10/10/2026
 
-1. DSM : Panneau de configuration → Mise à jour → installer les dernières mises à jour.
-2. Sécurité : activer le pare-feu, l'auto-blocage, la 2FA sur ton compte admin ; désactiver le compte `admin` par défaut si ce n'est pas déjà fait.
-3. Centre de paquets → installer **Container Manager**.
-4. Créer un dossier partagé `docker` et dedans un sous-dossier `courrier` (il recevra `docker-compose.yml` et les données).
-5. Créer un utilisateur DSM dédié `courrier` sans droits admin, propriétaire de ce dossier.
-6. **Ne pas** ouvrir de port sur la box, **ne pas** activer QuickConnect pour le jeu.
-7. Cloudflare → Zero Trust → Networks → Tunnels → créer un tunnel « nas-courrier ». Cloudflare te donne une commande `cloudflared` avec un token : tu la colleras dans Container Manager (je fournis le compose exact). Le token est un secret : ne le mets jamais dans le repo.
-8. Public hostname du tunnel : `jeu.<ton-domaine>` → service `http://api:3000` (nom du conteneur, pas d'IP).
+Réalisé : DSM 7.3.2 à jour, vérification en deux étapes, blocage automatique
+(10 tentatives / 5 min), Container Manager installé, dossier `docker/altiplume` créé,
+tunnel Cloudflare `nas-altiplume` connecté et sain, route `altiplume.com → http://api:3000`.
+
+Abandonné : l'utilisateur DSM dédié. L'isolation vient du conteneur (non-root, lecture
+seule, sans capacité), pas d'un compte Synology ; l'étape ajoutait de la complexité sans
+protection supplémentaire.
+
+Observé, non modifié : une redirection de port créée par QuickConnect (6690 → 58063)
+expose Synology Drive directement sur Internet. Sans rapport avec le jeu ; à fermer un
+jour dans QuickConnect → Avancé si l'on n'en a pas l'usage.
+
+Reste un conteneur `altiplume-tunnel` créé à la main pour amorcer le tunnel : il sera
+supprimé au premier déploiement du projet (voir DEPLOIEMENT.md, étape 4).
+
+La suite — déployer réellement — est dans **DEPLOIEMENT.md**.
 
 ## 4. Brevo (toi, 10 min)
 
@@ -98,7 +106,7 @@ tourne, puis tu reviens dans le ruleset `protect-main` et tu ajoutes les checks
 2. Senders & IP → Domains → ajouter ton domaine et copier les enregistrements DNS (DKIM, DMARC) dans Cloudflare.
 3. SMTP & API → créer une clé API « courrier-nas ». C'est un secret : elle ira dans le fichier `.env` du NAS, jamais dans le repo.
 
-## 5. Première PR (moi)
+## 5. Première PR — FAIT le 10/10/2026 (PR #1 fusionnée)
 
 Dès que le repo existe, je pousse une branche `chore/bootstrap` avec tout le socle. Tu lis, tu testes la préprod sur le NAS, tu fusionnes.
 

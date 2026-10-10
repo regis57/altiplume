@@ -9,10 +9,22 @@ updates:
       timezone: Europe/Paris
     open-pull-requests-limit: 5
     groups:
+      # Les mises à jour mineures et correctives sont regroupées ; une version
+      # majeure arrive seule, dans sa propre PR, pour être jugée sur pièce.
       production:
         dependency-type: production
+        update-types: ["minor", "patch"]
       development:
         dependency-type: development
+        update-types: ["minor", "patch"]
+    ignore:
+      # Les définitions de types de Node suivent la version de Node utilisée (22).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 est une réécriture du compilateur : on y passera en
+      # connaissance de cause, pas par une mise à jour automatique.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
@@ -37,3 +49,8 @@ updates:
       timezone: Europe/Paris
     commit-message:
       prefix: "chore(docker)"
+    ignore:
+      # On suit Node 22, version à support long (LTS) jusqu'en avril 2027. Un
+      # changement de version majeure est une décision, pas une mise à jour.
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
