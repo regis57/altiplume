@@ -37,3 +37,8 @@ updates:
       timezone: Europe/Paris
     commit-message:
       prefix: "chore(docker)"
+    ignore:
+      # On suit Node 22, version à support long (LTS) jusqu'en avril 2027. Un
+      # changement de version majeure est une décision, pas une mise à jour.
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
