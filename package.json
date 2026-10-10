@@ -1,0 +1,32 @@
+{
+  "name": "altiplume",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Altiplume — cozy 1930s airmail aerodrome game.",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "node --watch packages/server/src/server.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --build --force",
+    "test": "vitest run",
+    "audit": "npm audit --audit-level=high --omit=dev",
+    "licenses": "node scripts/check-licenses.mjs",
+    "check": "npm run lint && npm run typecheck && npm test && npm run audit && npm run licenses"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.0",
+    "globals": "^17.13.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^5.0.3"
+  }
+}

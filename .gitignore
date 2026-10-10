@@ -147,3 +147,13 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Altiplume
+.env
+data/
+*.db
+*.db-wal
+*.db-shm
+dist/
+coverage/
+*.tsbuildinfo

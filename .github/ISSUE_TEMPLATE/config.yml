@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Signaler une faille de sécurité
+    url: https://github.com/regis57/altiplume/security/advisories/new
+    about: N'ouvrez jamais d'issue publique pour une vulnérabilité. Utilisez le signalement privé.
+  - name: Poser une question ou proposer une idée de jeu
+    url: https://github.com/regis57/altiplume/discussions
+    about: Pour tout ce qui n'est ni un bug ni une tâche précise.
