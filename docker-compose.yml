@@ -1,13 +1,16 @@
-# Déploiement sur le Synology DS218+ (Container Manager).
+# Déploiement sur le Synology DS218+ (Container Manager → Projet).
 #
-# Principe : aucun port n'est publié sur le réseau local ni sur Internet. Le seul
-# chemin d'entrée est le tunnel Cloudflare, qui ouvre une connexion sortante depuis
-# le NAS. La box reste close.
+# Principe : aucun port n'est publié, ni sur le réseau local ni sur Internet. Le seul
+# chemin d'entrée est le tunnel Cloudflare, qui ouvre une connexion SORTANTE depuis le
+# NAS. La box reste close.
 #
-# Le fichier .env vit À CÔTÉ de ce fichier, sur le NAS, et n'entre jamais dans Git.
+# Les secrets vivent dans un fichier `.env` posé À CÔTÉ de ce fichier, sur le NAS. Il
+# n'entre jamais dans Git. Voir docs/DEPLOIEMENT.md.
 
 services:
   api:
+    # Étiquette suivie : `latest` = dernière fusion sur main. Pour figer une version
+    # précise, remplacer par `ghcr.io/regis57/altiplume@sha256:<empreinte>`.
     image: ghcr.io/regis57/altiplume:latest
     container_name: altiplume-api
     restart: unless-stopped
@@ -18,7 +21,9 @@ services:
       PORT: "3000"
       DATABASE_PATH: /data/altiplume.db
     volumes:
-      - ./data:/data
+      # Volume nommé plutôt que dossier du NAS : Docker en gère les droits, et
+      # l'utilisateur non-root du conteneur peut y écrire sans bricolage de permissions.
+      - altiplume-data:/data
     # Le code et le système de fichiers sont immuables ; seul /data est écrivable.
     read_only: true
     tmpfs:
@@ -36,10 +41,10 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: altiplume-tunnel
     restart: unless-stopped
-    command: tunnel --no-autoupdate run
+    command: tunnel run
     environment:
       # Jeton du tunnel, fourni par Cloudflare. C'est un secret : il vit dans .env.
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?définissez TUNNEL_TOKEN dans .env}
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?definir TUNNEL_TOKEN dans .env}
     depends_on: [api]
     read_only: true
     security_opt:
@@ -53,3 +58,6 @@ services:
 networks:
   altiplume:
     driver: bridge
+
+volumes:
+  altiplume-data:

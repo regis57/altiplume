@@ -38,6 +38,13 @@ npm run check      # lint + typecheck + tests + audit + licences
 npm run dev        # API sur http://localhost:3000
 ```
 
+## Déployer
+
+L'image de l'API est publiée sur `ghcr.io/regis57/altiplume` à chaque fusion sur
+`main`, avec une attestation de provenance vérifiable par `gh attestation verify`.
+Le déploiement sur un NAS Synology, sans ligne de commande, est décrit dans
+[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
+
 ## Licence
 
 Deux régimes distincts, et la distinction compte :
