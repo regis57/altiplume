@@ -20,13 +20,15 @@
     "licenses": "node scripts/check-licenses.mjs",
     "check": "npm run lint && npm run typecheck && npm run build && npm test && npm run audit && npm run licenses",
     "build": "npm run build -w @altiplume/client",
-    "start": "node --no-warnings=ExperimentalWarning packages/server/src/server.ts"
+    "start": "node --no-warnings=ExperimentalWarning packages/server/src/server.ts",
+    "e2e": "node scripts/e2e-passkeys.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.5",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
+    "playwright": "1.64.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.0",
     "vitest": "^5.0.3"

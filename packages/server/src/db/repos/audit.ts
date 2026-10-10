@@ -13,7 +13,12 @@ export type AuditEvent =
   | 'player.exported'
   | 'player.deleted'
   | 'magic_link.sent'
-  | 'magic_link.rejected';
+  | 'magic_link.rejected'
+  | 'passkey.added'
+  | 'passkey.removed'
+  | 'passkey.rejected'
+  | 'device.approved'
+  | 'device.denied';
 
 export function audit(
   db: Database, event: AuditEvent, playerId: string | null, meta: Record<string, string | number | boolean> = {}, now: number = Date.now(),

@@ -28,6 +28,18 @@ title: Mon compte
     </form>
   </section>
 
+  <section class="bloc" aria-labelledby="t-passkeys">
+    <h2 id="t-passkeys" data-i18n="passkeys.title">Passkeys</h2>
+    <p data-i18n="passkeys.text">Une passkey, c'est votre téléphone (ou cet ordinateur) qui vous reconnaît : empreinte, visage ou code de l'appareil. Plus besoin d'attendre un email. Le serveur ne garde qu'une clé publique, inutilisable sans l'appareil.</p>
+    <div class="message" id="passkeys-message" role="alert" aria-live="polite"></div>
+    <ul class="liste-cles" id="passkeys-list" aria-live="polite"></ul>
+    <p class="aide cache" id="passkeys-empty" data-i18n="passkeys.empty">Aucune passkey pour l'instant.</p>
+    <div class="actions">
+      <button class="bouton cache" type="button" data-action="passkey-add" data-i18n="passkeys.add">Ajouter une passkey sur cet appareil</button>
+    </div>
+    <p class="aide cache" id="passkeys-unsupported" data-i18n="passkeys.unsupported">Ce navigateur ne propose pas de passkeys. Le lien par email reste disponible.</p>
+  </section>
+
   <section class="bloc" aria-labelledby="t-donnees">
     <h2 id="t-donnees" data-i18n="account.data">Vos données</h2>
     <p data-i18n="account.dataText">Tout ce que le jeu sait de vous tient dans un fichier. Vous pouvez l'emporter, ou tout effacer — immédiatement et définitivement.</p>

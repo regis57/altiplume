@@ -22,8 +22,9 @@ d'Altiplume (personne physique, France). Version du 11 octobre 2026.
 |---|---|
 | **Finalité** | Maintenir la connexion d'un navigateur ; vérifier qu'un lien envoyé par email est bien utilisé par son destinataire. |
 | **Base légale** | Exécution du contrat. |
-| **Données** | Empreinte du jeton (jamais le jeton), identifiant de joueur, dates de création, d'usage et d'expiration. Pour un lien d'inscription : pseudonyme et langue choisis, en attente de confirmation. |
-| **Durée** | Lien : 10 minutes. Session : 30 jours sans usage. Purge automatique. |
+| **Données** | Empreinte du jeton (jamais le jeton), identifiant de joueur, dates de création, d'usage et d'expiration. Pour un lien d'inscription : pseudonyme et langue choisis, en attente de confirmation. Pour une passkey (WebAuthn) : identifiant de la clé, clé publique, compteur de signatures, type d'appareil (synchronisée ou non), nom choisi par la personne, dates. Pour une connexion par QR code : code à six chiffres, empreintes des deux jetons, état, 90 secondes. Défis WebAuthn : 5 minutes. |
+| **Durée** | Lien : 10 minutes. Session : 30 jours sans usage. Passkey : jusqu'à suppression par la personne ou avec le compte. Demande QR : 90 secondes (ligne effacée 10 minutes après). Purge automatique. |
+| **Remarque** | L'authenticateur (téléphone, ordinateur) ne reçoit que le pseudonyme et l'identifiant interne du joueur, jamais l'adresse email. La clé privée reste sur l'appareil. |
 
 ## Traitement 3 — Journal d'audit
 

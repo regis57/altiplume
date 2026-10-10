@@ -234,7 +234,7 @@ Cible : OWASP ASVS niveau 2.
 
 - **Données minimales** : email, pseudonyme, clé publique de passkey, locale, état du jeu. Pas de mot de passe. Pas d'adresse IP conservée au-delà de 7 jours (anti-abus seulement). Pas d'analytique tierce.
 - **En-têtes** : CSP stricte avec nonces (aucun script inline), HSTS préchargé, `Referrer-Policy: strict-origin`, `Permissions-Policy` minimale, COOP/COEP.
-- **Auth** : liens magiques à usage unique, 10 minutes ; passkeys liées au domaine ; flux QR pour PC avec code à confirmer sur le téléphone, 60 secondes, usage unique ; sessions en cookies `HttpOnly`, `Secure`, `SameSite=Lax`.
+- **Auth** : liens magiques à usage unique, 10 minutes ; passkeys liées au domaine (découvrables, l'authenticateur ne reçoit que le pseudonyme, dix par compte, compteur de signatures vérifié) ; flux QR pour PC avec code à six chiffres à confirmer sur le téléphone, 90 secondes, usage unique, trois secrets distincts (code d'appareil dans le QR — en fragment d'URL —, jeton d'interrogation gardé par le PC, code lisible pour la personne) ; sessions en cookies `HttpOnly`, `Secure`, `SameSite=Lax`.
 - **Limitation de débit** par IP et par compte sur l'auth et les écritures.
 - **Serveur autoritatif** sur tout ce qui a une valeur.
 - **Secrets** : variables d'environnement sur le NAS, jamais dans Git ; gitleaks bloque tout commit fautif.

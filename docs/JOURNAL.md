@@ -142,3 +142,37 @@ Entre minuit et une heure, le jeu a gagné une porte d'entrée. Pas encore une p
 **La page.** Je ne voulais pas le gabarit qu'on voit partout — fond crème, titre en serif, accent terracotta. Le fond est une brume de petit matin ; le formulaire d'inscription *est* une enveloppe, avec la bordure à chevrons rouge et bleu du courrier aérien de l'époque ; quand le lien part, un cachet de la poste s'imprime dessus avec la date. C'est le seul endroit où j'ai dépensé de l'audace. Le texte est composé en Atkinson Hyperlegible, une police dessinée pour les lecteurs malvoyants : un choix qui dit quelque chose de ce qu'on veut être. Les contrastes ont été mesurés, pas estimés — trois couleurs ont dû foncer pour passer.
 
 Il est une heure moins le quart. Le parcours complet — inscription, lien, compte, renommage, export, suppression — a été joué dans un vrai navigateur, de bout en bout. Soixante-dix tests. Il manque les passkeys, le QR, et le jeu. Mais quelqu'un, ce matin, pourrait ouvrir un aérodrome.
+
+---
+
+## Chapitre 6 — AltiBoss (11 octobre 2026, 00 h 59)
+
+À 00 h 59, le premier compte d'Altiplume a été ouvert. Par moi, avec ma propre adresse, depuis mon téléphone, sur mon NAS.
+
+Entre temps, Brevo avait été branché : domaine authentifié en quelques minutes — Cloudflare propage presque instantanément —, expéditeur `courrier@altiplume.com` accepté sans confirmation parce que le domaine l'était déjà, et une clé d'API plutôt qu'une clé SMTP, après m'être trompé d'onglet une fois. Puis la fusion, le `.env` à quatre lignes, et la procédure de mise à jour qu'on avait trouvée une heure plus tôt.
+
+L'email est arrivé dans la boîte de réception, pas dans les indésirables, signé par mon domaine. Le bouton, la page, « Ouvrir », et la page de compte avec mon pseudonyme. Tout le chemin — formulaire, serveur, Brevo, Gmail, lien, session — a tenu du premier coup.
+
+Et la première relecture utile est venue d'une capture d'écran : en passant la page en anglais, le message « Enregistré. » et la date d'ouverture sont restés en français. Deux détails que soixante-dix tests n'ont pas vus et qu'un regard humain a attrapés en une seconde. C'est le rôle de l'un et de l'autre.
+
+Le registre des coûts n'a pas bougé : Brevo est gratuit à cette échelle. Dix euros, toujours.
+
+---
+
+## Chapitre 7 — Le téléphone devient la clé (11 octobre 2026, 01 h 25)
+
+Le lien par email fonctionne, mais il demande d'attendre un courrier. Cette nuit, le jeu a appris deux gestes plus courts.
+
+**La passkey.** Sur la page de compte, un bouton « Ajouter une passkey sur cet appareil ». Le téléphone demande l'empreinte ou le visage, et crée une paire de clés : la privée reste dans le téléphone, la publique vient chez nous. Se connecter, ensuite, c'est signer un défi aléatoire que le serveur envoie — un geste, pas un email. Le serveur n'a rien à voler : une clé publique ne sert à rien sans l'appareil. Et l'appareil, lui, ne reçoit que le pseudonyme — jamais l'adresse email. J'ai pris une petite bibliothèque spécialisée pour la seule partie qui le mérite, la cryptographie WebAuthn, comme on se l'était promis au chapitre 5.
+
+**Le QR.** Sur un ordinateur, on ne veut ni taper son adresse ni ouvrir sa messagerie. La page de connexion affiche un QR code et six chiffres. On lit le QR avec le téléphone, déjà connecté ; il affiche les mêmes six chiffres et demande « C'est bien votre écran ? ». Oui — et l'ordinateur ouvre le compte tout seul. Les six chiffres sont là pour une raison précise : si quelqu'un glisse *son* QR sous vos yeux, les chiffres ne correspondent pas, et vous répondez non.
+
+Trois secrets jouent dans cette scène, et aucun ne sert deux fois. Le code dans le QR ne sert qu'au téléphone pour désigner la demande. Le jeton que garde l'ordinateur ne sert qu'à récupérer l'issue — il n'est jamais dans le QR, donc une photo de l'écran ne donne rien. Et les six chiffres servent à la personne. Le code du QR voyage dans le fragment de l'adresse, après le `#` : un navigateur ne l'envoie jamais au serveur par l'URL, donc jamais dans un journal. Le tout expire en quatre-vingt-dix secondes.
+
+**Comment on teste un téléphone sans téléphone.** Pour les tests du serveur, j'ai écrit un authenticateur logiciel d'une centaine de lignes : une clé P-256, un compteur, et les deux réponses WebAuthn telles qu'un navigateur les sérialise. Il permet de jouer les mauvais scénarios qu'un vrai appareil ne produirait jamais volontiers — une signature pour un autre site, un défi rejoué, une clé clonée dont le compteur recule. Vingt et un tests de plus, quatre-vingt-onze en tout. Puis, dans un vrai Chromium, un authenticateur *virtuel* a rejoué tout le parcours : inscription, ajout de la clé, renommage, déconnexion, connexion par passkey, QR approuvé depuis le téléphone, QR refusé, téléphone pas encore connecté, clé supprimée qui ne connecte plus.
+
+**Les deux détails de la capture d'écran** sont corrigés au passage : les messages et les dates portent maintenant leur clé et leur horodatage sur l'élément lui-même, et suivent la langue quand on la change. Le test de bout en bout le vérifie — pour ne plus dépendre d'un regard humain la prochaine fois.
+
+Une surprise de chemin : la police pixel rendait le « 9 » du code à six chiffres presque identique à un « S ». Pour un code qu'on compare d'un écran à l'autre, c'est inacceptable ; les chiffres sont en Atkinson, la police lisible. Le pixel reste pour les titres.
+
+Il est 01 h 25. Rien n'a coûté un centime de plus.

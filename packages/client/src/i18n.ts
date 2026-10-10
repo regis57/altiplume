@@ -72,6 +72,48 @@ const FR: Record<string, string> = {
   'account.deleteSubmit': 'Effacer mon compte',
   'account.deleted': 'Votre compte est effacé. Merci d\'être passé par ici.',
 
+  'login.pitch2': "Déjà passé par ici sur ce téléphone ? Une passkey vous ouvre d'un geste. Sur un ordinateur, montrez-lui le QR code.",
+  'login.or': 'ou',
+  'login.passkey': 'Se connecter avec une passkey',
+  'login.showQr': 'Afficher un QR code pour mon téléphone',
+  'login.qrAlt': 'QR code à lire avec le téléphone déjà connecté',
+  'login.qrHelp': 'Avec le téléphone où vous êtes déjà connecté, lisez ce code, puis vérifiez que les chiffres correspondent :',
+  'login.qrWaiting': 'En attente du téléphone…',
+  'login.qrApproved': 'Approuvé. Ouverture de votre aérodrome…',
+  'login.qrDenied': 'Refusé depuis le téléphone.',
+  'login.qrExpired': 'Ce QR code a expiré. Affichez-en un nouveau.',
+  'login.passkeyCancelled': 'Connexion par passkey annulée.',
+
+  'approve.title': 'Un écran demande à entrer.',
+  'approve.pitch': "Vous avez lu un QR code sur un ordinateur ou une tablette. Si le code ci-dessous est bien celui qu'il affiche, vous pouvez l'ouvrir à votre compte — sans y taper quoi que ce soit.",
+  'approve.formTitle': 'Connecter cet écran ?',
+  'approve.compare': "Le même code doit s'afficher sur l'autre écran :",
+  'approve.yes': "Oui, c'est mon écran",
+  'approve.no': 'Non',
+  'approve.warning': "Si vous n'avez pas lu ce QR vous-même, répondez non : quelqu'un essaie peut-être d'entrer dans votre aérodrome.",
+  'approve.login': 'Connectez-vous d\'abord sur ce téléphone : <a href="/connexion">se connecter</a>. Vous reviendrez ici ensuite.',
+  'approve.done': 'C\'est fait. Vous pouvez poser le téléphone et <a href="/compte">retourner à votre compte</a>.',
+  'approve.approved': "L'autre écran est connecté.",
+  'approve.denied': "Refusé. L'autre écran n'entrera pas.",
+  'approve.missing': "Aucun code dans ce lien. Lisez de nouveau le QR code affiché sur l'autre écran.",
+
+  'passkeys.title': 'Passkeys',
+  'passkeys.text': "Une passkey, c'est votre téléphone (ou cet ordinateur) qui vous reconnaît : empreinte, visage ou code de l'appareil. Plus besoin d'attendre un email. Le serveur ne garde qu'une clé publique, inutilisable sans l'appareil.",
+  'passkeys.empty': "Aucune passkey pour l'instant.",
+  'passkeys.add': 'Ajouter une passkey sur cet appareil',
+  'passkeys.unsupported': 'Ce navigateur ne propose pas de passkeys. Le lien par email reste disponible.',
+  'passkeys.added': 'Passkey ajoutée. La prochaine fois, un geste suffira.',
+  'passkeys.cancelled': 'Ajout annulé.',
+  'passkeys.removed': 'Passkey supprimée.',
+  'passkeys.renamed': 'Passkey renommée.',
+  'passkeys.created': 'Ajoutée le',
+  'passkeys.lastUsed': 'Dernier usage',
+  'passkeys.neverUsed': 'jamais utilisée',
+  'passkeys.synced': 'synchronisée',
+  'passkeys.rename': 'Renommer',
+  'passkeys.remove': 'Supprimer',
+  'passkeys.nameLabel': 'Nom de la passkey',
+
   'error.email_invalid': "Cette adresse n'a pas l'air valide.",
   'error.nickname_too_short': 'Trois caractères au moins.',
   'error.nickname_too_long': 'Vingt caractères au plus.',
@@ -91,6 +133,17 @@ const FR: Record<string, string> = {
   'error.schema': 'La demande est mal formée.',
   'error.server_error': 'Le serveur a rencontré un problème. Réessayez dans un instant.',
   'error.network': 'Impossible de joindre le serveur. Vérifiez votre connexion.',
+  'error.unauthenticated': 'Votre session a expiré. Reconnectez-vous.',
+  'error.challenge_unknown': 'La demande a expiré. Recommencez.',
+  'error.passkey_rejected': "Cette passkey n'a pas été acceptée.",
+  'error.passkey_unknown': "Cette passkey n'est pas connue ici. Peut-être a-t-elle été supprimée ; utilisez le lien par email.",
+  'error.passkey_exists': 'Cette passkey est déjà enregistrée.',
+  'error.passkey_limit': 'Dix passkeys au plus par compte. Supprimez-en une pour en ajouter.',
+  'error.passkey_unsupported': 'Ce navigateur ne propose pas de passkeys.',
+  'error.device_unknown': "Ce QR code n'est plus valable. Affichez-en un nouveau sur l'autre écran.",
+  'error.device_decided': 'Ce QR code a déjà reçu une réponse.',
+  'error.name_empty': 'Donnez un nom à cette passkey.',
+  'error.not_found': 'Introuvable.',
 };
 
 const EN: Record<string, string> = {
@@ -157,6 +210,48 @@ const EN: Record<string, string> = {
   'account.deleteSubmit': 'Erase my account',
   'account.deleted': 'Your account is erased. Thanks for stopping by.',
 
+  'login.pitch2': 'Been here before on this phone? A passkey lets you in with one tap. On a computer, show it the QR code.',
+  'login.or': 'or',
+  'login.passkey': 'Sign in with a passkey',
+  'login.showQr': 'Show a QR code for my phone',
+  'login.qrAlt': 'QR code to scan with the phone that is already signed in',
+  'login.qrHelp': 'With the phone where you are already signed in, scan this code, then check that the digits match:',
+  'login.qrWaiting': 'Waiting for the phone…',
+  'login.qrApproved': 'Approved. Opening your aerodrome…',
+  'login.qrDenied': 'Declined from the phone.',
+  'login.qrExpired': 'This QR code has expired. Show a new one.',
+  'login.passkeyCancelled': 'Passkey sign-in cancelled.',
+
+  'approve.title': 'A screen is asking to come in.',
+  'approve.pitch': "You scanned a QR code on a computer or tablet. If the code below is the one it shows, you can let it into your account — without typing anything there.",
+  'approve.formTitle': 'Connect this screen?',
+  'approve.compare': 'The same code should appear on the other screen:',
+  'approve.yes': "Yes, that's my screen",
+  'approve.no': 'No',
+  'approve.warning': "If you didn't scan this QR code yourself, answer no: someone may be trying to get into your aerodrome.",
+  'approve.login': 'Sign in on this phone first: <a href="/connexion">sign in</a>. You will come back here afterwards.',
+  'approve.done': 'Done. You can put the phone down and <a href="/compte">go back to your account</a>.',
+  'approve.approved': 'The other screen is signed in.',
+  'approve.denied': "Declined. The other screen won't get in.",
+  'approve.missing': 'No code in this link. Scan the QR code on the other screen again.',
+
+  'passkeys.title': 'Passkeys',
+  'passkeys.text': 'A passkey is your phone (or this computer) recognising you: fingerprint, face or device code. No more waiting for an email. The server keeps only a public key, useless without the device.',
+  'passkeys.empty': 'No passkeys yet.',
+  'passkeys.add': 'Add a passkey on this device',
+  'passkeys.unsupported': "This browser doesn't offer passkeys. The email link remains available.",
+  'passkeys.added': 'Passkey added. Next time, one tap will do.',
+  'passkeys.cancelled': 'Cancelled.',
+  'passkeys.removed': 'Passkey removed.',
+  'passkeys.renamed': 'Passkey renamed.',
+  'passkeys.created': 'Added on',
+  'passkeys.lastUsed': 'Last used',
+  'passkeys.neverUsed': 'never used',
+  'passkeys.synced': 'synced',
+  'passkeys.rename': 'Rename',
+  'passkeys.remove': 'Remove',
+  'passkeys.nameLabel': 'Passkey name',
+
   'error.email_invalid': "That address doesn't look valid.",
   'error.nickname_too_short': 'At least three characters.',
   'error.nickname_too_long': 'Twenty characters at most.',
@@ -176,6 +271,17 @@ const EN: Record<string, string> = {
   'error.schema': 'The request is malformed.',
   'error.server_error': 'The server ran into a problem. Try again in a moment.',
   'error.network': "Can't reach the server. Check your connection.",
+  'error.unauthenticated': 'Your session has expired. Sign in again.',
+  'error.challenge_unknown': 'The request has expired. Start again.',
+  'error.passkey_rejected': "This passkey wasn't accepted.",
+  'error.passkey_unknown': "This passkey isn't known here. It may have been removed; use the email link.",
+  'error.passkey_exists': 'This passkey is already registered.',
+  'error.passkey_limit': 'Ten passkeys at most per account. Remove one to add another.',
+  'error.passkey_unsupported': "This browser doesn't offer passkeys.",
+  'error.device_unknown': 'This QR code is no longer valid. Show a new one on the other screen.',
+  'error.device_decided': 'This QR code has already been answered.',
+  'error.name_empty': 'Give this passkey a name.',
+  'error.not_found': 'Not found.',
 };
 
 const DICT: Record<Locale, Record<string, string>> = { fr: FR, en: EN };
@@ -199,6 +305,14 @@ export function setLocale(locale: Locale): void {
   try { localStorage.setItem(STORAGE_KEY, locale); } catch { /* sans importance */ }
 }
 
+/** Date dans la langue courante. `short` : « 11 oct. 2026 » ; `long` : « 11 octobre 2026 ». */
+export function formatDate(ms: number, style: 'short' | 'long' = 'long'): string {
+  const tag = current === 'fr' ? 'fr-FR' : 'en-GB';
+  return new Date(ms).toLocaleDateString(tag, style === 'short'
+    ? { day: '2-digit', month: 'short', year: 'numeric' }
+    : { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export function t(key: string): string {
   return DICT[current][key] ?? DICT.fr[key] ?? key;
 }
@@ -214,6 +328,20 @@ export function translatePage(): void {
     const key = el.dataset['i18nHtml'];
     // Les chaînes avec balises viennent du dictionnaire embarqué, jamais du réseau.
     if (key) el.innerHTML = t(key);
+  });
+  // Messages composés de codes (« error.x error.y ») : re-rendus dans la langue courante.
+  document.querySelectorAll<HTMLElement>('[data-i18n-keys]').forEach((el) => {
+    const keys = (el.dataset['i18nKeys'] ?? '').split(' ').filter(Boolean);
+    el.textContent = keys.map((k) => t(k)).join(' ');
+  });
+  document.querySelectorAll<HTMLElement>('[data-i18n-aria]').forEach((el) => {
+    const key = el.dataset['i18nAria'];
+    if (key) el.setAttribute('aria-label', t(key));
+  });
+  // Dates : l'horodatage est porté par l'élément, le format suit la langue.
+  document.querySelectorAll<HTMLElement>('[data-date]').forEach((el) => {
+    const ms = Number(el.dataset['date']);
+    if (Number.isFinite(ms)) el.textContent = formatDate(ms, el.dataset['dateStyle'] === 'short' ? 'short' : 'long');
   });
   document.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => {
     el.classList.toggle('cache', el.dataset['lang'] !== current);
