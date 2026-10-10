@@ -21,6 +21,7 @@ on:
       - package.json
       - package-lock.json
       - packages/server/**
+      - packages/client/**
       - .github/workflows/release.yml
   workflow_dispatch:
 
@@ -83,7 +84,9 @@ jobs:
       - name: Vérifier que l'image démarre et répond
         if: github.event_name == 'pull_request'
         run: |
-          id=$(docker run -d --read-only --tmpfs /tmp -p 3000:3000 "${IMAGE}:pr-${{ github.event.number }}")
+          id=$(docker run -d --read-only --tmpfs /tmp -p 3000:3000 \
+            -e PUBLIC_ORIGIN=https://altiplume.test -e MAIL_API_KEY=factice-pour-le-test \
+            "${IMAGE}:pr-${{ github.event.number }}")
           for i in $(seq 1 20); do
             if curl -fsS http://127.0.0.1:3000/healthz; then ok=1; break; fi
             sleep 1

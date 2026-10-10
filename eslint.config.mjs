@@ -9,7 +9,7 @@ export default tseslint.config(
   {
     // Le code serveur et l'outillage tournent sous Node ; le client, dans le
     // navigateur. Déclarer les globales évite de désactiver des règles utiles.
-    files: ['packages/server/**/*.ts', 'scripts/**/*.mjs', '*.config.*'],
+    files: ['packages/server/**/*.ts', 'scripts/**/*.mjs', '*.config.*', 'packages/*/build.mjs'],
     languageOptions: { globals: globals.node },
   },
   {

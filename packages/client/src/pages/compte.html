@@ -1,0 +1,51 @@
+title: Mon compte
+---
+<div class="lecture">
+  <h1 data-i18n="account.title">Mon compte</h1>
+  <div class="message" id="account-message" role="alert" aria-live="polite"></div>
+  <dl class="fiche">
+    <dt data-i18n="account.nickname">Pseudonyme</dt><dd id="fiche-nickname">—</dd>
+    <dt data-i18n="signup.email">Adresse email</dt><dd id="fiche-email">—</dd>
+    <dt data-i18n="account.since">Aérodrome ouvert le</dt><dd id="fiche-since">—</dd>
+  </dl>
+
+  <section class="bloc" aria-labelledby="t-modifier">
+    <h2 id="t-modifier" data-i18n="account.edit">Modifier</h2>
+    <form id="rename" novalidate>
+      <div class="champ">
+        <label for="nickname" data-i18n="account.nickname">Pseudonyme</label>
+        <input id="nickname" name="nickname" type="text" autocomplete="nickname" minlength="3" maxlength="20" />
+        <p class="erreur-champ" id="nickname-erreur"></p>
+      </div>
+      <div class="champ">
+        <label for="locale" data-i18n="account.language">Langue</label>
+        <select id="locale" name="locale">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <button class="bouton" type="submit" data-i18n="account.save">Enregistrer</button>
+    </form>
+  </section>
+
+  <section class="bloc" aria-labelledby="t-donnees">
+    <h2 id="t-donnees" data-i18n="account.data">Vos données</h2>
+    <p data-i18n="account.dataText">Tout ce que le jeu sait de vous tient dans un fichier. Vous pouvez l'emporter, ou tout effacer — immédiatement et définitivement.</p>
+    <div class="actions">
+      <a class="bouton secondaire" href="/v1/account/export" download data-i18n="account.export">Télécharger mes données</a>
+      <button class="bouton secondaire" type="button" data-action="logout" data-i18n="account.logout">Se déconnecter</button>
+    </div>
+  </section>
+
+  <section class="bloc" aria-labelledby="t-supprimer">
+    <h2 id="t-supprimer" data-i18n="account.delete">Fermer l'aérodrome</h2>
+    <p data-i18n="account.deleteText">Votre compte, vos sessions et vos données de jeu sont effacés sur-le-champ. Pour confirmer, retapez votre pseudonyme exactement.</p>
+    <form id="delete" novalidate>
+      <div class="champ">
+        <label for="confirm" data-i18n="account.confirm">Pseudonyme, pour confirmer</label>
+        <input id="confirm" name="confirm" type="text" autocomplete="off" />
+      </div>
+      <button class="bouton danger" type="submit" data-i18n="account.deleteSubmit">Effacer mon compte</button>
+    </form>
+  </section>
+</div>

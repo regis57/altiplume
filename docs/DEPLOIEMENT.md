@@ -21,21 +21,28 @@ l'image l'est aussi, sans rien faire. Pour s'en assurer : GitHub → ton profil 
 
 ## 2. Préparer le fichier de secrets
 
-Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant le jeton :
+Depuis la version « comptes », l'API envoie des emails de connexion : il faut un
+compte **Brevo** (gratuit, 300 emails/jour) **avant** de déployer. Sans clé, le serveur
+refuse de démarrer — c'est voulu : un jeu où personne ne peut s'inscrire n'a pas à
+tourner. Voir DEMARRAGE.md, section Brevo, pour obtenir la clé et faire reconnaître
+le domaine `altiplume.com` comme expéditeur (DKIM).
+
+Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant les valeurs :
 
 ```
 TUNNEL_TOKEN=eyJ...le jeton du tunnel, en entier, sans espace...
 PUBLIC_ORIGIN=https://altiplume.com
+MAIL_API_KEY=xkeysib-...la clé d'API Brevo...
+MAIL_FROM=courrier@altiplume.com
 ```
 
-C'est tout pour le premier déploiement : l'API n'a encore ni base de données ni
-authentification. `SESSION_SECRET` et `MAIL_API_KEY` seront ajoutés quand la pull
-request qui les utilise arrivera — le mode d'emploi sera mis à jour à ce moment-là.
+`MAIL_FROM` doit être une adresse du domaine déclaré chez Brevo.
 
 Enregistre le fichier sous le nom **`.env`** — avec les guillemets dans la boîte de
 dialogue du Bloc-notes, `".env"`, sinon Windows ajoute `.txt`. Puis dans **File
-Station**, va dans `docker/altiplume` et **téléverse** ce fichier. Il est invisible
-dans la liste tant que l'affichage des fichiers cachés n'est pas activé : c'est normal.
+Station**, va dans `docker/altiplume` et **téléverse** ce fichier (remplace l'ancien
+s'il existe). Il est invisible dans la liste tant que l'affichage des fichiers cachés
+n'est pas activé : c'est normal.
 
 Ce fichier ne quitte jamais le NAS.
 
@@ -61,7 +68,9 @@ Valide. Container Manager télécharge les deux images et démarre les deux cont
 
 ## 5. Vérifier
 
-Dans un navigateur : `https://altiplume.com/healthz` doit afficher `{"status":"ok"}`.
+Dans un navigateur : `https://altiplume.com/healthz` doit afficher `{"status":"ok"}`, et
+`https://altiplume.com/` la page d'accueil avec l'enveloppe d'inscription. Inscris-toi
+avec ta propre adresse : le lien doit arriver en moins d'une minute.
 
 Sur la page du tunnel chez Cloudflare : **Active replicas : 1**, statut **Healthy**.
 

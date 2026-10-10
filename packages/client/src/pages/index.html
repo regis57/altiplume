@@ -1,0 +1,45 @@
+title: Un petit aérodrome dans les nuages
+---
+<div class="accueil">
+  <section>
+    <h1 data-i18n="home.title">Un petit aérodrome, quelque part dans les nuages.</h1>
+    <p class="pitch" data-i18n="home.pitch1">Vous héritez d'une piste en herbe à moitié ruinée. Restaurez-la, recrutez des pilotes qui ont leur caractère, ouvrez des lignes de courrier vers des régions lointaines.</p>
+    <p class="pitch" data-i18n="home.pitch2">Les vols durent du vrai temps. On joue cinq minutes le matin ; on revient le soir voir si le courrier est arrivé.</p>
+    <p class="promesse" data-i18n-html="home.promise"><strong>Rien ne se perd si vous ne vous connectez pas.</strong> C'est une règle du jeu, pas une promesse marketing.</p>
+  </section>
+
+  <section class="enveloppe" aria-labelledby="titre-inscription">
+    <div class="cachet cache" id="cachet" aria-hidden="true">
+      <span class="cachet-nom" data-i18n="stamp.name">Altiplume</span>
+      <span class="cachet-date" id="cachet-date"></span>
+      <span class="cachet-mention" data-i18n="stamp.sent">lien envoyé</span>
+    </div>
+    <h2 id="titre-inscription" data-i18n="signup.title">Ouvrir un aérodrome</h2>
+    <p class="sous-titre" data-i18n="signup.subtitle">Un email et un pseudonyme. Pas de mot de passe : vous recevrez un lien.</p>
+    <div class="message" id="signup-message" role="alert" aria-live="polite"></div>
+    <form id="signup" novalidate>
+      <div class="champ">
+        <label for="email" data-i18n="signup.email">Adresse email</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="254" />
+        <p class="aide" data-i18n="signup.emailHelp">Elle ne sert qu'à vous envoyer vos liens de connexion.</p>
+        <p class="erreur-champ" id="email-erreur"></p>
+      </div>
+      <div class="champ">
+        <label for="nickname" data-i18n="signup.nickname">Pseudonyme</label>
+        <input id="nickname" name="nickname" type="text" autocomplete="nickname" required minlength="3" maxlength="20" />
+        <p class="aide" data-i18n="signup.nicknameHelp">Public. De 3 à 20 caractères.</p>
+        <p class="erreur-champ" id="nickname-erreur"></p>
+      </div>
+      <div class="case">
+        <input id="age" name="age" type="checkbox" required />
+        <label for="age" data-i18n="signup.age">J'ai 15 ans ou plus.</label>
+      </div>
+      <div class="case">
+        <input id="terms" name="terms" type="checkbox" required />
+        <label for="terms" data-i18n-html="signup.terms">J'accepte les <a href="/cgu">conditions d'utilisation</a> et la <a href="/confidentialite">politique de confidentialité</a>.</label>
+      </div>
+      <button class="bouton" type="submit" data-i18n="signup.submit">Recevoir mon lien</button>
+    </form>
+    <p class="bas" data-i18n-html="signup.already">Déjà un aérodrome ? <a href="/connexion">Se connecter</a>.</p>
+  </section>
+</div>

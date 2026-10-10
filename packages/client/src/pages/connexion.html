@@ -1,0 +1,27 @@
+title: Se connecter
+---
+<div class="accueil">
+  <section>
+    <h1 data-i18n="login.title">Reprendre le courrier.</h1>
+    <p class="pitch" data-i18n="login.pitch">Indiquez votre adresse ; vous recevrez un lien valable dix minutes. Pas de mot de passe à retenir, rien à perdre.</p>
+  </section>
+  <section class="enveloppe" aria-labelledby="titre-connexion">
+    <div class="cachet cache" id="cachet" aria-hidden="true">
+      <span class="cachet-nom" data-i18n="stamp.name">Altiplume</span>
+      <span class="cachet-date" id="cachet-date"></span>
+      <span class="cachet-mention" data-i18n="stamp.sent">lien envoyé</span>
+    </div>
+    <h2 id="titre-connexion" data-i18n="login.formTitle">Se connecter</h2>
+    <p class="sous-titre" data-i18n="login.subtitle">Le lien arrive par email.</p>
+    <div class="message" id="login-message" role="alert" aria-live="polite"></div>
+    <form id="login" novalidate>
+      <div class="champ">
+        <label for="email" data-i18n="signup.email">Adresse email</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="254" />
+        <p class="erreur-champ" id="email-erreur"></p>
+      </div>
+      <button class="bouton" type="submit" data-i18n="login.submit">Recevoir mon lien</button>
+    </form>
+    <p class="bas" data-i18n-html="login.new">Pas encore d'aérodrome ? <a href="/">En ouvrir un</a>.</p>
+  </section>
+</div>

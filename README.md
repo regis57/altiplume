@@ -14,7 +14,9 @@ promesse marketing.
 
 ## État du projet
 
-Pré-alpha. Le socle technique se met en place ; il n'y a pas encore de jeu jouable.
+Pré-alpha. On peut ouvrir un compte sur altiplume.com — email, pseudonyme, lien de
+connexion, export et suppression de ses données — mais il n'y a pas encore de jeu
+derrière la porte.
 La conception complète est dans [docs/CONCEPTION.md](docs/CONCEPTION.md), le
 journal de bord dans [docs/JOURNAL.md](docs/JOURNAL.md).
 
@@ -34,8 +36,9 @@ journal de bord dans [docs/JOURNAL.md](docs/JOURNAL.md).
 ```bash
 nvm use            # Node 22
 npm ci
-npm run check      # lint + typecheck + tests + audit + licences
-npm run dev        # API sur http://localhost:3000
+npm run check      # lint + typecheck + build + tests + audit + licences
+npm run dev        # API et client sur http://localhost:3000 ; les liens de connexion
+                   # s'affichent dans la console tant que MAIL_API_KEY est vide
 ```
 
 ## Déployer

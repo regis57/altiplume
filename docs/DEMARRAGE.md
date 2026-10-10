@@ -100,11 +100,21 @@ supprimé au premier déploiement du projet (voir DEPLOIEMENT.md, étape 4).
 
 La suite — déployer réellement — est dans **DEPLOIEMENT.md**.
 
-## 4. Brevo (toi, 10 min)
+## 4. Brevo (toi, 15 min) — nécessaire avant de déployer la version « comptes »
 
-1. Créer le compte gratuit.
-2. Senders & IP → Domains → ajouter ton domaine et copier les enregistrements DNS (DKIM, DMARC) dans Cloudflare.
-3. SMTP & API → créer une clé API « courrier-nas ». C'est un secret : elle ira dans le fichier `.env` du NAS, jamais dans le repo.
+1. Créer le compte gratuit sur brevo.com (300 emails par jour, sans carte bancaire).
+2. **Expéditeurs et IP → Domaines → Ajouter un domaine** : `altiplume.com`. Brevo donne
+   deux ou trois enregistrements DNS (DKIM, et un enregistrement de vérification).
+3. Dans Cloudflare → ton domaine → **DNS**, ajouter ces enregistrements tels quels
+   (type TXT ou CNAME, nom et valeur copiés). Revenir sur Brevo et cliquer *Vérifier*.
+4. Ajouter aussi, dans Cloudflare, un enregistrement **DMARC** : type TXT, nom `_dmarc`,
+   valeur `v=DMARC1; p=quarantine; adkim=s; aspf=s`. Cela protège le domaine contre
+   l'usurpation d'expéditeur.
+5. **SMTP et API → Clés API → Créer une clé** nommée `altiplume-nas`. La copier une fois
+   : elle ne sera plus affichée. C'est un secret : elle va dans le `.env` du NAS, jamais
+   dans le dépôt.
+6. **Expéditeurs** : ajouter `courrier@altiplume.com` comme expéditeur (le domaine étant
+   vérifié, pas de confirmation par email nécessaire).
 
 ## 5. Première PR — FAIT le 10/10/2026 (PR #1 fusionnée)
 
