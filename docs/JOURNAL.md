@@ -142,3 +142,17 @@ Entre minuit et une heure, le jeu a gagné une porte d'entrée. Pas encore une p
 **La page.** Je ne voulais pas le gabarit qu'on voit partout — fond crème, titre en serif, accent terracotta. Le fond est une brume de petit matin ; le formulaire d'inscription *est* une enveloppe, avec la bordure à chevrons rouge et bleu du courrier aérien de l'époque ; quand le lien part, un cachet de la poste s'imprime dessus avec la date. C'est le seul endroit où j'ai dépensé de l'audace. Le texte est composé en Atkinson Hyperlegible, une police dessinée pour les lecteurs malvoyants : un choix qui dit quelque chose de ce qu'on veut être. Les contrastes ont été mesurés, pas estimés — trois couleurs ont dû foncer pour passer.
 
 Il est une heure moins le quart. Le parcours complet — inscription, lien, compte, renommage, export, suppression — a été joué dans un vrai navigateur, de bout en bout. Soixante-dix tests. Il manque les passkeys, le QR, et le jeu. Mais quelqu'un, ce matin, pourrait ouvrir un aérodrome.
+
+---
+
+## Chapitre 6 — AltiBoss (11 octobre 2026, 00 h 59)
+
+À 00 h 59, le premier compte d'Altiplume a été ouvert. Par moi, avec ma propre adresse, depuis mon téléphone, sur mon NAS.
+
+Entre temps, Brevo avait été branché : domaine authentifié en quelques minutes — Cloudflare propage presque instantanément —, expéditeur `courrier@altiplume.com` accepté sans confirmation parce que le domaine l'était déjà, et une clé d'API plutôt qu'une clé SMTP, après m'être trompé d'onglet une fois. Puis la fusion, le `.env` à quatre lignes, et la procédure de mise à jour qu'on avait trouvée une heure plus tôt.
+
+L'email est arrivé dans la boîte de réception, pas dans les indésirables, signé par mon domaine. Le bouton, la page, « Ouvrir », et la page de compte avec mon pseudonyme. Tout le chemin — formulaire, serveur, Brevo, Gmail, lien, session — a tenu du premier coup.
+
+Et la première relecture utile est venue d'une capture d'écran : en passant la page en anglais, le message « Enregistré. » et la date d'ouverture sont restés en français. Deux détails que soixante-dix tests n'ont pas vus et qu'un regard humain a attrapés en une seconde. C'est le rôle de l'un et de l'autre.
+
+Le registre des coûts n'a pas bougé : Brevo est gratuit à cette échelle. Dix euros, toujours.

@@ -12,7 +12,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-10 | altiplume.com (Cloudflare Registrar) | ~10 €/an | annuel | **payé** | Montant exact à relever sur la facture Cloudflare |
 | à faire | altiplume.fr (défensif, facultatif) | ~8 €/an | annuel | option | Évite qu'un tiers s'installe sur le .fr |
 | 2026-10-10 | Cloudflare Free (DNS, tunnel, SSL, anti-DDoS) | 0 € | — | **en service** | Tunnel actif, certificat émis, aucune carte demandée |
-| à faire | Brevo Free (emails de connexion, 300/jour) | 0 € | — | prévu | Sans carte bancaire |
+| 2026-10-11 | Brevo Free (emails de connexion, 300/jour) | 0 € | — | **en service** | Domaine authentifié, premier email livré en boîte de réception |
 | à faire | Électricité DS218+ | 0 € | — | prévu | NAS déjà allumé 24h/24 |
 | optionnel | Barrette RAM DS218+ (4 Go SO-DIMM DDR3L) | ~30 € | ponctuel | option | Seulement si la mémoire sature |
 | optionnel | Dépôt de marque INPI (1 classe) | ~190 € | ponctuel | option | Une fois le nom définitif choisi |
@@ -41,6 +41,8 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-10 | NAS : sécurité DSM, Container Manager, tunnel Cloudflare, test externe | ~1 h |
 | 2026-10-10 | PR #6 : chaîne de publication, attestation, mode d'emploi NAS | ~45 min |
 | 2026-10-10 | Premier déploiement sur le NAS — altiplume.com répond | ~20 min |
+| 2026-10-11 | PR #12 : comptes sans mot de passe, première page, pages légales | ~2 h |
+| 2026-10-11 | Brevo, déploiement de la version comptes, première inscription réelle | ~30 min |
 
 ## Revenus (à partir du lancement)
 
