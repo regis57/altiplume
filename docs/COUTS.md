@@ -39,6 +39,8 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-10 | Création et sécurisation du dépôt GitHub, audit par l'API | ~45 min |
 | 2026-10-10 | Première PR : socle, chaîne de vérification, cœur de simulation | ~1 h |
 | 2026-10-10 | NAS : sécurité DSM, Container Manager, tunnel Cloudflare, test externe | ~1 h |
+| 2026-10-10 | PR #6 : chaîne de publication, attestation, mode d'emploi NAS | ~45 min |
+| 2026-10-10 | Premier déploiement sur le NAS — altiplume.com répond | ~20 min |
 
 ## Revenus (à partir du lancement)
 

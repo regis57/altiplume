@@ -12,32 +12,25 @@ DSM 7.2 ou plus, avec Container Manager. Aucune ligne de commande n'est nécessa
 - Un conteneur **temporaire** `altiplume-tunnel`, créé à la main pour amorcer le tunnel.
   Il sera remplacé par celui du projet (étape 4) — ne pas en avoir deux en même temps.
 
-## 1. Rendre l'image publique (une seule fois)
+## 1. Vérifier que l'image est publique
 
-Après la première exécution du workflow *Release* sur `main`, l'image existe sur le
-registre GitHub mais elle est **privée par défaut**, et le NAS ne pourrait pas la
-télécharger.
-
-GitHub → ton profil → **Packages** → `altiplume` → **Package settings** (en bas à
-droite) → *Danger Zone* → **Change visibility** → **Public**.
-
-Il n'y a rien de secret dans l'image : c'est le même code que le dépôt, déjà public.
+Le paquet `altiplume` hérite de la visibilité du dépôt : comme le dépôt est public,
+l'image l'est aussi, sans rien faire. Pour s'en assurer : GitHub → ton profil →
+**Packages** → `altiplume` → *Package settings* → la *Danger Zone* indique
+« This package is currently public ». (Vérifié le 10/10/2026.)
 
 ## 2. Préparer le fichier de secrets
 
-Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant les valeurs :
+Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant le jeton :
 
 ```
-TUNNEL_TOKEN=eyJ...le jeton du tunnel, en entier...
-SESSION_SECRET=...64 caractères hexadécimaux, voir ci-dessous...
-MAIL_API_KEY=
-MAIL_FROM=courrier@altiplume.com
+TUNNEL_TOKEN=eyJ...le jeton du tunnel, en entier, sans espace...
 PUBLIC_ORIGIN=https://altiplume.com
 ```
 
-Pour `SESSION_SECRET`, un générateur de mots de passe réglé sur 64 caractères
-hexadécimaux convient ; sinon, demande-le-moi et je t'en produis un que tu colleras.
-`MAIL_API_KEY` reste vide tant que Brevo n'est pas branché.
+C'est tout pour le premier déploiement : l'API n'a encore ni base de données ni
+authentification. `SESSION_SECRET` et `MAIL_API_KEY` seront ajoutés quand la pull
+request qui les utilise arrivera — le mode d'emploi sera mis à jour à ce moment-là.
 
 Enregistre le fichier sous le nom **`.env`** — avec les guillemets dans la boîte de
 dialogue du Bloc-notes, `".env"`, sinon Windows ajoute `.txt`. Puis dans **File
@@ -46,24 +39,25 @@ dans la liste tant que l'affichage des fichiers cachés n'est pas activé : c'es
 
 Ce fichier ne quitte jamais le NAS.
 
-## 3. Créer le projet
+## 3. Supprimer le conteneur temporaire — AVANT de créer le projet
+
+**Container Manager → Conteneur** : sélectionne `altiplume-tunnel`, **Action →
+Arrêter**, puis **Action → Supprimer**. Le projet va créer un conteneur du même nom ;
+tant que l'ancien existe, Docker refusera de créer le nouveau (*name already in use*).
+Pendant une minute, `altiplume.com` répondra une erreur de tunnel : c'est attendu.
+
+## 4. Créer le projet
 
 **Container Manager → Projet → Créer.**
 
 - Nom du projet : `altiplume`
 - Chemin : `/docker/altiplume`
-- Source : *Créer docker-compose.yml*, puis colle le contenu du fichier
-  `docker-compose.yml` du dépôt (copie-le depuis GitHub, bouton *Raw*).
+- Source : *Créer docker-compose.yml*, puis colle le contenu de
+  https://raw.githubusercontent.com/regis57/altiplume/main/docker-compose.yml
+  (ouvre l'adresse, tout sélectionner, copier).
 - Portail web : **ne rien configurer**.
 
 Valide. Container Manager télécharge les deux images et démarre les deux conteneurs.
-
-## 4. Supprimer le conteneur temporaire
-
-**Container Manager → Conteneur** : arrête puis supprime l'ancien `altiplume-tunnel`
-créé à la main, s'il existe encore avec ce nom hors du projet. Le projet en contient
-un nouveau avec le même jeton ; en garder deux ferait échouer une requête sur deux,
-car l'ancien ne connaît pas le conteneur `api`.
 
 ## 5. Vérifier
 
