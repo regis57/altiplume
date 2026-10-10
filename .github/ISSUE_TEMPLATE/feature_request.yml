@@ -1,0 +1,35 @@
+name: Proposition
+description: Une idée de fonctionnalité ou d'amélioration
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Le périmètre du projet est volontairement étroit et décrit dans
+        `docs/CONCEPTION.md`. Une proposition qui en sort peut être refusée sans que
+        ce soit un jugement sur sa qualité.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Le problème ou le manque
+      description: Qu'est-ce qui coince aujourd'hui, pour qui ?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Ce que vous proposez
+    validations:
+      required: true
+  - type: dropdown
+    id: pillar
+    attributes:
+      label: À quel pilier du jeu cela touche-t-il ?
+      options:
+        - Le lieu (l'aérodrome, la décoration)
+        - Les gens (pilotes, histoires)
+        - Le réseau (lignes, économie)
+        - Technique, accessibilité ou traduction
+        - Autre
+    validations:
+      required: true

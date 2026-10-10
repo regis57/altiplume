@@ -1,0 +1,11 @@
+{
+  "name": "@altiplume/server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "main": "src/server.ts",
+  "dependencies": {
+    "fastify": "^5.6.1"
+  }
+}
