@@ -5,14 +5,14 @@
 #
 # Les étiquettes seront remplacées par des empreintes (sha256:...) une fois la
 # chaîne de publication en place ; Dependabot suit déjà ce fichier.
-FROM node:22.22-alpine AS deps
+FROM node:26.10-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/server/package.json packages/server/
 COPY packages/client/package.json packages/client/
 RUN npm ci --omit=dev --ignore-scripts
 
-FROM node:22.22-alpine AS runtime
+FROM node:26.10-alpine AS runtime
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=3000
