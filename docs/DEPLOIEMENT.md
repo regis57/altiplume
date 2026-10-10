@@ -70,22 +70,23 @@ affiche *Server listening*.
 
 ## Mettre à jour
 
-Chaque fusion sur `main` publie une nouvelle image `latest`. Pour l'appliquer :
+Chaque fusion sur `main` publie une nouvelle image `latest`. Le NAS ne se met pas à
+jour tout seul ; c'est voulu tant que le projet est jeune.
 
-**Container Manager → Projet → altiplume → Action → Arrêter**, puis **Action →
-Nettoyer** (supprime les conteneurs, pas les données), puis **Action → Construire**.
-Container Manager retélécharge `latest` et redémarre. Les données restent dans le
-volume `altiplume-data`.
+Procédure constatée sur DSM 7.3 (il n'y a pas de bouton « Construire » dans cette
+version ; la méthode fiable est de repartir de l'image) :
 
-Pour automatiser : **Panneau de configuration → Planificateur de tâches → Créer →
-Tâche planifiée → Script défini par l'utilisateur**, utilisateur `root`, tous les
-jours à 5 h, script :
+1. **Projet → `altiplume` → Action → Arrêt**, puis **Action → Nettoyer** (supprime les
+   conteneurs, pas le volume de données).
+2. **Image →** sélectionner `ghcr.io/regis57/altiplume` **→ Supprimer**.
+3. **Projet → `altiplume` → Action → Supprimer** (le dossier, le `.env` et le volume
+   restent en place).
+4. **Projet → Créer** : nom `altiplume`, chemin `/docker/altiplume`, source **Utiliser un
+   docker-compose.yml existant**, pas de portail web. Container Manager retélécharge
+   l'image et recrée les conteneurs.
+5. Vérifier `https://altiplume.com/healthz`.
 
-```
-cd /volume1/docker/altiplume && docker compose pull --quiet && docker compose up -d --remove-orphans
-```
-
-À n'activer qu'une fois le premier déploiement validé à la main.
+Interruption de service : environ une minute. Validé le 11/10/2026 à 00 h 02.
 
 ## Revenir en arrière
 
