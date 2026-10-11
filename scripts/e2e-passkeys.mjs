@@ -66,7 +66,9 @@ try {
   const token = await lastLink();
   await page.goto(`${ORIGIN}/verifier?jeton=${encodeURIComponent(token)}`);
   await page.click('#verify button[type=submit]');
-  await page.waitForURL(`${ORIGIN}/compte`);
+  await page.waitForURL(`${ORIGIN}/aerodrome`);
+  await page.waitForSelector('#fondation:not(.cache)'); // connecté, sans compagnie encore
+  await page.goto(`${ORIGIN}/compte`);
   assert((await page.textContent('#fiche-nickname')) === 'Pilote', 'compte ouvert');
 
   // Ajout d'une passkey.
@@ -99,7 +101,8 @@ try {
   await page.waitForSelector('[data-action=passkey-login]:not(.cache)');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-passkey-2-connexion-mobile.png'), fullPage: true });
   await page.click('[data-action=passkey-login]');
-  await page.waitForURL(`${ORIGIN}/compte`);
+  await page.waitForURL(`${ORIGIN}/aerodrome`);
+  await page.goto(`${ORIGIN}/compte`);
   assert((await page.textContent('#fiche-nickname')) === 'Pilote', 'connecté par passkey');
   const lastUsed = await page.textContent('#passkeys-list .aide');
   assert(!/jamais/.test(lastUsed), 'dernier usage renseigné');
@@ -137,7 +140,8 @@ try {
   await page.click('[data-action=approve]');
   await page.waitForSelector('#approve-message.ok');
 
-  await desk.waitForURL(`${ORIGIN}/compte`, { timeout: 10_000 });
+  await desk.waitForURL(`${ORIGIN}/aerodrome`, { timeout: 10_000 });
+  await desk.goto(`${ORIGIN}/compte`);
   assert((await desk.textContent('#fiche-nickname')) === 'Pilote', 'le PC est connecté sans rien taper');
   if (shots) await desk.screenshot({ path: join(shots, 'e2e-qr-3-pc-connecte.png'), fullPage: true });
 

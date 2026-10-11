@@ -105,4 +105,66 @@ export const MIGRATIONS: readonly Migration[] = [
       CREATE INDEX device_codes_expires ON device_codes(expires_at);
     `,
   },
+  {
+    version: 3,
+    name: 'compagnies',
+    sql: `
+      -- La compagnie d'un joueur : une par compte. Les francs et les cachets sont
+      -- des entiers tenus par le serveur ; le navigateur n'envoie que des intentions.
+      CREATE TABLE companies (
+        id          TEXT PRIMARY KEY,
+        player_id   TEXT NOT NULL UNIQUE REFERENCES players(id) ON DELETE CASCADE,
+        name        TEXT NOT NULL,
+        francs      INTEGER NOT NULL DEFAULT 0,
+        stamps      INTEGER NOT NULL DEFAULT 0,
+        founded_at  INTEGER NOT NULL
+      );
+
+      -- Les avions d'une compagnie : un modèle du monde, une usure en points.
+      CREATE TABLE company_planes (
+        id          TEXT PRIMARY KEY,
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        model       TEXT NOT NULL,
+        wear        INTEGER NOT NULL DEFAULT 0,
+        acquired_at INTEGER NOT NULL
+      );
+      CREATE INDEX company_planes_company ON company_planes(company_id);
+
+      -- Les pilotes embauchés : un gabarit du monde, et ce qui évolue avec le joueur.
+      CREATE TABLE company_pilots (
+        id          TEXT PRIMARY KEY,
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        pilot       TEXT NOT NULL,
+        affinity    INTEGER NOT NULL DEFAULT 0,   -- vols faits ensemble
+        morale      INTEGER NOT NULL DEFAULT 10,  -- 0..20
+        fatigue     INTEGER NOT NULL DEFAULT 0,   -- 0..10
+        scenes_seen INTEGER NOT NULL DEFAULT 0,   -- scènes d'histoire déjà lues
+        hired_at    INTEGER NOT NULL,
+        UNIQUE (company_id, pilot)
+      );
+
+      -- Niveau de chaque zone de l'aérodrome.
+      CREATE TABLE company_zones (
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        zone        TEXT NOT NULL,
+        level       INTEGER NOT NULL DEFAULT 1,
+        PRIMARY KEY (company_id, zone)
+      );
+
+      CREATE TABLE company_decorations (
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        decoration  TEXT NOT NULL,
+        placed_at   INTEGER NOT NULL,
+        PRIMARY KEY (company_id, decoration)
+      );
+
+      -- L'album de cachets : une page par « première », datée.
+      CREATE TABLE company_stamps (
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        stamp       TEXT NOT NULL,
+        earned_at   INTEGER NOT NULL,
+        PRIMARY KEY (company_id, stamp)
+      );
+    `,
+  },
 ];

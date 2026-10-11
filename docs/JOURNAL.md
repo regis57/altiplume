@@ -208,3 +208,19 @@ Il y a aussi un mort. Bastien, l'ancien propriétaire, celui qui a appris à vol
 **La question de Régis** : faut-il un système de récompense pour que les pilotes reviennent ? Oui, et il est écrit maintenant au chapitre 4.7 de la conception. Six leviers : le courrier arrivé pendant qu'on dormait, les trois cartes du jour, l'aérodrome qu'on voit changer, les histoires, l'album de cachets — une collection de « premières », pas un classement —, et le compteur mondial anonyme. Et trois refus : pas de série quotidienne, pas de minuteur d'énergie, pas de classement permanent. Stardew Valley n'a rien de tout cela et personne n'y joue moins pour autant.
 
 Les tests du monde ont attrapé quatre incohérences avant qu'un joueur les voie : un contrat de colis pour un village qui n'en recevait pas, un hameau proche mieux payé qu'une ville plus loin. Ce sont des tests sur du contenu, pas sur du code, et ils valent autant.
+
+---
+
+## Chapitre 9 — Il lui faut un nom (11 octobre 2026, petit matin)
+
+La compagnie existe maintenant, ou plutôt : elle peut exister. Quand on se connecte pour la première fois, on n'arrive plus sur une page de compte mais sur une page qui dit « Il lui faut un nom. » Trois noms proposés — « Poste Aérienne Brume », « Les Ailes de Saline », « Comptoir du Zéphyr » —, un bouton pour en tirer d'autres, une ligne pour écrire le sien. On fonde. Et l'aérodrome apparaît.
+
+Ce qu'on voit : un ciel en pixels qui suit l'heure de la personne — brume de jour, rose à l'aube, encre la nuit avec une lune —, la piste et ses pierres blanches, le hangar, la manche à air, la Grive garée devant, et tout à gauche, au bout du chemin, la petite croix. Dessous, le nom de la compagnie, l'adresse « Chemin de la Croisette, Vallées de Brume », trois cents francs, un cachet. Puis Marthe, avec ses deux traits et son portrait ; la Grive et ses chiffres ; la piste et le hangar à leur premier niveau, avec ce que coûtera le suivant ; et l'album, douze pages, dont une seule collée : *Fondation*, datée d'aujourd'hui.
+
+Les histoires de Marthe sont là, mais verrouillées — « après le vol 3 », « après le vol 7 », « après le vol 12 ». Le serveur ne les envoie pas tant que l'affinité n'y est pas ; elles ne sont pas dans le catalogue public, on ne peut pas les lire en trichant. Quand on en lit une pour la première fois, une page de plus se colle dans l'album.
+
+Les trois proposition de noms sont reproductibles : même joueur, même jour, mêmes noms. Ce n'est pas un détail. Si un joueur dit « on m'a proposé un nom que je n'aurais pas dû voir », on peut rejouer son tirage.
+
+Deux choses attrapées par les captures d'écran avant Régis, cette fois : sur un téléphone, la navigation à quatre entrées débordait de l'écran — elle passe maintenant sous le logo ; et le bouton jour/nuit montrait les deux icônes à la fois en mode clair, une affaire de priorité de règles CSS que seul un œil voit.
+
+Il reste le plus important, et c'est la prochaine étape : le courrier. Les cartes du jour, affecter Marthe à la Grive, expédier vers Pont-de-Brume, attendre cinq vraies minutes, encaisser. Le jour où ça fusionnera, Altiplume sera un jeu.

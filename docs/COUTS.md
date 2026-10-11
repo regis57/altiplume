@@ -47,6 +47,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Correctif cache : empreintes dans les noms de fichiers, HTML sans cache | ~15 min |
 | 2026-10-11 | Logo plume, mode jour/nuit, déconnexion en tête de page | ~45 min |
 | 2026-10-11 | Le monde : six villages, trois avions, quatre pilotes et leurs histoires, 34 cartes, noms de compagnie, récompenses | ~1 h 30 |
+| 2026-10-11 | La compagnie : fondation, page de l'aérodrome, scène, album, histoires sous clé | ~1 h 15 |
 
 ## Revenus (à partir du lancement)
 

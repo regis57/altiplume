@@ -18,7 +18,9 @@ export type AuditEvent =
   | 'passkey.removed'
   | 'passkey.rejected'
   | 'device.approved'
-  | 'device.denied';
+  | 'device.denied'
+  | 'company.founded'
+  | 'company.renamed';
 
 export function audit(
   db: Database, event: AuditEvent, playerId: string | null, meta: Record<string, string | number | boolean> = {}, now: number = Date.now(),

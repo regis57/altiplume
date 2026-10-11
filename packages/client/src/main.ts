@@ -8,6 +8,7 @@ import { browserSupportsWebAuthn, startAuthentication, startRegistration, WebAut
 import { toCanvas } from 'qrcode';
 import { formatRemaining } from './time.ts';
 import { getLocale, setLocale, t, translatePage, type Locale } from './i18n.ts';
+import { pageAerodrome } from './aerodrome.ts';
 
 export { formatRemaining };
 
@@ -105,7 +106,7 @@ function busy(form: HTMLFormElement, on: boolean): void {
 /** Où aller après une connexion réussie : la page d'approbation si on en vient. */
 const RETURN_KEY = 'altiplume.retour';
 function afterSignIn(): void {
-  let target = '/compte';
+  let target = '/aerodrome';
   try {
     if (sessionStorage.getItem(RETURN_KEY) === 'approuver') target = '/approuver';
     sessionStorage.removeItem(RETURN_KEY);
@@ -561,9 +562,10 @@ function main(): void {
     case 'verifier': pageVerifier(); break;
     case 'approuver': void pageApprouver(); break;
     case 'compte': void pageCompte(); break;
+    case 'aerodrome': void pageAerodrome(api, setMessage); break;
     default: break;
   }
-  if (page !== 'compte') void updateNav();
+  if (page !== 'compte' && page !== 'aerodrome') void updateNav();
 
   if (new URLSearchParams(location.search).get('supprime') === '1') {
     setMessage('signup-message', 'account.deleted', 'ok');

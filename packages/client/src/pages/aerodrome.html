@@ -1,0 +1,90 @@
+title: Mon aérodrome
+---
+<div class="lecture jeu" id="jeu" data-moment="jour">
+  <div class="message" id="jeu-message" role="alert" aria-live="polite"></div>
+
+  <!-- Fondation : visible seulement tant que la compagnie n'a pas de nom. -->
+  <section class="fondation cache" id="fondation" aria-labelledby="t-fondation">
+    <h1 id="t-fondation" data-i18n="found.title">Il lui faut un nom.</h1>
+    <p class="pitch" data-i18n="found.pitch">Vous héritez de l'aérodrome de la Croisette : une piste en herbe, un hangar dont la porte ferme mal, une Grive, et Marthe, qui était déjà là. Avant le premier sac de courrier, la compagnie doit s'appeler quelque chose.</p>
+    <form class="enveloppe" id="fonder" novalidate aria-labelledby="t-choix">
+      <h2 id="t-choix" data-i18n="found.choose">Choisir un nom</h2>
+      <p class="sous-titre" data-i18n="found.suggested">Trois propositions, ou le vôtre.</p>
+      <div class="choix-noms" id="choix-noms" role="radiogroup" aria-labelledby="t-choix"></div>
+      <div class="actions">
+        <button class="bouton secondaire" type="button" data-action="autres-noms" data-i18n="found.more">D'autres noms</button>
+      </div>
+      <div class="champ">
+        <label for="nom-perso" data-i18n="found.custom">Ou le vôtre</label>
+        <input id="nom-perso" name="name" type="text" autocomplete="off" maxlength="40" />
+        <p class="aide" data-i18n="found.customHelp">De 3 à 40 caractères. Pas de marque réelle.</p>
+        <p class="erreur-champ" id="nom-perso-erreur"></p>
+      </div>
+      <button class="bouton" type="submit" data-i18n="found.submit">Fonder la compagnie</button>
+    </form>
+  </section>
+
+  <!-- L'aérodrome, une fois la compagnie fondée. -->
+  <section class="aerodrome cache" id="aerodrome" aria-labelledby="t-compagnie">
+    <div class="scene" aria-hidden="true">
+      <svg viewBox="0 0 160 72" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges">
+        <rect class="ciel" width="160" height="72"/>
+        <g class="astre"><rect x="120" y="12" width="6" height="6"/><rect x="119" y="13" width="8" height="4"/><rect x="121" y="11" width="4" height="8"/></g>
+        <g class="colline-loin"><rect x="0" y="40" width="160" height="12"/><rect x="10" y="36" width="30" height="4"/><rect x="16" y="33" width="14" height="3"/><rect x="60" y="37" width="40" height="3"/><rect x="72" y="34" width="18" height="3"/><rect x="120" y="38" width="40" height="2"/></g>
+        <g class="colline"><rect x="0" y="46" width="160" height="10"/><rect x="0" y="43" width="22" height="3"/><rect x="110" y="43" width="50" height="3"/><rect x="126" y="41" width="20" height="2"/></g>
+        <rect class="sol" x="0" y="54" width="160" height="18"/>
+        <g class="piste"><rect x="18" y="60" width="124" height="6"/><rect x="22" y="62" width="3" height="2" class="pierre"/><rect x="40" y="62" width="3" height="2" class="pierre"/><rect x="58" y="62" width="3" height="2" class="pierre"/><rect x="76" y="62" width="3" height="2" class="pierre"/><rect x="94" y="62" width="3" height="2" class="pierre"/><rect x="112" y="62" width="3" height="2" class="pierre"/><rect x="130" y="62" width="3" height="2" class="pierre"/></g>
+        <g class="hangar"><rect x="112" y="44" width="30" height="14"/><rect x="110" y="42" width="34" height="2"/><rect x="114" y="40" width="26" height="2"/><rect class="porte" x="122" y="48" width="10" height="10"/><rect class="toit" x="112" y="43" width="30" height="1"/></g>
+        <g class="avion"><rect x="92" y="55" width="12" height="1"/><rect x="94" y="53" width="8" height="1"/><rect x="95" y="54" width="6" height="1"/><rect x="103" y="54" width="1" height="3"/><rect x="104" y="53" width="1" height="4" class="helice"/><rect x="96" y="56" width="1" height="2"/><rect x="100" y="56" width="1" height="2"/></g>
+        <g class="manche"><rect x="80" y="46" width="1" height="12"/><rect x="81" y="46" width="6" height="2" class="toile"/></g>
+        <g class="chemin"><rect x="0" y="57" width="18" height="3"/><rect x="2" y="56" width="4" height="1"/></g>
+        <g class="croix"><rect x="7" y="48" width="1" height="8"/><rect x="5" y="50" width="5" height="1"/></g>
+        <g class="lanterne cache" id="scene-lanterne"><rect x="16" y="54" width="1" height="6"/><rect x="15" y="52" width="3" height="2" class="flamme"/></g>
+      </svg>
+    </div>
+
+    <div class="entete-page">
+      <div>
+        <h1 id="t-compagnie" class="nom-compagnie"></h1>
+        <p class="adresse" id="adresse"></p>
+      </div>
+      <dl class="caisse">
+        <div><dt data-i18n="game.francs">Francs</dt><dd id="francs">—</dd></div>
+        <div><dt data-i18n="game.stamps">Cachets</dt><dd id="cachets">—</dd></div>
+      </dl>
+    </div>
+
+    <section class="bloc" aria-labelledby="t-courrier">
+      <h2 id="t-courrier" data-i18n="game.mail">Le courrier</h2>
+      <p data-i18n="game.mailSoon">Les premiers contrats arrivent avec la prochaine version : trois cartes par jour, un pilote, un avion, et du vrai temps de vol. En attendant, la Grive est au hangar et Marthe regarde le ciel.</p>
+    </section>
+
+    <section class="bloc" aria-labelledby="t-pilotes">
+      <h2 id="t-pilotes" data-i18n="game.pilots">Les pilotes</h2>
+      <ul class="fiches" id="pilotes"></ul>
+    </section>
+
+    <section class="bloc" aria-labelledby="t-hangar">
+      <h2 id="t-hangar" data-i18n="game.hangar">Le hangar</h2>
+      <ul class="fiches" id="avions"></ul>
+    </section>
+
+    <section class="bloc" aria-labelledby="t-zones">
+      <h2 id="t-zones" data-i18n="game.field">L'aérodrome</h2>
+      <ul class="fiches" id="zones"></ul>
+    </section>
+
+    <section class="bloc" aria-labelledby="t-album">
+      <h2 id="t-album" data-i18n="game.album">L'album de cachets</h2>
+      <p data-i18n="game.albumText">Chaque première colle une page. Une collection, pas un classement.</p>
+      <ul class="album" id="album"></ul>
+    </section>
+  </section>
+
+  <dialog class="histoire" id="histoire" aria-labelledby="histoire-titre">
+    <p class="histoire-serie" id="histoire-serie"></p>
+    <h2 id="histoire-titre"></h2>
+    <div class="repliques" id="histoire-lignes"></div>
+    <form method="dialog"><button class="bouton" type="submit" data-i18n="story.close">Refermer le carnet</button></form>
+  </dialog>
+</div>

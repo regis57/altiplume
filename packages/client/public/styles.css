@@ -157,11 +157,13 @@ a:hover { color: var(--laiton-clair); }
 
 .entete {
   display: flex;
+  flex-wrap: wrap;          /* sur un téléphone, la navigation passe en dessous plutôt que de déborder */
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.4rem 1rem;
   padding-block: 1.2rem;
 }
+.entete nav { margin-left: auto; }
 .marque {
   display: inline-flex;
   align-items: center;
@@ -199,8 +201,9 @@ a:hover { color: var(--laiton-clair); }
   .marque { font-size: 1.25rem; gap: 0.45rem; }
   .entete nav a, .entete nav button { padding-inline: 0.5rem; }
 }
-.entete nav button svg { display: block; fill: currentColor; }
+.entete nav button svg { fill: currentColor; }
 /* Jour/nuit : on montre l'icône de ce qu'on obtiendra en cliquant. */
+.icone-soleil { display: block; }
 .icone-lune { display: none; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .icone-lune { display: block; }
@@ -466,3 +469,89 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .cache { display: none !important; }
 
 @media print { .entete nav, .pied, .bouton { display: none; } }
+
+/* ---- L'aérodrome ---- */
+
+.jeu .fondation .enveloppe { margin-top: 1.4rem; }
+.choix-noms { display: grid; gap: 0.5rem; margin-bottom: 1rem; }
+.choix-nom {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0.7rem;
+  padding: 0.7rem 0.9rem; min-height: 44px; border: 1.5px dashed var(--brume-fonce); border-radius: var(--rayon);
+  font-family: var(--police-titre); font-size: 1.15rem; cursor: pointer;
+}
+.choix-nom:has(input:checked) { border-style: solid; border-color: var(--encre); background: color-mix(in srgb, var(--laiton) 12%, transparent); }
+.choix-nom input { width: 1.25rem; height: 1.25rem; accent-color: var(--avion-bleu); }
+.jeu .actions { margin-bottom: 1.1rem; }
+
+/* La scène : un ciel qui suit l'heure de la personne, une piste, un hangar, la croix. */
+.scene { border-radius: var(--rayon); overflow: hidden; aspect-ratio: 160 / 72; max-height: 16rem; margin: 0.4rem 0 1rem; background: var(--brume-fonce); }
+.scene svg { display: block; width: 100%; height: 100%; }
+.scene .ciel { fill: #b9d3e3; }
+.scene .astre { fill: #f3dc8a; }
+.scene .colline-loin { fill: #9fb6a5; }
+.scene .colline { fill: #7f9a6c; }
+.scene .sol { fill: #6b8a5a; }
+.scene .piste { fill: #9fb27c; }
+.scene .pierre { fill: #f6f1e7; }
+.scene .hangar { fill: #5a6a62; }
+.scene .hangar .toit { fill: #3f4b45; }
+.scene .hangar .porte { fill: #46544d; }
+.scene .avion { fill: #2a2f33; }
+.scene .avion .helice { fill: #b23a2f; }
+.scene .manche { fill: #3f4b45; }
+.scene .manche .toile { fill: #b23a2f; }
+.scene .chemin { fill: #b8a98a; }
+.scene .croix { fill: #8c8c86; }
+.scene .lanterne { fill: #3f4b45; }
+.scene .lanterne .flamme { fill: #f3dc8a; }
+[data-moment='aube'] .scene .ciel { fill: #e8c9b4; }
+[data-moment='aube'] .scene .astre { fill: #f2a86a; }
+[data-moment='aube'] .scene .colline-loin { fill: #b9b0a8; }
+[data-moment='crepuscule'] .scene .ciel { fill: #c98a7a; }
+[data-moment='crepuscule'] .scene .astre { fill: #f0b36a; }
+[data-moment='crepuscule'] .scene .colline-loin { fill: #8a8a93; }
+[data-moment='crepuscule'] .scene .colline { fill: #5f7556; }
+[data-moment='nuit'] .scene .ciel { fill: #1b2634; }
+[data-moment='nuit'] .scene .astre { fill: #e9ecef; }
+[data-moment='nuit'] .scene .colline-loin { fill: #2f3b47; }
+[data-moment='nuit'] .scene .colline { fill: #2a3a30; }
+[data-moment='nuit'] .scene .sol { fill: #26342a; }
+[data-moment='nuit'] .scene .piste { fill: #3a4a3a; }
+[data-moment='nuit'] .scene .hangar { fill: #2c3530; }
+[data-moment='nuit'] .scene .hangar .toit { fill: #1f2622; }
+[data-moment='nuit'] .scene .chemin { fill: #4a4538; }
+
+.nom-compagnie { font-size: clamp(1.6rem, 4.5vw, 2.4rem); max-width: none; }
+.adresse { margin: 0.2rem 0 0; color: var(--encre-douce); }
+.caisse { display: flex; gap: 1.2rem; margin: 0; }
+.caisse div { display: grid; text-align: right; }
+.caisse dt { font-size: 0.85rem; color: var(--encre-douce); }
+.caisse dd { margin: 0; font-family: var(--police-titre); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+
+.fiches { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.9rem; }
+.fiches li { border: 1px dashed var(--papier-ombre); border-radius: var(--rayon); padding: 0.9rem; }
+.fiches h3 { font-family: var(--police-titre); font-weight: 600; font-size: 1.2rem; margin: 0 0 0.3rem; }
+.fiches p { margin: 0 0 0.5rem; }
+.fiches .actions { margin: 0.4rem 0 0; }
+.traits { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.trait { display: inline-block; padding: 0.15rem 0.55rem; border: 1px solid var(--laiton); border-radius: 999px; color: var(--laiton); font-size: 0.9rem; }
+.portrait { font-style: italic; color: var(--encre-douce); }
+
+.album { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.6rem; }
+.album .page {
+  display: grid; gap: 0.25rem; padding: 0.7rem; min-height: 5rem; border: 1.5px dashed var(--brume-fonce); border-radius: var(--rayon);
+  color: var(--encre-douce); font-size: 0.9rem;
+}
+.album .page.gagnee { border: 1.5px solid var(--cachet); color: var(--encre); background: color-mix(in srgb, var(--cachet) 8%, transparent); transform: rotate(-1.5deg); }
+.album .page.gagnee strong { color: var(--cachet-encre); font-family: var(--police-titre); }
+
+/* Le carnet d'histoires. */
+.histoire { max-width: min(100% - 2rem, 34rem); border: 0; border-radius: var(--rayon); padding: 1.4rem; background: var(--papier); color: var(--encre); }
+.histoire::backdrop { background: rgba(20, 24, 28, 0.6); }
+.histoire-serie { margin: 0; color: var(--encre-douce); font-size: 0.9rem; }
+.histoire h2 { font-family: var(--police-titre); margin: 0.2rem 0 1rem; }
+.repliques { display: grid; gap: 0.8rem; margin-bottom: 1.2rem; }
+.replique { margin: 0; }
+.replique.narrator { font-style: italic; color: var(--encre-douce); }
+.replique .qui { display: block; font-weight: 700; font-size: 0.9rem; color: var(--laiton); }
+.replique.you .qui { color: var(--avion-bleu); }

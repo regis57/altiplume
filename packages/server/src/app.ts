@@ -12,6 +12,7 @@ import { registerAuthRoutes } from './auth/routes.ts';
 import { registerPasskeyRoutes } from './auth/passkeys.ts';
 import { registerDeviceRoutes } from './auth/device.ts';
 import { registerAccountRoutes } from './account/routes.ts';
+import { registerGameRoutes } from './game/routes.ts';
 import { registerHealth } from './routes/health.ts';
 import { registerWorldRoutes } from './routes/world.ts';
 
@@ -70,6 +71,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   registerPasskeyRoutes(app, ctx);
   registerDeviceRoutes(app, ctx);
   registerAccountRoutes(app, ctx);
+  registerGameRoutes(app, ctx);
 
   // Réponses d'erreur uniformes et muettes : jamais de trace, jamais de chemin.
   app.setErrorHandler((error: unknown, _request, reply) => {
