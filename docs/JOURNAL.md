@@ -242,3 +242,13 @@ Cinq vraies minutes plus tard — ou le lendemain matin, c'est pareil — on rev
 **Les règles tiennent en dix lignes**, elles sont dans MONDE.md, et dix-huit tests les surveillent : le coût d'un départ, la durée d'un vol, l'occupation de l'avion, le bonus versé ou non, la fatigue qui monte et redescend, les six villages qui ouvrent la vallée, le vol de nuit aux lanternes, l'imprévu tranché, l'avion acheté si le hangar a la place, le pilote de passage, la fête. Puis un vrai navigateur a rejoué le tout, en reculant l'horodatage du vol dans la base pour ne pas attendre cinq minutes — le serveur, lui, n'a pas d'horloge truquée.
 
 Il reste beaucoup : restaurer la piste et le hangar, acheter les décorations, voir l'avion voler dans la scène, entendre la musique, recevoir une notification quand le courrier arrive. Mais ce matin, quand Régis se réveillera, il pourra expédier un sac de courrier et revenir le soir voir s'il est arrivé. C'était la phrase de la page d'accueil. Elle est vraie.
+
+---
+
+## Chapitre 11 — Les marteaux jusqu'à Pont-de-Brume (11 octobre 2026, 4 h 15)
+
+On peut maintenant dépenser ses francs à autre chose qu'au courrier : restaurer la piste (roulée, puis grande — le Martinet, puis le Héron peuvent se poser) et le hangar (une porte neuve, un établi, puis l'atelier — deux avions, puis trois). Et poser dix décorations qui ne servent à rien, sauf un peu de moral pour tout le monde, et beaucoup pour la personne qui regarde.
+
+Parce que c'est là que ça se voit. Chaque chose construite ou posée apparaît dans la scène : la piste s'éclaircit et s'allonge jusqu'au ruisseau ; la porte du hangar change ; les géraniums fleurissent sous les fenêtres ; le banc attend face à la piste, le pommier à côté ; la manche à air prend ses rayures rouges et blanches ; le drapeau de la vallée claque ; la boîte aux lettres rouge se plante au bout du chemin ; deux tables de café ; la lanterne de cuivre ; et l'enseigne, au-dessus de la porte, avec le nom de la compagnie peint dessus. Le hangar, une fois repeint, est vert de gris avec sa porte en rouge cachet — on le voit depuis Pont-de-Brume, paraît-il.
+
+Quarante lignes de SVG en pixels de deux par deux, et une règle CSS par objet. Rien de spectaculaire ; mais quand j'ai vu la capture d'écran avec tout posé — le nom « Messageries de la Croisette » sur la planche au-dessus de la porte rouge — j'ai pensé que c'était la première image du jeu que j'aurais envie de montrer.

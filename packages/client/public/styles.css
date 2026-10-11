@@ -591,3 +591,33 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .montant { font-variant-numeric: tabular-nums; font-weight: 700; }
 .montant.plus { color: var(--ok); }
 .montant.moins { color: var(--encre-douce); }
+
+/* ---- Ce qu'on a construit, dans la scène ---- */
+
+.scene .piste[data-niveau='2'] { fill: #b4c48a; }
+.scene .piste[data-niveau='3'] { fill: #c2cf96; }
+.scene .piste-longue { fill: #c2cf96; }
+.scene .hangar[data-niveau='2'] .porte { fill: #6a7a70; }
+.scene .hangar[data-niveau='3'] .porte { fill: #8a9a8e; }
+.scene .hangar.peint { fill: #6e8b7a; }
+.scene .hangar.peint .toit { fill: #4f6a5a; }
+.scene .hangar.peint .porte { fill: #b23a2f; }
+.scene .fleurs { fill: #d6584b; }
+.scene .fleurs .fleur2 { fill: #f3dc8a; }
+.scene .fleurs .feuilles { fill: #4f7a45; }
+.scene .banc { fill: #8a6a3a; }
+.scene .pommier { fill: #6b4a2a; }
+.scene .pommier .feuillage { fill: #4f7a45; }
+.scene .pommier .pomme { fill: #d6584b; }
+.scene .drapeau { fill: #3f4b45; }
+.scene .drapeau .vert { fill: #6e8b7a; }
+.scene .drapeau .bleu { fill: #2f4f7a; }
+.scene .boite { fill: #b23a2f; }
+.scene .boite .pied { fill: #3f4b45; }
+.scene .cafe { fill: #8a6a3a; }
+.scene .enseigne .planche { fill: #f6f1e7; }
+.scene .enseigne text { fill: #2a2f33; font-family: var(--police-titre); font-weight: 600; }
+.scene .toile-raie { fill: #f6f1e7; }
+[data-moment='nuit'] .scene .enseigne .planche { fill: #d9d2c4; }
+
+.deco li.posee { border-style: solid; border-color: var(--laiton); }

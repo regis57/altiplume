@@ -309,3 +309,42 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
 export function discardCard(db: Database, company: Company, cardId: string): boolean {
   return Number(db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, cardId).changes) === 1;
 }
+
+// ---- Restaurer et décorer ----
+
+export type BuildError = 'zone_unknown' | 'zone_max' | 'decoration_unknown' | 'decoration_owned' | 'not_enough_francs';
+
+/** Monte une zone d'un niveau, si la caisse le permet. */
+export function upgradeZone(db: Database, company: Company, zoneId: string, now: number): { ok: true; level: number } | { ok: false; error: BuildError } {
+  const zone = WORLD.zones.find((z) => z.id === zoneId);
+  if (!zone) return { ok: false, error: 'zone_unknown' };
+  return transaction(db, () => {
+    const current = (db.prepare('SELECT level FROM company_zones WHERE company_id = ? AND zone = ?').get(company.id, zoneId) as { level: number } | undefined)?.level ?? 1;
+    const next = zone.levels.find((l) => l.level === current + 1);
+    if (!next) return { ok: false as const, error: 'zone_max' as const };
+    const francs = (db.prepare('SELECT francs FROM companies WHERE id = ?').get(company.id) as { francs: number }).francs;
+    if (francs < next.cost) return { ok: false as const, error: 'not_enough_francs' as const };
+    db.prepare('UPDATE companies SET francs = francs - ? WHERE id = ?').run(next.cost, company.id);
+    db.prepare('UPDATE company_zones SET level = ? WHERE company_id = ? AND zone = ?').run(next.level, company.id, zoneId);
+    ledger(db, company.id, now, 'build.zone', -next.cost, `${zoneId}:${next.level}`);
+    return { ok: true as const, level: next.level };
+  });
+}
+
+/** Pose une décoration, une seule fois chacune. */
+export function placeDecoration(db: Database, company: Company, decorationId: string, now: number): { ok: true } | { ok: false; error: BuildError } {
+  const deco = WORLD.decorations.find((d) => d.id === decorationId);
+  if (!deco) return { ok: false, error: 'decoration_unknown' };
+  return transaction(db, () => {
+    const owned = db.prepare('SELECT 1 FROM company_decorations WHERE company_id = ? AND decoration = ?').get(company.id, decorationId);
+    if (owned) return { ok: false as const, error: 'decoration_owned' as const };
+    const francs = (db.prepare('SELECT francs FROM companies WHERE id = ?').get(company.id) as { francs: number }).francs;
+    if (francs < deco.cost) return { ok: false as const, error: 'not_enough_francs' as const };
+    db.prepare('UPDATE companies SET francs = francs - ? WHERE id = ?').run(deco.cost, company.id);
+    db.prepare('INSERT INTO company_decorations (company_id, decoration, placed_at) VALUES (?, ?, ?)').run(company.id, decorationId, now);
+    // Le moral : léger, et pour tout le monde. C'est le Stardew en nous.
+    db.prepare('UPDATE company_pilots SET morale = MIN(20, morale + ?) WHERE company_id = ?').run(deco.morale, company.id);
+    ledger(db, company.id, now, 'build.decoration', -deco.cost, decorationId);
+    return { ok: true as const };
+  });
+}
