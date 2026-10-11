@@ -15,6 +15,7 @@ d'Altiplume (personne physique, France). Version du 11 octobre 2026.
 | **Transferts hors UE** | Cloudflare, Inc. (États-Unis) — clauses contractuelles types. Brevo : France. |
 | **Durée** | Tant que le compte existe. Suppression automatique après 24 mois d'inactivité, précédée de deux avertissements. Suppression immédiate à la demande, depuis le compte. |
 | **Sécurité** | Aucun mot de passe. Jetons de connexion et de session stockés sous forme d'empreinte SHA-256 uniquement, à usage unique ou à expiration. Serveur non exposé directement (tunnel sortant). Conteneur non-root, lecture seule. Transport chiffré (TLS). |
+| **Sauvegardes** | Copie cohérente de la base chaque nuit sur le NAS, conservée 30 jours (rotation automatique), puis copie hors du NAS par Hyper Backup. Un compte effacé disparaît donc des sauvegardes au plus tard 30 jours après son effacement. |
 
 ## Traitement 2 — Sessions et liens de connexion
 
