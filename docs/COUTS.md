@@ -14,7 +14,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-10 | Cloudflare Free (DNS, tunnel, SSL, anti-DDoS) | 0 € | — | **en service** | Tunnel actif, certificat émis, aucune carte demandée |
 | 2026-10-11 | Brevo Free (emails de connexion, 300/jour) | 0 € | — | **en service** | Domaine authentifié, premier email livré en boîte de réception |
 | à faire | Électricité DS218+ | 0 € | — | prévu | NAS déjà allumé 24h/24 |
-| optionnel | Barrette RAM DS218+ (4 Go SO-DIMM DDR3L) | ~30 € | ponctuel | option | Seulement si la mémoire sature |
+| 2026-10-11 | Mémoire du DS218+ | 0 € | — | **déjà là** | Le NAS a 6 Go de RAM depuis avant le projet ; rien à acheter |
 | optionnel | Dépôt de marque INPI (1 classe) | ~190 € | ponctuel | option | Une fois le nom définitif choisi |
 | plus tard | VPS européen (OVH VPS-1) | 7,79 €/mois | mensuel | prévu | Quand le NAS ne suffit plus |
 | plus tard | AdSense + bandeau de consentement Google | 0 € | — | prévu | Revenus, pas coût |
@@ -24,7 +24,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 
 | Phase | Récurrent | Ponctuel |
 |---|---|---|
-| Développement (dépôt public) | 0 € | ~10 € (domaine, payé) |
+| Développement (dépôt public) | 0 € | ~10 € (domaine, payé) — **seule dépense à ce jour** |
 | Lancement sur NAS | ~0,85 €/mois (domaine lissé) | 0 € |
 | Phase VPS | ~8,70 €/mois | 0 € |
 
