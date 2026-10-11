@@ -18,8 +18,9 @@ promesse marketing.
 au terme d'un défi : un vendredi soir, un dossier vide ; le lendemain après-midi, un
 jeu installable sur téléphone, sans mot de passe, conforme au RGPD, hébergé sur un
 NAS domestique sans aucun port ouvert, et une notification « ton courrier est
-arrivé » reçue sur un iPhone à 14 h 23. Le récit complet, chapitre par chapitre,
-est le [Journal](https://github.com/regis57/altiplume/wiki/Journal) du wiki ; les
+arrivé » reçue sur un iPhone à 14 h 23. Le résumé — chronologie, décisions clefs —
+est [Les 24 heures](https://github.com/regis57/altiplume/wiki/Les-24-heures) ; le
+récit complet, le [Journal](https://github.com/regis57/altiplume/wiki/Journal) ; les
 coûts (un nom de domaine, environ dix euros) sont dans
 [Coûts](https://github.com/regis57/altiplume/wiki/Couts).
 
