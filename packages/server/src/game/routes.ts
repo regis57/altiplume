@@ -15,7 +15,7 @@ import { deriveSeed } from '../sim/rng.ts';
 import { findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
 import {
-  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, planDispatch, playCard, settle, type News,
+  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, placeDecoration, planDispatch, playCard, settle, upgradeZone, type News,
 } from './sim.ts';
 import type { Database } from '../db/database.ts';
 
@@ -150,6 +150,40 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     audit(ctx.db, 'card.played', playerId, { card }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(200).send({ effects: result.effects, ref: result.ref ?? null, ...view(ctx.db, state, now, c.news) });
+  });
+
+  /** Restaurer une zone : la piste, le hangar. */
+  app.post('/v1/company/zones/:zone/upgrade', {
+    schema: { params: { type: 'object', required: ['zone'], properties: { zone: { type: 'string', maxLength: 20 } } }, body: { type: 'object', additionalProperties: false, properties: {} } },
+    preHandler: requirePlayer, config: { rateLimit: { max: 30, timeWindow: '15 minutes' } },
+  }, async (request, reply) => {
+    const now = ctx.now();
+    const playerId = request.player!.id;
+    const c = current(playerId, now);
+    if (!c) return reply.code(404).send({ error: 'no_company' });
+    const { zone } = request.params as { zone: string };
+    const result = upgradeZone(ctx.db, c.company, zone, now);
+    if (!result.ok) return reply.code(result.error === 'zone_unknown' ? 404 : 400).send({ error: result.error });
+    audit(ctx.db, 'company.built', playerId, { zone, level: result.level }, now);
+    const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
+    return reply.code(200).send(view(ctx.db, state, now, c.news));
+  });
+
+  /** Poser une décoration. */
+  app.post('/v1/company/decorations/:decoration', {
+    schema: { params: { type: 'object', required: ['decoration'], properties: { decoration: { type: 'string', maxLength: 20 } } }, body: { type: 'object', additionalProperties: false, properties: {} } },
+    preHandler: requirePlayer, config: { rateLimit: { max: 30, timeWindow: '15 minutes' } },
+  }, async (request, reply) => {
+    const now = ctx.now();
+    const playerId = request.player!.id;
+    const c = current(playerId, now);
+    if (!c) return reply.code(404).send({ error: 'no_company' });
+    const { decoration } = request.params as { decoration: string };
+    const result = placeDecoration(ctx.db, c.company, decoration, now);
+    if (!result.ok) return reply.code(result.error === 'decoration_unknown' ? 404 : 400).send({ error: result.error });
+    audit(ctx.db, 'company.built', playerId, { decoration }, now);
+    const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
+    return reply.code(200).send(view(ctx.db, state, now, c.news));
   });
 
   /** Défausser une carte : elle ne reviendra pas aujourd'hui. */

@@ -21,7 +21,7 @@ interface WorldView {
   traits: { id: string; name: string; description: string }[];
   pilots: { id: string; name: string; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number }[] }[];
-  decorations: { id: string; name: string }[];
+  decorations: { id: string; name: string; description: string; cost: number; morale: number }[];
   stamps: { id: string; name: string; description: string }[];
 }
 
@@ -163,7 +163,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   const address = $('adresse'); if (address) address.textContent = world.home.address;
   const francs = $('francs'); if (francs) francs.textContent = String(c.francs);
   const cachets = $('cachets'); if (cachets) cachets.textContent = String(c.stamps);
-  $('scene-lanterne')?.classList.toggle('cache', !c.decorations.includes('d-lanterne'));
+  renderScene(c);
   clockOffset = c.now - Date.now();
   const allBusy = c.planes.length > 0 && c.planes.every((p) => p.busyUntil !== null);
   document.querySelector('.scene .avion')?.classList.toggle('cache', allBusy);
@@ -243,8 +243,42 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       const li = el('li');
       li.append(el('h3', undefined, `${z.name} — ${current?.name ?? ''}`));
       if (current) li.append(el('p', undefined, current.description));
-      if (next) li.append(el('p', 'aide', `${t('game.next')} ${next.name} · ${next.cost} F`));
+      if (next) {
+        li.append(el('p', 'aide', `${t('game.next')} ${next.name} — ${next.description}`));
+        const b = el('button', 'bouton'); b.type = 'button';
+        b.textContent = `${t('game.restore')} · ${next.cost} F`;
+        b.disabled = c.francs < next.cost;
+        if (b.disabled) b.title = t('error.not_enough_francs');
+        b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/zones/${z.id}/upgrade`, b, 'game.restored'));
+        const actions = el('div', 'actions'); actions.append(b); li.append(actions);
+      } else {
+        li.append(el('p', 'aide', t('game.zoneMax')));
+      }
       zones.append(li);
+    }
+  }
+
+  // Décorations
+  const decos = $('decorations');
+  if (decos) {
+    decos.replaceChildren();
+    for (const d of world.decorations) {
+      const li = el('li');
+      li.append(el('h3', undefined, d.name));
+      li.append(el('p', undefined, d.description));
+      if (c.decorations.includes(d.id)) {
+        li.classList.add('posee');
+        li.append(el('p', 'aide', t('game.placed')));
+      } else {
+        li.append(el('p', 'aide', `${d.cost} F · ${t('game.morale')} +${d.morale}`));
+        const b = el('button', 'bouton secondaire'); b.type = 'button';
+        b.textContent = `${t('game.place')} · ${d.cost} F`;
+        b.disabled = c.francs < d.cost;
+        if (b.disabled) b.title = t('error.not_enough_francs');
+        b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/decorations/${d.id}`, b, 'game.decorated'));
+        const actions = el('div', 'actions'); actions.append(b); li.append(actions);
+      }
+      decos.append(li);
     }
   }
 
@@ -458,6 +492,35 @@ function renderLogbook(world: WorldView, c: CompanyView): void {
     li.append(when, ' · ', what, ' ', amount);
     list.append(li);
   }
+}
+
+/** Un achat de construction : même chemin pour une zone et une décoration. */
+async function build(api: Api, setMessage: SetMessage, world: WorldView, path: string, button: HTMLButtonElement, doneKey: string): Promise<void> {
+  button.disabled = true;
+  const r = await api('POST', path, {}).catch(() => null);
+  if (r && r.status === 200) { setMessage('jeu-message', doneKey, 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
+  else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); button.disabled = false; }
+}
+
+/** La scène reflète ce qu'on a construit et posé. */
+function renderScene(c: CompanyView): void {
+  const has = (id: string) => c.decorations.includes(id);
+  const show = (id: string, on: boolean) => $(id)?.classList.toggle('cache', !on);
+  show('scene-lanterne', has('d-lanterne'));
+  show('scene-fleurs', has('d-fleurs'));
+  show('scene-banc', has('d-banc'));
+  show('scene-pommier', has('d-pommier'));
+  show('scene-drapeau', has('d-drapeau'));
+  show('scene-boite', has('d-boite'));
+  show('scene-cafe', has('d-cafe'));
+  show('scene-enseigne', has('d-enseigne'));
+  show('scene-manche-raie', has('d-manche'));
+  const sign = $('scene-enseigne-texte'); if (sign) sign.textContent = c.name;
+  $('scene-hangar')?.classList.toggle('peint', has('d-peinture'));
+  const runway = c.zones['runway'] ?? 1;
+  const piste = $('scene-piste'); if (piste) piste.dataset['niveau'] = String(runway);
+  show('scene-piste-longue', runway >= 3);
+  const hangar = $('scene-hangar'); if (hangar) hangar.dataset['niveau'] = String(c.zones['hangar'] ?? 1);
 }
 
 async function openScene(api: Api, setMessage: SetMessage, pilot: string, index: number, pilotName: string): Promise<void> {
