@@ -260,6 +260,7 @@ h1 {
   max-width: 42ch;
 }
 .promesse strong { color: var(--encre); font-weight: 700; }
+.monde { font-family: var(--police-titre); font-size: 1.1rem; color: var(--vert-de-gris); margin-top: 1.4rem; }
 
 /* ---- L'enveloppe par avion ---- */
 

@@ -118,6 +118,9 @@ const FR: Record<string, string> = {
   'home.pitch2': 'Les vols durent du vrai temps. On joue cinq minutes le matin ; on revient le soir voir si le courrier est arrivé.',
   'home.promise': "<strong>Rien ne se perd si vous ne vous connectez pas.</strong> C'est une règle du jeu, pas une promesse marketing.",
 
+  'home.worldMonth': 'Ce mois-ci, les aviateurs du monde ont acheminé {n} sacs de courrier.',
+  'home.worldTotal': 'Depuis l\'ouverture, les aviateurs du monde ont acheminé {n} sacs de courrier.',
+
   'stamp.name': 'Altiplume',
   'stamp.sent': 'lien envoyé',
 
@@ -353,6 +356,9 @@ const EN: Record<string, string> = {
   'home.pitch2': 'Flights take real time. Play five minutes in the morning; come back tonight to see if the mail got through.',
   'home.promise': "<strong>Nothing is lost if you don't log in.</strong> That's a rule of the game, not a marketing promise.",
 
+  'home.worldMonth': 'This month, the world\'s aviators have carried {n} bags of mail.',
+  'home.worldTotal': 'Since opening day, the world\'s aviators have carried {n} bags of mail.',
+
   'stamp.name': 'Altiplume',
   'stamp.sent': 'link sent',
 
@@ -526,7 +532,9 @@ export function translatePage(): void {
   // Messages composés de codes (« error.x error.y ») : re-rendus dans la langue courante.
   document.querySelectorAll<HTMLElement>('[data-i18n-keys]').forEach((el) => {
     const keys = (el.dataset['i18nKeys'] ?? '').split(' ').filter(Boolean);
-    el.textContent = keys.map((k) => t(k)).join(' ');
+    const count = el.dataset['count'];
+    el.textContent = keys.map((k) => t(k)).join(' ')
+      .replace('{n}', count === undefined ? '' : Number(count).toLocaleString(current === 'fr' ? 'fr-FR' : 'en-GB'));
   });
   document.querySelectorAll<HTMLElement>('[data-i18n-aria]').forEach((el) => {
     const key = el.dataset['i18nAria'];

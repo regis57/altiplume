@@ -50,6 +50,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | La compagnie : fondation, page de l'aérodrome, scène, album, histoires sous clé | ~1 h 15 |
 | 2026-10-11 | Le premier vol : cartes du jour, expédition, arrivées, imprévus, opportunités, livre de bord | ~1 h 30 |
 | 2026-10-11 | Restaurer et décorer : piste, hangar, dix décorations, la scène qui les montre | ~45 min |
+| 2026-10-11 | Compteur mondial anonyme | ~20 min |
 
 ## Revenus (à partir du lancement)
 

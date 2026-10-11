@@ -116,7 +116,24 @@ function afterSignIn(): void {
 
 // ---- Pages ----
 
+/** Le compteur mondial anonyme, sur la page d'accueil. Un chiffre d'ambiance, jamais un classement. */
+async function worldCounter(): Promise<void> {
+  const el = $('monde');
+  if (!el) return;
+  const r = await api('GET', '/v1/world/stats').catch(() => null);
+  if (!r || r.status !== 200) return;
+  const month = Number(r.body['deliveriesThisMonth'] ?? 0);
+  const total = Number(r.body['deliveriesTotal'] ?? 0);
+  if (total === 0) return; // tant que personne n'a volé, on ne dit rien
+  const n = month > 0 ? month : total;
+  el.dataset['i18nKeys'] = month > 0 ? 'home.worldMonth' : 'home.worldTotal';
+  el.dataset['count'] = String(n);
+  el.textContent = t(month > 0 ? 'home.worldMonth' : 'home.worldTotal').replace('{n}', n.toLocaleString(getLocale() === 'fr' ? 'fr-FR' : 'en-GB'));
+  el.classList.remove('cache');
+}
+
 function pageIndex(): void {
+  void worldCounter();
   const form = $('signup') as HTMLFormElement | null;
   if (!form) return;
   form.addEventListener('submit', async (event) => {
