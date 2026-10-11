@@ -119,6 +119,20 @@ try {
   assert((await page.textContent('#jeu-message')).includes('ronronne'), 'le dénouement s\'affiche');
   assert((await page.textContent('#francs')) === '304', '12 F de bougie');
 
+  // Trusted Types : la politique « altiplume » existe (on ne peut pas la recréer), une chaîne brute
+  // est refusée dans un puits d'injection, et les textes à balises sont bien rendus par la politique.
+  const tt = await page.evaluate(async () => {
+    const out = { supported: typeof trustedTypes !== 'undefined', duplicate: null, rawRejected: null, html: document.querySelector('[data-i18n-html]')?.innerHTML ?? '' };
+    if (!out.supported) return out;
+    try { trustedTypes.createPolicy('altiplume', { createHTML: (s) => s }); out.duplicate = false; } catch { out.duplicate = true; }
+    try { await navigator.serviceWorker.register('/sw.js'); out.rawRejected = false; } catch (e) { out.rawRejected = e instanceof TypeError; }
+    return out;
+  });
+  assert(tt.supported, 'Chromium connaît les Trusted Types');
+  assert(tt.duplicate === true, 'la politique altiplume est déjà créée par le client');
+  assert(tt.rawRejected === true, 'une adresse brute de service worker est refusée');
+  assert(tt.html.includes('<strong>'), `les textes à balises passent par la politique (${tt.html.slice(0, 40)})`);
+
   // Et le tout en anglais.
   await page.click('[data-action=toggle-lang]');
   await page.reload();

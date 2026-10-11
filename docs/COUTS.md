@@ -63,6 +63,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Fiche iPhone « Sur l'écran d'accueil », deux gestes dessinés | ~20 min |
 | 2026-10-11 | Un imprévu bloque la piste (cohérence des cartes) | ~25 min |
 | 2026-10-11 | v0.2 : la Côte de Saline (six escales, la Sterne, le ponton, la route) | ~60 min |
+| 2026-10-11 | Interlude sécurité : Observatory, SSL Labs, DNS ; Trusted Types, redirection, contrôle hebdomadaire | ~45 min |
 
 ## Revenus (à partir du lancement)
 

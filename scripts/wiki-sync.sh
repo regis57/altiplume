@@ -23,6 +23,7 @@ copy docs/MONDE.md      "Monde"
 copy docs/CONCEPTION.md "Conception"
 copy docs/DEMARRAGE.md  "Demarrage"
 copy docs/DEPLOIEMENT.md "Deploiement"
+copy docs/SECURITE.md   "Securite"
 copy docs/legal/registre-traitements.md "Registre-des-traitements"
 
 cat > "$WIKI/Home.md" <<'HOME'
@@ -38,6 +39,7 @@ gratuit, sans mot de passe. Le jeu : [altiplume.com](https://altiplume.com). Le 
 - **[Conception](Conception)** — le document de conception.
 - **[Démarrage](Demarrage)** — comment le projet a été mis en route.
 - **[Déploiement](Deploiement)** — le NAS, le tunnel, les tâches planifiées.
+- **[Sécurité](Securite)** — le protocole de vérification externe, les notes, ce qu'il reste à faire.
 - **[Registre des traitements](Registre-des-traitements)** — RGPD.
 
 _Ces pages sont des copies publiées automatiquement depuis le dossier `docs/` du
@@ -53,6 +55,7 @@ cat > "$WIKI/_Sidebar.md" <<'SIDE'
 - [Conception](Conception)
 - [Démarrage](Demarrage)
 - [Déploiement](Deploiement)
+- [Sécurité](Securite)
 - [Registre RGPD](Registre-des-traitements)
 SIDE
 echo "wiki : $(ls "$WIKI"/*.md | wc -l) pages préparées"
