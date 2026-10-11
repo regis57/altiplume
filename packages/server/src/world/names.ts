@@ -23,11 +23,12 @@ const BANKS: Readonly<Record<Locale, Bank>> = {
       adj: ['Dorée', 'Pâle', 'Haute', 'Vive', 'Lointaine', 'Sereine', 'Première', 'Vagabonde', 'Fidèle', 'Claire'],
       nom_f: ['Brume', 'Nuée', 'Aurore', 'Escale', 'Plume', 'Alizée', 'Lanterne', 'Rosée', 'Voile', 'Dérive'],
       nom_m: ['Zéphyr', 'Cachet', 'Laiton', 'Levant', 'Sillage', 'Fanal', 'Comptoir', 'Pli', 'Courant', 'Matin'],
-      lieu: ['Brume', 'Saline', 'Ocre', 'Cuivre', 'Lanternes', 'Grand Blanc', 'Verre', 'Trois Vents', 'la Croisette'],
+      // Les lieux portent leur article contracté : « Compagnie de la Brume », jamais « des Brume ».
+      lieu: ['de la Brume', 'de la Saline', "de l'Ocre", 'du Cuivre', 'des Lanternes', 'du Grand Blanc', 'de Verre', 'des Trois Vents', 'de la Croisette'],
     },
     patterns: [
-      '{nom_f} {adj} & Cie', '{nom_m} & Cie', 'Compagnie des {lieu}', 'Comptoir du {nom_m}', 'Messageries {nom_f}',
-      'Lignes de {lieu}', '{nom_f} & Fils', 'Poste Aérienne {nom_f}', 'Les Ailes de {lieu}',
+      '{nom_f} {adj} & Cie', '{nom_m} & Cie', 'Compagnie {lieu}', 'Comptoir du {nom_m}', 'Messageries {nom_f}',
+      'Lignes {lieu}', '{nom_f} & Fils', 'Poste Aérienne {nom_f}', 'Les Ailes {lieu}',
     ],
     fallback: 'Altiplume & Cie',
   },

@@ -217,4 +217,12 @@ export const MIGRATIONS: readonly Migration[] = [
       CREATE INDEX ledger_company ON ledger(company_id, at);
     `,
   },
+  {
+    version: 5,
+    name: 'noms-articles',
+    sql: `
+      -- Le générateur produisait « Compagnie des la Croisette » (vu en production le 11/10).
+      UPDATE companies SET name = replace(name, 'des la Croisette', 'de la Croisette') WHERE name LIKE '%des la Croisette%';
+    `,
+  },
 ];
