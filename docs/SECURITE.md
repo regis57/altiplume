@@ -10,55 +10,69 @@ La partie automatisable tourne chaque semaine (`.github/workflows/securite.yml`,
 `node scripts/securite-check.mjs altiplume.com --strict`) et à la demande ; le
 tableau ci-dessous est la référence humaine, mise à jour à chaque interlude.
 
-## État au 11 octobre 2026 (interlude sécurité, 16 h 30)
+## Secure by design, puis vérifié de l'extérieur
 
-| Domaine | Outil (gratuit, en ligne) | Ce qu'il vérifie | Attendu | Mesuré avant | Ce qui a été fait | Attendu après |
-|---|---|---|---|---|---|---|
-| En-têtes HTTP | [Mozilla HTTP Observatory](https://developer.mozilla.org/en-US/observatory/analyze?host=altiplume.com) | CSP, HSTS, cookies, Referrer-Policy, X-Content-Type-Options, COOP/CORP, redirection | A ou A+ ; CSP sans unsafe-inline | **B+ (80)** — 11 tests sur 12 ; le seul échec : `http://altiplume.com` répond 200 au lieu de rediriger vers HTTPS (−20) | Le serveur redirige en 301 toute requête arrivée en clair (`x-forwarded-proto: http`), sans HSTS sur la réponse en clair ; CSP passée à `default-src 'none'` (+ `worker-src`), COEP `require-corp` ajouté | **A+** dès que Cloudflare redirige aussi (voir « À faire à la main ») |
-| En-têtes HTTP | [securityheaders.com](https://securityheaders.com/?q=altiplume.com&followRedirects=on) | Même famille, grille différente | A ou A+ | **A**, « plafonné à A : servi en HTTP sans redirection » | Idem ci-dessus | **A+** |
-| CSP | [Google CSP Evaluator](https://csp-evaluator.withgoogle.com/) | Faiblesses de la politique (sources larges, unsafe-*, absence de object-src) | Aucune alerte haute | Aucune alerte haute ; deux remarques : `script-src 'self'` (JSONP/upload — sans objet ici) et **Trusted Types absents** | `require-trusted-types-for 'script'` + `trusted-types altiplume` ; le client a une politique unique pour ses deux puits (textes traduits, adresse du service worker) ; vérifié dans Chromium par le parcours de bout en bout | Une seule remarque restante (`'self'`), informative |
-| TLS | [Qualys SSL Labs](https://www.ssllabs.com/ssltest/analyze.html?d=altiplume.com) | Protocoles, suites, chaîne, HSTS | A ou A+ (TLS terminé par Cloudflare) | **B** sur les quatre adresses : TLS 1.0 et 1.1 encore acceptés par Cloudflare (réglage par défaut) ; chaîne valide, PFS, pas de RC4, HSTS présent | Rien côté serveur : c'est un réglage Cloudflare | **A+** (TLS ≥ 1.2 + HSTS ≥ 1 an) |
-| Surface réseau | [Shodan](https://www.shodan.io/) ou `nmap` sur l'adresse domestique | Ports ouverts sur la connexion domestique | Aucun service exposé : le NAS n'écoute pas sur Internet | DNS : `altiplume.com` ne pointe que sur Cloudflare (188.114.96.2, 188.114.97.2), pas de MX. L'adresse domestique n'est pas publiée. | — | Inchangé ; à vérifier depuis l'extérieur (4G) : `nmap -Pn <ip publique>` → tout filtré |
-| Application web | [OWASP ZAP](https://www.zaproxy.org/) en mode baseline (passif) | Injections évidentes, cookies, en-têtes, fuites d'information | Zéro alerte haute ; avertissements à documenter | Non encore lancé | Mode opératoire ci-dessous | Zéro alerte haute |
-| Authentification | [webauthn.io](https://webauthn.io/) et le lecteur de passkeys de son navigateur | La passkey créée est liée à altiplume.com, découvrable, refuse un autre domaine | Clé liée au domaine ; aucune clé pour un autre site | Les tests de bout en bout (authenticateur virtuel) vérifient le `rpId`, la seconde clé USB, le refus d'un autre domaine | — | Inchangé |
-| Email | [MXToolbox](https://mxtoolbox.com/SuperTool.aspx?action=dmarc%3aaltiplume.com) | SPF, DKIM, DMARC, délivrabilité | SPF et DKIM valides (Brevo) ; DMARC à renforcer | DKIM Brevo publié (`brevo1`, `brevo2`) ; **SPF absent** ; DMARC `p=none` (surveillance seulement) ; pas de MX (le domaine n'en reçoit pas) | Rien côté serveur : ce sont trois enregistrements DNS | SPF `-all`, DMARC `p=quarantine` puis `p=reject` |
-| Dépendances | [Socket](https://socket.dev/), [OSV-Scanner](https://google.github.io/osv-scanner/) ou `npm audit` sur le dépôt | Vulnérabilités connues, paquets suspects | 0 vulnérabilité ; licences permissives | `npm audit` : 0 (à chaque PR) ; licences : contrôlées (à chaque PR) | — | Inchangé |
-| Image Docker | [Trivy](https://trivy.dev/) sur `ghcr.io/regis57/altiplume:latest` ; `gh attestation verify` | Vulnérabilités de l'image, provenance SLSA | Image minimale ; attestation valide depuis le dépôt | Attestation de provenance signée à chaque publication (CI) ; Trivy pas encore lancé | Mode opératoire ci-dessous | 0 critique |
-| Code | CodeQL (intégré à GitHub), [Semgrep](https://semgrep.dev/) règles p/nodejs | Injections, cryptographie faible, secrets | Aucune alerte ouverte | CodeQL : 3 analyses (JavaScript/TypeScript, Python, Actions) vertes à chaque PR, 0 alerte ouverte | — | Inchangé |
-| Accessibilité | [Lighthouse](https://developer.chrome.com/docs/lighthouse) (onglet Chrome), [WAVE](https://wave.webaim.org/), [axe DevTools](https://www.deque.com/axe/devtools/) | Contrastes, sémantique, étiquettes, focus | Accessibilité ≥ 95 ; zéro erreur WAVE sur l'accueil, la connexion et l'aérodrome | Non encore mesuré | Prochain interlude | ≥ 95 |
-| PWA et performance | Lighthouse (catégories PWA et performance), [WebPageTest](https://www.webpagetest.org/) | Manifeste, service worker, icônes, temps de chargement | Installable ; performance ≥ 90 | Installée et notifiant sur iPhone, Android et PC (11/10) ; score non mesuré | Prochain interlude | ≥ 90 |
-| Respect de la vie privée | [Blacklight](https://themarkup.org/blacklight) (The Markup), [webbkoll](https://webbkoll.dataskydd.net/) | Traqueurs, cookies tiers, requêtes sortantes | Aucun traqueur, un seul cookie (session), aucune requête tierce | Par construction : `connect-src 'self'`, aucune ressource tierce, aucun cookie avant connexion (Observatory : `cookies-not-found`) | — | Inchangé ; à confirmer avec Blacklight |
-| Confidentialité du compte | [Have I Been Pwned](https://haveibeenpwned.com/DomainSearch) (domaine) | Qu'aucune fuite n'est associée au domaine | Néant (et rien à fuir : pas de mot de passe) | Domaine non encore vérifié chez HIBP | Mode opératoire ci-dessous | Néant |
+Le jeu a été conçu avec ses garanties (pas de mot de passe, aucun port ouvert,
+CSP sans inline, rien de tiers — voir en bas de page). Mais une garantie qu'on
+ne mesure pas n'est qu'une intention. Ce tableau est la mesure : ce que les
+plateformes ont vu **avant** l'interlude du 11 octobre, ce qui a été changé, et
+ce qu'elles ont vu **après**. Chaque résultat « après » a été lu réellement, à
+l'heure indiquée ; ce qui n'a pas été lancé est marqué **non effectué**, sans
+fard. C'est un effort continu : le tableau se remet à jour à chaque interlude,
+et le contrôle hebdomadaire sonne quand un point redescend.
 
-## À faire à la main (cinq minutes, dans Cloudflare)
+### Les résultats (11 octobre 2026)
 
-Trois réglages gratuits, dans le tableau de bord Cloudflare du domaine. Aucun ne
-touche au NAS ni au code ; aucun ne peut bloquer le jeu (le serveur accepte
-déjà exactement ces conditions).
+| Domaine | Outil | Ce qu'il vérifie | Attendu | Avant (16 h 30) | Ce qui a été fait | Après (17 h 10) | Statut |
+|---|---|---|---|---|---|---|---|
+| En-têtes HTTP | [Mozilla HTTP Observatory](https://developer.mozilla.org/en-US/observatory/analyze?host=altiplume.com) | CSP, HSTS, cookies, Referrer-Policy, X-Content-Type-Options, COOP/CORP, redirection | A ou A+ | **B+ (80/100)**, 11 tests sur 12 : `http://altiplume.com` répondait 200 au lieu de rediriger (−20) | Cloudflare « Always Use HTTPS » ; le serveur redirige aussi en 301 ; CSP `default-src 'none'`, COEP | **A+ (140/100)**, 12 tests sur 12 | ✅ vérifié |
+| En-têtes HTTP | [securityheaders.com](https://securityheaders.com/?q=altiplume.com&followRedirects=on) | Même famille, grille différente | A ou A+ | **A**, « plafonné : servi en HTTP sans redirection » | Idem | **A+**, six en-têtes reconnus, aucun avertissement | ✅ vérifié |
+| CSP | [Google CSP Evaluator](https://csp-evaluator.withgoogle.com/) | Faiblesses de la politique | Aucune alerte haute | Aucune alerte haute ; deux remarques : `script-src 'self'` et Trusted Types absents | `require-trusted-types-for 'script'` + politique unique « altiplume » côté client, vérifiée dans Chromium par le parcours de bout en bout | Non relancé après redéploiement : la nouvelle CSP n'était pas encore servie à 17 h 10 (le NAS n'avait pas redéployé) | ⏳ à relancer après redéploiement |
+| TLS | [Qualys SSL Labs](https://www.ssllabs.com/ssltest/analyze.html?d=altiplume.com) | Protocoles, suites, chaîne, HSTS | A ou A+ | **B** sur les quatre adresses : TLS 1.0 et 1.1 acceptés par Cloudflare (défaut) | Cloudflare « Minimum TLS Version : 1.2 » | **A+ sur les quatre adresses** (IPv4 et IPv6), TLS 1.2 et 1.3 seulement, HSTS présent | ✅ vérifié |
+| Email | [MXToolbox](https://mxtoolbox.com/SuperTool.aspx?action=dmarc%3aaltiplume.com) / DNS | SPF, DKIM, DMARC | SPF `-all`, DKIM, DMARC ≥ quarantine | DKIM Brevo publié ; **SPF absent** ; DMARC `p=none` | Deux enregistrements DNS | SPF `v=spf1 include:spf.brevo.com -all` ; DKIM `brevo1`/`brevo2` ; DMARC `p=quarantine` (export de zone du 11/10 15 h 00 UTC, puis contrôle externe) | ✅ vérifié |
+| Certificats | DNS CAA | Quelles autorités peuvent émettre pour le domaine | Celles de Cloudflare seulement | Aucun CAA | Enregistrements CAA | Présents (contrôle externe vert) | ✅ vérifié |
+| HTTP → HTTPS | contrôle externe (`scripts/securite-check.mjs`) | Premier saut en clair | 301 vers https | 200 sans redirection | Cloudflare + serveur | 301 vers `https://altiplume.com/` ; aucun cookie avant connexion | ✅ vérifié |
+| Surface réseau | DNS ; [Shodan](https://www.shodan.io/) ou `nmap` sur l'adresse domestique | Ports ouverts chez l'auteur | Aucun service exposé | `altiplume.com` → Cloudflare seulement, pas de MX ; adresse domestique non publiée | — | DNS vérifié ; `nmap`/Shodan depuis l'extérieur | ❌ non effectué (nmap/Shodan) |
+| Application web | [OWASP ZAP](https://www.zaproxy.org/) baseline (passif) | Injections évidentes, cookies, en-têtes, fuites | Zéro alerte haute | — | Mode opératoire ci-dessous | — | ❌ non effectué |
+| Authentification | [webauthn.io](https://webauthn.io/), lecteur de passkeys du navigateur | Passkey liée à altiplume.com, découvrable, refuse un autre domaine | Clé liée au domaine | Tests de bout en bout (authenticateur virtuel) : `rpId`, seconde clé USB, refus d'un autre domaine — à chaque PR | — | Idem (CI) ; vérification manuelle sur un vrai appareil | ❌ non effectué (manuel) |
+| Dépendances | `npm audit`, licences (CI) ; [Socket](https://socket.dev/), [OSV-Scanner](https://google.github.io/osv-scanner/) | Vulnérabilités connues, paquets suspects, licences | 0 vulnérabilité | 0 (CI, à chaque PR) | — | 0 (CI du 11/10) | ✅ vérifié (CI) ; Socket/OSV ❌ non effectué |
+| Image Docker | [Trivy](https://trivy.dev/) ; `gh attestation verify` | Vulnérabilités de l'image, provenance | 0 critique ; attestation valide | Attestation signée à chaque publication (CI) | Mode opératoire ci-dessous | — | ❌ non effectué (Trivy) |
+| Code | CodeQL (GitHub) ; [Semgrep](https://semgrep.dev/) | Injections, cryptographie faible, secrets | Aucune alerte ouverte | CodeQL : 3 analyses vertes par PR, 0 alerte ouverte | — | 0 alerte (PR #37) | ✅ vérifié (CodeQL) ; Semgrep ❌ non effectué |
+| Accessibilité | Lighthouse, [WAVE](https://wave.webaim.org/), [axe DevTools](https://www.deque.com/axe/devtools/) | Contrastes, sémantique, étiquettes, focus | ≥ 95 ; zéro erreur WAVE | — | — | — | ❌ non effectué |
+| PWA et performance | Lighthouse, [WebPageTest](https://www.webpagetest.org/) | Manifeste, service worker, icônes, chargement | Installable ; ≥ 90 | Installée et notifiant sur iPhone, Android, PC (constaté le 11/10) ; score non mesuré | — | — | ❌ non effectué (score) |
+| Vie privée | [Blacklight](https://themarkup.org/blacklight), [webbkoll](https://webbkoll.dataskydd.net/) | Traqueurs, cookies tiers, requêtes sortantes | Aucun traqueur, un seul cookie | Par construction (`connect-src 'self'`, aucune ressource tierce) ; Observatory : « cookies not found » | — | — | ❌ non effectué (Blacklight) |
+| Confidentialité du compte | [Have I Been Pwned](https://haveibeenpwned.com/DomainSearch) (domaine) | Fuite associée au domaine | Néant | — | Mode opératoire ci-dessous | — | ❌ non effectué |
 
-1. **SSL/TLS → Edge Certificates → Always Use HTTPS : On.** Cloudflare répond
-   301 vers HTTPS avant même d'atteindre le tunnel. (Le serveur le fait aussi
-   depuis la v0.2, ceinture et bretelles ; mais Observatory et securityheaders
-   testent le premier saut, donc celui de Cloudflare.)
-2. **SSL/TLS → Edge Certificates → Minimum TLS Version : TLS 1.2.** Aucun
-   navigateur du jeu n'utilise moins (TLS 1.0/1.1 sont retirés des navigateurs
-   depuis 2020). SSL Labs passe de B à A+.
-3. **DNS → trois enregistrements** (type TXT sauf mention) :
-   - `altiplume.com` → `v=spf1 include:spf.brevo.com -all` (SPF : seul Brevo
-     peut envoyer au nom du domaine ; `-all` parce que rien d'autre n'envoie).
-   - `_dmarc.altiplume.com` → `v=DMARC1; p=quarantine; rua=mailto:rua@dmarc.brevo.com`
-     (une semaine à `quarantine` sans rejet légitime dans les rapports Brevo,
-     puis `p=reject`).
-   - CAA `altiplume.com` → `0 issue "letsencrypt.org"`, `0 issue "pki.goog"`,
-     `0 issue "digicert.com"`, `0 issue "comodoca.com"`, `0 issue "ssl.com"`
-     (les autorités de l'Universal SSL de Cloudflare ; toute autre ne peut plus
-     émettre pour le domaine). Optionnel, mais propre.
+**Bilan du 11 octobre** : les cinq mesures externes qui notaient le site sont
+passées de B+/A/B à **A+ / A+ / A+**, le courrier est authentifié de bout en
+bout (SPF, DKIM, DMARC), et le contrôle hebdomadaire est vert. Neuf lignes
+restent « non effectué » : ce sont les prochains interludes, dans cet ordre
+proposé — ZAP baseline, Lighthouse/WAVE (accessibilité, promise depuis la
+conception), Trivy, Blacklight, nmap depuis l'extérieur, HIBP, Socket, Semgrep,
+passkey sur un vrai appareil.
 
-Puis relancer : Observatory (bouton « Rescan »), securityheaders, SSL Labs
-(« Clear cache » puis nouveau test, ~2 min), MXToolbox `dmarc:altiplume.com`.
-Ou simplement lancer le workflow **Sécurité** depuis l'onglet Actions : il fait
-tout sauf securityheaders et Trusted Types, et échoue tant qu'un point est sous
-l'attendu.
+### Ce que le contrôle hebdomadaire vérifie tout seul
+
+`.github/workflows/securite.yml` (lundi 07 h 17 à Paris, et à la demande dans
+l'onglet Actions) lance `node scripts/securite-check.mjs altiplume.com --strict` :
+Observatory (note et tests échoués), SSL Labs (note, protocoles), DNS (SPF,
+DKIM, DMARC, CAA, adresses, MX), les en-têtes réellement servis, la redirection
+HTTP → HTTPS, l'absence de cookie à l'accueil. Il échoue tant qu'un point est
+sous l'attendu — premier passage le 11 octobre à 17 h 03 : **vert**.
+securityheaders.com et l'évaluateur CSP n'ont pas d'API : ils se relancent à la
+main.
+
+### Les réglages faits à la main le 11 octobre (Cloudflare, gratuits)
+
+Pour mémoire, et pour les refaire sur un autre domaine un jour :
+
+1. SSL/TLS → Edge Certificates → **Always Use HTTPS : On**.
+2. SSL/TLS → Edge Certificates → **Minimum TLS Version : TLS 1.2**.
+3. DNS → TXT `altiplume.com` : `v=spf1 include:spf.brevo.com -all` ;
+   TXT `_dmarc.altiplume.com` : `v=DMARC1; p=quarantine; rua=mailto:rua@dmarc.brevo.com`
+   (passer à `p=reject` après une semaine sans rejet légitime dans les rapports
+   Brevo) ; CAA : `0 issue` pour `letsencrypt.org`, `pki.goog`, `digicert.com`,
+   `comodoca.com`, `ssl.com`.
 
 ## Modes opératoires (à la main, hors CI)
 
