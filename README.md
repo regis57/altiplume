@@ -14,11 +14,31 @@ promesse marketing.
 
 ## État du projet
 
-Pré-alpha. On peut ouvrir un compte sur altiplume.com — email, pseudonyme, lien de
-connexion, export et suppression de ses données — mais il n'y a pas encore de jeu
-derrière la porte.
-La conception complète est dans [docs/CONCEPTION.md](docs/CONCEPTION.md), le
-journal de bord dans [docs/JOURNAL.md](docs/JOURNAL.md).
+**Jouable** sur [altiplume.com](https://altiplume.com) depuis le 11 octobre 2026,
+au terme d'un défi : un vendredi soir, un dossier vide ; le lendemain après-midi, un
+jeu installable sur téléphone, sans mot de passe, conforme au RGPD, hébergé sur un
+NAS domestique sans aucun port ouvert, et une notification « ton courrier est
+arrivé » reçue sur un iPhone à 14 h 23. Le récit complet, chapitre par chapitre,
+est le [Journal](https://github.com/regis57/altiplume/wiki/Journal) du wiki ; les
+coûts (un nom de domaine, environ dix euros) sont dans
+[Coûts](https://github.com/regis57/altiplume/wiki/Couts).
+
+- **v0.1** (livrée) — les Vallées de Brume : six villages, trois avions, quatre
+  pilotes et leurs histoires, les cartes du jour, la ligne régulière, l'album de
+  cachets, l'aérodrome à restaurer et décorer, le mode nuit, l'installation sur
+  l'écran d'accueil et les notifications.
+- **v0.2** (en cours) — la Côte de Saline (six escales dont trois sur l'eau,
+  l'hydravion Sterne, le ponton, la route qui s'ouvre contre des cachets) est
+  fusionnée ; la scène redessinée en 320 × 144 avec chaque décoration visible ;
+  l'Archipel des Lanternes vient ensuite.
+- **Sécurité, vérifiée de l'extérieur** le 11 octobre : Observatory A+,
+  securityheaders A+, SSL Labs A+, SPF/DKIM/DMARC ; le détail, l'avant/après et ce
+  qui reste à faire sont dans [Sécurité](https://github.com/regis57/altiplume/wiki/Securite),
+  contrôlés chaque semaine.
+
+Connexion par lien magique, passkey ou QR code ; export et suppression de ses
+données en un clic. La conception complète est dans
+[docs/CONCEPTION.md](docs/CONCEPTION.md), le monde dans [docs/MONDE.md](docs/MONDE.md).
 
 ## Principes
 
