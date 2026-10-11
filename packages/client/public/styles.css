@@ -295,9 +295,13 @@ h1 {
 .champ label { font-weight: 700; }
 .champ .aide { color: var(--encre-douce); font-size: 0.92rem; margin: 0; }
 .champ .erreur-champ { color: var(--erreur); font-size: 0.95rem; margin: 0; }
+/* Le champ-piège du formulaire de contact : hors de l'écran, hors du parcours
+   clavier, hors de l'arbre d'accessibilité. Seuls les robots le remplissent. */
+.piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 input[type='email'],
 input[type='text'],
+textarea,
 select {
   font: inherit;
   width: 100%;
@@ -311,11 +315,14 @@ select {
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) input[type='email'],
   :root:not([data-theme='light']) input[type='text'],
+  :root:not([data-theme='light']) textarea,
   :root:not([data-theme='light']) select { background: var(--papier-ombre); }
 }
 :root[data-theme='dark'] input[type='email'],
 :root[data-theme='dark'] input[type='text'],
+:root[data-theme='dark'] textarea,
 :root[data-theme='dark'] select { background: var(--papier-ombre); }
+textarea { resize: vertical; min-height: 9rem; line-height: 1.5; }
 input[aria-invalid='true'] { border-color: var(--erreur); }
 
 .case {

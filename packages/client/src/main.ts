@@ -10,6 +10,7 @@ import { toCanvas } from 'qrcode';
 import { formatRemaining } from './time.ts';
 import { getLocale, setLocale, t, translatePage, type Locale } from './i18n.ts';
 import { pageAerodrome } from './aerodrome.ts';
+import { pageContact } from './contact.ts';
 
 export { formatRemaining };
 
@@ -578,6 +579,7 @@ function main(): void {
     case 'approuver': void pageApprouver(); break;
     case 'compte': void pageCompte(); break;
     case 'aerodrome': void pageAerodrome(api, setMessage); break;
+    case 'contact': void pageContact(api, setMessage, setDate); break;
     default: break;
   }
   if (page !== 'compte' && page !== 'aerodrome') void updateNav();

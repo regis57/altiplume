@@ -55,9 +55,17 @@ try {
 
 // ---- DNS : courrier et certificats ----
 try {
-  const spf = txt(await dns(host, 'TXT')).find((t) => t.startsWith('v=spf1'));
-  row('Email — SPF', 'v=spf1 … -all', spf ?? 'absent', Boolean(spf && /-all$/.test(spf)),
-    spf ? '' : `Cloudflare DNS → TXT ${host} : v=spf1 include:spf.brevo.com -all`);
+  const spfs = txt(await dns(host, 'TXT')).filter((t) => t.startsWith('v=spf1'));
+  const spf = spfs[0];
+  // Deux enregistrements SPF sur le même nom = SPF invalide : les liens de connexion tombent.
+  const unique = spfs.length === 1;
+  const brevo = Boolean(spf?.includes('include:spf.brevo.com'));
+  const routing = Boolean(spf?.includes('include:_spf.mx.cloudflare.net'));
+  row('Email — SPF', 'un seul enregistrement, Brevo + Cloudflare, en -all',
+    spfs.length === 0 ? 'absent' : spfs.length > 1 ? `${spfs.length} enregistrements SPF (invalide)` : spf,
+    unique && brevo && routing && /-all$/.test(spf),
+    !unique && spfs.length > 1 ? 'Fusionner en un seul TXT : deux SPF sur le même nom sont invalides'
+      : spfs.length === 0 ? `Cloudflare DNS → TXT ${host} : v=spf1 include:spf.brevo.com include:_spf.mx.cloudflare.net -all` : '');
   const dkim = await Promise.all(['brevo1', 'brevo2'].map(async (s) => (await dns(`${s}._domainkey.${host}`, 'CNAME')).length > 0));
   row('Email — DKIM (Brevo)', 'brevo1 et brevo2 publiés', dkim.every(Boolean) ? 'publiés' : 'incomplet', dkim.every(Boolean), dkim.every(Boolean) ? '' : 'Brevo → Expéditeurs et domaines → authentifier le domaine');
   const dmarc = txt(await dns(`_dmarc.${host}`, 'TXT')).find((t) => t.startsWith('v=DMARC1'));
@@ -65,11 +73,18 @@ try {
   row('Email — DMARC', 'p=quarantine ou p=reject', dmarc ?? 'absent', policy === 'quarantine' || policy === 'reject',
     policy === 'none' ? `Cloudflare DNS → TXT _dmarc.${host} : passer p=none en p=quarantine, puis p=reject après une semaine sans rejet légitime` : '');
   const caa = await dns(host, 'CAA');
-  row('Certificats — CAA', 'les autorités de Cloudflare seulement', caa.length ? txt(caa).join(' ; ') : 'absent (toute autorité peut émettre)', caa.length > 0,
+  row('Certificats — CAA', 'les autorités de Cloudflare seulement', caa.length ? caa.map((c) => String(c.data)).join(' ; ') : 'absent (toute autorité peut émettre)', caa.length > 0,
     caa.length ? '' : `Cloudflare DNS → CAA ${host} : issue letsencrypt.org, pki.goog, digicert.com, comodoca.com, ssl.com (les autorités de l'Universal SSL)`);
   const a = (await dns(host, 'A')).map((x) => x.data);
-  const mx = await dns(host, 'MX');
-  row('Surface réseau', 'seulement des adresses Cloudflare, aucun MX', `${a.join(', ')}${mx.length ? ' ; MX présent' : ' ; pas de MX'}`, a.length > 0 && mx.length === 0, '');
+  // Depuis le 11/10, le domaine reçoit du courrier par Cloudflare Email Routing :
+  // des MX sont attendus, mais seulement ceux de Cloudflare. Un autre serveur de
+  // courrier sur ce domaine serait une surprise, donc une alerte.
+  const mx = (await dns(host, 'MX')).map((x) => String(x.data).split(' ').pop().replace(/\.$/, ''));
+  const etrangers = mx.filter((name) => !/(^|\.)mx\.cloudflare\.net$/.test(name));
+  row('Courrier entrant — MX', 'uniquement les MX de Cloudflare Email Routing', mx.length ? mx.join(', ') : 'aucun MX',
+    mx.length > 0 && etrangers.length === 0,
+    etrangers.length ? `Serveur de courrier inattendu : ${etrangers.join(', ')} — vérifier la zone DNS` : '');
+  row('Surface réseau', 'seulement des adresses Cloudflare', a.join(', '), a.length > 0, '');
 } catch (e) { row('DNS', '—', `indisponible (${e.message})`, null); }
 
 // ---- Le site : en-têtes et redirection ----
@@ -104,5 +119,11 @@ process.stdout.write(`== Contrôle de sécurité externe — ${host} — ${new D
 process.stdout.write('| | Domaine | Attendu | Réel | À faire |\n|---|---|---|---|---|\n');
 for (const r of rows) process.stdout.write(`| ${mark(r.ok)} | ${r.domaine} | ${r.attendu} | ${r.reel} | ${r.action} |\n`);
 const bad = rows.filter((r) => r.ok === false);
-process.stdout.write(`\n${bad.length === 0 ? 'Tout est au niveau attendu.' : `${bad.length} point(s) sous l'attendu.`}\n`);
-if (strict && bad.length > 0) process.exit(1);
+const muets = rows.filter((r) => r.ok === null);
+// Un contrôle qui n'a rien pu mesurer n'est pas un contrôle réussi : sans cela,
+// une panne de réseau ferait passer le workflow au vert sans rien vérifier.
+const mesures = rows.filter((r) => r.ok !== null).length;
+process.stdout.write(`\n${bad.length === 0 ? 'Tout est au niveau attendu.' : `${bad.length} point(s) sous l'attendu.`}`);
+if (muets.length > 0) process.stdout.write(` ${muets.length} point(s) n'ont pas pu être mesurés.`);
+process.stdout.write('\n');
+if (strict && (bad.length > 0 || mesures === 0)) process.exit(1);

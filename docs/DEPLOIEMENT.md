@@ -34,9 +34,13 @@ TUNNEL_TOKEN=eyJ...le jeton du tunnel, en entier, sans espace...
 PUBLIC_ORIGIN=https://altiplume.com
 MAIL_API_KEY=xkeysib-...la clé d'API Brevo...
 MAIL_FROM=courrier@altiplume.com
+MAIL_CONTACT=bonjour@altiplume.com
 ```
 
-`MAIL_FROM` doit être une adresse du domaine déclaré chez Brevo.
+`MAIL_FROM` doit être une adresse du domaine déclaré chez Brevo. `MAIL_CONTACT` est
+la boîte qui reçoit le formulaire de contact — chez nous, `bonjour@altiplume.com`,
+redirigée vers la boîte personnelle de l'éditeur par Cloudflare Email Routing.
+Laissée vide, la page de contact se déclare simplement indisponible.
 
 Enregistre le fichier sous le nom **`.env`** — avec les guillemets dans la boîte de
 dialogue du Bloc-notes, `".env"`, sinon Windows ajoute `.txt`. Puis dans **File

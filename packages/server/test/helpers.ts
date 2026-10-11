@@ -5,12 +5,12 @@ import { openDatabase } from '../src/db/database.ts';
 import { ConsoleMailer } from '../src/mail/mailer.ts';
 
 /** Application de test : base en mémoire, emails capturés, horloge pilotée. */
-export async function testApp(startAt = Date.UTC(2026, 9, 11, 9, 0, 0)) {
+export async function testApp(startAt = Date.UTC(2026, 9, 11, 9, 0, 0), env: Record<string, string> = {}) {
   let clock = startAt;
   const mailer = new ConsoleMailer(() => undefined);
   const ctx: AppContext = {
     db: openDatabase({ path: ':memory:' }),
-    config: loadConfig({ NODE_ENV: 'test', PORT: '3000', PUBLIC_ORIGIN: 'http://localhost:3000' }),
+    config: loadConfig({ NODE_ENV: 'test', PORT: '3000', PUBLIC_ORIGIN: 'http://localhost:3000', MAIL_CONTACT: 'bonjour@altiplume.com', ...env }),
     mailer,
     push: null,
     now: () => clock,

@@ -54,12 +54,27 @@ d'Altiplume (personne physique, France). Version du 11 octobre 2026.
 | **Base légale** | Intérêt légitime. |
 | **Données** | Adresse IP, en mémoire vive seulement, pour la durée de la fenêtre (quelques minutes). Jamais écrite sur disque. |
 
+## Traitement 6 — Formulaire de contact
+
+| | |
+|---|---|
+| **Finalité** | Permettre à une personne d'écrire à l'éditeur (question, signalement de bug, demande RGPD) sans exposer une adresse email aux robots. |
+| **Base légale** | Intérêt légitime (répondre à une sollicitation) ; pour une demande RGPD, obligation légale. |
+| **Données** | Le message, et facultativement une adresse email de réponse et un sujet. |
+| **Stockage serveur** | **Aucun.** Le message est transmis par courriel et n'est écrit ni en base, ni sur disque. Le journal d'audit note uniquement `contact.sent` avec un indicateur « une adresse était jointe », sans contenu ni adresse. |
+| **Destinataire** | L'éditeur, sur sa boîte `bonjour@altiplume.com` (redirection Cloudflare Email Routing vers une boîte Gmail personnelle). |
+| **Durée** | Hors du serveur : le temps utile à la conversation, dans la boîte email de l'éditeur. Suppression sur demande. |
+| **Transferts hors UE** | Cloudflare, Inc. (acheminement du courriel entrant) et Google Ireland/LLC (Gmail) — clauses contractuelles types. |
+| **Mesures** | Destinataire fixé par la configuration du serveur, jamais par le navigateur (pas de relais ouvert) ; champ-piège et délai minimum de rédaction contre les robots ; trois envois par heure et par adresse IP ; longueurs bornées ; sujet et adresse nettoyés de tout caractère de contrôle (pas d'injection d'en-tête) ; message échappé dans la version HTML. |
+
 ## Sous-traitants
 
 | Sous-traitant | Rôle | Localisation | Encadrement |
 |---|---|---|---|
 | Cloudflare, Inc. | Acheminement, protection DDoS, certificat TLS | États-Unis (points de présence mondiaux) | Clauses contractuelles types, DPA Cloudflare |
-| Sendinblue SAS (Brevo) | Envoi des emails de connexion | France | DPA Brevo |
+| Sendinblue SAS (Brevo) | Envoi des emails de connexion et des messages du formulaire de contact | France | DPA Brevo |
+| Cloudflare, Inc. | Réception du courrier de `@altiplume.com` et redirection (Email Routing) | États-Unis | Clauses contractuelles types, DPA Cloudflare |
+| Google Ireland Ltd. | Boîte email de l'éditeur (Gmail), destinataire final des messages | Irlande / États-Unis | Clauses contractuelles types |
 
 ## Traitements prévus, non encore actifs
 
