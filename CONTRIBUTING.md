@@ -34,6 +34,17 @@ courrier, et celui de la Côte de Saline (route, ponton, Sterne, amerrissage). I
 Chromium (`CHROMIUM_PATH=/chemin/vers/chromium`, ou `npx playwright install chromium`).
 Lancez-le avant toute PR qui touche à l'authentification ou au client.
 
+## La scène
+
+La scène de l'aérodrome est dessinée pixel par pixel dans `scripts/scene-build.mjs` :
+chaque élément est un petit dessin en texte, une lettre par pixel, et une légende
+qui dit quelle classe CSS porte chaque lettre. `node scripts/scene-build.mjs`
+régénère le SVG dans `aerodrome.html` (entre les repères `scene:start` et
+`scene:end`) ; ne pas modifier le SVG à la main. Les couleurs — jour, aube,
+crépuscule, nuit — vivent dans `styles.css`. Pour juger avant de pousser :
+`node scripts/scene-preview.mjs dossier` écrit huit aperçus (nu / tout posé × quatre
+moments).
+
 ## Licences des dépendances
 
 Seules MIT, BSD-2/3, Apache-2.0, ISC, 0BSD, CC0 et OFL sont acceptées. Une dépendance

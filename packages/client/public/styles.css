@@ -484,43 +484,170 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .choix-nom input { width: 1.25rem; height: 1.25rem; accent-color: var(--avion-bleu); }
 .jeu .actions { margin-bottom: 1.1rem; }
 
-/* La scène : un ciel qui suit l'heure de la personne, une piste, un hangar, la croix. */
-.scene { border-radius: var(--rayon); overflow: hidden; aspect-ratio: 160 / 72; max-height: 16rem; margin: 0.4rem 0 1rem; background: var(--brume-fonce); }
+/* La scène : 320 × 144 pixels, dessinée par scripts/scene-build.mjs. Les couleurs
+   vivent ici pour suivre l'heure (data-moment) et le mode nuit. */
+.scene { border-radius: var(--rayon); overflow: hidden; aspect-ratio: 320 / 144; max-height: 16rem; margin: 0.4rem 0 1rem; background: var(--brume-fonce); }
 .scene svg { display: block; width: 100%; height: 100%; }
-.scene .ciel { fill: #b9d3e3; }
-.scene .astre { fill: #f3dc8a; }
+.scene .ciel-haut { fill: #a9c8de; }
+.scene .ciel-milieu { fill: #bdd5e5; }
+.scene .ciel-bas { fill: #d3e2ea; }
+.scene .etoile { fill: #e9ecef; opacity: 0; }
+.scene .astre-disque { fill: #f3dc8a; }
+.scene .astre-halo { fill: #f3dc8a; opacity: 0.45; }
+.scene .nuage { fill: #f6f7f8; }
+.scene .nuage-ombre { fill: #d9e2e8; }
 .scene .colline-loin { fill: #9fb6a5; }
+.scene .arbre-loin { fill: #86a08f; }
 .scene .colline { fill: #7f9a6c; }
+.scene .buisson { fill: #5f8252; }
+.scene .buisson-clair { fill: #7aa166; }
+.scene .feuillage { fill: #4f7a45; }
+.scene .feuillage-clair { fill: #6f9a5a; }
+.scene .feuillage-sombre { fill: #3f6a3f; }
+.scene .tronc { fill: #6b4a2a; }
 .scene .sol { fill: #6b8a5a; }
-.scene .piste { fill: #9fb27c; }
+.scene .herbe { fill: #7fa06a; }
+.scene .piste-sol { fill: #9fb27c; }
+.scene .piste-bord { fill: #8aa06a; }
+.scene .piste[data-niveau='2'] .piste-sol, .scene .piste[data-niveau='3'] .piste-sol { fill: #b9b39a; }
+.scene .piste[data-niveau='2'] .piste-bord, .scene .piste[data-niveau='3'] .piste-bord { fill: #a09a84; }
+.scene .piste-longue .piste-sol { fill: #b9b39a; }
+.scene .piste-longue .piste-bord { fill: #a09a84; }
 .scene .pierre { fill: #f6f1e7; }
-.scene .hangar { fill: #5a6a62; }
-.scene .hangar .toit { fill: #3f4b45; }
-.scene .hangar .porte { fill: #46544d; }
-.scene .avion { fill: #2a2f33; }
-.scene .avion .helice { fill: #b23a2f; }
-.scene .manche { fill: #3f4b45; }
-.scene .manche .toile { fill: #b23a2f; }
 .scene .chemin { fill: #b8a98a; }
+.scene .chemin-ombre { fill: #a3957a; }
 .scene .croix { fill: #8c8c86; }
-.scene .lanterne { fill: #3f4b45; }
+.scene .croix-ombre { fill: #6e6e68; }
+.scene .socle { fill: #7d7d77; }
+.scene .hangar .toit { fill: #3f4b45; }
+.scene .hangar .toit-clair { fill: #55655d; }
+.scene .hangar .mur { fill: #5a6a62; }
+.scene .hangar .mur-clair { fill: #66776e; }
+.scene .hangar .porte { fill: #3a463f; }
+.scene .hangar .porte-clair { fill: #46544d; }
+.scene .hangar .bardage { fill: #3a463f; }
+.scene .hangar .vitre { fill: #a9c8de; }
+.scene .hangar .cheminee { fill: #3a3a38; }
+.scene .hangar .seuil { fill: #4f5a54; }
+.scene .hangar[data-niveau='2'] .porte-clair { fill: #6a7a70; }
+.scene .hangar[data-niveau='3'] .porte-clair { fill: #8a9a8e; }
+.scene .hangar.peint .mur { fill: #6e8b7a; }
+.scene .hangar.peint .mur-clair { fill: #7f9c8a; }
+.scene .hangar.peint .toit { fill: #4f6a5a; }
+.scene .hangar.peint .toit-clair { fill: #5f7a6a; }
+.scene .hangar.peint .porte-clair, .scene .hangar.peint .bardage { fill: #b23a2f; }
+.scene .hangar.peint .porte { fill: #8c2d24; }
+.scene .enseigne .planche { fill: #f6f1e7; }
+.scene .enseigne .planche-bord { fill: #d9d2c4; }
+.scene .enseigne text { fill: #2a2f33; font-family: var(--police-titre); font-weight: 600; }
+.scene .mat { fill: #3f4b45; }
+.scene .toile { fill: #b23a2f; }
+.scene .toile-raie { fill: #f6f1e7; }
+.scene .avion .aile { fill: #c9b27a; }
+.scene .avion .hauban { fill: #2a2f33; }
+.scene .avion .fuselage { fill: #2a2f33; }
+.scene .avion .empennage { fill: #b23a2f; }
+.scene .avion .helice { fill: #b23a2f; }
+.scene .avion .roue { fill: #1b1f22; }
+.scene .hydravion .aile { fill: #c9b27a; }
+.scene .hydravion .hauban { fill: #2a2f33; }
+.scene .hydravion .fuselage { fill: #2a2f33; }
+.scene .hydravion .empennage { fill: #4fb3b0; }
+.scene .hydravion .helice { fill: #b23a2f; }
+.scene .hydravion .flotteur { fill: #4fb3b0; }
+.scene .eau { fill: #6f93a8; }
+.scene .eau-bord { fill: #86a7b8; }
+.scene .reflet { fill: #a9c4d2; }
+.scene .ponton .planches { fill: #8a6a3a; }
+.scene .ponton .planches-clair { fill: #a07f48; }
+.scene .ponton .pilotis { fill: #5a4426; }
+.scene .ponton .bollard { fill: #3f4b45; }
+/* Les décorations */
+.scene .fleurs .fleur { fill: #d6584b; }
+.scene .fleurs .fleur2 { fill: #f3dc8a; }
+.scene .fleurs .feuilles { fill: #4f7a45; }
+.scene .fleurs .bac { fill: #8a6a3a; }
+.scene .banc .bois { fill: #8a6a3a; }
+.scene .banc .pied { fill: #3f4b45; }
+.scene .boite .boite-corps { fill: #b23a2f; }
+.scene .boite .fente { fill: #5a1d17; }
+.scene .boite .pied { fill: #3f4b45; }
+.scene .lanterne .cage { fill: #8a6a3a; }
 .scene .lanterne .flamme { fill: #f3dc8a; }
-[data-moment='aube'] .scene .ciel { fill: #e8c9b4; }
-[data-moment='aube'] .scene .astre { fill: #f2a86a; }
+.scene .lanterne .halo { fill: #f3dc8a; opacity: 0; }
+.scene .pommier .pomme { fill: #d6584b; }
+.scene .drapeau .vert { fill: #6e8b7a; }
+.scene .drapeau .bleu { fill: #2f4f7a; }
+.scene .drapeau .plume { fill: #f6f1e7; }
+.scene .cafe .parasol { fill: #b23a2f; }
+.scene .cafe .parasol-clair { fill: #f6f1e7; }
+.scene .cafe .table { fill: #8a6a3a; }
+.scene .cafe .pied, .scene .cafe .chaise { fill: #3f4b45; }
+
+/* Les nuages dérivent, lentement. */
+@keyframes derive { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
+.scene .nuage-lent { animation: derive 240s linear infinite alternate; }
+.scene .nuage-lent-2 { animation-duration: 320s; animation-direction: alternate-reverse; }
+@media (prefers-reduced-motion: reduce) { .scene .nuage-lent { animation: none; } }
+
+/* L'aube */
+[data-moment='aube'] .scene .ciel-haut { fill: #c9b7c4; }
+[data-moment='aube'] .scene .ciel-milieu { fill: #e8c9b4; }
+[data-moment='aube'] .scene .ciel-bas { fill: #f3dcc4; }
+[data-moment='aube'] .scene .astre-disque { fill: #f2a86a; }
+[data-moment='aube'] .scene .astre-halo { fill: #f2a86a; }
+[data-moment='aube'] .scene .nuage { fill: #f8e6da; }
+[data-moment='aube'] .scene .nuage-ombre { fill: #dcc3b8; }
 [data-moment='aube'] .scene .colline-loin { fill: #b9b0a8; }
-[data-moment='crepuscule'] .scene .ciel { fill: #c98a7a; }
-[data-moment='crepuscule'] .scene .astre { fill: #f0b36a; }
+[data-moment='aube'] .scene .arbre-loin { fill: #a39a92; }
+/* Le crépuscule */
+[data-moment='crepuscule'] .scene .ciel-haut { fill: #6f6a8a; }
+[data-moment='crepuscule'] .scene .ciel-milieu { fill: #c98a7a; }
+[data-moment='crepuscule'] .scene .ciel-bas { fill: #e8b08a; }
+[data-moment='crepuscule'] .scene .astre-disque { fill: #f0b36a; }
+[data-moment='crepuscule'] .scene .astre-halo { fill: #f0b36a; }
+[data-moment='crepuscule'] .scene .nuage { fill: #e6c2b0; }
+[data-moment='crepuscule'] .scene .nuage-ombre { fill: #b08a84; }
 [data-moment='crepuscule'] .scene .colline-loin { fill: #8a8a93; }
+[data-moment='crepuscule'] .scene .arbre-loin { fill: #6f7280; }
 [data-moment='crepuscule'] .scene .colline { fill: #5f7556; }
-[data-moment='nuit'] .scene .ciel { fill: #1b2634; }
-[data-moment='nuit'] .scene .astre { fill: #e9ecef; }
+[data-moment='crepuscule'] .scene .hangar .vitre { fill: #f3dc8a; }
+/* La nuit */
+[data-moment='nuit'] .scene .ciel-haut { fill: #121a26; }
+[data-moment='nuit'] .scene .ciel-milieu { fill: #1b2634; }
+[data-moment='nuit'] .scene .ciel-bas { fill: #263241; }
+[data-moment='nuit'] .scene .etoile { opacity: 1; }
+[data-moment='nuit'] .scene .astre-disque { fill: #e9ecef; }
+[data-moment='nuit'] .scene .astre-halo { fill: #e9ecef; opacity: 0.25; }
+[data-moment='nuit'] .scene .nuage { fill: #3a4452; }
+[data-moment='nuit'] .scene .nuage-ombre { fill: #2b333e; }
 [data-moment='nuit'] .scene .colline-loin { fill: #2f3b47; }
+[data-moment='nuit'] .scene .arbre-loin { fill: #27313b; }
 [data-moment='nuit'] .scene .colline { fill: #2a3a30; }
+[data-moment='nuit'] .scene .buisson, [data-moment='nuit'] .scene .feuillage, [data-moment='nuit'] .scene .feuillage-sombre { fill: #1f2d23; }
+[data-moment='nuit'] .scene .buisson-clair, [data-moment='nuit'] .scene .feuillage-clair { fill: #2a3a2c; }
 [data-moment='nuit'] .scene .sol { fill: #26342a; }
-[data-moment='nuit'] .scene .piste { fill: #3a4a3a; }
-[data-moment='nuit'] .scene .hangar { fill: #2c3530; }
-[data-moment='nuit'] .scene .hangar .toit { fill: #1f2622; }
+[data-moment='nuit'] .scene .herbe { fill: #2f3f31; }
+[data-moment='nuit'] .scene .piste-sol { fill: #3a4a3a; }
+[data-moment='nuit'] .scene .piste-bord { fill: #30402f; }
+[data-moment='nuit'] .scene .piste[data-niveau='2'] .piste-sol, [data-moment='nuit'] .scene .piste[data-niveau='3'] .piste-sol, [data-moment='nuit'] .scene .piste-longue .piste-sol { fill: #4a4a44; }
+[data-moment='nuit'] .scene .pierre { fill: #c9c4b8; }
 [data-moment='nuit'] .scene .chemin { fill: #4a4538; }
+[data-moment='nuit'] .scene .chemin-ombre { fill: #3a3629; }
+[data-moment='nuit'] .scene .hangar .mur { fill: #2c3530; }
+[data-moment='nuit'] .scene .hangar .mur-clair { fill: #343e38; }
+[data-moment='nuit'] .scene .hangar .toit { fill: #1f2622; }
+[data-moment='nuit'] .scene .hangar .toit-clair { fill: #2a322d; }
+[data-moment='nuit'] .scene .hangar .porte, [data-moment='nuit'] .scene .hangar .bardage { fill: #1c2420; }
+[data-moment='nuit'] .scene .hangar .porte-clair { fill: #26302a; }
+[data-moment='nuit'] .scene .hangar .vitre { fill: #f3dc8a; }
+[data-moment='nuit'] .scene .enseigne .planche { fill: #d9d2c4; }
+[data-moment='nuit'] .scene .eau { fill: #1f2d3a; }
+[data-moment='nuit'] .scene .eau-bord { fill: #2a3a48; }
+[data-moment='nuit'] .scene .reflet { fill: #3f5566; }
+[data-moment='nuit'] .scene .lanterne .halo { opacity: 0.35; }
+[data-moment='nuit'] .scene .cafe .parasol-clair { fill: #c9c4b8; }
+[data-moment='nuit'] .scene .drapeau .plume { fill: #c9c4b8; }
 
 .nom-compagnie { font-size: clamp(1.6rem, 4.5vw, 2.4rem); max-width: none; }
 .adresse { margin: 0.2rem 0 0; color: var(--encre-douce); }
@@ -597,44 +724,6 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 
 .scene .piste[data-niveau='2'] { fill: #b4c48a; }
 .scene .piste[data-niveau='3'] { fill: #c2cf96; }
-.scene .piste-longue { fill: #c2cf96; }
-.scene .hangar[data-niveau='2'] .porte { fill: #6a7a70; }
-.scene .hangar[data-niveau='3'] .porte { fill: #8a9a8e; }
-.scene .hangar.peint { fill: #6e8b7a; }
-.scene .hangar.peint .toit { fill: #4f6a5a; }
-.scene .hangar.peint .porte { fill: #b23a2f; }
-.scene .fleurs { fill: #d6584b; }
-.scene .fleurs .fleur2 { fill: #f3dc8a; }
-.scene .fleurs .feuilles { fill: #4f7a45; }
-.scene .banc { fill: #8a6a3a; }
-.scene .pommier { fill: #6b4a2a; }
-.scene .pommier .feuillage { fill: #4f7a45; }
-.scene .pommier .pomme { fill: #d6584b; }
-.scene .drapeau { fill: #3f4b45; }
-.scene .drapeau .vert { fill: #6e8b7a; }
-.scene .drapeau .bleu { fill: #2f4f7a; }
-.scene .boite { fill: #b23a2f; }
-.scene .boite .pied { fill: #3f4b45; }
-.scene .cafe { fill: #8a6a3a; }
-.scene .enseigne .planche { fill: #f6f1e7; }
-.scene .enseigne text { fill: #2a2f33; font-family: var(--police-titre); font-weight: 600; }
-.scene .toile-raie { fill: #f6f1e7; }
-[data-moment='nuit'] .scene .enseigne .planche { fill: #d9d2c4; }
-
-/* La rivière au bas de la scène, le ponton, la Sterne amarrée. */
-.scene .riviere { fill: #6f93a8; }
-.scene .riviere .reflet { fill: #a9c4d2; }
-.scene .ponton .planches { fill: #8a6a3a; }
-.scene .ponton .pilotis { fill: #5a4426; }
-.scene .ponton .bollard { fill: #3f4b45; }
-.scene .hydravion { fill: #2a2f33; }
-.scene .hydravion .helice { fill: #b23a2f; }
-.scene .hydravion .flotteur { fill: #4fb3b0; }
-[data-moment='aube'] .scene .riviere { fill: #8a9fb0; }
-[data-moment='crepuscule'] .scene .riviere { fill: #5c6f86; }
-[data-moment='nuit'] .scene .riviere { fill: #1f2d3a; }
-[data-moment='nuit'] .scene .riviere .reflet { fill: #3f5566; }
-
 .deco li.posee { border-style: solid; border-color: var(--laiton); }
 .routes li.ouverte { border-style: solid; border-color: var(--laiton); }
 .routes .tagline { font-style: italic; margin: 0 0 0.4rem; }
