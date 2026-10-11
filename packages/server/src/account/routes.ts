@@ -4,6 +4,7 @@ import { transaction } from '../db/database.ts';
 import { audit } from '../db/repos/audit.ts';
 import { deletePlayer, nicknameTaken, renamePlayer, setPlayerLocale } from '../db/repos/players.ts';
 import { endSession, requirePlayer } from '../auth/session.ts';
+import { findCompanyByPlayer, loadCompanyState } from '../db/repos/companies.ts';
 import { cleanNickname, isLocale, validateNickname } from '../auth/validation.ts';
 
 const patchSchema = {
@@ -77,7 +78,7 @@ export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): vo
       sessions,
       passkeys, // noms et dates seulement : la clé publique n'est pas une donnée sur la personne
       events,
-      game: null, // Les données de jeu arriveront ici avec les premières parties.
+      game: (() => { const c = findCompanyByPlayer(ctx.db, p.id); return c ? loadCompanyState(ctx.db, c) : null; })(),
     };
     return reply
       .header('content-disposition', 'attachment; filename="altiplume-mes-donnees.json"')

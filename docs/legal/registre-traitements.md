@@ -10,7 +10,7 @@ d'Altiplume (personne physique, France). Version du 11 octobre 2026.
 | **Finalité** | Permettre à une personne de créer un compte, de s'y connecter sans mot de passe et de jouer. |
 | **Base légale** | Exécution du contrat (conditions d'utilisation acceptées à l'inscription). |
 | **Personnes concernées** | Joueurs inscrits, 15 ans et plus. |
-| **Données** | Adresse email ; pseudonyme (public) ; langue ; déclaration d'âge (oui/non) ; version des CGU acceptées et date ; dates de création et de dernière activité. |
+| **Données** | Adresse email ; pseudonyme (public) ; langue ; déclaration d'âge (oui/non) ; version des CGU acceptées et date ; dates de création et de dernière activité. Données de jeu rattachées au compte : nom de la compagnie (choisi ou proposé, filtré contre les marques réelles), francs, cachets, avions, pilotes embauchés et progression de leurs histoires, niveaux de l'aérodrome, décorations, album. Ces données décrivent la partie, pas la personne ; elles sont exportées et effacées avec le compte. |
 | **Destinataires** | L'éditeur. Brevo (envoi des emails de connexion : adresse email uniquement). Cloudflare (acheminement du trafic : adresse IP en transit). |
 | **Transferts hors UE** | Cloudflare, Inc. (États-Unis) — clauses contractuelles types. Brevo : France. |
 | **Durée** | Tant que le compte existe. Suppression automatique après 24 mois d'inactivité, précédée de deux avertissements. Suppression immédiate à la demande, depuis le compte. |
