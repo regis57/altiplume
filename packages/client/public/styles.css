@@ -419,6 +419,13 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .lecture h1 { max-width: none; font-size: clamp(1.8rem, 4vw, 2.4rem); }
 .lecture h2 { font-family: var(--police-titre); font-weight: 600; font-size: 1.4rem; margin-top: 2rem; }
 .lecture p, .lecture li { max-width: var(--mesure); }
+/* L'aide du jeu : un sommaire compact, des questions qui se lisent d'un coup d'œil. */
+.aide-jeu .sommaire { background: var(--papier); border-radius: var(--rayon); padding: 0.8rem 1.2rem; margin: 1.2rem 0; }
+.aide-jeu .sommaire ol { margin: 0; padding-left: 1.8rem; columns: 2 14rem; column-gap: 2rem; }
+.aide-jeu .sommaire li { margin: 0.15rem 0; break-inside: avoid; }
+.aide-jeu h2 { scroll-margin-top: 1rem; }
+.aide-jeu .faq dt { font-weight: 700; margin-top: 1rem; }
+.aide-jeu .faq dd { margin: 0.2rem 0 0; max-width: var(--mesure); }
 .lecture .relecture {
   border-left: 3px solid var(--laiton);
   padding-left: 1rem;

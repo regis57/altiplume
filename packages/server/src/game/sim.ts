@@ -156,7 +156,13 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       if (dest?.hazard === 'night' && (hour >= 20 || hour < 6)) stamps.push('s-nuit');
       if (dest?.runway === 'water') stamps.push('s-hydravion');
       if (deadlinesMet >= 10) stamps.push('s-delai');
-      for (const s of stamps) if (awardStamp(db, company.id, s, arrivedAt)) news.push({ kind: 'stamp', stamp: s });
+      for (const s of stamps) {
+        if (!awardStamp(db, company.id, s, arrivedAt)) continue;
+        news.push({ kind: 'stamp', stamp: s });
+        // Une première livraison lointaine vaut plus qu'une page : 2 ou 3 cachets au lieu d'un.
+        const extra = s === `s-${f.destination}` ? Math.max(0, (dest?.firstDeliveryStamps ?? 1) - 1) : 0;
+        if (extra > 0) db.prepare('UPDATE companies SET stamps = stamps + ? WHERE id = ?').run(extra, company.id);
+      }
       // Toute la région livrée : la page qui ouvre la suivante.
       const region = dest?.region ?? 'brume';
       const all = regionDestinations(region);
@@ -191,7 +197,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
 export type DispatchError =
   | 'card_unknown' | 'card_not_contract' | 'plane_unknown' | 'pilot_unknown' | 'plane_busy' | 'pilot_busy' | 'pilot_tired'
-  | 'plane_too_small' | 'runway_too_short' | 'needs_seaplane' | 'needs_water' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked';
+  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked';
 
 export interface DispatchPlan {
   readonly card: ContractCard;
@@ -233,9 +239,21 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
     return { ok: false, error: 'runway_too_short' };
   }
   if (destination.distance > model.range * traitFactor(template, 'range')) return { ok: false, error: 'out_of_range' };
+  // Il faut aussi pouvoir décoller de chez soi : le Martinet demande la piste roulée, le Héron la grande piste.
+  // (L'hydravion part de la rivière ; il n'existe pas sans ponton.)
+  const zone = (id: string) => (db.prepare('SELECT level FROM company_zones WHERE company_id = ? AND zone = ?').get(company.id, id) as { level: number } | undefined)?.level ?? 1;
+  if (model.runway !== 'water') {
+    const home = WORLD.zones.find((z) => z.id === 'runway')!.levels.find((l) => l.level === zone('runway'))?.runway ?? 'short';
+    if (RUNWAY_ORDER[model.runway] > RUNWAY_ORDER[home]) return { ok: false, error: 'home_runway_too_short' };
+  }
 
-  const cost = Math.round(template.wage + model.upkeep * traitFactor(template, 'fuel'));
-  if (company.francs < cost) return { ok: false, error: 'not_enough_francs' };
+  // Un hangar équipé entretient mieux : l'établi divise l'entretien par 1,25, l'atelier par 1,5.
+  const maintenance = WORLD.zones.find((z) => z.id === 'hangar')!.levels.find((l) => l.level === zone('hangar'))?.maintenance ?? 1;
+  const cost = Math.round(template.wage + (model.upkeep * traitFactor(template, 'fuel')) / maintenance);
+  // La ligne régulière ne coûte rien au départ : la poste avance le salaire et le
+  // carburant, et les retient sur le tarif à l'arrivée. C'est ce qui garantit qu'une
+  // compagnie ne peut jamais rester clouée au sol, même la caisse vide.
+  if (!card.standing && company.francs < cost) return { ok: false, error: 'not_enough_francs' };
   const durationMs = flightDurationMs(destination, model, traitFactor(template, 'speed'));
   return { ok: true, plan: { card, destination, plane, model, pilot, template, durationMs, cost } };
 }
@@ -254,17 +272,21 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(plan.template, 'wear'));
     const fatigueGain = Math.max(1, Math.round((plan.destination.distance >= 3 ? 2 : 1) * traitFactor(plan.template, 'fatigue')));
 
+    // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
+    const advanced = plan.card.standing === true;
+    const debit = advanced ? 0 : plan.cost;
+    const reward = advanced ? Math.max(0, plan.card.reward - plan.cost) : plan.card.reward;
     const id = newId();
     db.prepare(`INSERT INTO flights (id, company_id, card, plane_id, pilot_id, destination, departed_at, duration_ms, deadline_at, reward, bonus, incident)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
       .run(id, company.id, plan.card.id, plan.plane.id, plan.pilot.id, plan.destination.id, now, durationMs,
-        now + plan.card.softDeadlineHours * 3_600_000, plan.card.reward, plan.card.bonus, incident ? 1 : 0);
+        now + plan.card.softDeadlineHours * 3_600_000, reward, plan.card.bonus, incident ? 1 : 0);
     db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, plan.card.id);
-    db.prepare('UPDATE companies SET francs = francs - ?, flights_count = flights_count + 1 WHERE id = ?').run(plan.cost, company.id);
+    db.prepare('UPDATE companies SET francs = francs - ?, flights_count = flights_count + 1 WHERE id = ?').run(debit, company.id);
     db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(wear, plan.plane.id);
     db.prepare('UPDATE company_pilots SET fatigue = ?, fatigue_at = ? WHERE id = ?')
       .run(Math.min(FATIGUE_MAX, currentFatigue(plan.pilot, now) + fatigueGain), now, plan.pilot.id);
-    ledger(db, company.id, now, 'flight.departed', -plan.cost, plan.destination.id);
+    ledger(db, company.id, now, 'flight.departed', -debit, plan.destination.id);
     return db.prepare('SELECT * FROM flights WHERE id = ?').get(id) as unknown as FlightRow;
   });
 }

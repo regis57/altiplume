@@ -136,6 +136,10 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 - **La ligne régulière** : le sac de Pont-de-Brume, toujours disponible, jamais tirée,
   18 F sans bonus. La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
   11/10 après la première partie de Régis : à 14 h, il n'avait plus rien à expédier).
+  **La caisse vide non plus** (règle du 11/10 au soir, après une partie arrêtée à 3 F) :
+  la poste avance le salaire et le carburant, rien n'est débité au départ, et le tarif
+  moins l'avance est versé à l'arrivée — jamais moins que zéro. Avec Marthe et la Grive :
+  18 − 14 = 4 F nets par aller-retour. C'est le plancher du jeu, pas sa fortune.
 - **20 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
   un délai souple (tenu → bonus ; dépassé → rien). Les lointains paient mieux ; chaque
   contrat couvre au moins le salaire et l'entretien d'un vol.
@@ -169,9 +173,11 @@ peinture du hangar.
 ## Les règles du vol (v0.1)
 
 - **Expédier** demande une carte contrat en main, un avion libre qui porte assez de
-  sacs et peut se poser sur la piste du village, un pilote libre et pas trop fatigué,
-  et de quoi payer le départ (salaire du pilote + entretien de l'avion, moins avec
-  « Économe »).
+  sacs, qui peut se poser sur la piste du village **et décoller de la vôtre** (le
+  Martinet demande la piste roulée, le Héron la grande piste ; l'hydravion part de la
+  rivière), un pilote libre et pas trop fatigué, et de quoi payer le départ (salaire du
+  pilote + entretien de l'avion, moins avec « Économe », divisé par 1,25 avec l'établi
+  et par 1,5 avec l'atelier) — sauf sur la ligne régulière, où la poste avance tout.
 - **Durée** = distance ÷ vitesse (× « Tête brûlée »). L'aller livre ; le retour dure
   autant ; avion et pilote sont occupés jusqu'au retour.
 - **Aléas**, tirés d'une graine par joueur et par vol, donc rejouables : un incident

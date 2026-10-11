@@ -60,7 +60,12 @@ describe('le courrier — les cartes du jour', () => {
 
   it('se défausse, et une carte défaussée ne revient pas le jour même', async () => {
     const t = await company();
-    const card = t.founded.hand[0].card as string;
+    // Une carte précise, pas « la première du tirage » : le tirage dépend de l'identifiant
+    // du joueur, aléatoire dans les tests ; dans 5 % des cas il ne contient aucun contrat,
+    // la première carte est alors un imprévu — qui ne se défausse pas. C'était l'échec
+    // intermittent du 11 octobre.
+    t.clearHand(); t.give('c-journal');
+    const card = 'c-journal';
     expect((await t.json('DELETE', `/v1/company/cards/${card}`, {}, t.cookie)).statusCode).toBe(204);
     expect((await t.json('DELETE', `/v1/company/cards/${card}`, {}, t.cookie)).statusCode).toBe(404);
     expect((await t.state()).hand.map((h: { card: string }) => h.card)).not.toContain(card);
