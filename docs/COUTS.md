@@ -52,6 +52,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Restaurer et décorer : piste, hangar, dix décorations, la scène qui les montre | ~45 min |
 | 2026-10-11 | Compteur mondial anonyme | ~20 min |
 | 2026-10-11 | La scène vivante : l'avion qui vole, le soleil qui tourne, la musique en Web Audio | ~40 min |
+| 2026-10-11 | Réalignement des sept PR empilées après chaque fusion ; correctif « des la Croisette » | ~45 min |
 
 ## Revenus (à partir du lancement)
 

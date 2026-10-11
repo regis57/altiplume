@@ -177,3 +177,16 @@ describe('GET /v1/world', () => {
     await t.app.close();
   });
 });
+
+describe('noms de compagnie — articles', () => {
+  it('ne produit jamais « des la » ni « de Brume » sans article', async () => {
+    const { suggestNames } = await import('../src/world/names.ts');
+    const seen = new Set<string>();
+    for (let i = 0; i < 300; i += 1) for (const n of suggestNames('fr', i)) seen.add(n);
+    for (const n of seen) {
+      expect(n).not.toMatch(/\bdes la\b/);
+      expect(n).not.toMatch(/\b(Compagnie|Lignes|Ailes) (Brume|Saline|Ocre|Cuivre|Verre)\b/);
+    }
+    expect([...seen].some((n) => n === 'Compagnie de la Croisette')).toBe(true);
+  });
+});

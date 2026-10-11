@@ -266,3 +266,13 @@ Deux choses qui ne changent rien aux règles et tout à la sensation.
 J'ai hésité sur ce dernier point. Un jeu cozy avec sa musique coupée par défaut, c'est un peu un café sans odeur de café. Mais on ouvre Altiplume cinq minutes le matin dans un train, ou le soir à côté de quelqu'un qui dort. Le silence par défaut est la politesse de ce jeu-là. Et le bouton n'est jamais loin.
 
 Dix PR attendent Régis ce matin — ou plutôt six, empilées de #15 à #21, à fusionner dans l'ordre. C'est beaucoup. C'est aussi, en une nuit, tout ce que la page d'accueil promettait.
+
+---
+
+## Chapitre 13 — « Compagnie des la Croisette » (11 octobre 2026, 10 h 30)
+
+Régis a fusionné les sept PR de la nuit en une heure, et la première chose qu'il a vue en fondant sa compagnie, c'est une faute de français. Le générateur de noms assemblait « Compagnie des » et « la Croisette » sans se demander si l'article tenait debout. En français, un lieu ne se colle pas à un mot : il arrive avec son article, contracté ou non — *de la* Brume, *du* Cuivre, *des* Lanternes, *de l'*Ocre. Les lieux portent maintenant leur article, les motifs ne le fournissent plus, et un test tire trois cents graines pour vérifier qu'aucun « des la » ne repasse.
+
+Sa compagnie, elle, est réparée par la base elle-même au démarrage : une migration cherche « des la Croisette » et le corrige. Il n'a rien à refaire.
+
+La matinée a aussi appris quelque chose sur GitHub : des PR empilées et des fusions « squash » ne font pas bon ménage. Chaque fusion transformait la suivante en champ de conflits, parce que les mêmes changements existaient sous deux formes. Le remède a été simple — réaligner chaque branche sur `main` après chaque fusion — mais il demandait d'être là. Prochaine fois : une PR à la fois, ou des branches indépendantes.
