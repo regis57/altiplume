@@ -13,6 +13,8 @@ export interface Message {
   readonly subject: string;
   readonly text: string;
   readonly html: string;
+  /** Adresse à laquelle répondre, quand ce n'est pas celle de l'expéditeur (formulaire de contact). */
+  readonly replyTo?: string;
 }
 
 export interface Mailer {
@@ -48,6 +50,7 @@ export class BrevoMailer implements Mailer {
         subject: message.subject,
         textContent: message.text,
         htmlContent: message.html,
+        ...(message.replyTo ? { replyTo: { email: message.replyTo } } : {}),
       }),
       signal: AbortSignal.timeout(10_000),
     });

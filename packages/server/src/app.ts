@@ -17,6 +17,7 @@ import { registerGameRoutes } from './game/routes.ts';
 import { registerHealth } from './routes/health.ts';
 import { registerWorldRoutes } from './routes/world.ts';
 import { registerStatsRoutes } from './routes/stats.ts';
+import { registerContactRoutes } from './routes/contact.ts';
 
 export interface BuildOptions {
   readonly logger?: boolean;
@@ -70,6 +71,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   registerHealth(app);
   registerWorldRoutes(app);
   registerStatsRoutes(app, ctx);
+  registerContactRoutes(app, ctx);
   registerAuthRoutes(app, ctx);
   registerPasskeyRoutes(app, ctx);
   registerDeviceRoutes(app, ctx);

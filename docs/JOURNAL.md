@@ -395,3 +395,19 @@ La première scène faisait 160 pixels de large et chaque chose y était un rect
 **Comment c'est fait.** Pas de logiciel de dessin : chaque élément est un petit tableau de lettres dans un script, une lettre par pixel, une légende qui dit quelle classe CSS porte chaque lettre. Le script fusionne les pixels voisins en rectangles et écrit le SVG dans la page. Les couleurs restent dans la feuille de style — c'est elle qui fait l'aube, le crépuscule, la nuit. Deux mille rectangles, quatorze kilo-octets compressés. Un second script rend huit aperçus (nu / tout posé × quatre moments) pour juger avant de pousser.
 
 Et oui, ça évolue avec le jeu : la piste change quand on la restaure, le hangar quand on l'agrandit ou le peint, le ponton apparaît quand on le construit, la Sterne s'y amarre quand elle est là. La Côte de Saline aura sa propre scène ; ce chapitre-là est pour plus tard.
+
+## Chapitre 24 — La boîte aux lettres (11 octobre 2026, 20 h 30)
+
+Les mentions légales avaient encore un champ entre crochets : l'adresse de contact. Deux questions de Régis : « ai-je le droit à une redirection Cloudflare vers mon Gmail, ou y a-t-il un truc avec Brevo ? » et « ne faut-il pas plutôt un formulaire que d'afficher une adresse ? »
+
+**Brevo envoie, il ne reçoit pas.** Pour recevoir, Cloudflare Email Routing suffit, c'est gratuit, et ça donne un alias jetable : si `bonjour@` finit aspiré par les robots, on en crée un autre en dix secondes et on change une ligne. Une vraie boîte, on la traîne à vie.
+
+**Le piège, lui, était dans le SPF.** Cloudflare propose d'ajouter son propre enregistrement SPF au domaine. Or il y en avait déjà un, celui de Brevo — et deux SPF sur le même nom ne font pas un SPF plus fort, ils font un SPF invalide. Les liens de connexion seraient tombés les premiers. Un seul enregistrement, deux `include`, et tout va bien : `v=spf1 include:spf.brevo.com include:_spf.mx.cloudflare.net -all`.
+
+**Formulaire ou adresse ? Les deux.** L'adresse est publiée, parce que la loi attend un moyen de contact identifiable et qu'un formulaire seul se discute. Mais le formulaire est mis en avant : les gens de bonne foi cliquent le bouton, les robots aspirent une adresse qu'on peut jeter.
+
+**Ce qui tient les robots dehors**, sans captcha ni service tiers — la CSP ne les laisserait pas entrer de toute façon : un champ-piège invisible à l'écran, au clavier et aux lecteurs d'écran ; un délai minimum de rédaction, parce qu'un robot remplit et soumet en une demi-seconde ; trois envois par heure et par adresse IP ; des longueurs bornées. Un robot repéré reçoit exactement la même réponse qu'un humain : il n'apprend rien.
+
+**Et ce qui empêche le pire.** Le destinataire vient de la configuration du serveur, jamais du navigateur : sans cette règle, le formulaire serait un relais à spam ouvert sur Internet, et c'est le domaine qui finirait sur les listes noires. Le sujet et l'adresse de réponse sont nettoyés de tout caractère de contrôle — un retour à la ligne dans un sujet, c'est une tentative d'injection d'en-tête. Le message est échappé dans la version HTML du courriel. Et il n'y a pas d'injection SQL possible, pour une raison simple : **rien n'est écrit en base**. Le message traverse le serveur et s'en va. Le journal note qu'un message est parti, sans son contenu ni son auteur.
+
+Le contrôle hebdomadaire a appris deux choses au passage : que le domaine a maintenant des MX — mais seulement ceux de Cloudflare, et il alerte sur tout autre serveur de courrier —, et qu'un contrôle qui n'a rien pu mesurer n'est pas un contrôle réussi. Il passait au vert quand le réseau tombait ; il échoue, maintenant.

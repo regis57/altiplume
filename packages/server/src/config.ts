@@ -10,7 +10,8 @@ export interface Config {
   /** Origine publique, sans barre oblique finale : https://altiplume.com */
   readonly publicOrigin: string;
   readonly databasePath: string;
-  readonly mail: { readonly apiKey: string | null; readonly from: string };
+  /** `contact` : la boîte de l'éditeur, destinataire du formulaire ; absente, le formulaire n'existe pas. */
+  readonly mail: { readonly apiKey: string | null; readonly from: string; readonly contact: string | null };
   /** Clés VAPID pour les notifications ; absentes, les notifications sont simplement indisponibles. */
   readonly push: { readonly publicKey: string; readonly privateKey: string; readonly subject: string } | null;
   /** Vrai derrière le tunnel Cloudflare : les en-têtes X-Forwarded-* sont fiables. */
@@ -60,7 +61,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     port,
     publicOrigin,
     databasePath: env['DATABASE_PATH'] ?? './data/altiplume.db',
-    mail: { apiKey, from: env['MAIL_FROM'] ?? 'courrier@altiplume.com' },
+    mail: { apiKey, from: env['MAIL_FROM'] ?? 'courrier@altiplume.com', contact: env['MAIL_CONTACT']?.trim() || null },
     push,
     trustProxy: env['TRUST_PROXY'] === '1' || isProd,
   };

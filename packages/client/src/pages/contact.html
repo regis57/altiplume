@@ -1,0 +1,47 @@
+title: Écrire à l'aérodrome
+---
+<div class="lecture">
+  <h1 data-i18n="contact.title">Écrire à l'aérodrome</h1>
+  <p class="pitch" data-i18n="contact.pitch">Une question, un bug, une idée, un mot gentil : la boîte aux lettres est au bout du chemin. Le message part directement chez l'éditeur ; il n'est enregistré nulle part.</p>
+
+  <section class="enveloppe" aria-labelledby="titre-contact">
+    <div class="cachet cache" id="cachet" aria-hidden="true">
+      <span class="cachet-nom" data-i18n="stamp.name">Altiplume</span>
+      <span class="cachet-date" id="cachet-date"></span>
+      <span class="cachet-mention" data-i18n="contact.stampSent">message parti</span>
+    </div>
+    <h2 id="titre-contact" data-i18n="contact.formTitle">Votre message</h2>
+    <p class="sous-titre" data-i18n="contact.subtitle">Rien d'obligatoire sauf le message.</p>
+    <div class="message" id="contact-message" role="alert" aria-live="polite"></div>
+
+    <form id="contact" novalidate>
+      <div class="champ">
+        <label for="contact-sujet" data-i18n="contact.subject">Sujet</label>
+        <input id="contact-sujet" name="subject" type="text" autocomplete="off" maxlength="120" />
+        <p class="aide" data-i18n="contact.subjectHelp">Facultatif. « Un bug sur mon téléphone », par exemple.</p>
+      </div>
+      <div class="champ">
+        <label for="contact-email" data-i18n="contact.email">Votre adresse email</label>
+        <input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" />
+        <p class="aide" data-i18n="contact.emailHelp">Facultative, et seulement pour pouvoir vous répondre. Sans elle, le message part quand même.</p>
+        <p class="erreur-champ" id="contact-email-erreur"></p>
+      </div>
+      <div class="champ">
+        <label for="contact-texte" data-i18n="contact.message">Message</label>
+        <textarea id="contact-texte" name="message" rows="8" required minlength="10" maxlength="4000"></textarea>
+        <p class="aide" data-i18n="contact.messageHelp">De 10 à 4000 caractères.</p>
+        <p class="erreur-champ" id="contact-texte-erreur"></p>
+      </div>
+      <!-- Champ-piège : caché à l'écran et aux lecteurs d'écran. Si quelque chose le remplit, c'est un robot. -->
+      <div class="piege" aria-hidden="true">
+        <label for="contact-site">Site</label>
+        <input id="contact-site" name="site" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <button class="bouton" type="submit" data-i18n="contact.submit">Envoyer le message</button>
+    </form>
+
+    <p class="bas" data-i18n-html="contact.direct">Vous préférez votre propre boîte ? Écrivez à <a href="mailto:bonjour@altiplume.com">bonjour@altiplume.com</a>.</p>
+  </section>
+
+  <p class="aide" data-i18n="contact.privacy">Le message et l'adresse que vous indiquez servent uniquement à vous répondre. Ils ne sont pas enregistrés sur le serveur : ils partent par courriel et disparaissent d'ici.</p>
+</div>
