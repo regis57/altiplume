@@ -411,3 +411,25 @@ Les mentions légales avaient encore un champ entre crochets : l'adresse de cont
 **Et ce qui empêche le pire.** Le destinataire vient de la configuration du serveur, jamais du navigateur : sans cette règle, le formulaire serait un relais à spam ouvert sur Internet, et c'est le domaine qui finirait sur les listes noires. Le sujet et l'adresse de réponse sont nettoyés de tout caractère de contrôle — un retour à la ligne dans un sujet, c'est une tentative d'injection d'en-tête. Le message est échappé dans la version HTML du courriel. Et il n'y a pas d'injection SQL possible, pour une raison simple : **rien n'est écrit en base**. Le message traverse le serveur et s'en va. Le journal note qu'un message est parti, sans son contenu ni son auteur.
 
 Le contrôle hebdomadaire a appris deux choses au passage : que le domaine a maintenant des MX — mais seulement ceux de Cloudflare, et il alerte sur tout autre serveur de courrier —, et qu'un contrôle qui n'a rien pu mesurer n'est pas un contrôle réussi. Il passait au vert quand le réseau tombait ; il échoue, maintenant.
+
+## Chapitre 25 — Trois francs (11 octobre 2026, 21 h)
+
+Régis avait décoré son aérodrome — le café, la lanterne, le pommier, le drapeau —, et il lui restait trois francs. La ligne régulière en coûtait quatorze au départ. Plus rien ne décollait. « Suis-je bloqué pour toujours ? Banqueroute ? Souviens-toi de l'esprit Stardew Valley : on doit pouvoir grinder tranquille. »
+
+Il avait raison, et c'était pire qu'un bug : c'était une règle du jeu violée. *L'absence n'est jamais punie* — la maladresse non plus ne devrait pas l'être. Dans Stardew, on peut tout dépenser en graines ; le lendemain, on peut toujours aller pêcher.
+
+**La poste avance les frais.** C'est la correction, et elle se raconte dans le monde : sur la ligne régulière, rien n'est débité au départ ; la poste avance le salaire et le carburant, et les retient sur le tarif à l'arrivée. Dix-huit francs moins quatorze : quatre francs nets par aller-retour. Peu, mais sûr — et de zéro, quatre allers-retours suffisent à reprendre un contrat. Les contrats, eux, gardent leur règle : il faut pouvoir avancer les frais soi-même.
+
+Il fallait aussi vérifier qu'aucune autre porte ne se fermait. Un imprévu bloque la piste tant qu'on ne l'a pas tranché ; si toutes ses réponses coûtaient de l'argent, une caisse vide resterait coincée pour de bon. Ce n'est pas le cas — chaque imprévu a une réponse gratuite — et c'est maintenant un test : le jour où quelqu'un écrira un imprévu sans issue, la machine refusera.
+
+**En écrivant l'aide, trois autres promesses non tenues.** Pour expliquer le jeu, il faut le relire comme un joueur, et le relire comme un joueur, c'est vérifier que chaque phrase est vraie. Trois ne l'étaient pas :
+
+- *« Chaque première livraison vaut un cachet — deux pour Haut-Ferrand, trois pour la Combe. »* Les données le disaient, le code donnait un cachet partout. Corrigé, et les compagnies existantes reçoivent ce qui leur était dû.
+- *« Piste roulée : le Martinet peut se poser. »* La piste de la Croisette ne changeait rien à rien. Elle compte maintenant : pour décoller de chez soi, il faut la piste qui va avec l'avion.
+- *« Porte neuve, établi : l'entretien coûte moins. »* Il ne coûtait pas moins. Il coûte moins.
+
+Deux autres restent écrites dans le jeu sans effet encore — le moral des pilotes, et le trait « Nocturne ». L'aide n'en promet rien ; elles sont sur la liste.
+
+**Et l'aide.** « *Best support is no support* : il faut quelque chose de bien dès le départ. » Une page, *Comment on joue*, dans les deux langues, liée depuis l'en-tête de chaque page et depuis la fiche du premier vol. Elle commence par trois gestes en une minute, puis répond aux questions qu'on se pose vraiment : le courrier du jour, la ligne régulière, pourquoi un vol ne part pas, à quoi servent les francs et les cachets, les pilotes, l'aérodrome, les routes, et ce qui se passe quand on n'est pas là. Elle ne dit jamais « récompense » : on ne gagne pas des points, on fait des choses, et l'album s'en souvient. Elle finit par sept petites questions — dont la première : *« Je n'ai plus de francs, je suis bloqué ? »* Non.
+
+Bonne nouvelle au passage : sur Windows, Chrome a proposé d'installer Altiplume sur le bureau, et la notification est arrivée.

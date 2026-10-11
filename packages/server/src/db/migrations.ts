@@ -262,4 +262,20 @@ export const MIGRATIONS: readonly Migration[] = [
       INSERT OR IGNORE INTO company_zones (company_id, zone, level) SELECT id, 'ponton', 1 FROM companies;
     `,
   },
+  {
+    version: 8,
+    name: 'cachets-lointains',
+    sql: `
+      -- Les premières livraisons lointaines devaient valoir 2 ou 3 cachets (MONDE.md) ;
+      -- le code n'en donnait qu'un (vu le 11/10). On rend ce qui était dû, une fois.
+      UPDATE companies SET stamps = stamps + (
+        SELECT COALESCE(SUM(CASE stamp
+          WHEN 's-haut-ferrand' THEN 1 WHEN 's-lanterne-du-val' THEN 1 WHEN 's-combe-aux-rosees' THEN 2
+          WHEN 's-port-sel' THEN 1 WHEN 's-les-oeillets' THEN 1 WHEN 's-marais-blanc' THEN 1
+          WHEN 's-anse-aux-goemons' THEN 2 WHEN 's-phare-de-brisant' THEN 2 WHEN 's-ile-sainte-ambre' THEN 2
+          ELSE 0 END), 0)
+        FROM company_stamps s WHERE s.company_id = companies.id
+      );
+    `,
+  },
 ];

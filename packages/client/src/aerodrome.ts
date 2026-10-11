@@ -24,7 +24,7 @@ interface WorldView {
   cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
   pilots: { id: string; name: string; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
-  zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number }[] }[];
+  zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
   decorations: { id: string; name: string; description: string; cost: number; morale: number }[];
   stamps: { id: string; name: string; description: string }[];
 }
@@ -240,7 +240,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       const li = el('li');
       li.append(el('h3', undefined, m.name));
       li.append(el('p', undefined, m.description));
-      li.append(el('p', 'aide', `${m.capacity} ${t('game.bags')} · ${m.speed} ${t('game.speedUnit')} · ${m.range} ${t('game.rangeUnit')} · ${t('game.wear')} ${owned.wear}/100`));
+      li.append(el('p', 'aide', `${m.capacity} ${t(m.capacity === 1 ? 'game.bag' : 'game.bags')} · ${m.speed} ${t('game.speedUnit')} · ${m.range} ${t('game.rangeUnit')} · ${t('game.wear')} ${owned.wear}/100`));
       planes.append(li);
     }
   }
@@ -425,8 +425,11 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
     li.append(el('p', undefined, card.text));
     const actions = el('div', 'actions');
     if (card.kind === 'contract') {
-      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${card.bags} ${t('game.bags')} · ${card.reward} F` +
-        ` · +${card.bonus} F ${t('card.ifWithin')} ${card.softDeadlineHours} h`));
+      // « 1 sac », pas « 1 sacs » ; et pas de « +0 F » : la ligne régulière n'a pas de prime.
+      const bags = `${card.bags} ${t(card.bags === 1 ? 'game.bag' : 'game.bags')}`;
+      const bonus = card.bonus ? ` · +${card.bonus} F ${t('card.ifWithin')} ${card.softDeadlineHours} h` : '';
+      const advance = card.standing ? ` · ${t('card.advanced')}` : '';
+      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${bags} · ${card.reward} F${bonus}${advance}`));
       const send = el('button', 'bouton'); send.type = 'button'; send.textContent = t('card.dispatch');
       if (c.pendingEvent) {
         // Une vache sur la piste : on tranche l'imprévu d'abord.
@@ -512,7 +515,14 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
     const tpl = world.pilots.find((x) => x.id === hired?.pilot);
     if (!m || !tpl) { estimate.textContent = ''; return; }
     const minutes = Math.round((dest.distance / m.speed) * 60);
-    estimate.textContent = `≈ ${formatRemaining(minutes * 60_000, getLocale())} ${t('card.oneWay')} · ${t('card.cost')} ≈ ${tpl.wage + m.upkeep} F`;
+    // Le même calcul que le serveur : un hangar équipé divise l'entretien.
+    const hangar = world.zones.find((z) => z.id === 'hangar')?.levels.find((l) => l.level === (c.zones['hangar'] ?? 1));
+    const cost = Math.round(tpl.wage + m.upkeep / (hangar?.maintenance ?? 1));
+    // La ligne régulière : rien à payer maintenant, le tarif moins l'avance à l'arrivée.
+    const money = card.standing
+      ? `${t('card.postAdvances')} · ${t('card.net')} ≈ +${Math.max(0, (card.reward ?? 0) - cost)} F`
+      : `${t('card.cost')} ≈ ${cost} F`;
+    estimate.textContent = `≈ ${formatRemaining(minutes * 60_000, getLocale())} ${t('card.oneWay')} · ${money}`;
   };
   planeSelect.addEventListener('change', update); pilotSelect.addEventListener('change', update);
   const actions = el('div', 'actions');
