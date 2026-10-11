@@ -172,10 +172,49 @@ fait pas encore cette vérification au démarrage : c'est une amélioration pré
 
 ## Sauvegarde
 
-La base SQLite vit dans le volume `altiplume-data`. Tant qu'elle n'existe pas encore
-(il n'y a pas d'authentification ni de partie sauvegardée), il n'y a rien à
-sauvegarder. La procédure — copie cohérente de la base vers `docker/altiplume/backups`
-puis Hyper Backup — sera ajoutée avec la pull request qui introduit la base.
+La base SQLite (comptes, compagnies, vols — tout) vit dans le volume `altiplume-data`.
+Depuis le 11/10, il y a de vraies données dedans : on la sauvegarde **chaque nuit**.
+
+### La tâche planifiée (à créer une fois)
+
+Comme pour le redéploiement : **Planificateur de tâches → Créer → Tâche planifiée →
+Script défini par l'utilisateur**.
+
+- *Général* : nom `Altiplume - sauvegarde`, utilisateur **root**, **Activé** coché.
+- *Programmer* : tous les jours, **03:00**.
+- *Paramètres de tâche* : *Envoyer les détails par e-mail uniquement en cas d'anomalie* ;
+  *Enregistrer les résultats de sortie* dans `docker/altiplume/journal`.
+- *Exécuter la commande* : le contenu de `scripts/nas-backup.sh`.
+
+Lancer-la une fois à la main (*Exécuter*) : le dossier `docker/altiplume/sauvegardes`
+doit contenir `altiplume-AAAAMMJJ-HHMM.db`, et la sortie se terminer par `== OK — exit 0`.
+
+Ce que fait le script : il demande à SQLite, *dans* le conteneur, une copie cohérente
+de la base (la base est en mode WAL ; copier le fichier à chaud serait incohérent), la
+sort du conteneur, vérifie son intégrité avec la même image Node, et garde les trente
+dernières. Le jeu ne s'arrête pas.
+
+### Hors du NAS
+
+Un disque qui meurt emporte le volume *et* le dossier de sauvegardes. Dans **Hyper
+Backup**, ajouter le dossier `docker/altiplume/sauvegardes` à une tâche vers un
+support externe (disque USB, autre NAS, ou un stockage distant). La tâche Hyper Backup
+se planifie *après* 03:00, par exemple 04:00. Les sauvegardes font quelques centaines
+de kilo-octets : n'importe quel support convient.
+
+### Restaurer
+
+1. Planificateur de tâches → arrêter le jeu : dans Container Manager, **Projet →
+   `altiplume` → Arrêt**.
+2. Dans DSM → Terminal (SSH activé le temps de l'opération, désactivé après) :
+   ```
+   sudo docker run --rm -v altiplume_altiplume-data:/data -v /volume1/docker/altiplume/sauvegardes:/s:ro alpine \
+     sh -c 'rm -f /data/altiplume.db-wal /data/altiplume.db-shm && cp /s/altiplume-AAAAMMJJ-HHMM.db /data/altiplume.db && chown 1000:1000 /data/altiplume.db'
+   ```
+3. **Projet → Démarrer**, puis `https://altiplume.com/healthz`.
+
+À tester une fois par trimestre, sur une copie, pour être sûr que ça marche le jour
+où on en aura besoin. Noter la date du test ici : —
 
 ## En cas de problème
 

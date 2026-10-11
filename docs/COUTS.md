@@ -54,6 +54,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | La scène vivante : l'avion qui vole, le soleil qui tourne, la musique en Web Audio | ~40 min |
 | 2026-10-11 | Réalignement des sept PR empilées après chaque fusion ; correctif « des la Croisette » | ~45 min |
 | 2026-10-11 | Script de redéploiement NAS en tâche planifiée | ~15 min |
+| 2026-10-11 | Sauvegarde nocturne de la base (copie cohérente, intégrité, rotation, restauration) | ~20 min |
 
 ## Revenus (à partir du lancement)
 
