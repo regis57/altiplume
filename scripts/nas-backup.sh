@@ -29,15 +29,20 @@ $DOCKER run --rm -v "$VOLUME:/data" -v "$DEST:/s" alpine \
   sh -c "mv /data/.sauvegarde.db /s/altiplume-$horodatage.db && chown 1000:1000 /s/altiplume-$horodatage.db && chmod 600 /s/altiplume-$horodatage.db"
 echo "copie : $DEST/altiplume-$horodatage.db"
 
-# Contrôle d'intégrité de la copie, hors conteneur, avec la même image Node.
-$DOCKER run --rm -v "$DEST:/s:ro" ghcr.io/regis57/altiplume:latest node --no-warnings=ExperimentalWarning -e '
-  const { DatabaseSync } = require("node:sqlite");
-  const db = new DatabaseSync(process.argv[1], { readOnly: true });
-  const ok = db.prepare("PRAGMA integrity_check").get().integrity_check;
-  const joueurs = db.prepare("SELECT count(*) AS n FROM players").get().n;
-  console.log("intégrité :", ok, "— joueurs :", joueurs);
-  if (ok !== "ok") process.exit(1);
-' "/s/altiplume-$horodatage.db"
+# Contrôle d'intégrité de la copie, avec la même image Node. La base est en mode WAL :
+# même en lecture seule, SQLite veut écrire un fichier -shm à côté, donc on l'ouvre
+# depuis une copie dans un dossier accessible en écriture, jamais depuis le dossier
+# de sauvegardes (monté en lecture seule).
+$DOCKER run --rm -v "$DEST:/s:ro" ghcr.io/regis57/altiplume:latest sh -c '
+  cp "/s/$1" /tmp/controle.db && node --no-warnings=ExperimentalWarning -e "
+    const { DatabaseSync } = require(\"node:sqlite\");
+    const db = new DatabaseSync(\"/tmp/controle.db\");
+    const ok = db.prepare(\"PRAGMA integrity_check\").get().integrity_check;
+    const joueurs = db.prepare(\"SELECT count(*) AS n FROM players\").get().n;
+    console.log(\"intégrité :\", ok, \"— joueurs :\", joueurs);
+    if (ok !== \"ok\") process.exit(1);
+  "
+' -- "altiplume-$horodatage.db"
 
 # Rotation.
 ls -1t "$DEST"/altiplume-*.db | tail -n +$((GARDER + 1)) | while read -r vieux; do rm -f "$vieux"; echo "   supprimée : $vieux"; done
