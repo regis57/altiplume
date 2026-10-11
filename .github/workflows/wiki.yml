@@ -1,0 +1,41 @@
+name: Wiki
+
+# Publie docs/ dans le wiki GitHub après chaque fusion sur main qui le touche.
+# Le wiki doit exister (créer une première page à la main, une fois).
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'scripts/wiki-sync.sh', '.github/workflows/wiki.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write # le wiki est un dépôt Git à part ; le jeton du workflow peut y écrire
+
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Cloner le wiki
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki
+      - name: Préparer les pages
+        run: scripts/wiki-sync.sh wiki
+      - name: Publier s'il y a du nouveau
+        working-directory: wiki
+        run: |
+          git config user.name "Regis"
+          git config user.email "regis57@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "wiki déjà à jour"; exit 0; fi
+          git commit -m "docs: synchronisation depuis ${GITHUB_SHA::12}"
+          git push
