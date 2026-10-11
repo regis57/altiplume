@@ -4,6 +4,8 @@
  *
  * Règle : jamais de concaténation de morceaux de phrase. Une clé, une phrase.
  */
+import { trustedHtml } from './trusted.ts';
+
 export type Locale = 'fr' | 'en';
 
 const STORAGE_KEY = 'altiplume.locale';
@@ -621,7 +623,7 @@ export function translatePage(): void {
   document.querySelectorAll<HTMLElement>('[data-i18n-html]').forEach((el) => {
     const key = el.dataset['i18nHtml'];
     // Les chaînes avec balises viennent du dictionnaire embarqué, jamais du réseau.
-    if (key) el.innerHTML = t(key);
+    if (key) el.innerHTML = trustedHtml(t(key));
   });
   // Messages composés de codes (« error.x error.y ») : re-rendus dans la langue courante.
   document.querySelectorAll<HTMLElement>('[data-i18n-keys]').forEach((el) => {

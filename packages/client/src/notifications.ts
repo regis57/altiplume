@@ -7,6 +7,7 @@
  * confie l'abonnement au serveur. Un second clic retire tout.
  */
 import { t } from './i18n.ts';
+import { trustedScriptUrl } from './trusted.ts';
 
 type Json = Record<string, unknown>;
 type Api = (method: 'GET' | 'POST' | 'PATCH' | 'DELETE', path: string, body?: Json) => Promise<{ status: number; body: Json }>;
@@ -39,7 +40,7 @@ function urlBase64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
 async function registration(): Promise<ServiceWorkerRegistration> {
   const existing = await navigator.serviceWorker.getRegistration('/');
   if (existing) return existing;
-  return navigator.serviceWorker.register('/sw.js', { scope: '/' });
+  return navigator.serviceWorker.register(trustedScriptUrl('/sw.js'), { scope: '/' });
 }
 
 /** Le bouton cloche de l'aérodrome. */

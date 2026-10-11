@@ -1,0 +1,37 @@
+name: Sécurité
+
+# Le contrôle de sécurité externe (docs/SECURITE.md) : ce que les plateformes
+# gratuites voient d'altiplume.com, comparé à l'attendu. Chaque lundi matin et
+# à la demande. Échoue tant qu'un point est sous l'attendu — c'est le but.
+on:
+  schedule:
+    - cron: '17 5 * * 1' # lundi 05:17 UTC (07:17 à Paris)
+  workflow_dispatch:
+    inputs:
+      host:
+        description: Hôte à contrôler
+        default: altiplume.com
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  externe:
+    name: contrôle externe
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Contrôler
+        env:
+          HOST: ${{ inputs.host || 'altiplume.com' }}
+        run: |
+          node scripts/securite-check.mjs "$HOST" --strict | tee rapport.md
+          echo "## Contrôle de sécurité externe" >> "$GITHUB_STEP_SUMMARY"
+          cat rapport.md >> "$GITHUB_STEP_SUMMARY"
