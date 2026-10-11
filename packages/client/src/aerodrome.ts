@@ -6,6 +6,7 @@
  * valeur : elle affiche.
  */
 import { formatDate, getLocale, t, translatePage } from './i18n.ts';
+import { formatRemaining } from './time.ts';
 
 type Json = Record<string, unknown>;
 interface ApiResult { readonly status: number; readonly body: Json }
@@ -14,23 +15,42 @@ type SetMessage = (id: string, keys: string | string[], kind?: 'ok' | 'error') =
 
 interface WorldView {
   home: { name: string; address: string; description: string };
-  destinations: { id: string; name: string }[];
-  planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number }[];
+  destinations: { id: string; name: string; distance: number }[];
+  planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
-  pilots: { id: string; name: string; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number }[];
+  pilots: { id: string; name: string; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number }[] }[];
   decorations: { id: string; name: string }[];
   stamps: { id: string; name: string; description: string }[];
 }
 
+interface Flight {
+  id: string; card: string; destination: string; plane: string; pilot: string;
+  departedAt: number; arrivesAt: number; busyUntil: number; deadlineAt: number; reward: number; bonus: number;
+  status: 'en_route' | 'returning' | 'done'; progress: number; settled: boolean;
+}
+type News =
+  | { kind: 'cards.drawn'; count: number }
+  | { kind: 'flight.arrived'; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean }
+  | { kind: 'stamp'; stamp: string };
+
 interface CompanyView {
-  name: string; francs: number; stamps: number; foundedAt: number;
-  planes: { id: string; model: string; wear: number }[];
-  pilots: { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenesSeen: number }[];
+  name: string; francs: number; stamps: number; foundedAt: number; now: number;
+  planes: { id: string; model: string; wear: number; busyUntil: number | null }[];
+  pilots: { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenesSeen: number; busyUntil: number | null }[];
   zones: Record<string, number>;
   decorations: string[];
   album: { id: string; earnedAt: number }[];
+  hand: { card: string; drawnAt: number }[];
+  flights: Flight[];
+  logbook: { at: number; kind: string; francs: number; ref: string | null }[];
+  news: News[];
 }
+
+/** Décalage entre l'horloge du serveur et la nôtre, pour les comptes à rebours. */
+let clockOffset = 0;
+let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
 const SCENE_AFFINITY = [3, 7, 12];
 
@@ -144,6 +164,17 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   const francs = $('francs'); if (francs) francs.textContent = String(c.francs);
   const cachets = $('cachets'); if (cachets) cachets.textContent = String(c.stamps);
   $('scene-lanterne')?.classList.toggle('cache', !c.decorations.includes('d-lanterne'));
+  clockOffset = c.now - Date.now();
+  const allBusy = c.planes.length > 0 && c.planes.every((p) => p.busyUntil !== null);
+  document.querySelector('.scene .avion')?.classList.toggle('cache', allBusy);
+
+  renderNews(world, c);
+  renderFlights(api, setMessage, world, c);
+  renderHand(api, setMessage, world, c);
+  renderLogbook(world, c);
+  if (refreshTimer) clearInterval(refreshTimer);
+  // Les vols avancent sans nous ; on redemande l'état toutes les trente secondes s'il y en a.
+  if (c.flights.some((f) => f.status !== 'done')) refreshTimer = setInterval(() => void refresh(api, setMessage, world), 30_000);
 
   // Pilotes
   const pilots = $('pilotes');
@@ -231,6 +262,202 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
     }
   }
   translatePage();
+}
+
+
+async function refresh(api: Api, setMessage: SetMessage, world: WorldView): Promise<void> {
+  const r = await api('GET', '/v1/company').catch(() => null);
+  if (r && r.status === 200) render(api, setMessage, world, r.body as unknown as CompanyView);
+}
+
+function destName(world: WorldView, id: string): string { return world.destinations.find((d) => d.id === id)?.name ?? id; }
+function pilotName(world: WorldView, c: CompanyView, hiredId: string): string {
+  const hired = c.pilots.find((p) => p.id === hiredId);
+  return world.pilots.find((p) => p.id === hired?.pilot)?.name ?? '';
+}
+function pilotTemplateName(world: WorldView, id: string): string { return world.pilots.find((p) => p.id === id)?.name ?? id; }
+function planeName(world: WorldView, c: CompanyView, ownedId: string): string {
+  const owned = c.planes.find((p) => p.id === ownedId);
+  return world.planes.find((p) => p.id === owned?.model)?.name ?? '';
+}
+function stampName(world: WorldView, id: string): string { return world.stamps.find((s) => s.id === id)?.name ?? id; }
+
+/** Les nouvelles depuis la dernière visite : ce qu'on trouve en revenant. */
+function renderNews(world: WorldView, c: CompanyView): void {
+  const box = $('nouvelles');
+  if (!box) return;
+  box.replaceChildren();
+  for (const n of c.news) {
+    const li = el('li', 'nouvelle');
+    if (n.kind === 'cards.drawn') li.textContent = `${t('news.cards')} ${n.count}`;
+    else if (n.kind === 'flight.arrived') {
+      li.textContent = `${pilotTemplateName(world, n.pilot)} ${t('news.arrived')} ${destName(world, n.destination)} · +${n.francs} F` +
+        (n.bonus ? ` · ${t('news.onTime')}` : '') + (n.incident ? ` · ${t('news.incident')}` : '');
+      li.classList.add('bonne');
+    } else { li.textContent = `${t('news.stamp')} ${stampName(world, n.stamp)}`; li.classList.add('cachet-nouveau'); }
+    box.append(li);
+  }
+}
+
+function renderFlights(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyView): void {
+  const list = $('vols');
+  if (!list) return;
+  list.replaceChildren();
+  const active = c.flights.filter((f) => f.status !== 'done');
+  $('vols-vide')?.classList.toggle('cache', active.length > 0);
+  const now = Date.now() + clockOffset;
+  for (const f of active) {
+    const li = el('li', 'vol');
+    const card = world.cards.find((x) => x.id === f.card);
+    li.append(el('h3', undefined, `${card?.title ?? ''} → ${destName(world, f.destination)}`));
+    li.append(el('p', 'aide', `${pilotName(world, c, f.pilot)} · ${planeName(world, c, f.plane)}`));
+    const bar = el('div', 'jauge');
+    bar.setAttribute('role', 'progressbar');
+    bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100');
+    const pct = Math.round(Math.min(1, Math.max(0, (now - f.departedAt) / (f.busyUntil - f.departedAt))) * 100);
+    bar.setAttribute('aria-valuenow', String(pct));
+    const fill = el('div', 'jauge-remplie'); fill.style.width = `${pct}%`;
+    bar.append(fill);
+    li.append(bar);
+    const status = f.status === 'returning'
+      ? `${t('flight.returning')} · ${formatRemaining(f.busyUntil - now, getLocale())}`
+      : `${t('flight.enRoute')} · ${formatRemaining(f.arrivesAt - now, getLocale())} · ${t('flight.back')} ${formatRemaining(f.busyUntil - now, getLocale())}`;
+    li.append(el('p', 'aide', status));
+    list.append(li);
+  }
+}
+
+function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyView): void {
+  const list = $('main');
+  if (!list) return;
+  list.replaceChildren();
+  $('main-vide')?.classList.toggle('cache', c.hand.length > 0);
+  for (const h of c.hand) {
+    const card = world.cards.find((x) => x.id === h.card);
+    if (!card) continue;
+    const li = el('li', `carte ${card.kind}`);
+    li.append(el('p', 'carte-genre', t(`card.${card.kind}`)));
+    li.append(el('h3', undefined, card.title));
+    li.append(el('p', undefined, card.text));
+    const actions = el('div', 'actions');
+    if (card.kind === 'contract') {
+      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${card.bags} ${t('game.bags')} · ${card.reward} F` +
+        ` · +${card.bonus} F ${t('card.ifWithin')} ${card.softDeadlineHours} h`));
+      const send = el('button', 'bouton'); send.type = 'button'; send.textContent = t('card.dispatch');
+      send.addEventListener('click', () => dispatchForm(api, setMessage, world, c, card.id, li));
+      actions.append(send);
+    } else if (card.kind === 'event') {
+      for (const choice of card.choices ?? []) {
+        const b = el('button', 'bouton secondaire'); b.type = 'button'; b.textContent = choice.label;
+        b.addEventListener('click', async () => {
+          actions.querySelectorAll('button').forEach((x) => { x.disabled = true; });
+          const r = await api('POST', `/v1/company/cards/${card.id}/play`, { choice: choice.id }).catch(() => null);
+          if (r && r.status === 200) {
+            const msg = $('jeu-message'); if (msg) { delete msg.dataset['i18nKeys']; msg.textContent = choice.outcome; msg.classList.add('ok'); }
+            render(api, setMessage, world, r.body as unknown as CompanyView);
+          } else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); actions.querySelectorAll('button').forEach((x) => { x.disabled = false; }); }
+        });
+        actions.append(b);
+      }
+    } else {
+      const take = el('button', 'bouton'); take.type = 'button'; take.textContent = t('card.take');
+      const price = card.offer?.price ?? card.offer?.cost;
+      if (price) take.textContent += ` · ${price} F`;
+      take.addEventListener('click', async () => {
+        take.disabled = true;
+        const r = await api('POST', `/v1/company/cards/${card.id}/play`, {}).catch(() => null);
+        if (r && r.status === 200) { setMessage('jeu-message', 'card.taken', 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
+        else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); take.disabled = false; }
+      });
+      actions.append(take);
+    }
+    const discard = el('button', 'bouton secondaire'); discard.type = 'button'; discard.textContent = t('card.discard');
+    discard.addEventListener('click', async () => {
+      discard.disabled = true;
+      const r = await api('DELETE', `/v1/company/cards/${card.id}`, {}).catch(() => null);
+      if (r && r.status === 204) void refresh(api, setMessage, world); else discard.disabled = false;
+    });
+    actions.append(discard);
+    li.append(actions);
+    list.append(li);
+  }
+}
+
+/** Le petit formulaire d'expédition, dans la carte : avion, pilote, estimation, envoi. */
+function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyView, cardId: string, host: HTMLElement): void {
+  host.querySelector('.expedition')?.remove();
+  const card = world.cards.find((x) => x.id === cardId);
+  const dest = world.destinations.find((d) => d.id === card?.destination);
+  if (!card || !dest) return;
+  const form = el('form', 'expedition');
+  form.noValidate = true;
+  const planeField = el('div', 'champ');
+  const planeLabel = el('label', undefined, t('card.plane')); planeLabel.htmlFor = `avion-${cardId}`;
+  const planeSelect = el('select'); planeSelect.id = planeLabel.htmlFor; planeSelect.name = 'plane';
+  for (const p of c.planes) {
+    const m = world.planes.find((x) => x.id === p.model);
+    const o = el('option', undefined, `${m?.name ?? p.model}${p.busyUntil ? ` — ${t('card.busy')}` : ''}`);
+    o.value = p.id; o.disabled = p.busyUntil !== null || (m?.capacity ?? 0) < (card.bags ?? 1);
+    planeSelect.append(o);
+  }
+  planeField.append(planeLabel, planeSelect);
+  const pilotField = el('div', 'champ');
+  const pilotLabel = el('label', undefined, t('card.pilot')); pilotLabel.htmlFor = `pilote-${cardId}`;
+  const pilotSelect = el('select'); pilotSelect.id = pilotLabel.htmlFor; pilotSelect.name = 'pilot';
+  for (const p of c.pilots) {
+    const tpl = world.pilots.find((x) => x.id === p.pilot);
+    const tired = p.fatigue >= 8;
+    const o = el('option', undefined, `${tpl?.name ?? p.pilot}${p.busyUntil ? ` — ${t('card.busy')}` : tired ? ` — ${t('card.tired')}` : ''}`);
+    o.value = p.id; o.disabled = p.busyUntil !== null || tired;
+    pilotSelect.append(o);
+  }
+  pilotField.append(pilotLabel, pilotSelect);
+  const estimate = el('p', 'aide');
+  const update = () => {
+    const owned = c.planes.find((p) => p.id === planeSelect.value);
+    const m = world.planes.find((x) => x.id === owned?.model);
+    const hired = c.pilots.find((p) => p.id === pilotSelect.value);
+    const tpl = world.pilots.find((x) => x.id === hired?.pilot);
+    if (!m || !tpl) { estimate.textContent = ''; return; }
+    const minutes = Math.round((dest.distance / m.speed) * 60);
+    estimate.textContent = `≈ ${formatRemaining(minutes * 60_000, getLocale())} ${t('card.oneWay')} · ${t('card.cost')} ≈ ${tpl.wage + m.upkeep} F`;
+  };
+  planeSelect.addEventListener('change', update); pilotSelect.addEventListener('change', update);
+  const actions = el('div', 'actions');
+  const go = el('button', 'bouton'); go.type = 'submit'; go.textContent = t('card.send');
+  const cancel = el('button', 'bouton secondaire'); cancel.type = 'button'; cancel.textContent = t('card.cancel');
+  cancel.addEventListener('click', () => form.remove());
+  actions.append(go, cancel);
+  form.append(planeField, pilotField, estimate, actions);
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    go.disabled = true;
+    const r = await api('POST', '/v1/company/flights', { card: cardId, plane: planeSelect.value, pilot: pilotSelect.value }).catch(() => null);
+    if (r && r.status === 201) { setMessage('jeu-message', 'card.sent', 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
+    else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); go.disabled = false; }
+  });
+  host.append(form);
+  update();
+  planeSelect.focus();
+}
+
+function renderLogbook(world: WorldView, c: CompanyView): void {
+  const list = $('bord');
+  if (!list) return;
+  list.replaceChildren();
+  for (const e of c.logbook) {
+    const li = el('li');
+    const when = el('span', 'aide', formatDate(e.at, 'short') + ' ' + new Date(e.at).toLocaleTimeString(getLocale() === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit' }));
+    let what: string;
+    if (e.kind === 'flight.departed') what = `${t('log.departed')} ${destName(world, e.ref ?? '')}`;
+    else if (e.kind === 'flight.arrived') what = `${t('log.arrived')} ${destName(world, e.ref ?? '')}`;
+    else if (e.kind === 'purchase.plane') what = `${t('log.bought')} ${world.planes.find((p) => p.id === e.ref)?.name ?? ''}`;
+    else if (e.kind === 'hire.pilot') what = `${t('log.hired')} ${pilotTemplateName(world, e.ref ?? '')}`;
+    else what = `${t('log.card')} ${world.cards.find((x) => x.id === (e.ref ?? '').split(':')[0])?.title ?? ''}`;
+    const amount = el('span', e.francs >= 0 ? 'montant plus' : 'montant moins', e.francs === 0 ? '' : `${e.francs > 0 ? '+' : ''}${e.francs} F`);
+    li.append(when, ' · ', what, ' ', amount);
+    list.append(li);
+  }
 }
 
 async function openScene(api: Api, setMessage: SetMessage, pilot: string, index: number, pilotName: string): Promise<void> {

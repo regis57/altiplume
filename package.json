@@ -21,7 +21,7 @@
     "check": "npm run lint && npm run typecheck && npm run build && npm test && npm run audit && npm run licenses",
     "build": "npm run build -w @altiplume/client",
     "start": "node --no-warnings=ExperimentalWarning packages/server/src/server.ts",
-    "e2e": "node scripts/e2e-passkeys.mjs"
+    "e2e": "node scripts/e2e-passkeys.mjs && node scripts/e2e-courrier.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

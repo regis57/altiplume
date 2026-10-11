@@ -45,13 +45,17 @@ describe('la compagnie', () => {
     expect(c.planes).toHaveLength(1);
     expect(c.planes[0].model).toBe('grive');
     expect(c.pilots).toHaveLength(1);
-    expect(c.pilots[0]).toMatchObject({ pilot: 'marthe', affinity: 0, morale: 10, fatigue: 0 });
+    expect(c.pilots[0]).toMatchObject({ pilot: 'marthe', affinity: 0, morale: 10, fatigue: 0, busyUntil: null });
+    expect(c.hand).toHaveLength(3);
+    expect(c.flights).toEqual([]);
     expect(c.zones).toEqual({ runway: 1, hangar: 1 });
     expect(c.decorations).toEqual([]);
     expect(c.album.map((s: { id: string }) => s.id)).toEqual(['s-fondation']);
     expect(c.stamps).toBe(1);
     expect(c.foundedAt).toBe(t.ctx.now());
-    expect((await t.json('GET', '/v1/company', undefined, t.cookie)).json()).toEqual(c);
+    // Les nouvelles (le tirage du jour) ne se lisent qu'une fois ; le reste est identique.
+    expect(c.news).toEqual([{ kind: 'cards.drawn', count: 3 }]);
+    expect((await t.json('GET', '/v1/company', undefined, t.cookie)).json()).toEqual({ ...c, news: [] });
     await t.app.close();
   });
 

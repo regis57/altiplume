@@ -224,3 +224,21 @@ Les trois proposition de noms sont reproductibles : même joueur, même jour, m�
 Deux choses attrapées par les captures d'écran avant Régis, cette fois : sur un téléphone, la navigation à quatre entrées débordait de l'écran — elle passe maintenant sous le logo ; et le bouton jour/nuit montrait les deux icônes à la fois en mode clair, une affaire de priorité de règles CSS que seul un œil voit.
 
 Il reste le plus important, et c'est la prochaine étape : le courrier. Les cartes du jour, affecter Marthe à la Grive, expédier vers Pont-de-Brume, attendre cinq vraies minutes, encaisser. Le jour où ça fusionnera, Altiplume sera un jeu.
+
+---
+
+## Chapitre 10 — Le premier vol (11 octobre 2026, 3 h 30)
+
+Altiplume est un jeu.
+
+Pas un grand jeu. Un petit : on fonde la compagnie, on trouve trois cartes sur le comptoir, on prend *Le journal du matin* pour Pont-de-Brume, on choisit la Grive et Marthe, on lit « ≈ 5 min aller simple · coût ≈ 14 F », on appuie sur Envoyer. La Grive disparaît du parking de la scène. Une jauge apparaît sous « En vol ». La caisse dit 286. Et on pose le téléphone.
+
+Cinq vraies minutes plus tard — ou le lendemain matin, c'est pareil — on revient, et il y a une ligne verte en haut de la page : « Marthe Vaudrin est rentrée de Pont-de-Brume · +30 F · délai tenu ». Et deux lignes rouges : « Nouvelle page dans l'album : Premier vol », « Nouvelle page dans l'album : Pont-de-Brume ». La caisse dit 316. Le livre de bord a deux lignes. Marthe a un vol d'affinité. Il lui en faut trois pour raconter l'histoire de la croix.
+
+**Comment ça marche sans rien faire tourner.** Il n'y a aucune tâche de fond. Quand on lit l'état de la compagnie, le serveur regarde l'heure, rattrape ce qui s'est passé — les vols arrivés, le tirage du jour s'il a changé — et le note une fois pour toutes. Entre deux lectures, le NAS dort. Trente personnes ou trente mille, c'est le même code ; seul le nombre de lectures change.
+
+**Ce qui est tiré au sort l'est avec une graine.** Les cartes du jour dépendent du joueur et du jour ; l'aléa de chaque vol dépend du joueur et du numéro du vol. On peut tout rejouer. Si quelqu'un dit « mon avion a eu un incident trois fois de suite, c'est truqué », on peut lui montrer le tirage. Ce n'est pas de la méfiance ; c'est ce qui rend un jeu honnête vérifiable.
+
+**Les règles tiennent en dix lignes**, elles sont dans MONDE.md, et dix-huit tests les surveillent : le coût d'un départ, la durée d'un vol, l'occupation de l'avion, le bonus versé ou non, la fatigue qui monte et redescend, les six villages qui ouvrent la vallée, le vol de nuit aux lanternes, l'imprévu tranché, l'avion acheté si le hangar a la place, le pilote de passage, la fête. Puis un vrai navigateur a rejoué le tout, en reculant l'horodatage du vol dans la base pour ne pas attendre cinq minutes — le serveur, lui, n'a pas d'horloge truquée.
+
+Il reste beaucoup : restaurer la piste et le hangar, acheter les décorations, voir l'avion voler dans la scène, entendre la musique, recevoir une notification quand le courrier arrive. Mais ce matin, quand Régis se réveillera, il pourra expédier un sac de courrier et revenir le soir voir s'il est arrivé. C'était la phrase de la page d'accueil. Elle est vraie.
