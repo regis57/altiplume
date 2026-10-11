@@ -171,7 +171,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
 export type DispatchError =
   | 'card_unknown' | 'card_not_contract' | 'plane_unknown' | 'pilot_unknown' | 'plane_busy' | 'pilot_busy' | 'pilot_tired'
-  | 'plane_too_small' | 'runway_too_short' | 'out_of_range' | 'not_enough_francs';
+  | 'plane_too_small' | 'runway_too_short' | 'out_of_range' | 'not_enough_francs' | 'event_pending';
 
 export interface DispatchPlan {
   readonly card: ContractCard;
@@ -190,6 +190,8 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
   // La ligne régulière n'est jamais en main : elle est toujours là.
   const inHand = card.standing || db.prepare('SELECT 1 FROM company_hand WHERE company_id = ? AND card = ?').get(company.id, cardId);
   if (!inHand) return { ok: false, error: 'card_unknown' };
+  // Un imprévu en main, c'est une vache sur la piste : rien ne décolle tant qu'on n'a pas tranché.
+  if (pendingEvent(db, company)) return { ok: false, error: 'event_pending' };
   const destination = findDestination(card.destination);
   if (!destination) return { ok: false, error: 'card_unknown' };
   const plane = db.prepare('SELECT id, model, wear FROM company_planes WHERE id = ? AND company_id = ?').get(planeId, company.id) as PlaneRow | undefined;
@@ -308,7 +310,16 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
   });
 }
 
+/** Un imprévu non tranché bloque la piste. */
+export function pendingEvent(db: Database, company: Company): string | null {
+  const rows = db.prepare('SELECT card FROM company_hand WHERE company_id = ?').all(company.id) as { card: string }[];
+  const found = rows.find((r) => findCard(r.card)?.kind === 'event');
+  return found ? found.card : null;
+}
+
+/** Laisser passer : un contrat ou une opportunité, jamais un imprévu — lui, on le tranche. */
 export function discardCard(db: Database, company: Company, cardId: string): boolean {
+  if (findCard(cardId)?.kind === 'event') return false;
   return Number(db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, cardId).changes) === 1;
 }
 

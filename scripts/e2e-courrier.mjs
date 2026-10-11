@@ -66,13 +66,15 @@ try {
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#t-compagnie')) === 'Les Ailes de la Croisette', 'compagnie fondée');
   assert((await page.textContent('#francs')) === '300', '300 francs au départ');
-  const drawn = await page.$$eval('#main .carte', (c) => c.length);
+  const drawn = await page.$$eval('#main .carte:not(.reguliere)', (c) => c.length);
   assert(drawn === 3, `trois cartes du jour (${drawn})`);
   assert((await page.textContent('#nouvelles')).includes('Cartes du jour'), 'les nouvelles annoncent le tirage');
 
   // On s'assure d'avoir un contrat précis en main : le journal pour Pont-de-Brume.
   const db = new DatabaseSync(dbPath);
   db.exec("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'c-journal', founded_at FROM companies");
+  // Un imprévu tiré bloquerait la piste : on le tranche d'office pour ce parcours.
+  db.exec("DELETE FROM company_hand WHERE card LIKE 'e-%'");
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-1-main.png'), fullPage: true });

@@ -45,6 +45,7 @@ interface CompanyView {
   decorations: string[];
   album: { id: string; earnedAt: number }[];
   hand: { card: string; drawnAt: number }[];
+  pendingEvent: string | null;
   flights: Flight[];
   logbook: { at: number; kind: string; francs: number; ref: string | null }[];
   news: News[];
@@ -386,6 +387,12 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${card.bags} ${t('game.bags')} · ${card.reward} F` +
         ` · +${card.bonus} F ${t('card.ifWithin')} ${card.softDeadlineHours} h`));
       const send = el('button', 'bouton'); send.type = 'button'; send.textContent = t('card.dispatch');
+      if (c.pendingEvent) {
+        // Une vache sur la piste : on tranche l'imprévu d'abord.
+        send.disabled = true;
+        send.title = t('card.runwayBlocked');
+        li.append(el('p', 'aide bloque', t('card.runwayBlocked')));
+      }
       send.addEventListener('click', () => dispatchForm(api, setMessage, world, c, card.id, li));
       actions.append(send);
     } else if (card.kind === 'event') {
@@ -413,7 +420,7 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       });
       actions.append(take);
     }
-    if (!card.standing) {
+    if (!card.standing && card.kind !== 'event') {
       const discard = el('button', 'bouton secondaire'); discard.type = 'button'; discard.textContent = t('card.discard');
       discard.addEventListener('click', async () => {
         discard.disabled = true;

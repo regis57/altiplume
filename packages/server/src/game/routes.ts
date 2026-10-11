@@ -12,10 +12,10 @@ import { requirePlayer } from '../auth/session.ts';
 import { isLocale, type Locale } from '../auth/validation.ts';
 import { gameDayIndex } from '../sim/day.ts';
 import { deriveSeed } from '../sim/rng.ts';
-import { findPilot, localizeScene } from '../world/index.ts';
+import { findCard, findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
 import {
-  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, placeDecoration, planDispatch, playCard, settle, upgradeZone, type News,
+  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, pendingEvent, placeDecoration, planDispatch, playCard, settle, upgradeZone, type News,
 } from './sim.ts';
 import type { Database } from '../db/database.ts';
 
@@ -80,6 +80,7 @@ function view(db: Database, state: CompanyState, now: number, news: News[] = [])
     decorations: state.decorations.map((d) => d.decoration),
     album: state.stamps.map((s) => ({ id: s.stamp, earnedAt: s.earnedAt })),
     hand: listHand(db, state.company.id),
+    pendingEvent: pendingEvent(db, state.company),
     flights,
     logbook: listLedger(db, state.company.id),
     news,
@@ -191,6 +192,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const company = findCompanyByPlayer(ctx.db, request.player!.id);
     if (!company) return reply.code(404).send({ error: 'no_company' });
     const { card } = request.params as { card: string };
+    if (findCard(card)?.kind === 'event') return reply.code(409).send({ error: 'event_must_decide' });
     if (!discardCard(ctx.db, company, card)) return reply.code(404).send({ error: 'card_unknown' });
     return reply.code(204).send();
   });
