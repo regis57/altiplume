@@ -52,9 +52,9 @@ export async function setupNotifications(api: Api, setMessage: SetMessage): Prom
   const key = await api('GET', '/v1/push/key');
   if (key.status !== 200) return; // non configuré côté serveur : le bouton n'existe pas
 
-  // iPhone hors application installée : impossible, on l'explique au lieu de cacher.
+  // iPhone hors application installée : impossible, on montre les deux gestes au lieu de cacher.
   if (!pushSupported()) {
-    if (isIosSafariOutsideApp() && hint) { hint.dataset['i18n'] = 'push.iosHint'; hint.textContent = t('push.iosHint'); hint.classList.remove('cache'); }
+    if (isIosSafariOutsideApp()) showIosInstallCard(hint);
     return;
   }
   const publicKey = String(key.body['publicKey']);
@@ -97,6 +97,27 @@ export async function setupNotifications(api: Api, setMessage: SetMessage): Prom
     } finally {
       button.disabled = false;
     }
+  });
+}
+
+const LATER_KEY = 'altiplume.installer.plus-tard';
+
+/** La fiche iPhone : Partager → « Sur l'écran d'accueil ». Apple ne laisse pas un site s'installer lui-même. */
+function showIosInstallCard(hint: HTMLElement | null): void {
+  const card = document.getElementById('fiche-installer');
+  if (!card) return;
+  let later = 0;
+  try { later = Number(localStorage.getItem(LATER_KEY) ?? 0); } catch { /* sans stockage */ }
+  if (Date.now() - later < 7 * 24 * 3_600_000) {
+    // La personne a dit « plus tard » cette semaine : une ligne discrète suffit.
+    if (hint) { hint.dataset['i18n'] = 'push.iosHint'; hint.textContent = t('push.iosHint'); hint.classList.remove('cache'); }
+    return;
+  }
+  card.classList.remove('cache');
+  card.querySelector('[data-action=install-later]')?.addEventListener('click', () => {
+    try { localStorage.setItem(LATER_KEY, String(Date.now())); } catch { /* sans importance */ }
+    card.classList.add('cache');
+    if (hint) { hint.dataset['i18n'] = 'push.iosHint'; hint.textContent = t('push.iosHint'); hint.classList.remove('cache'); }
   });
 }
 

@@ -293,6 +293,8 @@ Jusqu'ici, on revenait à l'aérodrome parce qu'on y pensait. À partir de maint
 
 La clé secrète se génère sur le NAS lui-même, par la même image que le jeu, et ne quitte jamais le `.env`. Neuf tests de plus — cent trente-six en tout.
 
+**14 h 23.** Sur l'écran verrouillé de l'iPhone de Régis, sous la plume : « Your mail has arrived from Altiplume — Martha Vaudrin has landed at Mistbridge. +18 F · deadline met. » Toute la chaîne — NAS, chiffrement, signature, Apple, téléphone — a tenu du premier coup. Le « oui à cliquer sur le téléphone » du premier soir, c'était ça.
+
 ---
 
 ## Chapitre 15 — « Ça me laisse pas refaire une mission » (11 octobre 2026, 14 h)
@@ -304,3 +306,16 @@ C'était dans la conception depuis le début — trois cartes par jour, c'est le
 La réponse est une carte qui n'en est pas une : **la ligne régulière**. Le sac de Pont-de-Brume, 18 francs, sans bonus, jamais tirée, toujours posée au bas du comptoir, impossible à défausser. C'est le pain de la compagnie ; les contrats restent la fortune. On peut toujours faire voler quelqu'un — et c'est tout ce que demandait Régis, et tout ce qu'un joueur demande.
 
 Un paragraphe de conception et vingt minutes. Les tests vérifient qu'elle part la main vide, autant de fois qu'on veut, et qu'aucun tirage ne la contient jamais.
+
+
+---
+
+## Chapitre 16 — Les deux gestes (11 octobre 2026, 14 h 30)
+
+« Sur mobile, on peut pas avoir un raccourci dans notre interface pour créer l'icône ? La simplicité, tu te souviens ? »
+
+Non, on ne peut pas — pas sur iPhone. Apple interdit à tout site de se poser lui-même sur l'écran d'accueil ; seul le geste Partager → « Sur l'écran d'accueil » le fait, pour tous les sites du monde. Sur Android, Chrome propose l'installation et le jeu a déjà son bouton.
+
+Ce qu'on peut faire, c'est ne pas laisser chercher. Sur iPhone, hors application installée, l'aérodrome montre maintenant une fiche avec les deux gestes dessinés en pixels — le carré à la flèche, puis le carré au plus — et explique pourquoi : plein écran, et les notifications. « Plus tard » la replie pour une semaine. Deux gestes, c'est le minimum qu'Apple nous laisse ; on les montre avec le doigt.
+
+*Au passage, le test instable de ce matin est démasqué : il glissait une carte précise dans la main du joueur, et un jour sur cent le tirage quotidien l'y avait déjà mise — doublon, erreur. Il ne s'en formalise plus.*

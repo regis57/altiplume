@@ -32,7 +32,7 @@ describe('restaurer et décorer', () => {
   it('le hangar agrandi permet un avion de plus', async () => {
     const t = await company();
     t.ctx.db.prepare('UPDATE companies SET francs = 5000').run();
-    t.ctx.db.prepare("INSERT INTO company_hand (company_id, card, drawn_at) SELECT id, 'o-martinet', 0 FROM companies").run();
+    t.ctx.db.prepare("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'o-martinet', 0 FROM companies").run();
     expect((await t.json('POST', '/v1/company/cards/o-martinet/play', {}, t.cookie)).json().error).toBe('hangar_full');
     expect((await t.json('POST', '/v1/company/zones/hangar/upgrade', {}, t.cookie)).json().zones.hangar).toBe(2);
     expect((await t.json('POST', '/v1/company/cards/o-martinet/play', {}, t.cookie)).json().planes).toHaveLength(2);
