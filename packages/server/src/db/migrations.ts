@@ -225,4 +225,25 @@ export const MIGRATIONS: readonly Migration[] = [
       UPDATE companies SET name = replace(name, 'des la Croisette', 'de la Croisette') WHERE name LIKE '%des la Croisette%';
     `,
   },
+  {
+    version: 6,
+    name: 'courrier-arrive',
+    sql: `
+      -- Abonnements aux notifications : une adresse et deux clés fournies par le
+      -- navigateur. Supprimés avec le joueur ; l'adresse est une donnée personnelle.
+      CREATE TABLE push_subscriptions (
+        id          TEXT PRIMARY KEY,
+        player_id   TEXT NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        endpoint    TEXT NOT NULL UNIQUE,
+        p256dh      TEXT NOT NULL,
+        auth        TEXT NOT NULL,
+        created_at  INTEGER NOT NULL,
+        last_used_at INTEGER
+      );
+      CREATE INDEX push_subscriptions_player ON push_subscriptions(player_id);
+      -- Un vol prévient une fois à l'arrivée, qu'il y ait ou non un abonné.
+      ALTER TABLE flights ADD COLUMN notified_at INTEGER;
+      CREATE INDEX flights_to_notify ON flights(notified_at) WHERE notified_at IS NULL;
+    `,
+  },
 ];

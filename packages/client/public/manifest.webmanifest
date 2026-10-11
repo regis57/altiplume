@@ -1,0 +1,17 @@
+{
+  "name": "Altiplume",
+  "short_name": "Altiplume",
+  "description": "Un petit aérodrome postal des années 1930, dans un monde inventé. Jeu cozy, gratuit, sans mot de passe.",
+  "lang": "fr",
+  "start_url": "/aerodrome",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#cfd8dd",
+  "theme_color": "#cfd8dd",
+  "icons": [
+    { "src": "/icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

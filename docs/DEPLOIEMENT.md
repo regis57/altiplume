@@ -151,6 +151,26 @@ Si DSM ne trouve pas `/usr/local/bin/docker-compose`, remplacer dans le script
 `COMPOSE="/usr/local/bin/docker-compose -p altiplume"` par
 `COMPOSE="/usr/local/bin/docker compose -p altiplume"`.
 
+### Activer les notifications « ton courrier est arrivé » (une fois)
+
+Le jeu peut prévenir le téléphone quand un vol se pose. Il lui faut une paire de clés
+(VAPID) qui l'identifie auprès des services de notification. On la génère **sur le
+NAS**, sans rien installer :
+
+1. **Planificateur de tâches → Créer → Script défini par l'utilisateur** : nom
+   `Altiplume - clés VAPID`, root, *Activé* décoché, *Enregistrer les résultats de
+   sortie* dans `docker/altiplume/journal`, script = contenu de `scripts/nas-vapid.sh`.
+2. **Exécuter** une fois. Le fichier de sortie contient deux lignes
+   `VAPID_PUBLIC_KEY=…` et `VAPID_PRIVATE_KEY=…`.
+3. Ouvrir `docker/altiplume/.env` (File Station → clic droit → Modifier), coller les
+   deux lignes à la fin, enregistrer. La clé privée est un secret : nulle part ailleurs.
+4. Supprimer la tâche et le fichier de sortie (la clé privée y figure).
+5. Lancer **Altiplume - redéployer**.
+
+Ensuite, sur l'aérodrome, le bouton **🔔 Me prévenir à l'arrivée** apparaît. Sur
+iPhone et iPad, il faut d'abord installer Altiplume sur l'écran d'accueil (Partager →
+« Sur l'écran d'accueil ») : c'est une règle d'Apple, pas la nôtre.
+
 ## Revenir en arrière
 
 Chaque image porte aussi une étiquette `sha-xxxxxxxxxxxx` correspondant au commit.

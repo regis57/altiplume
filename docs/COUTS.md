@@ -55,6 +55,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Réalignement des sept PR empilées après chaque fusion ; correctif « des la Croisette » | ~45 min |
 | 2026-10-11 | Script de redéploiement NAS en tâche planifiée | ~15 min |
 | 2026-10-11 | Sauvegarde nocturne de la base (copie cohérente, intégrité, rotation, restauration) | ~20 min |
+| 2026-10-11 | « Ton courrier est arrivé » : application installable, Web Push écrit à la main (VAPID, aes128gcm), notification à l'atterrissage | ~1 h 30 |
 
 ## Revenus (à partir du lancement)
 
