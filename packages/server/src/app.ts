@@ -13,6 +13,7 @@ import { registerPasskeyRoutes } from './auth/passkeys.ts';
 import { registerDeviceRoutes } from './auth/device.ts';
 import { registerAccountRoutes } from './account/routes.ts';
 import { registerHealth } from './routes/health.ts';
+import { registerWorldRoutes } from './routes/world.ts';
 
 export interface BuildOptions {
   readonly logger?: boolean;
@@ -64,6 +65,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
 
   registerSessionHook(app, ctx);
   registerHealth(app);
+  registerWorldRoutes(app);
   registerAuthRoutes(app, ctx);
   registerPasskeyRoutes(app, ctx);
   registerDeviceRoutes(app, ctx);

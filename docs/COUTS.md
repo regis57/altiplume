@@ -45,6 +45,8 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Brevo, déploiement de la version comptes, première inscription réelle | ~30 min |
 | 2026-10-11 | PR passkeys + connexion par QR, authenticateur de test, parcours de bout en bout | ~1 h 15 |
 | 2026-10-11 | Correctif cache : empreintes dans les noms de fichiers, HTML sans cache | ~15 min |
+| 2026-10-11 | Logo plume, mode jour/nuit, déconnexion en tête de page | ~45 min |
+| 2026-10-11 | Le monde : six villages, trois avions, quatre pilotes et leurs histoires, 34 cartes, noms de compagnie, récompenses | ~1 h 30 |
 
 ## Revenus (à partir du lancement)
 
