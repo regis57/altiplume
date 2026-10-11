@@ -602,7 +602,7 @@ function animateScene(c: CompanyView): void {
     const h = new Date().getHours() + new Date().getMinutes() / 60;
     const day = h >= 6 && h < 21;
     const a = day ? (h - 6) / 15 : ((h + 3) % 24) / 9; // la nuit : de 21 h à 6 h
-    astre.setAttribute('transform', `translate(${Math.round(-100 + a * 130)} ${Math.round(Math.sin(a * Math.PI) * -8)})`);
+    astre.setAttribute('transform', `translate(${Math.round(-200 + a * 260)} ${Math.round(Math.sin(a * Math.PI) * -16)})`);
   }
   if (!flight) { sprite.classList.add('cache'); return; }
   sprite.classList.remove('cache');
@@ -612,9 +612,10 @@ function animateScene(c: CompanyView): void {
     const p = Math.min(1, Math.max(0, (now - flight.departedAt) / (flight.busyUntil - flight.departedAt)));
     const out = p < 0.5;
     const leg = out ? p / 0.5 : (p - 0.5) / 0.5;
-    const x = out ? 20 + leg * 116 : 136 - leg * 116;
-    const y = 30 - Math.sin(leg * Math.PI) * 14;
-    sprite.setAttribute('transform', out ? `translate(${x.toFixed(1)} ${y.toFixed(1)})` : `translate(${(x + 13).toFixed(1)} ${y.toFixed(1)}) scale(-1 1)`);
+    // Le biplan fait 29 pixels de large ; au retour, on le retourne autour de son bord droit.
+    const x = out ? 40 + leg * 232 : 272 - leg * 232;
+    const y = 60 - Math.sin(leg * Math.PI) * 28;
+    sprite.setAttribute('transform', out ? `translate(${x.toFixed(1)} ${y.toFixed(1)})` : `translate(${(x + 29).toFixed(1)} ${y.toFixed(1)}) scale(-1 1)`);
     if (!reduced && p < 1) animation = requestAnimationFrame(place);
   };
   place();
