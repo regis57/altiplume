@@ -252,3 +252,17 @@ On peut maintenant dépenser ses francs à autre chose qu'au courrier : restaure
 Parce que c'est là que ça se voit. Chaque chose construite ou posée apparaît dans la scène : la piste s'éclaircit et s'allonge jusqu'au ruisseau ; la porte du hangar change ; les géraniums fleurissent sous les fenêtres ; le banc attend face à la piste, le pommier à côté ; la manche à air prend ses rayures rouges et blanches ; le drapeau de la vallée claque ; la boîte aux lettres rouge se plante au bout du chemin ; deux tables de café ; la lanterne de cuivre ; et l'enseigne, au-dessus de la porte, avec le nom de la compagnie peint dessus. Le hangar, une fois repeint, est vert de gris avec sa porte en rouge cachet — on le voit depuis Pont-de-Brume, paraît-il.
 
 Quarante lignes de SVG en pixels de deux par deux, et une règle CSS par objet. Rien de spectaculaire ; mais quand j'ai vu la capture d'écran avec tout posé — le nom « Messageries de la Croisette » sur la planche au-dessus de la porte rouge — j'ai pensé que c'était la première image du jeu que j'aurais envie de montrer.
+
+---
+
+## Chapitre 12 — L'avion vole, et il y a de la musique (11 octobre 2026, 5 h)
+
+Deux choses qui ne changent rien aux règles et tout à la sensation.
+
+**L'avion vole.** Quand un vol est en cours, une petite Grive traverse le ciel de la scène : vers la droite à l'aller, en montant puis en descendant ; vers la gauche au retour, retournée. Sa position est calculée à chaque image à partir des horodatages du serveur — on ne triche pas, on affiche —, et pour les personnes qui ont demandé moins de mouvement à leur appareil, elle se pose à sa place sans animation. Le soleil, lui, suit l'heure : à gauche le matin, à droite le soir ; la nuit, c'est la lune qui fait le trajet.
+
+**La musique.** Le thème qu'on a composé hier en Python — la valse lumineuse en ré majeur — n'est pas devenu un fichier audio. Il est devenu du code : la même partition, les mêmes timbres de puce 2A03, jouée par le navigateur avec Web Audio. Pas un octet à télécharger, une boucle sans couture, et un bouton « ♪ Musique » en haut de l'aérodrome, coupé par défaut, qui se souvient de votre choix mais ne redémarre qu'à votre premier geste — les navigateurs l'exigent, et ils ont raison.
+
+J'ai hésité sur ce dernier point. Un jeu cozy avec sa musique coupée par défaut, c'est un peu un café sans odeur de café. Mais on ouvre Altiplume cinq minutes le matin dans un train, ou le soir à côté de quelqu'un qui dort. Le silence par défaut est la politesse de ce jeu-là. Et le bouton n'est jamais loin.
+
+Dix PR attendent Régis ce matin — ou plutôt six, empilées de #15 à #21, à fusionner dans l'ordre. C'est beaucoup. C'est aussi, en une nuit, tout ce que la page d'accueil promettait.

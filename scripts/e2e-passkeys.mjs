@@ -177,6 +177,7 @@ try {
   await page.click('#passkeys-list .danger');
   await page.waitForSelector('#passkeys-empty:not(.cache)');
   await page.click('[data-action=logout]');
+  await page.waitForURL(`${ORIGIN}/`);
   await page.goto(`${ORIGIN}/connexion`);
   await page.click('[data-action=passkey-login]');
   await page.waitForSelector('#login-message:not(:empty)');

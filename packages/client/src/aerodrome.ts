@@ -7,6 +7,7 @@
  */
 import { formatDate, getLocale, t, translatePage } from './i18n.ts';
 import { formatRemaining } from './time.ts';
+import { musicIsOn, resumeMusicOnGesture, toggleMusic } from './music.ts';
 
 type Json = Record<string, unknown>;
 interface ApiResult { readonly status: number; readonly body: Json }
@@ -164,6 +165,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   const francs = $('francs'); if (francs) francs.textContent = String(c.francs);
   const cachets = $('cachets'); if (cachets) cachets.textContent = String(c.stamps);
   renderScene(c);
+  animateScene(c);
+  musicButton();
   clockOffset = c.now - Date.now();
   const allBusy = c.planes.length > 0 && c.planes.every((p) => p.busyUntil !== null);
   document.querySelector('.scene .avion')?.classList.toggle('cache', allBusy);
@@ -521,6 +524,53 @@ function renderScene(c: CompanyView): void {
   const piste = $('scene-piste'); if (piste) piste.dataset['niveau'] = String(runway);
   show('scene-piste-longue', runway >= 3);
   const hangar = $('scene-hangar'); if (hangar) hangar.dataset['niveau'] = String(c.zones['hangar'] ?? 1);
+}
+
+let animation: number | null = null;
+
+/** L'avion traverse la scène pendant le vol : à l'aller vers la droite, au retour vers la gauche. */
+function animateScene(c: CompanyView): void {
+  if (animation !== null) { cancelAnimationFrame(animation); animation = null; }
+  const sprite = $('scene-avion-vol');
+  if (!sprite) return;
+  const flight = c.flights.find((f) => f.status !== 'done');
+  // Le soleil (ou la lune) suit l'heure : à gauche le matin, à droite le soir.
+  const astre = document.querySelector<SVGGElement>('.scene .astre');
+  if (astre) {
+    const h = new Date().getHours() + new Date().getMinutes() / 60;
+    const day = h >= 6 && h < 21;
+    const a = day ? (h - 6) / 15 : ((h + 3) % 24) / 9; // la nuit : de 21 h à 6 h
+    astre.setAttribute('transform', `translate(${Math.round(-100 + a * 130)} ${Math.round(Math.sin(a * Math.PI) * -8)})`);
+  }
+  if (!flight) { sprite.classList.add('cache'); return; }
+  sprite.classList.remove('cache');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const place = () => {
+    const now = Date.now() + clockOffset;
+    const p = Math.min(1, Math.max(0, (now - flight.departedAt) / (flight.busyUntil - flight.departedAt)));
+    const out = p < 0.5;
+    const leg = out ? p / 0.5 : (p - 0.5) / 0.5;
+    const x = out ? 20 + leg * 116 : 136 - leg * 116;
+    const y = 30 - Math.sin(leg * Math.PI) * 14;
+    sprite.setAttribute('transform', out ? `translate(${x.toFixed(1)} ${y.toFixed(1)})` : `translate(${(x + 13).toFixed(1)} ${y.toFixed(1)}) scale(-1 1)`);
+    if (!reduced && p < 1) animation = requestAnimationFrame(place);
+  };
+  place();
+}
+
+function musicButton(): void {
+  const b = document.querySelector<HTMLButtonElement>('[data-action=toggle-music]');
+  if (!b || b.dataset['ready']) return;
+  b.dataset['ready'] = '1';
+  const paint = () => {
+    const on = musicIsOn();
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.dataset['i18n'] = on ? 'music.off' : 'music.on';
+    b.textContent = t(on ? 'music.off' : 'music.on');
+  };
+  b.addEventListener('click', async () => { b.disabled = true; await toggleMusic(); paint(); b.disabled = false; });
+  resumeMusicOnGesture(paint);
+  paint();
 }
 
 async function openScene(api: Api, setMessage: SetMessage, pilot: string, index: number, pilotName: string): Promise<void> {

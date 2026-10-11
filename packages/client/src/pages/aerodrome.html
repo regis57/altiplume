@@ -47,6 +47,7 @@ title: Mon aérodrome
         <g class="drapeau cache" id="scene-drapeau"><rect x="100" y="42" width="1" height="16"/><rect x="101" y="42" width="6" height="2" class="vert"/><rect x="101" y="44" width="6" height="2" class="bleu"/></g>
         <g class="boite cache" id="scene-boite"><rect x="13" y="55" width="2" height="2"/><rect x="13" y="57" width="1" height="3" class="pied"/></g>
         <g class="cafe cache" id="scene-cafe"><rect x="104" y="55" width="4" height="1"/><rect x="105" y="56" width="1" height="2"/><rect x="107" y="56" width="1" height="2"/><rect x="102" y="56" width="1" height="2"/><rect x="109" y="56" width="1" height="2"/></g>
+        <g class="avion avion-vol cache" id="scene-avion-vol"><rect x="0" y="2" width="12" height="1"/><rect x="2" y="0" width="8" height="1"/><rect x="3" y="1" width="6" height="1"/><rect x="11" y="1" width="1" height="3"/><rect x="12" y="0" width="1" height="4" class="helice"/></g>
         <g class="enseigne cache" id="scene-enseigne"><rect x="113" y="36" width="28" height="4" class="planche"/><text x="127" y="39.2" text-anchor="middle" font-size="3" textLength="26" lengthAdjust="spacingAndGlyphs" id="scene-enseigne-texte"></text></g>
       </svg>
     </div>
@@ -56,10 +57,13 @@ title: Mon aérodrome
         <h1 id="t-compagnie" class="nom-compagnie"></h1>
         <p class="adresse" id="adresse"></p>
       </div>
-      <dl class="caisse">
-        <div><dt data-i18n="game.francs">Francs</dt><dd id="francs">—</dd></div>
-        <div><dt data-i18n="game.stamps">Cachets</dt><dd id="cachets">—</dd></div>
-      </dl>
+      <div class="caisse-et-musique">
+        <dl class="caisse">
+          <div><dt data-i18n="game.francs">Francs</dt><dd id="francs">—</dd></div>
+          <div><dt data-i18n="game.stamps">Cachets</dt><dd id="cachets">—</dd></div>
+        </dl>
+        <button class="bouton secondaire musique" type="button" data-action="toggle-music" aria-pressed="false" data-i18n="music.on">♪ Musique</button>
+      </div>
     </div>
 
     <ul class="nouvelles" id="nouvelles" aria-live="polite"></ul>
