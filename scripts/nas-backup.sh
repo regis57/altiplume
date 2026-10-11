@@ -15,13 +15,19 @@ mkdir -p "$DEST"
 horodatage=$(date '+%Y%m%d-%H%M')
 echo "== Altiplume : sauvegarde $horodatage"
 
+# 1. SQLite écrit la copie dans le volume de données (le /tmp du conteneur est un
+#    tmpfs que `docker cp` ne voit pas — appris le 11/10).
 $DOCKER exec altiplume-api node --no-warnings=ExperimentalWarning -e '
   const { DatabaseSync, backup } = require("node:sqlite");
   const db = new DatabaseSync("/data/altiplume.db", { readOnly: true });
-  backup(db, "/tmp/sauvegarde.db").then((pages) => { console.log("pages copiées :", pages); db.close(); });
+  backup(db, "/data/.sauvegarde.db").then((pages) => { console.log("pages copiées :", pages); db.close(); });
 '
-$DOCKER cp altiplume-api:/tmp/sauvegarde.db "$DEST/altiplume-$horodatage.db"
-$DOCKER exec altiplume-api rm -f /tmp/sauvegarde.db
+# 2. On sort la copie du volume par un conteneur jetable qui monte le même volume.
+VOLUME=$($DOCKER inspect altiplume-api -f '{{range .Mounts}}{{if eq .Destination "/data"}}{{.Name}}{{end}}{{end}}')
+[ -n "$VOLUME" ] || { echo "ERREUR : volume de données introuvable"; exit 1; }
+$DOCKER run --rm -v "$VOLUME:/data" -v "$DEST:/s" alpine \
+  sh -c "mv /data/.sauvegarde.db /s/altiplume-$horodatage.db && chown 1000:1000 /s/altiplume-$horodatage.db && chmod 600 /s/altiplume-$horodatage.db"
+echo "copie : $DEST/altiplume-$horodatage.db"
 
 # Contrôle d'intégrité de la copie, hors conteneur, avec la même image Node.
 $DOCKER run --rm -v "$DEST:/s:ro" ghcr.io/regis57/altiplume:latest node --no-warnings=ExperimentalWarning -e '
