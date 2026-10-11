@@ -88,7 +88,7 @@ function ledger(db: Database, companyId: string, now: number, kind: string, fran
 
 /** Tire les cartes du jour, pondérées par rareté et par la chance des pilotes. */
 export function drawCards(rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW): string[] {
-  const pool = WORLD.cards.filter((c) => !exclude.includes(c.id));
+  const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing));
   const out: string[] = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
     // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
@@ -184,10 +184,12 @@ export interface DispatchPlan {
 
 /** Vérifie une intention d'expédition et calcule ce qu'elle coûtera et durera. */
 export function planDispatch(db: Database, company: Company, cardId: string, planeId: string, pilotId: string, now: number): { ok: true; plan: DispatchPlan } | { ok: false; error: DispatchError } {
-  const inHand = db.prepare('SELECT 1 FROM company_hand WHERE company_id = ? AND card = ?').get(company.id, cardId);
   const card = findCard(cardId);
-  if (!inHand || !card) return { ok: false, error: 'card_unknown' };
+  if (!card) return { ok: false, error: 'card_unknown' };
   if (card.kind !== 'contract') return { ok: false, error: 'card_not_contract' };
+  // La ligne régulière n'est jamais en main : elle est toujours là.
+  const inHand = card.standing || db.prepare('SELECT 1 FROM company_hand WHERE company_id = ? AND card = ?').get(company.id, cardId);
+  if (!inHand) return { ok: false, error: 'card_unknown' };
   const destination = findDestination(card.destination);
   if (!destination) return { ok: false, error: 'card_unknown' };
   const plane = db.prepare('SELECT id, model, wear FROM company_planes WHERE id = ? AND company_id = ?').get(planeId, company.id) as PlaneRow | undefined;

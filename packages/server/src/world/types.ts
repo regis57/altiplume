@@ -120,6 +120,8 @@ export interface ContractCard {
   readonly bonus: number;
   /** Rareté : poids dans le tirage (1 = commun, 3 = rare). */
   readonly weight: 1 | 2 | 3;
+  /** Ligne régulière : jamais tirée, toujours disponible, sans bonus. */
+  readonly standing?: true;
 }
 
 export interface EventChoice {

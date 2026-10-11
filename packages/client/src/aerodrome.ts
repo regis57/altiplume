@@ -19,7 +19,7 @@ interface WorldView {
   home: { name: string; address: string; description: string };
   destinations: { id: string; name: string; distance: number }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
-  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
   pilots: { id: string; name: string; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number }[] }[];
@@ -372,11 +372,13 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
   if (!list) return;
   list.replaceChildren();
   $('main-vide')?.classList.toggle('cache', c.hand.length > 0);
-  for (const h of c.hand) {
-    const card = world.cards.find((x) => x.id === h.card);
+  // La main, puis la ligne régulière — toujours là, jamais défaussée.
+  const shown = [...c.hand.map((h) => h.card), ...world.cards.filter((x) => x.standing).map((x) => x.id)];
+  for (const id of shown) {
+    const card = world.cards.find((x) => x.id === id);
     if (!card) continue;
-    const li = el('li', `carte ${card.kind}`);
-    li.append(el('p', 'carte-genre', t(`card.${card.kind}`)));
+    const li = el('li', `carte ${card.kind}${card.standing ? ' reguliere' : ''}`);
+    li.append(el('p', 'carte-genre', card.standing ? t('card.standing') : t(`card.${card.kind}`)));
     li.append(el('h3', undefined, card.title));
     li.append(el('p', undefined, card.text));
     const actions = el('div', 'actions');
@@ -411,13 +413,15 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       });
       actions.append(take);
     }
-    const discard = el('button', 'bouton secondaire'); discard.type = 'button'; discard.textContent = t('card.discard');
-    discard.addEventListener('click', async () => {
-      discard.disabled = true;
-      const r = await api('DELETE', `/v1/company/cards/${card.id}`, {}).catch(() => null);
-      if (r && r.status === 204) void refresh(api, setMessage, world); else discard.disabled = false;
-    });
-    actions.append(discard);
+    if (!card.standing) {
+      const discard = el('button', 'bouton secondaire'); discard.type = 'button'; discard.textContent = t('card.discard');
+      discard.addEventListener('click', async () => {
+        discard.disabled = true;
+        const r = await api('DELETE', `/v1/company/cards/${card.id}`, {}).catch(() => null);
+        if (r && r.status === 204) void refresh(api, setMessage, world); else discard.disabled = false;
+      });
+      actions.append(discard);
+    }
     li.append(actions);
     list.append(li);
   }

@@ -11,7 +11,20 @@ function contract(id: string, destination: string, cargo: CargoKind, bags: numbe
   return { kind: 'contract', id, destination, cargo, bags, reward, softDeadlineHours, bonus, weight, title, text };
 }
 
+/**
+ * La ligne régulière : le sac de Pont-de-Brume part quand on veut, même la main
+ * vide. Elle paie peu et n'a pas de bonus — c'est le pain de la compagnie, pas sa
+ * fortune — mais elle garantit qu'on peut toujours faire voler quelqu'un.
+ */
+export const REGULAR_LINE: ContractCard = {
+  ...contract('c-ligne-reguliere', 'pont-de-brume', 'letters', 1, 18, 24, 0, 1,
+    { fr: 'La ligne régulière', en: 'The regular run' },
+    { fr: "Le sac du jour pour Pont-de-Brume. Pas de contrat, pas de prime : la poste paie le tarif, et elle paie toujours. Il part quand vous voulez.", en: 'The day\'s bag for Mistbridge. No contract, no bonus: the post pays the rate, and it always pays. It leaves whenever you like.' }),
+  standing: true,
+};
+
 export const CONTRACTS: readonly ContractCard[] = [
+  REGULAR_LINE,
   // Pont-de-Brume — le pain quotidien
   contract('c-journal', 'pont-de-brume', 'newspapers', 1, 24, 4, 6, 1,
     { fr: 'Le journal du matin', en: 'The morning paper' },

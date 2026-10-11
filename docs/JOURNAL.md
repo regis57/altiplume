@@ -292,3 +292,15 @@ Jusqu'ici, on revenait à l'aérodrome parce qu'on y pensait. À partir de maint
 **Apple.** Sur iPhone, les notifications d'un site web n'existent que si le site est installé sur l'écran d'accueil. Le jeu le dit à la place de cacher le bouton. C'est leur règle ; on l'explique.
 
 La clé secrète se génère sur le NAS lui-même, par la même image que le jeu, et ne quitte jamais le `.env`. Neuf tests de plus — cent trente-six en tout.
+
+---
+
+## Chapitre 15 — « Ça me laisse pas refaire une mission » (11 octobre 2026, 14 h)
+
+Régis voulait tester la notification. Il a ouvert l'aérodrome : « Rien en main. De nouvelles cartes arrivent demain. » Marthe attendait devant le hangar, et il n'y avait rien à lui donner.
+
+C'était dans la conception depuis le début — trois cartes par jour, c'est le rythme du jeu — et c'était faux quand même. Un joueur qui a tout joué à midi n'a aucune raison de revenir avant demain, et un jeu qui dit « revenez demain » le premier jour ne sera pas réouvert le second.
+
+La réponse est une carte qui n'en est pas une : **la ligne régulière**. Le sac de Pont-de-Brume, 18 francs, sans bonus, jamais tirée, toujours posée au bas du comptoir, impossible à défausser. C'est le pain de la compagnie ; les contrats restent la fortune. On peut toujours faire voler quelqu'un — et c'est tout ce que demandait Régis, et tout ce qu'un joueur demande.
+
+Un paragraphe de conception et vingt minutes. Les tests vérifient qu'elle part la main vide, autant de fois qu'on veut, et qu'aucun tirage ne la contient jamais.
