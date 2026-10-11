@@ -7,13 +7,15 @@ import { BRUME, DESTINATIONS, HOME } from './brume.ts';
 import { CONTRACTS, EVENTS, OPPORTUNITIES } from './cards.ts';
 import { PILOTS } from './pilots.ts';
 import { PLANES } from './planes.ts';
+import { SALINE, SALINE_DESTINATIONS } from './saline.ts';
 import { TRAITS } from './traits.ts';
-import type { Card, Destination, PilotTemplate, PlaneModel, Text, Trait, World } from './types.ts';
+import type { Card, Destination, PilotTemplate, PlaneModel, Region, RegionId, Text, Trait, World } from './types.ts';
 
 export const WORLD: World = {
   region: BRUME,
+  regions: [BRUME, SALINE],
   home: HOME,
-  destinations: DESTINATIONS,
+  destinations: [...DESTINATIONS, ...SALINE_DESTINATIONS],
   planes: PLANES,
   traits: TRAITS,
   pilots: PILOTS,
@@ -28,6 +30,18 @@ export function text(t: Text, locale: Locale): string {
   return t[locale];
 }
 
+export function findRegion(id: string): Region | undefined {
+  return WORLD.regions.find((r) => r.id === id);
+}
+/** Les escales d'une région. */
+export function regionDestinations(region: RegionId): readonly Destination[] {
+  return WORLD.destinations.filter((d) => d.region === region);
+}
+/** La région dont une carte dépend : celle de sa destination pour un contrat, la sienne sinon. */
+export function cardRegion(card: Card): RegionId {
+  if (card.kind === 'contract') return findDestination(card.destination)?.region ?? 'brume';
+  return card.region ?? 'brume';
+}
 export function findDestination(id: string): Destination | undefined {
   return WORLD.destinations.find((d) => d.id === id);
 }
@@ -58,9 +72,12 @@ export function localizeWorld(locale: Locale) {
   const tx = (t: Text) => text(t, locale);
   return {
     region: { id: WORLD.region.id, name: tx(WORLD.region.name), tagline: tx(WORLD.region.tagline), description: tx(WORLD.region.description), palette: WORLD.region.palette },
+    regions: WORLD.regions.map((r) => ({
+      id: r.id, name: tx(r.name), tagline: tx(r.tagline), description: tx(r.description), palette: r.palette, ...(r.route ? { route: r.route } : {}),
+    })),
     home: { name: tx(WORLD.home.name), address: tx(WORLD.home.address), description: tx(WORLD.home.description) },
     destinations: WORLD.destinations.map((d) => ({
-      id: d.id, name: tx(d.name), description: tx(d.description), distance: d.distance, runway: d.runway, hazard: d.hazard, mail: d.mail,
+      id: d.id, region: d.region, name: tx(d.name), description: tx(d.description), distance: d.distance, runway: d.runway, hazard: d.hazard, mail: d.mail,
     })),
     planes: WORLD.planes.map((p) => ({
       id: p.id, archetype: p.archetype, name: tx(p.name), description: tx(p.description),
@@ -79,7 +96,7 @@ export function localizeWorld(locale: Locale) {
     }),
     zones: WORLD.zones.map((z) => ({
       id: z.id, name: tx(z.name),
-      levels: z.levels.map((l) => ({ level: l.level, name: tx(l.name), description: tx(l.description), cost: l.cost, runway: l.runway, planes: l.planes, maintenance: l.maintenance })),
+      levels: z.levels.map((l) => ({ level: l.level, name: tx(l.name), description: tx(l.description), cost: l.cost, runway: l.runway, planes: l.planes, maintenance: l.maintenance, seaplanes: l.seaplanes })),
     })),
     decorations: WORLD.decorations.map((d) => ({ id: d.id, name: tx(d.name), description: tx(d.description), cost: d.cost, morale: d.morale })),
     stamps: WORLD.stamps.map((s) => ({ id: s.id, name: tx(s.name), description: tx(s.description) })),

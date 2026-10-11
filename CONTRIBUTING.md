@@ -29,7 +29,8 @@ volontairement étroit.
 (vulnérabilités des dépendances), `licenses` (licences autorisées uniquement).
 
 En plus, et à la main : `npm run e2e` joue dans un vrai Chromium le parcours complet
-des passkeys et de la connexion par QR, avec un authenticateur virtuel. Il faut un
+des passkeys et de la connexion par QR (avec un authenticateur virtuel), celui du
+courrier, et celui de la Côte de Saline (route, ponton, Sterne, amerrissage). Il faut un
 Chromium (`CHROMIUM_PATH=/chemin/vers/chromium`, ou `npx playwright install chromium`).
 Lancez-le avant toute PR qui touche à l'authentification ou au client.
 

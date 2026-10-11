@@ -621,7 +621,23 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .scene .toile-raie { fill: #f6f1e7; }
 [data-moment='nuit'] .scene .enseigne .planche { fill: #d9d2c4; }
 
+/* La rivière au bas de la scène, le ponton, la Sterne amarrée. */
+.scene .riviere { fill: #6f93a8; }
+.scene .riviere .reflet { fill: #a9c4d2; }
+.scene .ponton .planches { fill: #8a6a3a; }
+.scene .ponton .pilotis { fill: #5a4426; }
+.scene .ponton .bollard { fill: #3f4b45; }
+.scene .hydravion { fill: #2a2f33; }
+.scene .hydravion .helice { fill: #b23a2f; }
+.scene .hydravion .flotteur { fill: #4fb3b0; }
+[data-moment='aube'] .scene .riviere { fill: #8a9fb0; }
+[data-moment='crepuscule'] .scene .riviere { fill: #5c6f86; }
+[data-moment='nuit'] .scene .riviere { fill: #1f2d3a; }
+[data-moment='nuit'] .scene .riviere .reflet { fill: #3f5566; }
+
 .deco li.posee { border-style: solid; border-color: var(--laiton); }
+.routes li.ouverte { border-style: solid; border-color: var(--laiton); }
+.routes .tagline { font-style: italic; margin: 0 0 0.4rem; }
 
 /* ---- La scène vivante ---- */
 

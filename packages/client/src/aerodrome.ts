@@ -18,7 +18,8 @@ type SetMessage = (id: string, keys: string | string[], kind?: 'ok' | 'error') =
 
 interface WorldView {
   home: { name: string; address: string; description: string };
-  destinations: { id: string; name: string; distance: number }[];
+  regions: { id: string; name: string; tagline: string; description: string; route?: { requires: string; cost: number } }[];
+  destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
   cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
@@ -43,6 +44,7 @@ interface CompanyView {
   planes: { id: string; model: string; wear: number; busyUntil: number | null }[];
   pilots: { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenesSeen: number; busyUntil: number | null }[];
   zones: Record<string, number>;
+  regions: string[];
   decorations: string[];
   album: { id: string; earnedAt: number }[];
   hand: { card: string; drawnAt: number }[];
@@ -266,6 +268,41 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         li.append(el('p', 'aide', t('game.zoneMax')));
       }
       zones.append(li);
+    }
+  }
+
+  // Les routes : la région de départ, puis celles qui s'ouvrent contre des cachets.
+  const routes = $('routes');
+  if (routes) {
+    routes.replaceChildren();
+    for (const r of world.regions) {
+      const stops = world.destinations.filter((d) => d.region === r.id);
+      const water = stops.filter((d) => d.runway === 'water').length;
+      const open = c.regions.includes(r.id);
+      const li = el('li', open ? 'route ouverte' : 'route');
+      li.append(el('h3', undefined, r.name));
+      li.append(el('p', 'tagline', r.tagline));
+      li.append(el('p', undefined, r.description));
+      li.append(el('p', 'aide', `${stops.length} ${t('game.stops')}${water ? ` · ${water} ${t('game.onWater')}` : ''}`));
+      if (!r.route) {
+        li.append(el('p', 'aide', t('game.routeHome')));
+      } else if (open) {
+        li.append(el('p', 'aide', t('game.routeOpen')));
+      } else {
+        const hasPage = c.album.some((a) => a.id === r.route!.requires);
+        const b = el('button', 'bouton'); b.type = 'button';
+        b.textContent = `${t('game.openRoute')} · ${r.route.cost} ${t('game.stamps').toLowerCase()}`;
+        b.disabled = !hasPage || c.stamps < r.route.cost;
+        if (!hasPage) {
+          b.title = t('error.route_requires');
+          li.append(el('p', 'aide', `${t('game.routeNeeds')} « ${stampName(world, r.route.requires)} »`));
+        } else if (c.stamps < r.route.cost) {
+          b.title = t('error.not_enough_stamps');
+        }
+        b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/regions/${r.id}/open`, b, 'game.routeOpened'));
+        const actions = el('div', 'actions'); actions.append(b); li.append(actions);
+      }
+      routes.append(li);
     }
   }
 
@@ -508,6 +545,9 @@ function renderLogbook(world: WorldView, c: CompanyView): void {
     else if (e.kind === 'flight.arrived') what = `${t('log.arrived')} ${destName(world, e.ref ?? '')}`;
     else if (e.kind === 'purchase.plane') what = `${t('log.bought')} ${world.planes.find((p) => p.id === e.ref)?.name ?? ''}`;
     else if (e.kind === 'hire.pilot') what = `${t('log.hired')} ${pilotTemplateName(world, e.ref ?? '')}`;
+    else if (e.kind === 'route.opened') what = `${t('log.route')} ${world.regions.find((r) => r.id === e.ref)?.name ?? ''}`;
+    else if (e.kind === 'build.zone') what = `${t('log.built')} ${world.zones.find((z) => z.id === (e.ref ?? '').split(':')[0])?.name ?? ''}`;
+    else if (e.kind === 'build.decoration') what = `${t('log.decorated')} ${world.decorations.find((d) => d.id === e.ref)?.name ?? ''}`;
     else what = `${t('log.card')} ${world.cards.find((x) => x.id === (e.ref ?? '').split(':')[0])?.title ?? ''}`;
     const amount = el('span', e.francs >= 0 ? 'montant plus' : 'montant moins', e.francs === 0 ? '' : `${e.francs > 0 ? '+' : ''}${e.francs} F`);
     li.append(when, ' · ', what, ' ', amount);
@@ -542,6 +582,10 @@ function renderScene(c: CompanyView): void {
   const piste = $('scene-piste'); if (piste) piste.dataset['niveau'] = String(runway);
   show('scene-piste-longue', runway >= 3);
   const hangar = $('scene-hangar'); if (hangar) hangar.dataset['niveau'] = String(c.zones['hangar'] ?? 1);
+  // Le ponton sur la rivière, et la Sterne amarrée quand elle est là et au repos.
+  show('scene-ponton', (c.zones['ponton'] ?? 1) >= 2);
+  const sterne = c.planes.find((p) => p.model === 'sterne');
+  show('scene-hydravion', sterne !== undefined && sterne.busyUntil === null);
 }
 
 let animation: number | null = null;

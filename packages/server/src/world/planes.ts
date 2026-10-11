@@ -35,4 +35,13 @@ export const PLANES: readonly PlaneModel[] = [
     },
     range: 16, capacity: 5, speed: 15, reliability: 0.92, runway: 'long', price: 6500, upkeep: 16, starter: false,
   },
+  {
+    id: 'sterne', archetype: 'seaplane',
+    name: { fr: 'Sterne S-1', en: 'Tern S-1' },
+    description: {
+      fr: "L'hydravion de la Côte : deux flotteurs, un moteur qui n'aime pas le sel, et la seule façon d'atteindre les îles. Il se pose sur l'eau, et seulement sur l'eau — il lui faut un ponton.",
+      en: "The Shore's seaplane: two floats, an engine that dislikes salt, and the only way to reach the islands. It lands on water, and only on water — it needs a pontoon.",
+    },
+    range: 14, capacity: 3, speed: 14, reliability: 0.9, runway: 'water', price: 5400, upkeep: 14, starter: false,
+  },
 ];

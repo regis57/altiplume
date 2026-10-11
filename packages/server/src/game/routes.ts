@@ -15,7 +15,7 @@ import { deriveSeed } from '../sim/rng.ts';
 import { findCard, findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
 import {
-  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, pendingEvent, placeDecoration, planDispatch, playCard, settle, upgradeZone, type News,
+  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, openRegion, pendingEvent, placeDecoration, planDispatch, playCard, settle, unlockedRegions, upgradeZone, type News,
 } from './sim.ts';
 import type { Database } from '../db/database.ts';
 
@@ -77,6 +77,7 @@ function view(db: Database, state: CompanyState, now: number, news: News[] = [])
       fatigue: currentFatigue({ fatigue: p.fatigue, fatigue_at: p.fatigueAt }, now), busyUntil: busyPilots.get(p.id) ?? null,
     })),
     zones: state.zones,
+    regions: unlockedRegions(db, state.company.id),
     decorations: state.decorations.map((d) => d.decoration),
     album: state.stamps.map((s) => ({ id: s.stamp, earnedAt: s.earnedAt })),
     hand: listHand(db, state.company.id),
@@ -166,6 +167,23 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const result = upgradeZone(ctx.db, c.company, zone, now);
     if (!result.ok) return reply.code(result.error === 'zone_unknown' ? 404 : 400).send({ error: result.error });
     audit(ctx.db, 'company.built', playerId, { zone, level: result.level }, now);
+    const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
+    return reply.code(200).send(view(ctx.db, state, now, c.news));
+  });
+
+  /** Ouvrir la route d'une région, contre des cachets. */
+  app.post('/v1/company/regions/:region/open', {
+    schema: { params: { type: 'object', required: ['region'], properties: { region: { type: 'string', maxLength: 20 } } }, body: { type: 'object', additionalProperties: false, properties: {} } },
+    preHandler: requirePlayer, config: { rateLimit: { max: 30, timeWindow: '15 minutes' } },
+  }, async (request, reply) => {
+    const now = ctx.now();
+    const playerId = request.player!.id;
+    const c = current(playerId, now);
+    if (!c) return reply.code(404).send({ error: 'no_company' });
+    const { region } = request.params as { region: string };
+    const result = openRegion(ctx.db, c.company, region, now);
+    if (!result.ok) return reply.code(result.error === 'region_unknown' ? 404 : result.error === 'region_open' ? 409 : 400).send({ error: result.error });
+    audit(ctx.db, 'route.opened', playerId, { region }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(200).send(view(ctx.db, state, now, c.news));
   });

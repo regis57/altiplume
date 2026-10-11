@@ -91,6 +91,58 @@ export const CONTRACTS: readonly ContractCard[] = [
   contract('c-colis-combe', 'combe-aux-rosees', 'parcels', 2, 78, 48, 10, 1,
     { fr: 'Provisions pour la Combe', en: 'Supplies for the Combe' },
     { fr: "Du sel, du café, du fil, des aiguilles. Tout ce qui manque au bout de la vallée quand la route est fermée.", en: 'Salt, coffee, thread, needles. Everything the end of the valley runs out of when the road is closed.' }),
+  // ---- Côte de Saline : ne se tirent qu'une fois la route ouverte ----
+  // Port-Sel — le port
+  contract('c-capitainerie', 'port-sel', 'letters', 2, 92, 24, 14, 1,
+    { fr: 'Le sac de la capitainerie', en: "The harbourmaster's bag" },
+    { fr: "Deux sacs pour le port : les lettres de toute la Côte, qui passent par la capitainerie avant de prendre le bateau.", en: "Two bags for the harbour: letters for the whole Shore, which pass through the harbourmaster's office before taking the boat." }),
+  contract('c-sel-gris', 'port-sel', 'salt', 3, 96, 48, 10, 1,
+    { fr: 'Sel pour les quais', en: 'Salt for the quays' },
+    { fr: "Trois sacs de sel gris des Œillets à porter au port, où les saleurs de poisson l'attendent. Lourd, et sans aucune urgence.", en: 'Three sacks of Panbrook grey salt for the harbour, where the fish-salters are waiting. Heavy, and in no hurry at all.' }),
+  contract('c-urgent-port', 'port-sel', 'urgent', 1, 108, 3, 36, 2,
+    { fr: "Le pli de l'armateur", en: "The shipowner's letter" },
+    { fr: "Un armateur de Port-Sel doit signer avant la marée du soir, sinon le bateau part sans sa cargaison. Un seul pli, qui vaut un bateau.", en: 'A Saltharbour shipowner must sign before the evening tide, or the boat sails without its cargo. One letter, worth a ship.' }),
+  // Les Œillets — les salines
+  contract('c-semences-jardin', 'les-oeillets', 'seeds', 2, 98, 36, 12, 1,
+    { fr: 'Semences pour les jardins de sel', en: 'Seeds for the salt gardens' },
+    { fr: "Les sauniers cultivent des jardins sur les digues, dans de la terre rapportée. Ils commandent leurs graines loin, et attendent.", en: 'The salters grow gardens on the dykes, in carted-in soil. They order their seeds from far away, and wait.' }),
+  contract('c-sauniers', 'les-oeillets', 'letters', 2, 104, 24, 12, 1,
+    { fr: 'Les lettres des sauniers', en: "The salters' letters" },
+    { fr: "Les Œillets n'ont ni bureau ni route carrossable. Les lettres partent par la digue, c'est-à-dire par vous.", en: 'Panbrook has neither post office nor carriage road. Letters leave by the dyke — that is, by you.' }),
+  contract('c-fleur-de-sel', 'les-oeillets', 'salt', 1, 110, 12, 24, 2,
+    { fr: 'La fleur de sel', en: 'The salt flower' },
+    { fr: "La première récolte de fleur de sel de l'année, dans des boîtes de bois, pour la table d'un notable de Pont-de-Brume. Elle doit arriver sèche.", en: "The first salt-flower harvest of the year, in wooden boxes, for a Mistbridge notable's table. It must arrive dry." }),
+  // Marais-Blanc — les pilotis
+  contract('c-dispensaire', 'marais-blanc', 'medicine', 1, 118, 6, 36, 2,
+    { fr: 'Le dispensaire du marais', en: 'The fen clinic' },
+    { fr: "La fièvre des marais revient avec la saison. Le dispensaire de Marais-Blanc a besoin de quinine avant la nuit.", en: 'The fen fever is back with the season. The Whitefen clinic needs quinine before nightfall.' }),
+  contract('c-pilotis', 'marais-blanc', 'parcels', 3, 114, 48, 12, 1,
+    { fr: 'Colis pour les pilotis', en: 'Parcels for the stilts' },
+    { fr: "Des lampes, de la toile cirée, un accordéon. Marais-Blanc commande tout ce qui ne pousse pas dans la vase.", en: 'Lamps, oilcloth, an accordion. Whitefen orders everything that does not grow in mud.' }),
+  contract('c-lettres-marais', 'marais-blanc', 'letters', 2, 122, 24, 12, 1,
+    { fr: 'Courrier du marais', en: 'Fen mail' },
+    { fr: "Deux sacs de lettres, et la brume de sel qui traîne jusqu'à dix heures sur la seule terre ferme.", en: 'Two bags of letters, and the salt haze that lingers until ten over the only firm ground.' }),
+  // Anse-aux-Goémons — sur l'eau
+  contract('c-coquillages', 'anse-aux-goemons', 'shellfish', 2, 130, 8, 30, 1,
+    { fr: 'Les coquillages du matin', en: 'The morning shellfish' },
+    { fr: "Deux paniers de coquillages pêchés à l'aube, pour la table de Port-Sel. Ils ne supportent pas la journée : on se pose, on charge, on repart.", en: 'Two baskets of shellfish gathered at dawn, for the tables of Saltharbour. They will not keep the day: land, load, leave.' }),
+  contract('c-lettres-anse', 'anse-aux-goemons', 'letters', 2, 138, 36, 14, 1,
+    { fr: "Le sac de l'anse", en: 'The cove bag' },
+    { fr: "Les lettres des ramasseurs de goémon, portées jusqu'à l'hydravion en barque. Le passeur attend que vous soyez posé.", en: "The wrack-gatherers' letters, rowed out to the seaplane. The boatman waits until you are down." }),
+  // Phare de Brisant — la lumière
+  contract('c-gardiens', 'phare-de-brisant', 'letters', 1, 146, 48, 14, 1,
+    { fr: 'Les lettres des gardiens', en: "The keepers' letters" },
+    { fr: "Deux gardiens, quinze jours chacun. Leurs lettres sont la seule chose qui monte et descend du phare avec régularité.", en: 'Two keepers, a fortnight each. Their letters are the only thing that goes up and down the lighthouse with any regularity.' }),
+  contract('c-lentille', 'phare-de-brisant', 'parts', 2, 156, 12, 40, 3,
+    { fr: 'La pièce de la lanterne', en: 'The lantern part' },
+    { fr: "Le mécanisme de rotation du phare a cassé. Une pièce forgée à Haut-Ferrand, à poser avant la nuit, ou la Côte navigue sans lumière.", en: "The lighthouse's turning gear has broken. A part forged in Ferncrest, to fit before dark, or the Shore sails without a light." }),
+  // Île Sainte-Ambre — le large
+  contract('c-lettres-ile', 'ile-sainte-ambre', 'letters', 3, 164, 48, 16, 1,
+    { fr: "Le courrier de l'île", en: 'The island mail' },
+    { fr: "Trois sacs pour l'île : tout ce qu'un mois sans bateau a laissé en attente. On vous regarde arriver depuis la chapelle.", en: 'Three bags for the island: everything a month without a boat has left waiting. They watch you come in from the chapel.' }),
+  contract('c-amour-ile', 'ile-sainte-ambre', 'loveletters', 1, 176, 12, 36, 2,
+    { fr: 'Une lettre pour le large', en: 'A letter for the open sea' },
+    { fr: "Une seule enveloppe, cachetée de cire, et quelqu'un à Lanterne-du-Val qui a demandé trois fois si elle était partie.", en: 'A single envelope, sealed with wax, and someone in Lanternhollow who has asked three times whether it has gone.' }),
 ];
 
 export const EVENTS: readonly EventCard[] = [
@@ -184,6 +236,25 @@ export const EVENTS: readonly EventCard[] = [
       { id: 'return', label: { fr: 'La rapporter au bureau', en: 'Return it to the office' }, outcome: { fr: "La poste la gardera. Quelqu'un la réclamera peut-être.", en: 'The post office keeps it. Someone may claim it.' }, effects: {} },
     ],
   },
+  // ---- Côte de Saline ----
+  {
+    kind: 'event', id: 'e-grain', weight: 1, region: 'saline',
+    title: { fr: 'Un grain sur la Côte', en: 'A squall on the Shore' },
+    text: { fr: "Le ciel noircit au large en un quart d'heure. La capitainerie de Port-Sel hisse le pavillon : on ne décolle pas, ou on fait vite.", en: 'The sky goes black offshore in a quarter of an hour. The Saltharbour harbourmaster runs up the flag: nobody takes off, or they do it quickly.' },
+    choices: [
+      { id: 'wait', label: { fr: 'Attendre que ça passe', en: 'Wait it out' }, outcome: { fr: "Deux heures au café de la capitainerie, à regarder la pluie marcher sur l'eau. Le courrier arrivera mouillé de rien.", en: 'Two hours in the harbourmaster\'s café, watching the rain walk across the water. The mail arrives none the wetter.' }, effects: { delayHours: 2, morale: 1 } },
+      { id: 'dash', label: { fr: 'Partir avant le grain', en: 'Beat the squall' }, outcome: { fr: "Le pilote décolle dans la première rafale. Il passe. Les flotteurs ont pris une vague et le moteur a bu du sel.", en: 'The pilot takes off into the first gust. They make it. The floats took a wave and the engine drank salt.' }, effects: { wear: 8, morale: -1 } },
+    ],
+  },
+  {
+    kind: 'event', id: 'e-maree', weight: 2, region: 'saline',
+    title: { fr: 'La marée a tout changé', en: 'The tide changed everything' },
+    text: { fr: "À marée basse, l'anse n'est plus qu'un miroir de vase. La barque du passeur est à sec et le sac attend sur la cale.", en: 'At low tide the cove is nothing but a mirror of mud. The boatman\'s boat is high and dry and the bag waits on the slipway.' },
+    choices: [
+      { id: 'tide', label: { fr: 'Attendre la marée', en: 'Wait for the tide' }, outcome: { fr: "Trois heures. Le passeur raconte les naufrages du siècle dernier ; le pilote repart avec le sac et deux histoires.", en: 'Three hours. The boatman tells of last century\'s wrecks; the pilot leaves with the bag and two stories.' }, effects: { delayHours: 3, morale: 1 } },
+      { id: 'walk', label: { fr: 'Aller chercher le sac à pied (10 F)', en: 'Fetch the bag on foot (10 F)' }, outcome: { fr: "Jusqu'aux genoux dans la vase, bottes louées au village. Le sac arrive à l'heure ; les bottes ne reviennent pas.", en: 'Knee-deep in mud in boots hired from the village. The bag arrives on time; the boots do not come back.' }, effects: { francs: -10 } },
+    ],
+  },
 ];
 
 export const OPPORTUNITIES: readonly OpportunityCard[] = [
@@ -209,6 +280,19 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     kind: 'opportunity', id: 'o-carte', weight: 3,
     title: { fr: 'La vieille carte de Bastien', en: 'Old Bastien\'s map' },
     text: { fr: "En rangeant le hangar, une carte roulée dans un tube : les lignes que Bastien n'a jamais ouvertes, annotées de sa main. Un cachet pour l'album, et une idée pour plus tard.", en: 'Tidying the hangar, a map rolled in a tube: the routes Bastien never opened, annotated in his hand. A stamp for the album, and an idea for later.' },
+    offer: { type: 'map', stamps: 1 },
+  },
+  // ---- Côte de Saline ----
+  {
+    kind: 'opportunity', id: 'o-sterne', weight: 2, region: 'saline',
+    title: { fr: 'Une Sterne à Port-Sel', en: 'A Tern at Saltharbour' },
+    text: { fr: "Un hydravion des douanes est réformé à Port-Sel : flotteurs refaits, moteur neuf, et un capitaine qui préfère le vendre à quelqu'un qui portera du courrier plutôt qu'à la ferraille.", en: 'A customs seaplane is being retired at Saltharbour: floats redone, new engine, and a captain who would rather sell it to someone who will carry mail than to the scrapyard.' },
+    offer: { type: 'plane', model: 'sterne', price: 4400 },
+  },
+  {
+    kind: 'opportunity', id: 'o-carte-marine', weight: 3, region: 'saline',
+    title: { fr: 'La carte marine du gardien', en: 'The keeper\'s sea chart' },
+    text: { fr: "Un des gardiens de Brisant vous confie sa vieille carte de la Côte : les passes, les hauts-fonds, et un trait au crayon vers des îles qui n'y figurent pas encore. Un cachet pour l'album.", en: 'One of the Breaker keepers hands you his old chart of the Shore: the channels, the shoals, and a pencil line towards islands that are not on it yet. A stamp for the album.' },
     offer: { type: 'map', stamps: 1 },
   },
 ];

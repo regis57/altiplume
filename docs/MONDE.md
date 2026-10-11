@@ -1,4 +1,4 @@
-# Le monde d'Altiplume — bible de la v0.1
+# Le monde d'Altiplume — bible du jeu
 
 Ce document décrit ce qui existe dans le jeu : les lieux, les gens, les machines,
 les cartes. Il est écrit en français ; chaque nom a un équivalent **natif** en
@@ -41,8 +41,47 @@ l'heure, soit cinq minutes la lieue.
 | **Combe-aux-Rosées** | Dewcombe | 6 | 30 min | longue | Le bout de la vallée, dispensaire, route des plateaux | médicaments, urgent, lettres, colis |
 
 Chaque première livraison vaut un **cachet** (1 pour les proches, 2 pour Haut-Ferrand
-et Lanterne-du-Val, 3 pour la Combe). Les six villages livrés ouvrent la route des
-Hauts-Plateaux d'Ocre (v0.2).
+et Lanterne-du-Val, 3 pour la Combe). Les six villages livrés collent la page « Toute
+la vallée », qui permet d'ouvrir la route de la Côte de Saline.
+
+## La Côte de Saline (*Saltshore*) — v0.2
+
+Au bout de la vallée, la route descend vers la mer. Des marais salants découpés en
+bassins — des *œillets* —, un port qui sent le goudron, un phare sur ses brisants et
+deux îles qu'on n'atteint qu'en se posant sur l'eau. Le vent de mer est franc et
+change d'avis ; les pistes sont courtes parce que la terre est chère.
+
+**La route s'ouvre** contre **10 cachets**, une fois la page « Toute la vallée »
+dans l'album : c'est le prix d'une carte marine et d'un bail sur un bout de quai. Les
+cachets sont la monnaie de prestige ; ils servent à ça. La page « La route de la
+Côte » s'ajoute à l'album. Tant que la route est fermée, aucune carte de la Côte ne
+se tire : le courrier du jour reste celui de la vallée.
+
+Six escales, de la plus proche à la plus lointaine. Les distances continuent celles
+de la vallée (la Combe est à 6 lieues). Trois escales sont des plans d'eau.
+
+| Escale | Anglais | Lieues | Vol (Sterne) | Piste | Particularité | Courrier |
+|---|---|---|---|---|---|---|
+| **Port-Sel** | Saltharbour | 7,5 | 32 min | moyenne | La capitainerie fait bureau de poste ; vent de mer | lettres, colis, sel, urgent |
+| **Les Œillets** | Panbrook | 7,9 | 34 min | courte (une digue) | Le village des sauniers, des jardins sur les digues | sel, semences, lettres |
+| **Marais-Blanc** | Whitefen | 9,6 | 41 min | moyenne | Un bourg sur pilotis, un dispensaire, la brume de sel | médicaments, lettres, sel, colis |
+| **Anse-aux-Goémons** | Wrackcove | 10,5 | 45 min | **eau** | On se pose entre les bouées, une barque vient | coquillages, lettres, fragile |
+| **Phare de Brisant** | Breaker Light | 11,5 | 49 min | **eau** | Deux gardiens ; la nuit, on vise la lumière | lettres, pièces, urgent |
+| **Île Sainte-Ambre** | Amber Holm | 13 | 56 min | **eau** | L'île du large, sa chapelle, ses lettres attendues | lettres d'amour, lettres, fragile, coquillages |
+
+Port-Sel et les Œillets sont à portée de la Grive ; Marais-Blanc demande le
+Martinet ; les trois escales sur l'eau demandent la **Sterne**. Chaque première
+livraison vaut 2 ou 3 cachets ; les six escales collent « Toute la Côte » (au large,
+des lanternes — l'Archipel viendra). Le premier amerrissage colle « Sur l'eau ».
+
+**Le vent de mer** (Port-Sel, l'Anse, Sainte-Ambre) ajoute un quart d'heure deux fois
+sur cinq (une sur cinq avec « Météo dans la peau »). La brume de Marais-Blanc suit la
+règle de Moulin-Gris. Le phare suit celle des lanternes : une arrivée après le
+coucher du soleil vaut « Vol de nuit ».
+
+Deux imprévus propres à la Côte (un grain au large, la marée qui a tout changé) et
+deux opportunités (une Sterne des douanes réformée à Port-Sel, la carte marine du
+gardien) ne se tirent qu'une fois la route ouverte.
 
 ## Les avions
 
@@ -52,9 +91,12 @@ Hauts-Plateaux d'Ocre (v0.2).
 | **Martinet M-1** | Swift M-1 | monoplan rapide | 10 | 1 | 24 l/h | 86 % | moyenne | 3 200 F |
 | **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F |
 
-Trois oiseaux, trois caractères : la Grive pardonne tout, le Martinet file et casse,
-le Héron porte et exige une grande piste. L'hydravion et le long-courrier viendront
-avec la Côte de Saline et le Grand Blanc.
+| **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 5 400 F (4 400 F en occasion, à Port-Sel) |
+
+Quatre oiseaux, quatre caractères : la Grive pardonne tout, le Martinet file et
+casse, le Héron porte et exige une grande piste, la Sterne se pose sur l'eau — et
+seulement sur l'eau. Elle ne dort pas au hangar : il lui faut un **ponton**. Le
+long-courrier viendra avec le Grand Blanc.
 
 ## Les pilotes
 
@@ -109,12 +151,15 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 
 ## L'aérodrome
 
-Deux zones à restaurer dans la v0.1 (la tour, le café et l'atelier viendront) :
+Trois zones à restaurer (la tour, le café et l'atelier viendront) :
 
 - **La piste** : pré fauché → piste roulée (900 F, le Martinet se pose) → grande piste
   (2 400 F, le Héron se pose).
 - **Le hangar** : porte de travers (1 avion) → porte neuve et établi (700 F, 2 avions,
   entretien moins cher) → atelier (2 000 F, 3 avions).
+- **Le ponton** (v0.2) : la rive nue → ponton sur la rivière (1 500 F, une Sterne
+  s'amarre). L'hydravion ne compte pas dans le hangar, et le hangar ne compte pas
+  pour lui.
 
 Et dix décorations, sans effet sur la simulation sauf un léger moral : jardinières,
 le banc, la manche à air rayée, l'enseigne, le drapeau de la vallée, la boîte aux
@@ -143,8 +188,9 @@ peinture du hangar.
 
 ## L'album de cachets
 
-Douze pages dans la v0.1 : Fondation, Premier vol, une par village, Vol de nuit,
-À l'heure (dix délais tenus), Une histoire, Toute la vallée. Une collection, pas un
+Douze pages pour la vallée : Fondation, Premier vol, une par village, Vol de nuit,
+À l'heure (dix délais tenus), Une histoire, Toute la vallée. Neuf pour la Côte : La
+route de la Côte, une par escale, Sur l'eau, Toute la Côte. Une collection, pas un
 classement.
 
 ## Ce qu'on commence avec

@@ -58,6 +58,7 @@ export function foundCompany(db: Database, playerId: string, name: string, now: 
     for (const zone of WORLD.zones) {
       db.prepare('INSERT INTO company_zones (company_id, zone, level) VALUES (?, ?, 1)').run(id, zone.id);
     }
+    db.prepare('INSERT INTO company_regions (company_id, region, opened_at) VALUES (?, ?, ?)').run(id, WORLD.region.id, now);
     awardStamp(db, id, 's-fondation', now);
     return findCompanyByPlayer(db, playerId)!;
   });

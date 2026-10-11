@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { sessionCookie, testApp } from './helpers.ts';
 import { drawCards, FATIGUE_RECOVERY_MS, HAND_SIZE } from '../src/game/sim.ts';
 import { makeRng } from '../src/sim/rng.ts';
-import { findCard, findDestination, findPlane, WORLD } from '../src/world/index.ts';
+import { findCard, findDestination, findPlane, regionDestinations } from '../src/world/index.ts';
 
 const DAY = 86_400_000;
 const signup = { email: 'regis@example.test', nickname: 'Régis', locale: 'fr', ageConfirmed: true, acceptTerms: true };
@@ -212,8 +212,9 @@ describe('le courrier — expédier', () => {
     }
     const s = (await t.json('GET', '/v1/company', undefined, cookie)).json();
     const album = s.album.map((a: { id: string }) => a.id);
-    for (const d of WORLD.destinations) expect(album).toContain(`s-${d.id}`);
+    for (const d of regionDestinations('brume')) expect(album).toContain(`s-${d.id}`);
     expect(album).toContain('s-vallee');
+    expect(album).not.toContain('s-cote');
     expect(album).toContain('s-nuit');
     expect(s.pilots[0].affinity).toBe(6);
     expect(findDestination('lanterne-du-val')!.hazard).toBe('night');
