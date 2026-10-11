@@ -4,7 +4,8 @@
  * Tout est du DOM ordinaire : lisible par un lecteur d'écran, navigable au clavier,
  * traduisible. Aucun script ni style en ligne, la CSP l'interdit.
  */
-import { browserSupportsWebAuthn, startAuthentication, startRegistration, WebAuthnError } from '@simplewebauthn/browser';
+import { browserSupportsWebAuthn, startAuthentication, WebAuthnError } from '@simplewebauthn/browser';
+import { addPasskey } from './passkeys.ts';
 import { toCanvas } from 'qrcode';
 import { formatRemaining } from './time.ts';
 import { getLocale, setLocale, t, translatePage, type Locale } from './i18n.ts';
@@ -464,26 +465,10 @@ async function pageCompte(): Promise<void> {
     add?.addEventListener('click', async () => {
       setMessage('passkeys-message', '');
       add.disabled = true;
-      try {
-        const opts = await api('POST', '/v1/passkeys/options', {});
-        if (opts.status !== 200) { setMessage('passkeys-message', errorKey(opts)); return; }
-        const { options, challengeToken } = opts.body as { options: Parameters<typeof startRegistration>[0]['optionsJSON']; challengeToken: string };
-        let response;
-        try {
-          response = await startRegistration({ optionsJSON: options });
-        } catch (error) {
-          const name = error instanceof WebAuthnError ? error.name : '';
-          setMessage('passkeys-message', name === 'NotAllowedError' ? 'passkeys.cancelled' : name === 'InvalidStateError' ? 'error.passkey_exists' : 'error.passkey_rejected');
-          return;
-        }
-        const r = await api('POST', '/v1/passkeys/register', { challengeToken, response: response as unknown as Json });
-        if (r.status === 201) { setMessage('passkeys-message', 'passkeys.added', 'ok'); await renderPasskeys(); }
-        else setMessage('passkeys-message', errorKey(r));
-      } catch {
-        setMessage('passkeys-message', 'error.network');
-      } finally {
-        add.disabled = false;
-      }
+      const result = await addPasskey(api);
+      add.disabled = false;
+      setMessage('passkeys-message', result.key, result.ok ? 'ok' : 'error');
+      if (result.ok) await renderPasskeys();
     });
   } else {
     $('passkeys-unsupported')?.classList.remove('cache');

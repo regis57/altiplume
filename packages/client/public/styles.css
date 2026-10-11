@@ -644,3 +644,5 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .gestes strong { color: var(--encre); }
 
 .carte .bloque { color: var(--cachet-encre); margin: 0 0 0.5rem; }
+.fiche-passkey { border: 2px solid var(--laiton); }
+.fiche-passkey .bouton { width: auto; }
