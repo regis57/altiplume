@@ -171,6 +171,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   animateScene(c);
   musicButton();
   setupInstall();
+  // Le premier vol : trois gestes, tant qu'aucun sac n'est revenu.
+  $('fiche-premier-vol')?.classList.toggle('cache', c.logbook.some((l) => l.kind === 'flight.arrived'));
   void setupPasskeyInvitation(api, setMessage);
   void setupNotifications(api, setMessage);
   clockOffset = c.now - Date.now();

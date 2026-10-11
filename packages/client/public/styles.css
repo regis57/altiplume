@@ -646,3 +646,15 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .carte .bloque { color: var(--cachet-encre); margin: 0 0 0.5rem; }
 .fiche-passkey { border: 2px solid var(--laiton); }
 .fiche-passkey .bouton { width: auto; }
+
+/* ---- Grand écran : deux colonnes ---- */
+.fiche-premier-vol { border: 2px solid var(--vert-de-gris); }
+.etapes { margin: 0.6rem 0 0; padding-left: 1.4rem; display: grid; gap: 0.5rem; }
+.etapes strong { color: var(--encre); }
+@media (min-width: 64rem) {
+  .lecture.jeu { max-width: 76rem; }
+  .jeu .scene { max-height: 24rem; margin-left: auto; margin-right: auto; }
+  .jeu .colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.2rem; align-items: start; }
+  .jeu .colonne { min-width: 0; }
+  .jeu .fiche-premier-vol, .jeu .fiche-passkey, .jeu .fiche-installer { max-width: 44rem; }
+}

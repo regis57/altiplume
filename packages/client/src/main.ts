@@ -99,6 +99,17 @@ function stamp(): void {
   el.classList.add('tampon');
 }
 
+/** Sous le cachet, l'adresse où le lien part : une faute de frappe se voit tout de suite. */
+function showSentTo(id: string, email: string): void {
+  const el = $(id);
+  if (!el) return;
+  el.replaceChildren();
+  const label = document.createElement('span'); label.dataset['i18n'] = 'sent.to'; label.textContent = t('sent.to');
+  const addr = document.createElement('strong'); addr.textContent = email.trim();
+  el.append(label, ' ', addr);
+  el.classList.remove('cache');
+}
+
 function busy(form: HTMLFormElement, on: boolean): void {
   const button = form.querySelector('button[type=submit]') as HTMLButtonElement | null;
   if (button) button.disabled = on;
@@ -154,6 +165,7 @@ function pageIndex(): void {
       if (r.status === 202) {
         stamp();
         setMessage('signup-message', 'signup.sent', 'ok');
+        showSentTo('signup-adresse', payload.email);
         form.querySelectorAll('input, button').forEach((el) => { (el as HTMLInputElement).disabled = true; });
         return;
       }
@@ -180,6 +192,7 @@ function pageConnexion(): void {
       if (r.status === 202) {
         stamp();
         setMessage('login-message', 'login.sent', 'ok');
+        showSentTo('login-adresse', email);
         form.querySelectorAll('input, button').forEach((el) => { (el as HTMLInputElement).disabled = true; });
         return;
       }

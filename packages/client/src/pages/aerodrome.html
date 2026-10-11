@@ -98,6 +98,17 @@ title: Mon aérodrome
 
     <ul class="nouvelles" id="nouvelles" aria-live="polite"></ul>
 
+    <aside class="bloc fiche-premier-vol cache" id="fiche-premier-vol" aria-labelledby="t-premier-vol">
+      <h2 id="t-premier-vol" data-i18n="firstFlight.title">Votre premier vol, en trois gestes</h2>
+      <ol class="etapes">
+        <li data-i18n-html="firstFlight.step1"><strong>Choisissez un sac</strong> dans le courrier du jour — ou la ligne régulière, qui part toujours.</li>
+        <li data-i18n-html="firstFlight.step2"><strong>Expédiez</strong> : Marthe et la Grive sont prêts devant le hangar.</li>
+        <li data-i18n-html="firstFlight.step3"><strong>Revenez dans quelques minutes</strong> — le vol dure du vrai temps. Rien ne se perd si vous tardez.</li>
+      </ol>
+    </aside>
+
+    <div class="colonnes">
+    <div class="colonne">
     <section class="bloc" aria-labelledby="t-vols">
       <h2 id="t-vols" data-i18n="game.flights">En vol</h2>
       <p class="aide cache" id="vols-vide" data-i18n="game.noFlights">Personne en l'air. La Grive attend devant le hangar.</p>
@@ -121,6 +132,8 @@ title: Mon aérodrome
       <ul class="fiches" id="avions"></ul>
     </section>
 
+    </div>
+    <div class="colonne">
     <section class="bloc" aria-labelledby="t-zones">
       <h2 id="t-zones" data-i18n="game.field">L'aérodrome</h2>
       <ul class="fiches" id="zones"></ul>
@@ -141,7 +154,9 @@ title: Mon aérodrome
       <h2 id="t-album" data-i18n="game.album">L'album de cachets</h2>
       <p data-i18n="game.albumText">Chaque première colle une page. Une collection, pas un classement.</p>
       <ul class="album" id="album"></ul>
-    </section>
+      </div>
+    </div>
+  </section>
   </section>
 
   <dialog class="histoire" id="histoire" aria-labelledby="histoire-titre">

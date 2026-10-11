@@ -338,3 +338,15 @@ Régis a filmé ses cinq premières minutes sur iPhone, avec un compte neuf. Le 
 Il a raison. La passkey était rangée dans « Mon compte », là où personne ne va le premier jour. Or c'est elle qui décide si revenir est un geste ou une corvée : avec, c'est l'empreinte ; sans, c'est un email à attendre.
 
 L'aérodrome porte maintenant, tant qu'aucune clé n'existe, une invitation en trois lignes : *Revenir d'un geste — Créer ma passkey — Plus tard*. « Plus tard » la fait taire trois jours, puis elle revient, gentiment. Dès qu'une clé existe, elle disparaît pour de bon et la gestion reste dans « Mon compte », comme avant. Le même code sert aux deux endroits ; le parcours de bout en bout, avec l'authenticateur virtuel, joue l'invitation, le « plus tard », la création et la disparition.
+
+---
+
+## Chapitre 19 — Les cinq premières minutes (11 octobre 2026, 15 h 30)
+
+Deux vidéos de Régis, l'une sur PC, l'autre sur iPhone, avec un compte neuf à chaque fois. On y voit ce qu'aucun test ne mesure : où l'œil hésite.
+
+Sur PC, l'aérodrome était une colonne étroite au milieu d'un grand écran — une page de téléphone agrandie. Sur grand écran, il s'étale maintenant sur deux colonnes : le courrier et les pilotes à gauche, le chantier et l'album à droite, la scène au-dessus, centrée, le soleil entier.
+
+Rien ne disait quoi faire après la fondation. Une fiche « Votre premier vol, en trois gestes » — choisir un sac, expédier, revenir dans quelques minutes — reste tant qu'aucun sac n'est rentré, puis s'efface d'elle-même.
+
+Et sous le cachet « lien envoyé », l'adresse où le lien part, en gras : une faute de frappe se voit tout de suite, au lieu de se découvrir dix minutes plus tard devant une boîte vide.
