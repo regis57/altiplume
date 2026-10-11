@@ -106,8 +106,12 @@ describe('le courrier — expédier', () => {
     const f = s1.flights[0];
     expect(f.destination).toBe('pont-de-brume');
     expect(f.status).toBe('en_route');
-    expect(f.arrivesAt - f.departedAt).toBe(5 * 60_000); // 1 lieue à 12 lieues/h
-    expect(f.busyUntil - f.departedAt).toBe(10 * 60_000);
+    // 1 lieue à 12 lieues/h : 5 min — ou 6 min 30 si l'aléa du vol (6 %) a frappé. L'aléa
+    // dépend de l'identifiant du joueur, aléatoire ici : le test accepte les deux issues.
+    const duration = f.arrivesAt - f.departedAt;
+    expect([5 * 60_000, 6.5 * 60_000]).toContain(duration);
+    const incident = duration !== 5 * 60_000;
+    expect(f.busyUntil - f.departedAt).toBe(2 * duration);
     expect(s1.planes[0].busyUntil).toBe(f.busyUntil);
     expect(s1.pilots[0].busyUntil).toBe(f.busyUntil);
     expect(s1.pilots[0].fatigue).toBe(1);
@@ -122,21 +126,21 @@ describe('le courrier — expédier', () => {
     let s = await t.state();
     expect(s.flights[0].status).toBe('en_route');
     expect(s.francs).toBe(286);
-    // Six minutes : arrivé, encaissé une seule fois, avion sur le retour.
-    t.advance(2 * 60_000);
+    // À l'arrivée : encaissé une seule fois, avion sur le retour.
+    t.advance(duration - 4 * 60_000 + 1);
     s = await t.state();
     expect(s.flights[0].status).toBe('returning');
     expect(s.flights[0].settled).toBe(true);
     expect(s.francs).toBe(286 + 24 + 6); // récompense + bonus de délai (4 h)
-    expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 30, bonus: true }));
+    expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 30, bonus: true, incident }));
     expect(s.news.map((n: { kind: string; stamp?: string }) => n.stamp).filter(Boolean)).toEqual(['s-premier-vol', 's-pont-de-brume']);
     expect(s.pilots[0].affinity).toBe(1);
-    expect(s.pilots[0].morale).toBe(11);
+    expect(s.pilots[0].morale).toBe(incident ? 10 : 11);
     expect(s.planes[0].wear).toBeGreaterThanOrEqual(5);
     expect(s.album.map((a: { id: string }) => a.id)).toEqual(['s-fondation', 's-premier-vol', 's-pont-de-brume']);
     expect((await t.state()).francs).toBe(316); // pas de double encaissement
-    // Onze minutes : rentré, disponible.
-    t.advance(5 * 60_000);
+    // Rentré, disponible.
+    t.advance(duration);
     s = await t.state();
     expect(s.flights).toEqual([]);
     expect(s.planes[0].busyUntil).toBeNull();
