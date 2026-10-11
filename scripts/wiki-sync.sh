@@ -17,6 +17,7 @@ copy() { # <source> <page>
   } > "$WIKI/$2.md"
 }
 
+copy docs/LES-24-HEURES.md "Les-24-heures"
 copy docs/JOURNAL.md    "Journal"
 copy docs/COUTS.md      "Couts"
 copy docs/MONDE.md      "Monde"
@@ -33,6 +34,7 @@ Un petit aérodrome postal des années 1930, dans un monde inventé. Jeu web coz
 gratuit, sans mot de passe. Le jeu : [altiplume.com](https://altiplume.com). Le code
 (AGPL-3.0) : [github.com/regis57/altiplume](https://github.com/regis57/altiplume).
 
+- **[Les 24 heures](Les-24-heures)** — le résumé : chronologie, décisions clefs, échanges structurants.
 - **[Journal](Journal)** — le récit de l'aventure, chapitre par chapitre.
 - **[Coûts](Couts)** — ce que le projet coûte, euro par euro, et le temps passé.
 - **[Monde](Monde)** — les Vallées de Brume, les pilotes, les avions, les cartes.
@@ -49,6 +51,7 @@ HOME
 cat > "$WIKI/_Sidebar.md" <<'SIDE'
 **Altiplume**
 - [Accueil](Home)
+- [Les 24 heures](Les-24-heures)
 - [Journal](Journal)
 - [Coûts](Couts)
 - [Monde](Monde)
