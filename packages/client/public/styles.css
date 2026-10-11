@@ -741,6 +741,18 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .deco li.posee { border-style: solid; border-color: var(--laiton); }
 .routes li.ouverte { border-style: solid; border-color: var(--laiton); }
 .routes .tagline { font-style: italic; margin: 0 0 0.4rem; }
+/* Les vignettes des régions : un petit paysage en tête de chaque route. */
+.routes .vignette { display: block; width: 100%; aspect-ratio: 160 / 48; border-radius: var(--rayon); margin: 0 0 0.6rem; }
+.routes li:not(.ouverte) .vignette { filter: saturate(0.35) brightness(0.92); }
+.vignette .v-ciel { fill: #b9d3e3; } .vignette .v-brume { fill: #d9e2e6; opacity: 0.8; } .vignette .v-colline-loin { fill: #9fb6a5; }
+.vignette .v-sol { fill: #7f9a6c; } .vignette .v-mur { fill: #d9cfb8; } .vignette .v-toit { fill: #8c4a3a; } .vignette .v-fenetre { fill: #f3dc8a; } .vignette .v-croix { fill: #8c8c86; }
+.vignette .v-ciel-saline { fill: #e6edf0; } .vignette .v-mer { fill: #4fb3b0; } .vignette .v-reflet { fill: #a9e0dc; }
+.vignette .v-sel { fill: #f1ece0; } .vignette .v-digue { fill: #d8d1b6; } .vignette .v-eau-sel { fill: #cfe6e3; }
+.vignette .v-phare { fill: #f6f1e7; } .vignette .v-phare-bande { fill: #b23a2f; } .vignette .v-lumiere { fill: #f3dc8a; } .vignette .v-rocher { fill: #5a5a55; } .vignette .v-barque { fill: #6b4a2a; }
+.vignette .v-nuit { fill: #1f2d4a; } .vignette .v-mer-nuit { fill: #16243a; } .vignette .etoile-vignette { fill: #e9ecef; } .vignette .v-lune { fill: #e9ecef; }
+.vignette .v-ile { fill: #2a3a46; } .vignette .v-lanterne { fill: #f0a848; } .vignette .v-halo { fill: #f0a848; opacity: 0.35; } .vignette .v-piquet { fill: #3a3a38; } .vignette .v-reflet-lanterne { fill: #f0a848; opacity: 0.4; }
+[data-moment='nuit'] .vignette .v-ciel { fill: #1b2634; } [data-moment='nuit'] .vignette .v-sol { fill: #2a3a30; } [data-moment='nuit'] .vignette .v-colline-loin { fill: #2f3b47; } [data-moment='nuit'] .vignette .v-brume { fill: #2b333e; }
+[data-moment='nuit'] .vignette .v-ciel-saline { fill: #263241; } [data-moment='nuit'] .vignette .v-mer { fill: #1f3d3c; } [data-moment='nuit'] .vignette .v-sel { fill: #8a8a80; } [data-moment='nuit'] .vignette .v-digue { fill: #6a6a60; } [data-moment='nuit'] .vignette .v-eau-sel { fill: #4a6a68; }
 
 /* ---- La scène vivante ---- */
 

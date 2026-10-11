@@ -83,6 +83,29 @@ Deux imprévus propres à la Côte (un grain au large, la marée qui a tout chan
 deux opportunités (une Sterne des douanes réformée à Port-Sel, la carte marine du
 gardien) ne se tirent qu'une fois la route ouverte.
 
+## L'Archipel des Lanternes (*Lantern Isles*) — v0.2
+
+Six îles basses au large de la Côte, une lanterne au bout de chaque ponton. La poste
+y arrive le soir : le jour appartient aux bateaux, la nuit au courrier. **Tout se
+pose sur l'eau**, et quatre îles sur six se volent de nuit — c'est la région du trait
+Nocturne. **La route s'ouvre** contre **15 cachets**, une fois « Toute la Côte » dans
+l'album.
+
+| Île | Anglais | Lieues | Vol (Goéland) | Particularité | Courrier |
+|---|---|---|---|---|---|
+| **Île-aux-Fanaux** | Beacon Holm | 14 | 52 min | Douze lanternes, une par famille ; nuit | lettres, colis, lettres d'amour |
+| **Grand-Récif** | Long Reef | 15 | 56 min | Un lagon, à quitter avant la marée basse ; vent | coquillages, lettres, pièces |
+| **Sainte-Lueur** | Glimmerkirk | 16 | 60 min | La chapelle, l'école, les enfants sur le ponton ; nuit | lettres, journaux, colis, médicaments |
+| **Le Rocher-Noir** | Blackstack | 17 | 64 min | Trois guetteurs, un chien, un sémaphore ; vent | pièces, journaux, lettres, urgent |
+| **Anse-des-Lanternes** | Lanterncove | 18 | 68 min | Le bourg, la fabrique de lanternes, la poste de minuit ; nuit | lettres, colis, fragile, urgent |
+| **Île-du-Bout** | Lastholm | 19 | 71 min | La dernière île ; après, le Grand Blanc ; nuit | lettres, lettres d'amour, fragile |
+
+La Sterne n'atteint les trois premières qu'avec un pilote de Longues routes (14 × 1,2) ;
+le **Goéland** atteint tout. Chaque première livraison vaut 3 cachets ; les six îles
+collent « Tout l'Archipel ». Deux imprévus (la lanterne éteinte, la nuit des lanternes),
+une opportunité (quelqu'un sur le ponton), et le Goéland, vendu à Port-Sel une fois la
+Côte ouverte.
+
 ## Les avions
 
 | Modèle | Anglais | Type | Portée | Sacs | Vitesse | Fiabilité | Piste | Prix |
@@ -92,15 +115,16 @@ gardien) ne se tirent qu'une fois la route ouverte.
 | **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F |
 
 | **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 5 400 F (4 400 F en occasion, à Port-Sel) |
+| **Goéland G-4** | Gull G-4 | hydravion long-courrier | 22 | 4 | 16 l/h | 91 % | **eau** | 7 800 F (6 600 F en occasion, à Port-Sel) |
 
-Quatre oiseaux, quatre caractères : la Grive pardonne tout, le Martinet file et
+Cinq oiseaux, cinq caractères : la Grive pardonne tout, le Martinet file et
 casse, le Héron porte et exige une grande piste, la Sterne se pose sur l'eau — et
-seulement sur l'eau. Elle ne dort pas au hangar : il lui faut un **ponton**. Le
-long-courrier viendra avec le Grand Blanc.
+seulement sur l'eau. Elle ne dort pas au hangar : il lui faut un **ponton**. Le Goéland
+porte plus loin et plus lourd, et préfère la nuit calme au vent de mer.
 
 ## Les pilotes
 
-Quatre pilotes, deux femmes, deux hommes, quatre régions d'origine. Chacun a deux
+Six pilotes, trois femmes, trois hommes, six régions d'origine. Chacun a deux
 traits (qui changent des chiffres de la simulation, pas seulement une phrase) et une
 histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 
@@ -110,6 +134,8 @@ histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 | **Ilias Ferrant** | 27 | Hauts-Plateaux d'Ocre | Tête brûlée · Économe | *Le col et la lettre* — la moitié de la paie pour l'auberge du col, plein gaz, le Grand Blanc un jour |
 | **Ysé Loranne** | 31 | Archipel des Lanternes | Nocturne · Porte-bonheur | *Les lanternes du Val* — une lanterne sur six, le bateau-poste, la lanterne de cuivre au bout de la piste |
 | **Aurèle Combray** (*Aurel*) | 58 | Côte de Saline | Mains d'or · Longues routes | *Le moteur qui tousse* — du fil de fer, la photo dans la casquette, l'atelier qu'il ne vendra pas |
+| **Solenn Darrieux** | 36 | Forêt de Cuivre | Nocturne · Mains d'or | *La lanterne de la forêt* — ce qu'on voit la nuit, le moteur de son père, la lanterne de cuivre au bout du ponton |
+| **Teodor Vashti** | 41 | Désert de Verre | Longues routes · Porte-bonheur | *Le compte des étoiles* — trois chiffres sur la manche, le foulard du frère, la lettre vers le Grand Blanc |
 
 Marthe est là dès le premier jour. Les trois autres passent au café et se recrutent
 avec une carte « pilote de passage ». **Bastien**, l'ancien propriétaire, est mort
@@ -161,8 +187,8 @@ Trois zones à restaurer (la tour, le café et l'atelier viendront) :
   (2 400 F, le Héron se pose).
 - **Le hangar** : porte de travers (1 avion) → porte neuve et établi (700 F, 2 avions,
   entretien moins cher) → atelier (2 000 F, 3 avions).
-- **Le ponton** (v0.2) : la rive nue → ponton sur la rivière (1 500 F, une Sterne
-  s'amarre). L'hydravion ne compte pas dans le hangar, et le hangar ne compte pas
+- **Le ponton** (v0.2) : la rive nue → ponton sur la rivière (1 500 F, un hydravion
+  s'amarre) → double ponton et lanterne (2 800 F, deux hydravions). L'hydravion ne compte pas dans le hangar, et le hangar ne compte pas
   pour lui.
 
 Et dix décorations, sans effet sur la simulation sauf un léger moral : jardinières,

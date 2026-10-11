@@ -8,14 +8,15 @@ import { CONTRACTS, EVENTS, OPPORTUNITIES } from './cards.ts';
 import { PILOTS } from './pilots.ts';
 import { PLANES } from './planes.ts';
 import { SALINE, SALINE_DESTINATIONS } from './saline.ts';
+import { ARCHIPEL, ARCHIPEL_DESTINATIONS } from './archipel.ts';
 import { TRAITS } from './traits.ts';
 import type { Card, Destination, PilotTemplate, PlaneModel, Region, RegionId, Text, Trait, World } from './types.ts';
 
 export const WORLD: World = {
   region: BRUME,
-  regions: [BRUME, SALINE],
+  regions: [BRUME, SALINE, ARCHIPEL],
   home: HOME,
-  destinations: [...DESTINATIONS, ...SALINE_DESTINATIONS],
+  destinations: [...DESTINATIONS, ...SALINE_DESTINATIONS, ...ARCHIPEL_DESTINATIONS],
   planes: PLANES,
   traits: TRAITS,
   pilots: PILOTS,

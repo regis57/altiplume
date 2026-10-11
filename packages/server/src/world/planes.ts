@@ -44,4 +44,13 @@ export const PLANES: readonly PlaneModel[] = [
     },
     range: 14, capacity: 3, speed: 14, reliability: 0.9, runway: 'water', price: 5400, upkeep: 14, starter: false,
   },
+  {
+    id: 'goeland', archetype: 'seaplane',
+    name: { fr: 'Goéland G-4', en: 'Gull G-4' },
+    description: {
+      fr: "L'hydravion long-courrier : une coque au lieu de flotteurs, deux moteurs, et de quoi tenir jusqu'à la dernière île et revenir. Il préfère la nuit calme au vent de mer.",
+      en: 'The long-range seaplane: a hull instead of floats, two engines, and enough fuel to reach the last island and come home. It prefers a calm night to a sea wind.',
+    },
+    range: 22, capacity: 4, speed: 16, reliability: 0.91, runway: 'water', price: 7800, upkeep: 18, starter: false,
+  },
 ];

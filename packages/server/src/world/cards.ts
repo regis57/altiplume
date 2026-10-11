@@ -143,6 +143,49 @@ export const CONTRACTS: readonly ContractCard[] = [
   contract('c-amour-ile', 'ile-sainte-ambre', 'loveletters', 1, 176, 12, 36, 2,
     { fr: 'Une lettre pour le large', en: 'A letter for the open sea' },
     { fr: "Une seule enveloppe, cachetée de cire, et quelqu'un à Lanterne-du-Val qui a demandé trois fois si elle était partie.", en: 'A single envelope, sealed with wax, and someone in Lanternhollow who has asked three times whether it has gone.' }),
+  // ---- Archipel des Lanternes : ne se tirent qu'une fois la route ouverte ----
+  // Île-aux-Fanaux
+  contract('c-douze-lanternes', 'ile-aux-fanaux', 'letters', 2, 190, 36, 16, 1,
+    { fr: 'Les douze lanternes', en: 'The twelve lanterns' },
+    { fr: "Deux sacs pour les douze familles de l'île. Chacune laisse sa lanterne allumée tant que sa lettre n'est pas arrivée.", en: "Two bags for the island's twelve families. Each keeps its lantern lit until its letter has come." }),
+  contract('c-amour-fanaux', 'ile-aux-fanaux', 'loveletters', 1, 204, 12, 40, 2,
+    { fr: 'La lanterne bleue', en: 'The blue lantern' },
+    { fr: "Une lettre pour la maison à la lanterne bleue. On vous a dit de ne pas la donner à quelqu'un d'autre, même si on insiste.", en: 'A letter for the house with the blue lantern. You were told not to hand it to anyone else, however much they insist.' }),
+  // Grand-Récif
+  contract('c-coquillages-recif', 'grand-recif', 'shellfish', 3, 212, 8, 36, 1,
+    { fr: 'La pêche du lagon', en: 'The lagoon catch' },
+    { fr: "Trois paniers pêchés à marée basse, pour Port-Sel. Il faut se poser, charger et repartir avant que le lagon se vide.", en: 'Three baskets gathered at low tide, bound for Saltharbour. Land, load and leave before the lagoon empties.' }),
+  contract('c-pieces-recif', 'grand-recif', 'parts', 2, 220, 24, 20, 1,
+    { fr: 'Le moteur du bateau-poste', en: "The mail boat's engine" },
+    { fr: "Le bateau-poste du Récif est en panne. Des pièces de Haut-Ferrand, et tout le village qui attend sur le ponton.", en: "The Reef's mail boat has broken down. Parts from Ferncrest, and the whole village waiting on the jetty." }),
+  // Sainte-Lueur
+  contract('c-ecole', 'sainte-lueur', 'newspapers', 2, 232, 48, 14, 1,
+    { fr: "Les journaux de l'école", en: "The school's newspapers" },
+    { fr: "La maîtresse de Sainte-Lueur apprend à lire dans le journal de Pont-de-Brume. Deux sacs, et les enfants qui comptent les hublots.", en: 'The Glimmerkirk schoolmistress teaches reading from the Mistbridge paper. Two bags, and the children counting the portholes.' }),
+  contract('c-quinine-lueur', 'sainte-lueur', 'medicine', 1, 244, 6, 48, 2,
+    { fr: 'La fièvre de Sainte-Lueur', en: 'The Glimmerkirk fever' },
+    { fr: "Trois enfants malades, un dispensaire sans quinine, et la nuit qui tombe. On vise la lanterne de la chapelle.", en: 'Three sick children, a clinic without quinine, and night falling. You aim for the chapel lantern.' }),
+  // Le Rocher-Noir
+  contract('c-guetteurs', 'le-rocher-noir', 'newspapers', 1, 250, 48, 14, 1,
+    { fr: 'Les nouvelles du rocher', en: 'News for the rock' },
+    { fr: "Trois guetteurs, un chien, et des journaux vieux d'une semaine qu'ils lisent comme s'ils étaient d'hier.", en: 'Three watchers, a dog, and week-old newspapers they read as if they were from yesterday.' }),
+  contract('c-semaphore', 'le-rocher-noir', 'parts', 2, 262, 10, 50, 3,
+    { fr: 'Le sémaphore cassé', en: 'The broken semaphore' },
+    { fr: "Sans son sémaphore, le Rocher-Noir ne peut plus prévenir des tempêtes. Deux caisses de pièces, avant le prochain grain.", en: 'Without its semaphore, Blackstack can no longer warn of storms. Two crates of parts, before the next squall.' }),
+  // Anse-des-Lanternes
+  contract('c-poste-minuit', 'anse-des-lanternes', 'letters', 4, 276, 24, 20, 1,
+    { fr: 'La poste de minuit', en: 'The midnight post' },
+    { fr: "Quatre sacs pour le bureau de l'Anse, ouvert jusqu'à minuit. C'est le gros courrier de l'archipel, et il part de nuit.", en: "Four bags for the Cove's office, open till midnight. It is the Isles' big mail, and it goes at night." }),
+  contract('c-lanternes-fragiles', 'anse-des-lanternes', 'fragile', 2, 288, 24, 24, 2,
+    { fr: 'Les verres de la fabrique', en: "The works' glass" },
+    { fr: "Des verres soufflés pour la fabrique de lanternes, calés dans la paille. Un seul cassé et toute une île reste dans le noir.", en: 'Blown glass for the lantern works, packed in straw. One broken and a whole island stays dark.' }),
+  // Île-du-Bout
+  contract('c-derniere-ile', 'ile-du-bout', 'letters', 2, 304, 48, 20, 1,
+    { fr: 'Le courrier du bout', en: 'Mail for the end' },
+    { fr: "Deux sacs pour la dernière île. Après elle, plus personne à qui écrire. Avant elle, tout le monde.", en: 'Two bags for the last island. Beyond it, no one left to write to. Before it, everyone.' }),
+  contract('c-lettre-grand-blanc', 'ile-du-bout', 'loveletters', 1, 320, 12, 48, 3,
+    { fr: 'Une lettre vers le Grand Blanc', en: 'A letter towards the Great White' },
+    { fr: "Une lettre pour quelqu'un parti vers le nord, à laisser à la dernière lanterne. On ne sait pas qui la prendra. On sait qu'elle doit y être.", en: 'A letter for someone gone north, to be left at the last lantern. No one knows who will collect it. Everyone knows it must be there.' }),
 ];
 
 export const EVENTS: readonly EventCard[] = [
@@ -255,6 +298,25 @@ export const EVENTS: readonly EventCard[] = [
       { id: 'walk', label: { fr: 'Aller chercher le sac à pied (10 F)', en: 'Fetch the bag on foot (10 F)' }, outcome: { fr: "Jusqu'aux genoux dans la vase, bottes louées au village. Le sac arrive à l'heure ; les bottes ne reviennent pas.", en: 'Knee-deep in mud in boots hired from the village. The bag arrives on time; the boots do not come back.' }, effects: { francs: -10 } },
     ],
   },
+  // ---- Archipel des Lanternes ----
+  {
+    kind: 'event', id: 'e-lanterne-eteinte', weight: 1, region: 'archipel',
+    title: { fr: 'La lanterne est éteinte', en: 'The lantern is out' },
+    text: { fr: "Nuit noire, et le ponton visé n'a pas allumé sa lanterne. Le pilote tourne au-dessus de l'île, sans savoir où est l'eau et où est le rocher.", en: 'Pitch dark, and the jetty you were aiming for has not lit its lantern. The pilot circles the island, not knowing where the water ends and the rock begins.' },
+    choices: [
+      { id: 'wait', label: { fr: "Attendre l'aube", en: 'Wait for dawn' }, outcome: { fr: "Trois heures à tourner, puis le jour. Le gardien du ponton, penaud, offre le café et une lanterne de rechange.", en: 'Three hours of circling, then daylight. The sheepish jetty keeper offers coffee and a spare lantern.' }, effects: { delayHours: 3, morale: 1 } },
+      { id: 'moon', label: { fr: 'Se poser à la lune', en: 'Land by the moon' }, outcome: { fr: "La coque racle quelque chose. Le pilote se pose, pâle. On réparera au ponton.", en: 'The hull scrapes something. The pilot lands, pale. Repairs can wait till the pontoon.' }, effects: { wear: 10, morale: -2 } },
+    ],
+  },
+  {
+    kind: 'event', id: 'e-fete-lanternes', weight: 2, region: 'archipel',
+    title: { fr: 'La nuit des lanternes', en: 'Lantern night' },
+    text: { fr: "Toute la chaîne d'îles a allumé ses lanternes en même temps : c'est la fête de l'archipel. On vous attend sur chaque ponton, et personne ne comprendrait qu'on reparte vite.", en: 'The whole chain of islands has lit its lanterns at once: it is the Isles\' festival. You are expected on every jetty, and no one would understand a quick departure.' },
+    choices: [
+      { id: 'stay', label: { fr: 'Rester à la fête', en: 'Stay for the festival' }, outcome: { fr: "Le courrier arrivera demain. Les pilotes dansent sur un ponton et personne ne le regrettera.", en: 'The mail will arrive tomorrow. The pilots dance on a jetty and nobody will regret it.' }, effects: { delayHours: 8, morale: 4 } },
+      { id: 'mail', label: { fr: 'Le courrier d\'abord', en: 'Mail first' }, outcome: { fr: "Un verre à chaque ponton, pas plus. Le sac arrive à l'heure, le pilote un peu moins.", en: 'One glass at each jetty, no more. The bag arrives on time; the pilot, a little less so.' }, effects: { delayHours: 1 } },
+    ],
+  },
 ];
 
 export const OPPORTUNITIES: readonly OpportunityCard[] = [
@@ -294,5 +356,18 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     title: { fr: 'La carte marine du gardien', en: 'The keeper\'s sea chart' },
     text: { fr: "Un des gardiens de Brisant vous confie sa vieille carte de la Côte : les passes, les hauts-fonds, et un trait au crayon vers des îles qui n'y figurent pas encore. Un cachet pour l'album.", en: 'One of the Breaker keepers hands you his old chart of the Shore: the channels, the shoals, and a pencil line towards islands that are not on it yet. A stamp for the album.' },
     offer: { type: 'map', stamps: 1 },
+  },
+  // ---- Archipel des Lanternes ----
+  {
+    kind: 'opportunity', id: 'o-goeland', weight: 2, region: 'saline',
+    title: { fr: 'Un Goéland à Port-Sel', en: 'A Gull at Saltharbour' },
+    text: { fr: "La compagnie des bateaux-poste revend son hydravion long-courrier : une coque, deux moteurs, et de quoi tenir jusqu'à la dernière île. Elle veut quelqu'un qui le fera voler, pas quelqu'un qui le revendra.", en: 'The mail-boat company is selling its long-range seaplane: a hull, two engines, enough fuel to reach the last island. They want someone who will fly it, not someone who will sell it on.' },
+    offer: { type: 'plane', model: 'goeland', price: 6600 },
+  },
+  {
+    kind: 'opportunity', id: 'o-pilote-iles', weight: 2, region: 'archipel',
+    title: { fr: 'Quelqu\'un sur le ponton', en: 'Someone on the jetty' },
+    text: { fr: "À l'Anse-des-Lanternes, quelqu'un attend sur le ponton avec un sac et une lanterne, et demande si votre compagnie prend encore des pilotes.", en: 'At Lanterncove, someone is waiting on the jetty with a bag and a lantern, asking whether your company is still taking pilots.' },
+    offer: { type: 'pilot', pilot: 'rotating' },
   },
 ];

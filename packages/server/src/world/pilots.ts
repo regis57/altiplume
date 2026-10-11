@@ -192,4 +192,99 @@ export const PILOTS: readonly PilotTemplate[] = [
       ],
     },
   },
+  // ---- v0.2 : deux pilotes de passage, venus de plus loin ----
+  {
+    id: 'solenn', gender: 'f', age: 36,
+    name: { fr: 'Solenn Darrieux', en: 'Solenn Darrieux' },
+    origin: { fr: 'Forêt de Cuivre', en: 'Copperwood' },
+    traits: ['nightowl', 'goldenhands'],
+    portrait: { fr: "Une tresse rousse serrée, des mains tachées de graisse, et une petite lanterne de cuivre accrochée à la ceinture qu'elle ne retire jamais.", en: 'A tight red braid, grease-stained hands, and a small copper lantern hooked to her belt that she never takes off.' },
+    greeting: { fr: "On m'a dit que vous alliez ouvrir les îles. Les îles, c'est la nuit. Et la nuit, c'est moi.", en: "I heard you were opening the Isles. The Isles mean night. And night is my business." },
+    wage: 10, starter: false,
+    story: {
+      title: { fr: 'La lanterne de la forêt', en: 'The Forest Lantern' },
+      scenes: [
+        {
+          affinity: 3,
+          title: { fr: 'Ce qu\'on voit la nuit', en: 'What you see at night' },
+          lines: [
+            { who: 'narrator', text: { fr: "Solenn rentre de Lanterne-du-Val à onze heures du soir, comme si c'était midi. Elle accroche sa petite lanterne au clou du hangar avant de parler.", en: 'Solenn comes back from Lanternhollow at eleven at night as if it were noon. She hangs her little lantern on the hangar nail before she speaks.' } },
+            { who: 'you', text: { fr: "Vous n'avez pas peur de la nuit ?", en: "You're not afraid of the dark?" } },
+            { who: 'pilot', text: { fr: "Dans la Forêt de Cuivre, la nuit tombe à quatre heures sous les arbres. On apprend à voir autrement : les ombres qui bougent, celles qui ne bougent pas, et la lumière qu'on emporte.", en: "In Copperwood, night falls at four under the trees. You learn to see differently: the shadows that move, the ones that don't, and the light you carry with you." } },
+            { who: 'pilot', text: { fr: "Le jour, tout le monde voit tout. La nuit, on ne voit que ce qui compte.", en: 'By day, everyone sees everything. By night, you only see what matters.' } },
+            { who: 'narrator', text: { fr: "Elle reprend sa lanterne. Elle ne l'a pas allumée de tout le vol.", en: 'She takes back her lantern. She never lit it the whole flight.' } },
+          ],
+        },
+        {
+          affinity: 7,
+          title: { fr: 'Le moteur de son père', en: "Her father's engine" },
+          lines: [
+            { who: 'narrator', text: { fr: "Un matin, vous trouvez Solenn sous la Grive, qui parle au moteur. Pas fort. Comme à un cheval.", en: 'One morning you find Solenn under the Thrush, talking to the engine. Not loudly. The way you talk to a horse.' } },
+            { who: 'you', text: { fr: "Il répond ?", en: 'Does it answer?' } },
+            { who: 'pilot', text: { fr: "Toujours. Mon père réparait les scieries de la Forêt. Il disait qu'une machine qui casse, c'est une machine qu'on n'a pas écoutée. J'ai écouté toute mon enfance.", en: "Always. My father fixed the sawmills in the Forest. He said a machine that breaks is a machine nobody listened to. I listened all through my childhood." } },
+            { who: 'pilot', text: { fr: "Celui-ci dit qu'il a soif, et qu'il n'aime pas la brume. Comme Marthe.", en: "This one says it's thirsty, and it doesn't like fog. Like Martha." } },
+            { who: 'narrator', text: { fr: "Marthe, derrière vous, ne dit rien. Mais elle sourit, ce qui est rare.", en: 'Martha, behind you, says nothing. But she smiles, which is rare.' } },
+          ],
+        },
+        {
+          affinity: 12,
+          title: { fr: 'La lanterne de cuivre', en: 'The copper lantern' },
+          lines: [
+            { who: 'narrator', text: { fr: "Le soir où vous ouvrez la route des îles, Solenn décroche sa petite lanterne et vous la tend.", en: 'The evening you open the island road, Solenn unhooks her little lantern and holds it out to you.' } },
+            { who: 'pilot', text: { fr: "Elle vient de la fabrique de l'Anse-des-Lanternes. Ma mère l'a rapportée de là-bas, avant moi. Elle disait qu'une lanterne, ça ne sert pas à voir : ça sert à être vue.", en: "It comes from the works at Lanterncove. My mother brought it back from there, before I was born. She said a lantern isn't for seeing: it's for being seen." } },
+            { who: 'you', text: { fr: "Pourquoi me la donner ?", en: 'Why give it to me?' } },
+            { who: 'pilot', text: { fr: "Je ne vous la donne pas. Je la mets au bout de votre ponton. Pour que les îles sachent d'où on vient. Et pour que je retrouve le chemin de la Croisette, la nuit.", en: "I'm not giving it to you. I'm putting it at the end of your pontoon. So the Isles know where we come from. And so I can find Crosslet Lane again at night." } },
+            { who: 'narrator', text: { fr: "Elle l'allume. C'est la première fois que vous la voyez allumée.", en: 'She lights it. It is the first time you have seen it lit.' } },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'teodor', gender: 'm', age: 41,
+    name: { fr: 'Teodor Vashti', en: 'Teodor Vashti' },
+    origin: { fr: 'Désert de Verre', en: 'Glass Flats' },
+    traits: ['longhaul', 'luckycharm'],
+    portrait: { fr: "Un grand homme calme, la peau tannée, un foulard blanc qu'il garde même sous la pluie. Il compte tout : les lieues, les litres, les étoiles.", en: 'A tall, calm man, sun-tanned, with a white scarf he keeps on even in the rain. He counts everything: leagues, litres, stars.' },
+    greeting: { fr: "Je viens de loin et je vais loin. Si vous avez des lignes qui dépassent l'horizon, on peut discuter.", en: 'I come from far and I go far. If you have routes past the horizon, we can talk.' },
+    wage: 11, starter: false,
+    story: {
+      title: { fr: 'Le compte des étoiles', en: 'Counting the Stars' },
+      scenes: [
+        {
+          affinity: 3,
+          title: { fr: 'Les lieues et les litres', en: 'Leagues and litres' },
+          lines: [
+            { who: 'narrator', text: { fr: "Avant chaque vol, Teodor écrit trois chiffres sur sa manche, au crayon. Il les efface au retour.", en: 'Before every flight, Teodor writes three numbers on his sleeve, in pencil. He rubs them out when he is back.' } },
+            { who: 'you', text: { fr: "Qu'est-ce que vous notez ?", en: 'What do you write?' } },
+            { who: 'pilot', text: { fr: "Les lieues, les litres, et le nombre d'étoiles que je dois voir avant de faire demi-tour. Dans le Désert de Verre, il n'y a pas de village au bout. Il n'y a que le chiffre.", en: "The leagues, the litres, and the number of stars I must see before turning back. In the Glass Flats there is no village at the end. There is only the number." } },
+            { who: 'pilot', text: { fr: "Ici, il y a toujours un village. Je note quand même. Par respect pour le désert.", en: 'Here, there is always a village. I still write it down. Out of respect for the desert.' } },
+            { who: 'narrator', text: { fr: "Il efface les chiffres avec le pouce. La manche est grise de tous les vols d'avant.", en: 'He rubs the numbers out with his thumb. The sleeve is grey with all the flights before.' } },
+          ],
+        },
+        {
+          affinity: 7,
+          title: { fr: 'Le porte-bonheur', en: 'The lucky charm' },
+          lines: [
+            { who: 'narrator', text: { fr: "Yse prétend que Teodor a de la chance. Il a traversé un grain sans une goutte, trouvé une pièce rare au marché, et le bac était à quai quand il est arrivé.", en: 'Ysé claims Teodor is lucky. He crossed a squall without a drop, found a rare part at the market, and the ferry was at the quay when he arrived.' } },
+            { who: 'you', text: { fr: "C'est le foulard ?", en: 'Is it the scarf?' } },
+            { who: 'pilot', text: { fr: "Le foulard est à mon frère. Il est resté dans le désert. La chance, c'est de regarder plus longtemps que les autres avant de décider. Les gens appellent ça de la chance parce qu'ils ne voient pas le regard.", en: "The scarf is my brother's. He stayed in the desert. Luck is looking longer than the others before deciding. People call it luck because they don't see the looking." } },
+            { who: 'pilot', text: { fr: "Mais je ne contredis pas Ysé. Ça lui fait plaisir, et ça ne coûte rien.", en: "But I don't contradict Ysé. It makes her happy, and it costs nothing." } },
+            { who: 'narrator', text: { fr: "Il remet le foulard droit. Il pleut. Il ne l'enlève pas.", en: 'He straightens the scarf. It is raining. He does not take it off.' } },
+          ],
+        },
+        {
+          affinity: 12,
+          title: { fr: "La dernière île", en: 'The last island' },
+          lines: [
+            { who: 'narrator', text: { fr: "Teodor rentre de l'Île-du-Bout à l'aube. Il ne descend pas tout de suite du Goéland. Il regarde vers le nord.", en: 'Teodor comes back from Lastholm at dawn. He does not climb out of the Gull straight away. He is looking north.' } },
+            { who: 'pilot', text: { fr: "Il y avait une lettre à la dernière lanterne. Pour quelqu'un parti vers le Grand Blanc. Personne ne l'a prise depuis trois ans.", en: 'There was a letter at the last lantern. For someone gone to the Great White. No one has collected it in three years.' } },
+            { who: 'you', text: { fr: "Vous l'avez laissée ?", en: 'Did you leave it?' } },
+            { who: 'pilot', text: { fr: "Je l'ai laissée. Et j'en ai mis une à côté. Pour mon frère. Le désert et la glace, c'est le même endroit, vu d'assez haut : un endroit où on ne revient pas, et où quelqu'un pose quand même une lettre.", en: "I left it. And I put one beside it. For my brother. The desert and the ice are the same place, seen from high enough: a place you don't come back from, where someone still leaves a letter." } },
+            { who: 'narrator', text: { fr: "Il écrit trois chiffres sur sa manche. Il ne les efface pas, cette fois.", en: 'He writes three numbers on his sleeve. This time, he does not rub them out.' } },
+          ],
+        },
+      ],
+    },
+  },
 ];
