@@ -38,6 +38,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | v0.2 : la scène en 320 × 144, chaque décoration dessinée, jour et nuit | ~50 min |
 | 2026-10-11 | Boîte `bonjour@altiplume.com` (Cloudflare Email Routing) et formulaire de contact anti-robots | ~40 min |
 | 2026-10-11 | « Le jeu ne bloque jamais » (ligne régulière à crédit, cachets lointains, piste et hangar qui tiennent parole) et l'aide du jeu | ~55 min |
+| 2026-10-11 | Tenir parole : suppression après 24 mois (deux avertissements), moral et Nocturne dans la simulation, test de cohérence | ~35 min |
 | 2026-10-10 | Document de conception v0.1 + prototype générateur de noms | ~45 min |
 | 2026-10-11 | Réglages Cloudflare et DNS, relance des mesures, mise à jour du tableau sécurité | ~20 min |
 | 2026-10-10 | Création et sécurisation du dépôt GitHub, audit par l'API | ~45 min |

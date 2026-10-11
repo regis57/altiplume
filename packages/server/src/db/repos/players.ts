@@ -64,7 +64,8 @@ export function nicknameTaken(db: Database, nickname: string, exceptPlayerId?: s
 }
 
 export function touchPlayer(db: Database, id: string, now: number): void {
-  db.prepare('UPDATE players SET last_seen_at = ? WHERE id = ?').run(now, id);
+  // Revenir efface les avertissements d'inactivité : on repart de zéro.
+  db.prepare('UPDATE players SET last_seen_at = ?, inactivity_warned = 0 WHERE id = ?').run(now, id);
 }
 
 export function renamePlayer(db: Database, id: string, nickname: string): void {

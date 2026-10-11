@@ -278,4 +278,15 @@ export const MIGRATIONS: readonly Migration[] = [
       );
     `,
   },
+  {
+    version: 9,
+    name: 'inactivite',
+    sql: `
+      -- Suppression après 24 mois sans connexion, promise par la politique de
+      -- confidentialité : deux avertissements (22 et 23 mois), puis l'effacement.
+      -- 0 = rien envoyé, 1 = premier avertissement, 2 = second. Remis à zéro à la connexion.
+      ALTER TABLE players ADD COLUMN inactivity_warned INTEGER NOT NULL DEFAULT 0;
+      CREATE INDEX players_last_seen ON players(last_seen_at);
+    `,
+  },
 ];

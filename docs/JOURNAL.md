@@ -433,3 +433,13 @@ Deux autres restent écrites dans le jeu sans effet encore — le moral des pilo
 **Et l'aide.** « *Best support is no support* : il faut quelque chose de bien dès le départ. » Une page, *Comment on joue*, dans les deux langues, liée depuis l'en-tête de chaque page et depuis la fiche du premier vol. Elle commence par trois gestes en une minute, puis répond aux questions qu'on se pose vraiment : le courrier du jour, la ligne régulière, pourquoi un vol ne part pas, à quoi servent les francs et les cachets, les pilotes, l'aérodrome, les routes, et ce qui se passe quand on n'est pas là. Elle ne dit jamais « récompense » : on ne gagne pas des points, on fait des choses, et l'album s'en souvient. Elle finit par sept petites questions — dont la première : *« Je n'ai plus de francs, je suis bloqué ? »* Non.
 
 Bonne nouvelle au passage : sur Windows, Chrome a proposé d'installer Altiplume sur le bureau, et la notification est arrivée.
+
+## Chapitre 26 — Tenir parole (11 octobre 2026, 21 h 30)
+
+Trois promesses écrites, aucune tenue. On les a tenues.
+
+**« Après 24 mois sans connexion, le compte est supprimé, précédé de deux avertissements par email. »** C'est dans la politique de confidentialité et dans le registre depuis le premier soir — et rien, nulle part, ne le faisait. Le ménage horaire du serveur s'en charge maintenant : à vingt-deux mois, un premier email, dans la langue de la personne, qui dit que rien n'est perdu et qu'une connexion suffit ; à vingt-trois, un dernier ; à vingt-quatre, l'effacement — le compte, la compagnie, les pilotes, l'album, tout suit. Revenir, à n'importe quel moment, remet le compteur à zéro. Et le serveur n'efface jamais sans avoir envoyé les deux avertissements, même s'il a dormi deux ans d'un coup. Rien de tout cela n'arrivera avant 2028 ; mais une promesse RGPD n'attend pas d'être testée par un plaignant pour devoir être vraie.
+
+**Le moral et le trait « Nocturne »** s'affichaient sans rien changer. Un pilote heureux casse moins, désormais : à vingt de moral, un quart d'incidents en moins ; à zéro, un quart de plus. Et la nuit, aux lanternes, le risque d'incident double — sauf pour Ysé, qui est Nocturne, et qui vole de nuit comme de jour. L'aide le dit, en une phrase.
+
+**Pour que ça ne se reproduise plus**, trois tests lisent le code de la simulation et vérifient que chaque effet de trait, chaque propriété de zone, et le moral y sont réellement utilisés. Le jour où quelqu'un ajoutera un trait « Mains de fée » sans lui donner d'effet, la machine refusera — avant qu'un joueur ne le remarque.
