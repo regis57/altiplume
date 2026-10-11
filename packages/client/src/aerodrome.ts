@@ -638,7 +638,7 @@ function musicButton(): void {
 async function openScene(api: Api, setMessage: SetMessage, pilot: string, index: number, pilotName: string): Promise<void> {
   const dialog = $('histoire') as HTMLDialogElement | null;
   if (!dialog) return;
-  const r = await api('GET', `/v1/company/pilots/${encodeURIComponent(pilot)}/story/${index}`);
+  const r = await api('GET', `/v1/company/pilots/${encodeURIComponent(pilot)}/story/${index}?locale=${getLocale()}`);
   if (r.status !== 200) { setMessage('jeu-message', r.status === 403 ? 'story.locked' : 'error.server_error'); return; }
   const scene = r.body as unknown as { title: string; storyTitle: string; lines: { who: 'pilot' | 'you' | 'narrator'; text: string }[] };
   const serie = $('histoire-serie'); if (serie) serie.textContent = `${scene.storyTitle} · ${index + 1}`;

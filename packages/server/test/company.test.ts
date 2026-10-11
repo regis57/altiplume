@@ -96,6 +96,9 @@ describe('la compagnie', () => {
     // En anglais, si le joueur passe en anglais.
     await t.json('PATCH', '/v1/account', { locale: 'en' }, t.cookie);
     expect((await t.json('GET', '/v1/company/pilots/marthe/story/0', undefined, t.cookie)).json().title).toBe('The cross at the end of the lane');
+    // La langue de la page l'emporte sur celle du compte (bug vu le 11/10 : compte en anglais, page en français).
+    expect((await t.json('GET', '/v1/company/pilots/marthe/story/0?locale=fr', undefined, t.cookie)).json().title).toBe('La croix au bout du chemin');
+    expect((await t.json('GET', '/v1/company/pilots/marthe/story/0?locale=xx', undefined, t.cookie)).json().title).toBe('The cross at the end of the lane');
     await t.app.close();
   });
 

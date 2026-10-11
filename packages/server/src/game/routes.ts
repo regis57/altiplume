@@ -33,6 +33,8 @@ const foundSchema = {
 
 const sceneSchema = {
   params: { type: 'object', required: ['pilot', 'index'], properties: { pilot: { type: 'string', maxLength: 32 }, index: { type: 'string', pattern: '^[0-9]$' } } },
+  // La langue de la page, pas celle de l'inscription : on peut changer de langue après coup.
+  querystring: { type: 'object', additionalProperties: false, properties: { locale: { type: 'string', maxLength: 5 } } },
 } as const;
 
 const dispatchSchema = {
@@ -260,6 +262,6 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
       // Première histoire entendue : une page dans l'album.
       if (i === 0) awardStamp(ctx.db, company.id, 's-histoire', ctx.now());
     }
-    return localizeScene(template, i, localeOf(request));
+    return localizeScene(template, i, localeOf(request, request.query as { locale?: string }));
   });
 }
