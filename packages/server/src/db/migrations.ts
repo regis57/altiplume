@@ -167,4 +167,54 @@ export const MIGRATIONS: readonly Migration[] = [
       );
     `,
   },
+  {
+    version: 4,
+    name: 'courrier',
+    sql: `
+      -- Le jour du dernier tirage de cartes, pour ne tirer qu'une fois par jour de jeu.
+      ALTER TABLE companies ADD COLUMN last_draw_day INTEGER NOT NULL DEFAULT -1;
+      -- Compteur de vols, qui sert de graine aux aléas de chaque vol.
+      ALTER TABLE companies ADD COLUMN flights_count INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE companies ADD COLUMN deadlines_met INTEGER NOT NULL DEFAULT 0;
+      -- La fatigue se déduit du temps écoulé depuis sa dernière mise à jour : sans tick.
+      ALTER TABLE company_pilots ADD COLUMN fatigue_at INTEGER NOT NULL DEFAULT 0;
+
+      -- La main : au plus cinq cartes, identifiées par leur carte du monde.
+      CREATE TABLE company_hand (
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        card        TEXT NOT NULL,
+        drawn_at    INTEGER NOT NULL,
+        PRIMARY KEY (company_id, card)
+      );
+
+      -- Les vols. L'état se déduit des horodatages ; rien ne les fait avancer.
+      CREATE TABLE flights (
+        id           TEXT PRIMARY KEY,
+        company_id   TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        card         TEXT NOT NULL,
+        plane_id     TEXT NOT NULL,
+        pilot_id     TEXT NOT NULL,
+        destination  TEXT NOT NULL,
+        departed_at  INTEGER NOT NULL,
+        duration_ms  INTEGER NOT NULL,            -- aller simple ; retour de même durée
+        deadline_at  INTEGER NOT NULL,            -- délai souple : bonus si arrivée avant
+        reward       INTEGER NOT NULL,
+        bonus        INTEGER NOT NULL,
+        incident     INTEGER NOT NULL DEFAULT 0,  -- 1 si l'aléa du vol a frappé
+        settled_at   INTEGER                      -- NULL tant que l'arrivée n'a pas été encaissée
+      );
+      CREATE INDEX flights_company ON flights(company_id, settled_at);
+
+      -- Le livre de bord : chaque mouvement, en ajout seulement.
+      CREATE TABLE ledger (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        at          INTEGER NOT NULL,
+        kind        TEXT NOT NULL,                -- flight.departed, flight.arrived, card.played, purchase, ...
+        francs      INTEGER NOT NULL DEFAULT 0,   -- signé
+        ref         TEXT                          -- carte, destination, avion... un code, jamais du texte libre
+      );
+      CREATE INDEX ledger_company ON ledger(company_id, at);
+    `,
+  },
 ];

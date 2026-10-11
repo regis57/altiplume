@@ -15,7 +15,7 @@ export interface Company {
 export interface CompanyPlane { readonly id: string; readonly model: string; readonly wear: number; readonly acquiredAt: number }
 export interface CompanyPilot {
   readonly id: string; readonly pilot: string; readonly affinity: number; readonly morale: number; readonly fatigue: number;
-  readonly scenesSeen: number; readonly hiredAt: number;
+  readonly scenesSeen: number; readonly hiredAt: number; readonly fatigueAt: number;
 }
 export interface CompanyStamp { readonly stamp: string; readonly earnedAt: number }
 export interface CompanyDecoration { readonly decoration: string; readonly placedAt: number }
@@ -74,16 +74,16 @@ export function awardStamp(db: Database, companyId: string, stamp: string, now: 
 }
 
 export function loadCompanyState(db: Database, company: Company): CompanyState {
-  const planes = (db.prepare('SELECT id, model, wear, acquired_at FROM company_planes WHERE company_id = ? ORDER BY acquired_at').all(company.id) as
+  const planes = (db.prepare('SELECT id, model, wear, acquired_at FROM company_planes WHERE company_id = ? ORDER BY acquired_at, rowid').all(company.id) as
     { id: string; model: string; wear: number; acquired_at: number }[]).map((r) => ({ id: r.id, model: r.model, wear: r.wear, acquiredAt: r.acquired_at }));
-  const pilots = (db.prepare('SELECT * FROM company_pilots WHERE company_id = ? ORDER BY hired_at').all(company.id) as
-    { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenes_seen: number; hired_at: number }[])
-    .map((r) => ({ id: r.id, pilot: r.pilot, affinity: r.affinity, morale: r.morale, fatigue: r.fatigue, scenesSeen: r.scenes_seen, hiredAt: r.hired_at }));
+  const pilots = (db.prepare('SELECT * FROM company_pilots WHERE company_id = ? ORDER BY hired_at, rowid').all(company.id) as
+    { id: string; pilot: string; affinity: number; morale: number; fatigue: number; fatigue_at: number; scenes_seen: number; hired_at: number }[])
+    .map((r) => ({ id: r.id, pilot: r.pilot, affinity: r.affinity, morale: r.morale, fatigue: r.fatigue, fatigueAt: r.fatigue_at, scenesSeen: r.scenes_seen, hiredAt: r.hired_at }));
   const zones: Record<string, number> = {};
   for (const r of db.prepare('SELECT zone, level FROM company_zones WHERE company_id = ?').all(company.id) as { zone: string; level: number }[]) zones[r.zone] = r.level;
-  const decorations = (db.prepare('SELECT decoration, placed_at FROM company_decorations WHERE company_id = ? ORDER BY placed_at').all(company.id) as
+  const decorations = (db.prepare('SELECT decoration, placed_at FROM company_decorations WHERE company_id = ? ORDER BY placed_at, rowid').all(company.id) as
     { decoration: string; placed_at: number }[]).map((r) => ({ decoration: r.decoration, placedAt: r.placed_at }));
-  const stamps = (db.prepare('SELECT stamp, earned_at FROM company_stamps WHERE company_id = ? ORDER BY earned_at').all(company.id) as
+  const stamps = (db.prepare('SELECT stamp, earned_at FROM company_stamps WHERE company_id = ? ORDER BY earned_at, rowid').all(company.id) as
     { stamp: string; earned_at: number }[]).map((r) => ({ stamp: r.stamp, earnedAt: r.earned_at }));
   return { company, planes, pilots, zones, decorations, stamps };
 }

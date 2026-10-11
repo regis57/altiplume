@@ -115,6 +115,26 @@ le banc, la manche à air rayée, l'enseigne, le drapeau de la vallée, la boît
 lettres au bout du chemin, la lanterne de piste, le pommier, les tables du café, la
 peinture du hangar.
 
+## Les règles du vol (v0.1)
+
+- **Expédier** demande une carte contrat en main, un avion libre qui porte assez de
+  sacs et peut se poser sur la piste du village, un pilote libre et pas trop fatigué,
+  et de quoi payer le départ (salaire du pilote + entretien de l'avion, moins avec
+  « Économe »).
+- **Durée** = distance ÷ vitesse (× « Tête brûlée »). L'aller livre ; le retour dure
+  autant ; avion et pilote sont occupés jusqu'au retour.
+- **Aléas**, tirés d'une graine par joueur et par vol, donc rejouables : un incident
+  (probabilité 1 − fiabilité, aggravée par l'usure) allonge le vol de 30 % et use
+  l'avion ; la brume de Moulin-Gris ajoute vingt minutes une fois sur deux (une sur
+  quatre avec « Météo dans la peau »).
+- **À l'arrivée** : la récompense, plus le bonus si le délai souple est tenu ; jamais
+  de pénalité. Affinité +1 avec le pilote ; moral +1 si à l'heure, −1 si incident.
+- **Fatigue** : +1 par vol (+2 au-delà de trois lieues, × « Cœur de village »), −1
+  toutes les trois heures. À 8, le pilote se repose.
+- **Cartes** : trois par jour de jeu (minuit UTC), dans la place qui reste d'une main
+  de cinq. Ce qu'on n'a pas la place de prendre, quelqu'un d'autre l'a porté : ce
+  n'est pas une perte. Une carte défaussée ne revient pas le jour même.
+
 ## L'album de cachets
 
 Douze pages dans la v0.1 : Fondation, Premier vol, une par village, Vol de nuit,

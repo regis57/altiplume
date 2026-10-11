@@ -14,6 +14,10 @@ import { gameDayIndex } from '../sim/day.ts';
 import { deriveSeed } from '../sim/rng.ts';
 import { findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
+import {
+  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, planDispatch, playCard, settle, type News,
+} from './sim.ts';
+import type { Database } from '../db/database.ts';
 
 const namesSchema = {
   querystring: {
@@ -31,18 +35,54 @@ const sceneSchema = {
   params: { type: 'object', required: ['pilot', 'index'], properties: { pilot: { type: 'string', maxLength: 32 }, index: { type: 'string', pattern: '^[0-9]$' } } },
 } as const;
 
-/** L'état de la compagnie tel que le client le reçoit. */
-function view(state: CompanyState) {
+const dispatchSchema = {
+  body: {
+    type: 'object', required: ['card', 'plane', 'pilot'], additionalProperties: false,
+    properties: { card: { type: 'string', maxLength: 40 }, plane: { type: 'string', maxLength: 40 }, pilot: { type: 'string', maxLength: 40 } },
+  },
+} as const;
+
+const playSchema = {
+  params: { type: 'object', required: ['card'], properties: { card: { type: 'string', maxLength: 40 } } },
+  body: { type: 'object', additionalProperties: false, properties: { choice: { type: 'string', maxLength: 20 } } },
+} as const;
+
+const cardSchema = {
+  params: { type: 'object', required: ['card'], properties: { card: { type: 'string', maxLength: 40 } } },
+} as const;
+
+/** L'état de la compagnie tel que le client le reçoit, à l'instant `now`. */
+function view(db: Database, state: CompanyState, now: number, news: News[] = []) {
+  const flights = listFlights(db, state.company.id, now).map((f) => {
+    const arrivesAt = f.departed_at + f.duration_ms;
+    const back = busyUntil(f);
+    const status = now >= back ? 'done' : now >= arrivesAt ? 'returning' : 'en_route';
+    return {
+      id: f.id, card: f.card, destination: f.destination, plane: f.plane_id, pilot: f.pilot_id,
+      departedAt: f.departed_at, arrivesAt, busyUntil: back, deadlineAt: f.deadline_at, reward: f.reward, bonus: f.bonus,
+      status, progress: Math.min(1, Math.max(0, (now - f.departed_at) / (2 * f.duration_ms))), settled: f.settled_at !== null,
+    };
+  });
+  const busyPlanes = new Map(flights.filter((f) => f.status !== 'done').map((f) => [f.plane, f.busyUntil]));
+  const busyPilots = new Map(flights.filter((f) => f.status !== 'done').map((f) => [f.pilot, f.busyUntil]));
   return {
     name: state.company.name,
     francs: state.company.francs,
     stamps: state.company.stamps,
     foundedAt: state.company.foundedAt,
-    planes: state.planes.map((p) => ({ id: p.id, model: p.model, wear: p.wear })),
-    pilots: state.pilots.map((p) => ({ id: p.id, pilot: p.pilot, affinity: p.affinity, morale: p.morale, fatigue: p.fatigue, scenesSeen: p.scenesSeen })),
+    now,
+    planes: state.planes.map((p) => ({ id: p.id, model: p.model, wear: p.wear, busyUntil: busyPlanes.get(p.id) ?? null })),
+    pilots: state.pilots.map((p) => ({
+      id: p.id, pilot: p.pilot, affinity: p.affinity, morale: p.morale, scenesSeen: p.scenesSeen,
+      fatigue: currentFatigue({ fatigue: p.fatigue, fatigue_at: p.fatigueAt }, now), busyUntil: busyPilots.get(p.id) ?? null,
+    })),
     zones: state.zones,
     decorations: state.decorations.map((d) => d.decoration),
     album: state.stamps.map((s) => ({ id: s.stamp, earnedAt: s.earnedAt })),
+    hand: listHand(db, state.company.id),
+    flights,
+    logbook: listLedger(db, state.company.id),
+    news,
   };
 }
 
@@ -60,10 +100,65 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     return { names: suggestNames(locale, seed, 3) };
   });
 
+  /** Charge la compagnie après avoir rattrapé le temps écoulé. */
+  function current(playerId: string, now: number) {
+    const before = findCompanyByPlayer(ctx.db, playerId);
+    if (!before) return null;
+    const news = settle(ctx.db, before, playerId, now);
+    const company = findCompanyByPlayer(ctx.db, playerId)!;
+    return { company, news };
+  }
+
   app.get('/v1/company', { preHandler: requirePlayer }, async (request, reply) => {
+    const now = ctx.now();
+    const c = current(request.player!.id, now);
+    if (!c) return reply.code(404).send({ error: 'no_company' });
+    return view(ctx.db, loadCompanyState(ctx.db, c.company), now, c.news);
+  });
+
+  /** Expédier : une carte contrat, un avion, un pilote. Le serveur calcule tout. */
+  app.post('/v1/company/flights', {
+    schema: dispatchSchema, preHandler: requirePlayer,
+    config: { rateLimit: { max: 60, timeWindow: '15 minutes' } },
+  }, async (request, reply) => {
+    const now = ctx.now();
+    const playerId = request.player!.id;
+    const c = current(playerId, now);
+    if (!c) return reply.code(404).send({ error: 'no_company' });
+    const body = request.body as { card: string; plane: string; pilot: string };
+    const plan = planDispatch(ctx.db, c.company, body.card, body.plane, body.pilot, now);
+    if (!plan.ok) return reply.code(400).send({ error: plan.error });
+    const flight = dispatch(ctx.db, c.company, playerId, plan.plan, now);
+    audit(ctx.db, 'flight.dispatched', playerId, { destination: flight.destination }, now);
+    const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
+    return reply.code(201).send({ flight: flight.id, ...view(ctx.db, state, now, c.news) });
+  });
+
+  /** Jouer un imprévu (avec un choix) ou saisir une opportunité. */
+  app.post('/v1/company/cards/:card/play', {
+    schema: playSchema, preHandler: requirePlayer,
+    config: { rateLimit: { max: 60, timeWindow: '15 minutes' } },
+  }, async (request, reply) => {
+    const now = ctx.now();
+    const playerId = request.player!.id;
+    const c = current(playerId, now);
+    if (!c) return reply.code(404).send({ error: 'no_company' });
+    const { card } = request.params as { card: string };
+    const { choice } = request.body as { choice?: string };
+    const result = playCard(ctx.db, c.company, card, choice, now);
+    if (!result.ok) return reply.code(400).send({ error: result.error });
+    audit(ctx.db, 'card.played', playerId, { card }, now);
+    const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
+    return reply.code(200).send({ effects: result.effects, ref: result.ref ?? null, ...view(ctx.db, state, now, c.news) });
+  });
+
+  /** Défausser une carte : elle ne reviendra pas aujourd'hui. */
+  app.delete('/v1/company/cards/:card', { schema: cardSchema, preHandler: requirePlayer }, async (request, reply) => {
     const company = findCompanyByPlayer(ctx.db, request.player!.id);
     if (!company) return reply.code(404).send({ error: 'no_company' });
-    return view(loadCompanyState(ctx.db, company));
+    const { card } = request.params as { card: string };
+    if (!discardCard(ctx.db, company, card)) return reply.code(404).send({ error: 'card_unknown' });
+    return reply.code(204).send();
   });
 
   /** Fondation : une fois, un nom propre, et tout l'état de départ. */
@@ -78,7 +173,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const now = ctx.now();
     const company = foundCompany(ctx.db, player.id, name, now);
     audit(ctx.db, 'company.founded', player.id, {}, now);
-    return reply.code(201).send(view(loadCompanyState(ctx.db, company)));
+    return reply.code(201).send(view(ctx.db, loadCompanyState(ctx.db, company), now, settle(ctx.db, company, player.id, now)));
   });
 
   app.patch('/v1/company', { schema: foundSchema, preHandler: requirePlayer }, async (request, reply) => {

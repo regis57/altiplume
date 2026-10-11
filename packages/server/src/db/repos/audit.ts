@@ -20,7 +20,9 @@ export type AuditEvent =
   | 'device.approved'
   | 'device.denied'
   | 'company.founded'
-  | 'company.renamed';
+  | 'company.renamed'
+  | 'flight.dispatched'
+  | 'card.played';
 
 export function audit(
   db: Database, event: AuditEvent, playerId: string | null, meta: Record<string, string | number | boolean> = {}, now: number = Date.now(),

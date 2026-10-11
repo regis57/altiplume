@@ -54,9 +54,19 @@ title: Mon aérodrome
       </dl>
     </div>
 
+    <ul class="nouvelles" id="nouvelles" aria-live="polite"></ul>
+
+    <section class="bloc" aria-labelledby="t-vols">
+      <h2 id="t-vols" data-i18n="game.flights">En vol</h2>
+      <p class="aide cache" id="vols-vide" data-i18n="game.noFlights">Personne en l'air. La Grive attend devant le hangar.</p>
+      <ul class="fiches" id="vols"></ul>
+    </section>
+
     <section class="bloc" aria-labelledby="t-courrier">
-      <h2 id="t-courrier" data-i18n="game.mail">Le courrier</h2>
-      <p data-i18n="game.mailSoon">Les premiers contrats arrivent avec la prochaine version : trois cartes par jour, un pilote, un avion, et du vrai temps de vol. En attendant, la Grive est au hangar et Marthe regarde le ciel.</p>
+      <h2 id="t-courrier" data-i18n="game.mail">Le courrier du jour</h2>
+      <p class="aide" data-i18n="game.mailHelp">Trois cartes par jour, cinq en main au plus. Un contrat s'expédie ; un imprévu se tranche ; une opportunité se saisit ou se laisse.</p>
+      <p class="aide cache" id="main-vide" data-i18n="game.handEmpty">Rien en main. De nouvelles cartes arrivent demain.</p>
+      <ul class="cartes" id="main"></ul>
     </section>
 
     <section class="bloc" aria-labelledby="t-pilotes">
@@ -72,6 +82,11 @@ title: Mon aérodrome
     <section class="bloc" aria-labelledby="t-zones">
       <h2 id="t-zones" data-i18n="game.field">L'aérodrome</h2>
       <ul class="fiches" id="zones"></ul>
+    </section>
+
+    <section class="bloc" aria-labelledby="t-bord">
+      <h2 id="t-bord" data-i18n="game.logbook">Le livre de bord</h2>
+      <ul class="bord" id="bord"></ul>
     </section>
 
     <section class="bloc" aria-labelledby="t-album">
