@@ -12,6 +12,8 @@ export type AuditEvent =
   | 'player.renamed'
   | 'player.exported'
   | 'player.deleted'
+  | 'player.inactivity_warned'
+  | 'player.expired'
   | 'magic_link.sent'
   | 'magic_link.rejected'
   | 'passkey.added'

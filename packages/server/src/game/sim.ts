@@ -263,7 +263,14 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
   return transaction(db, () => {
     const row = db.prepare('SELECT flights_count FROM companies WHERE id = ?').get(company.id) as { flights_count: number };
     const rng = makeRng(deriveSeed(playerId, row.flights_count, 'flight'));
-    const reliability = Math.min(1, plan.model.reliability * traitFactor(plan.template, 'reliability') * (1 - plan.plane.wear / 400));
+    // La nuit aux lanternes : le risque d'incident double, sauf pour un pilote Nocturne (÷ 4).
+    const hour = new Date(now).getUTCHours();
+    const nightFlight = plan.destination.hazard === 'night' && (hour >= 20 || hour < 6);
+    const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') : 1;
+    // Le moral compte : un pilote heureux casse moins (20 → risque × 0,75), un pilote abattu plus (0 → × 1,25).
+    const moraleFactor = 1 + (10 - plan.pilot.morale) / 40;
+    const baseReliability = Math.min(1, plan.model.reliability * traitFactor(plan.template, 'reliability') * (1 - plan.plane.wear / 400));
+    const reliability = 1 - Math.min(1, (1 - baseReliability) * nightFactor * moraleFactor);
     const incident = rng() > reliability;
     let durationMs = plan.durationMs;
     if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk')) durationMs += FOG_DELAY_MS;

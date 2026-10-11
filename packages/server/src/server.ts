@@ -6,6 +6,7 @@ import { purgeExpiredSessions } from './db/repos/sessions.ts';
 import { purgeOldAudit } from './db/repos/audit.ts';
 import { purgeExpiredChallenges } from './db/repos/passkeys.ts';
 import { purgeExpiredDeviceCodes } from './db/repos/deviceCodes.ts';
+import { sweepInactive } from './account/inactivite.ts';
 import { BrevoMailer, ConsoleMailer, type Mailer } from './mail/mailer.ts';
 import type { AppContext } from './context.ts';
 import { WebPushSender } from './push/webpush.ts';
@@ -37,6 +38,8 @@ const housekeeping = setInterval(() => {
   purgeOldAudit(db, now);
   purgeExpiredChallenges(db, now);
   purgeExpiredDeviceCodes(db, now);
+  // Les comptes inactifs : avertis à 22 et 23 mois, effacés à 24 — la promesse de la politique de confidentialité.
+  sweepInactive(ctx, now).catch((error) => app.log.error(error));
 }, 3_600_000);
 housekeeping.unref();
 

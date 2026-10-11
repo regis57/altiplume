@@ -181,8 +181,9 @@ peinture du hangar.
 - **Durée** = distance ÷ vitesse (× « Tête brûlée »). L'aller livre ; le retour dure
   autant ; avion et pilote sont occupés jusqu'au retour.
 - **Aléas**, tirés d'une graine par joueur et par vol, donc rejouables : un incident
-  (probabilité 1 − fiabilité, aggravée par l'usure) allonge le vol de 30 % et use
-  l'avion ; la brume de Moulin-Gris ajoute vingt minutes une fois sur deux (une sur
+  (probabilité 1 − fiabilité, aggravée par l'usure ; **× 2 la nuit aux lanternes**, ÷ 4
+  pour un pilote Nocturne ; **× 0,75 à 20 de moral, × 1,25 à 0** — un pilote heureux
+  casse moins) allonge le vol de 30 % et use l'avion ; la brume de Moulin-Gris ajoute vingt minutes une fois sur deux (une sur
   quatre avec « Météo dans la peau »).
 - **À l'arrivée** : la récompense, plus le bonus si le délai souple est tenu ; jamais
   de pénalité. Affinité +1 avec le pilote ; moral +1 si à l'heure, −1 si incident.
