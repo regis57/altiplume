@@ -63,11 +63,12 @@ describe('le monde — intégrité', () => {
     expect(story).toContain('Crosslet Lane');
   });
 
-  it('livre la tranche v0.1 : 6 destinations, 3 avions, 4 pilotes, 20+10+4 cartes, 10 décorations', () => {
+  it('livre la tranche v0.1 : 6 destinations, 3 avions, 4 pilotes, 20+10+4 cartes et la ligne régulière, 10 décorations', () => {
     expect(WORLD.destinations).toHaveLength(6);
     expect(WORLD.planes).toHaveLength(3);
     expect(WORLD.pilots).toHaveLength(4);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract')).toHaveLength(20);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing)).toHaveLength(20);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.standing)).toHaveLength(1);
     expect(WORLD.cards.filter((c) => c.kind === 'event')).toHaveLength(10);
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity')).toHaveLength(4);
     expect(WORLD.decorations).toHaveLength(10);
@@ -80,7 +81,7 @@ describe('le monde — intégrité', () => {
         expect(d, c.id).toBeDefined();
         expect(d!.mail, `${c.id} : ${c.cargo} n'est pas un courrier de ${c.destination}`).toContain(c.cargo);
         expect(c.bags).toBeGreaterThanOrEqual(1);
-        expect(c.bonus).toBeGreaterThan(0);
+        if (c.standing) expect(c.bonus).toBe(0); else expect(c.bonus).toBeGreaterThan(0);
       }
       if (c.kind === 'opportunity' && c.offer.type === 'plane') expect(findPlane(c.offer.model)).toBeDefined();
       if (c.kind === 'event') expect(c.choices.length).toBeGreaterThanOrEqual(2);
