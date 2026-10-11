@@ -246,4 +246,20 @@ export const MIGRATIONS: readonly Migration[] = [
       CREATE INDEX flights_to_notify ON flights(notified_at) WHERE notified_at IS NULL;
     `,
   },
+  {
+    version: 7,
+    name: 'cote-de-saline',
+    sql: `
+      -- Les routes ouvertes : une ligne par région au-delà de celle de départ.
+      CREATE TABLE company_regions (
+        company_id  TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+        region      TEXT NOT NULL,
+        opened_at   INTEGER NOT NULL,
+        PRIMARY KEY (company_id, region)
+      );
+      INSERT INTO company_regions (company_id, region, opened_at) SELECT id, 'brume', founded_at FROM companies;
+      -- Le ponton : une zone de plus, au niveau 1 (la rive nue) pour les compagnies existantes.
+      INSERT OR IGNORE INTO company_zones (company_id, zone, level) SELECT id, 'ponton', 1 FROM companies;
+    `,
+  },
 ];

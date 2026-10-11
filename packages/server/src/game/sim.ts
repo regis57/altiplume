@@ -16,8 +16,8 @@ import { awardStamp, type Company } from '../db/repos/companies.ts';
 import { newId } from '../auth/tokens.ts';
 import { gameDayIndex } from '../sim/day.ts';
 import { deriveSeed, makeRng, type Rng } from '../sim/rng.ts';
-import { findCard, findDestination, findPilot, findPlane, findTrait, flightDurationMs, WORLD } from '../world/index.ts';
-import type { ContractCard, Destination, PilotTemplate, PlaneModel, Runway, TraitId } from '../world/types.ts';
+import { cardRegion, findCard, findDestination, findPilot, findPlane, findRegion, findTrait, flightDurationMs, regionDestinations, WORLD } from '../world/index.ts';
+import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Runway, TraitId } from '../world/types.ts';
 
 export const HAND_SIZE = 5;
 export const DAILY_DRAW = 3;
@@ -26,6 +26,8 @@ export const FATIGUE_LIMIT = 8;
 /** Un point de fatigue s'efface toutes les trois heures. */
 export const FATIGUE_RECOVERY_MS = 3 * 3_600_000;
 const FOG_DELAY_MS = 20 * 60_000;
+/** Le vent de mer : plus court que la brume, mais il ne prévient pas. */
+const SEAWIND_DELAY_MS = 15 * 60_000;
 const INCIDENT_DELAY_FACTOR = 1.3;
 const INCIDENT_WEAR = 15;
 const FLIGHT_WEAR = 5;
@@ -42,10 +44,23 @@ export interface FlightRow {
   deadline_at: number; reward: number; bonus: number; incident: number; settled_at: number | null;
 }
 
-const RUNWAY_ORDER: Record<Runway, number> = { short: 0, medium: 1, long: 2 };
+const RUNWAY_ORDER: Record<Runway, number> = { short: 0, medium: 1, long: 2, water: 3 };
 
+/** Un hydravion se pose sur l'eau et seulement sur l'eau ; les autres, sur une piste assez longue. */
 export function canLand(plane: PlaneModel, destination: Destination): boolean {
+  if (plane.runway === 'water' || destination.runway === 'water') return plane.runway === destination.runway;
   return RUNWAY_ORDER[plane.runway] <= RUNWAY_ORDER[destination.runway];
+}
+
+/** Le cachet « toute la région » de chaque région. */
+const REGION_STAMP: Record<RegionId, string> = { brume: 's-vallee', saline: 's-cote' };
+
+/** Les régions dont la route est ouverte ; celle de départ l'est toujours. */
+export function unlockedRegions(db: Database, companyId: string): RegionId[] {
+  const rows = db.prepare('SELECT region FROM company_regions WHERE company_id = ? ORDER BY opened_at').all(companyId) as { region: string }[];
+  const set = new Set<RegionId>(['brume']);
+  for (const r of rows) if (findRegion(r.region)) set.add(r.region as RegionId);
+  return [...set];
 }
 
 /** Multiplicateur combiné des deux traits d'un pilote pour un effet donné. */
@@ -87,8 +102,8 @@ function ledger(db: Database, companyId: string, now: number, kind: string, fran
 // ---- Le jour : tirage des cartes ----
 
 /** Tire les cartes du jour, pondérées par rareté et par la chance des pilotes. */
-export function drawCards(rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW): string[] {
-  const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing));
+export function drawCards(rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume']): string[] {
+  const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing) && regions.includes(cardRegion(c)));
   const out: string[] = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
     // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
@@ -136,13 +151,18 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
       // L'album.
       const stamps: string[] = ['s-premier-vol', `s-${f.destination}`];
+      const dest = findDestination(f.destination);
       const hour = new Date(arrivedAt).getUTCHours();
-      if (findDestination(f.destination)?.hazard === 'night' && (hour >= 20 || hour < 6)) stamps.push('s-nuit');
+      if (dest?.hazard === 'night' && (hour >= 20 || hour < 6)) stamps.push('s-nuit');
+      if (dest?.runway === 'water') stamps.push('s-hydravion');
       if (deadlinesMet >= 10) stamps.push('s-delai');
       for (const s of stamps) if (awardStamp(db, company.id, s, arrivedAt)) news.push({ kind: 'stamp', stamp: s });
-      const delivered = db.prepare('SELECT COUNT(*) AS n FROM company_stamps WHERE company_id = ? AND stamp IN (' + WORLD.destinations.map(() => '?').join(',') + ')')
-        .get(company.id, ...WORLD.destinations.map((d) => `s-${d.id}`)) as { n: number };
-      if (Number(delivered.n) === WORLD.destinations.length && awardStamp(db, company.id, 's-vallee', arrivedAt)) news.push({ kind: 'stamp', stamp: 's-vallee' });
+      // Toute la région livrée : la page qui ouvre la suivante.
+      const region = dest?.region ?? 'brume';
+      const all = regionDestinations(region);
+      const delivered = db.prepare('SELECT COUNT(*) AS n FROM company_stamps WHERE company_id = ? AND stamp IN (' + all.map(() => '?').join(',') + ')')
+        .get(company.id, ...all.map((d) => `s-${d.id}`)) as { n: number };
+      if (Number(delivered.n) === all.length && awardStamp(db, company.id, REGION_STAMP[region], arrivedAt)) news.push({ kind: 'stamp', stamp: REGION_STAMP[region] });
     }
     if (deadlinesMet !== row.deadlines_met) db.prepare('UPDATE companies SET deadlines_met = ? WHERE id = ?').run(deadlinesMet, company.id);
 
@@ -154,7 +174,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       const luck = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(company.id) as { pilot: string }[])
         .reduce((f, r) => { const p = findPilot(r.pilot); return p ? f * traitFactor(p, 'luck') : f; }, 1);
       const inFlight = (db.prepare('SELECT card FROM flights WHERE company_id = ? AND settled_at IS NULL').all(company.id) as { card: string }[]).map((r) => r.card);
-      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck);
+      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id));
       let added = 0;
       for (const card of drawn.slice(0, Math.max(0, room))) {
         db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, now);
@@ -171,7 +191,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
 export type DispatchError =
   | 'card_unknown' | 'card_not_contract' | 'plane_unknown' | 'pilot_unknown' | 'plane_busy' | 'pilot_busy' | 'pilot_tired'
-  | 'plane_too_small' | 'runway_too_short' | 'out_of_range' | 'not_enough_francs' | 'event_pending';
+  | 'plane_too_small' | 'runway_too_short' | 'needs_seaplane' | 'needs_water' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked';
 
 export interface DispatchPlan {
   readonly card: ContractCard;
@@ -194,6 +214,7 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
   if (pendingEvent(db, company)) return { ok: false, error: 'event_pending' };
   const destination = findDestination(card.destination);
   if (!destination) return { ok: false, error: 'card_unknown' };
+  if (!unlockedRegions(db, company.id).includes(destination.region)) return { ok: false, error: 'region_locked' };
   const plane = db.prepare('SELECT id, model, wear FROM company_planes WHERE id = ? AND company_id = ?').get(planeId, company.id) as PlaneRow | undefined;
   const model = plane ? findPlane(plane.model) : undefined;
   if (!plane || !model) return { ok: false, error: 'plane_unknown' };
@@ -206,7 +227,11 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
   if (busy.some((b) => b.pilot_id === pilot.id)) return { ok: false, error: 'pilot_busy' };
   if (currentFatigue(pilot, now) >= FATIGUE_LIMIT) return { ok: false, error: 'pilot_tired' };
   if (model.capacity < card.bags) return { ok: false, error: 'plane_too_small' };
-  if (!canLand(model, destination)) return { ok: false, error: 'runway_too_short' };
+  if (!canLand(model, destination)) {
+    if (destination.runway === 'water') return { ok: false, error: 'needs_seaplane' };
+    if (model.runway === 'water') return { ok: false, error: 'needs_water' };
+    return { ok: false, error: 'runway_too_short' };
+  }
   if (destination.distance > model.range * traitFactor(template, 'range')) return { ok: false, error: 'out_of_range' };
 
   const cost = Math.round(template.wage + model.upkeep * traitFactor(template, 'fuel'));
@@ -224,6 +249,7 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     const incident = rng() > reliability;
     let durationMs = plan.durationMs;
     if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk')) durationMs += FOG_DELAY_MS;
+    if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk')) durationMs += SEAWIND_DELAY_MS;
     if (incident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
     const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(plan.template, 'wear'));
     const fatigueGain = Math.max(1, Math.round((plan.destination.distance >= 3 ? 2 : 1) * traitFactor(plan.template, 'fatigue')));
@@ -245,7 +271,7 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
 
 // ---- Jouer une carte (imprévu, opportunité) ou la défausser ----
 
-export type PlayError = 'card_unknown' | 'choice_unknown' | 'not_enough_francs' | 'hangar_full' | 'no_pilot_available' | 'card_is_contract';
+export type PlayError = 'card_unknown' | 'choice_unknown' | 'not_enough_francs' | 'hangar_full' | 'no_pontoon' | 'no_pilot_available' | 'card_is_contract';
 
 export function playCard(db: Database, company: Company, cardId: string, choiceId: string | undefined, now: number): { ok: true; effects: Record<string, number>; ref?: string } | { ok: false; error: PlayError } {
   const inHand = db.prepare('SELECT 1 FROM company_hand WHERE company_id = ? AND card = ?').get(company.id, cardId);
@@ -277,10 +303,16 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
       const offer = card.offer;
       if (offer.type === 'plane') {
         const model = findPlane(offer.model)!;
-        const hangar = (db.prepare('SELECT level FROM company_zones WHERE company_id = ? AND zone = ?').get(company.id, 'hangar') as { level: number } | undefined)?.level ?? 1;
-        const capacity = WORLD.zones.find((z) => z.id === 'hangar')!.levels.find((l) => l.level === hangar)?.planes ?? 1;
-        const owned = (db.prepare('SELECT COUNT(*) AS n FROM company_planes WHERE company_id = ?').get(company.id) as { n: number }).n;
-        if (Number(owned) >= capacity) return { ok: false as const, error: 'hangar_full' as const };
+        // Un hydravion s'amarre au ponton ; les autres dorment au hangar.
+        const seaplane = model.runway === 'water';
+        const zoneId = seaplane ? 'ponton' : 'hangar';
+        const level = (db.prepare('SELECT level FROM company_zones WHERE company_id = ? AND zone = ?').get(company.id, zoneId) as { level: number } | undefined)?.level ?? 1;
+        const zoneLevel = WORLD.zones.find((z) => z.id === zoneId)!.levels.find((l) => l.level === level);
+        const capacity = (seaplane ? zoneLevel?.seaplanes : zoneLevel?.planes) ?? 0;
+        const waterModels = WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id);
+        const owned = (db.prepare('SELECT model FROM company_planes WHERE company_id = ?').all(company.id) as { model: string }[])
+          .filter((r) => waterModels.includes(r.model) === seaplane).length;
+        if (owned >= capacity) return { ok: false as const, error: seaplane ? 'no_pontoon' as const : 'hangar_full' as const };
         if (company.francs < offer.price) return { ok: false as const, error: 'not_enough_francs' as const };
         db.prepare('INSERT INTO company_planes (id, company_id, model, wear, acquired_at) VALUES (?, ?, ?, 10, ?)').run(newId(), company.id, model.id, now);
         db.prepare('UPDATE companies SET francs = francs - ? WHERE id = ?').run(offer.price, company.id);
@@ -321,6 +353,31 @@ export function pendingEvent(db: Database, company: Company): string | null {
 export function discardCard(db: Database, company: Company, cardId: string): boolean {
   if (findCard(cardId)?.kind === 'event') return false;
   return Number(db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, cardId).changes) === 1;
+}
+
+// ---- Ouvrir une route ----
+
+export type RouteError = 'region_unknown' | 'region_open' | 'route_requires' | 'not_enough_stamps';
+
+/**
+ * Ouvre la route d'une région : il faut la page d'album exigée, et les cachets
+ * se dépensent — c'est la monnaie de prestige, elle sert à ça.
+ */
+export function openRegion(db: Database, company: Company, regionId: string, now: number): { ok: true } | { ok: false; error: RouteError } {
+  const region = findRegion(regionId);
+  if (!region || !region.route) return { ok: false, error: 'region_unknown' };
+  return transaction(db, () => {
+    if (unlockedRegions(db, company.id).includes(region.id)) return { ok: false as const, error: 'region_open' as const };
+    const has = db.prepare('SELECT 1 FROM company_stamps WHERE company_id = ? AND stamp = ?').get(company.id, region.route!.requires);
+    if (!has) return { ok: false as const, error: 'route_requires' as const };
+    const stamps = (db.prepare('SELECT stamps FROM companies WHERE id = ?').get(company.id) as { stamps: number }).stamps;
+    if (stamps < region.route!.cost) return { ok: false as const, error: 'not_enough_stamps' as const };
+    db.prepare('UPDATE companies SET stamps = stamps - ? WHERE id = ?').run(region.route!.cost, company.id);
+    db.prepare('INSERT INTO company_regions (company_id, region, opened_at) VALUES (?, ?, ?)').run(company.id, region.id, now);
+    ledger(db, company.id, now, 'route.opened', 0, region.id);
+    awardStamp(db, company.id, `s-route-${region.id}`, now);
+    return { ok: true as const };
+  });
 }
 
 // ---- Restaurer et décorer ----

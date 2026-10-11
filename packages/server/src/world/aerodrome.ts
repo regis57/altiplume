@@ -24,6 +24,14 @@ export const ZONES: readonly Zone[] = [
       { level: 3, cost: 2000, planes: 3, maintenance: 1.5, name: { fr: 'Atelier', en: 'Workshop' }, description: { fr: "Trois avions, un treuil, et un coin où quelqu'un a dessiné la place de chaque outil au crayon.", en: 'Three planes, a hoist, and a corner where someone has pencilled the place of every tool.' } },
     ],
   },
+  {
+    id: 'ponton',
+    name: { fr: 'Le ponton', en: 'The pontoon' },
+    levels: [
+      { level: 1, cost: 0, seaplanes: 0, name: { fr: 'La rive', en: 'The bank' }, description: { fr: "La rivière passe au bout de la piste, lente et assez large. Rien n'y est amarré. Pas encore.", en: 'The river runs past the end of the strip, slow and wide enough. Nothing is moored there. Not yet.' } },
+      { level: 2, cost: 1500, seaplanes: 1, name: { fr: 'Ponton sur la rivière', en: 'River pontoon' }, description: { fr: "Des planches sur pilotis, deux bollards, une échelle. Un hydravion peut s'y amarrer — et partir pour la Côte.", en: 'Planks on piles, two bollards, a ladder. A seaplane can moor here — and leave for the Shore.' } },
+    ],
+  },
 ];
 
 export const DECORATIONS: readonly Decoration[] = [
@@ -56,5 +64,15 @@ export const STAMPS: readonly Stamp[] = [
   { id: 's-nuit', name: { fr: 'Vol de nuit', en: 'Night flight' }, description: { fr: "Un atterrissage aux lanternes, après le coucher du soleil.", en: 'A landing by lantern light, after sunset.' } },
   { id: 's-delai', name: { fr: 'À l\'heure', en: 'On time' }, description: { fr: "Dix délais souples tenus. On commence à compter sur vous.", en: 'Ten soft deadlines met. People are starting to count on you.' } },
   { id: 's-histoire', name: { fr: 'Une histoire', en: 'A story' }, description: { fr: "Un pilote vous a raconté sa première histoire.", en: 'A pilot told you their first story.' } },
-  { id: 's-vallee', name: { fr: 'Toute la vallée', en: 'The whole valley' }, description: { fr: "Les six villages des Vallées de Brume ont reçu votre courrier. La route des Hauts-Plateaux attend.", en: 'All six villages of Mistvale have had your mail. The plateau road awaits.' } },
+  { id: 's-vallee', name: { fr: 'Toute la vallée', en: 'The whole valley' }, description: { fr: "Les six villages des Vallées de Brume ont reçu votre courrier. La route de la Côte attend.", en: 'All six villages of Mistvale have had your mail. The road to the Shore awaits.' } },
+  // La Côte de Saline
+  { id: 's-route-saline', name: { fr: 'La route de la Côte', en: 'The Shore road' }, description: { fr: "Une carte marine, un bail sur un bout de quai : la Côte de Saline est ouverte.", en: 'A sea chart, a lease on a bit of quay: Saltshore is open.' } },
+  { id: 's-port-sel', name: { fr: 'Port-Sel', en: 'Saltharbour' }, description: { fr: "Première livraison au port.", en: 'First delivery to the harbour.' } },
+  { id: 's-les-oeillets', name: { fr: 'Les Œillets', en: 'Panbrook' }, description: { fr: "Première livraison sur la digue des salines.", en: 'First delivery on the salt-pan dyke.' } },
+  { id: 's-marais-blanc', name: { fr: 'Marais-Blanc', en: 'Whitefen' }, description: { fr: "Première livraison au bourg sur pilotis.", en: 'First delivery to the town on stilts.' } },
+  { id: 's-anse-aux-goemons', name: { fr: 'Anse-aux-Goémons', en: 'Wrackcove' }, description: { fr: "Première livraison entre les bouées.", en: 'First delivery between the buoys.' } },
+  { id: 's-phare-de-brisant', name: { fr: 'Phare de Brisant', en: 'Breaker Light' }, description: { fr: "Première livraison aux gardiens du phare.", en: 'First delivery to the lighthouse keepers.' } },
+  { id: 's-ile-sainte-ambre', name: { fr: 'Île Sainte-Ambre', en: 'Amber Holm' }, description: { fr: "Première livraison à l'île du large.", en: 'First delivery to the island offshore.' } },
+  { id: 's-hydravion', name: { fr: 'Sur l\'eau', en: 'On the water' }, description: { fr: "Le premier amerrissage de la compagnie.", en: 'The company\'s first landing on water.' } },
+  { id: 's-cote', name: { fr: 'Toute la Côte', en: 'The whole Shore' }, description: { fr: "Les six escales de la Côte de Saline ont reçu votre courrier. Au large, des lanternes.", en: 'All six stops on Saltshore have had your mail. Out at sea, lanterns.' } },
 ];

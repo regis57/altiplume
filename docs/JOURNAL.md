@@ -350,3 +350,19 @@ Sur PC, l'aérodrome était une colonne étroite au milieu d'un grand écran —
 Rien ne disait quoi faire après la fondation. Une fiche « Votre premier vol, en trois gestes » — choisir un sac, expédier, revenir dans quelques minutes — reste tant qu'aucun sac n'est rentré, puis s'efface d'elle-même.
 
 Et sous le cachet « lien envoyé », l'adresse où le lien part, en gras : une faute de frappe se voit tout de suite, au lieu de se découvrir dix minutes plus tard devant une boîte vide.
+
+## Chapitre 20 — La route descend vers la mer (11 octobre 2026, 16 h)
+
+« Je souhaite poursuivre les développements de notre v2. » La feuille de route disait : Côte de Saline, Archipel, hydravion, décoration complète. On commence par la Côte, parce que c'est elle qui demande la machine la plus neuve.
+
+**Une région, c'est d'abord une règle.** Jusqu'ici, le monde avait une seule région et le code le savait trop bien : la liste des destinations, c'était *la* liste. Il a fallu lui apprendre qu'une destination appartient à une région, qu'une carte dépend de la région de sa destination, et qu'une compagnie a des routes ouvertes — la vallée dès la fondation, les autres plus tard. Rien de visible, mais tout le reste s'appuie dessus.
+
+**Ce qui ouvre la route.** Les cachets. Le document de conception le disait depuis le premier soir : *la monnaie de prestige, on ne peut pas l'acheter, elle débloque les régions.* Elle n'avait encore rien débloqué. Maintenant : la page « Toute la vallée » dans l'album, dix cachets sur la table, et la Côte de Saline est ouverte. Les cachets partent ; la page « La route de la Côte » arrive. Tant que la route est fermée, pas une carte de la Côte ne se tire : le courrier du jour reste celui de la vallée, et le joueur ne voit pas de contrats qu'il ne peut pas honorer.
+
+**Six escales, dont trois sur l'eau.** Port-Sel et sa capitainerie, les Œillets des sauniers, Marais-Blanc sur ses pilotis, l'Anse-aux-Goémons entre ses bouées, le Phare de Brisant et ses deux gardiens, l'Île Sainte-Ambre au large. Les distances continuent celles de la vallée : la Grive porte jusqu'au port et jusqu'à la digue des Œillets, le Martinet jusqu'au marais, et pour le reste il faut se poser sur l'eau.
+
+**La Sterne et le ponton.** Un hydravion ne se pose que sur l'eau, et seulement sur l'eau — la Sterne ne se posera pas sur une digue, et la Grive n'amerrira pas. Elle ne dort pas au hangar non plus : il lui faut un ponton sur la rivière, une zone de plus à restaurer, 1 500 F, visible dans la scène dès qu'il existe, avec la Sterne amarrée quand elle est au repos. Le hangar compte les avions de terre, le ponton compte les hydravions ; aucun ne prend la place de l'autre.
+
+**Les chiffres.** Quinze contrats, mieux payés que ceux de la vallée parce que plus loin (de 92 à 176 F), deux imprévus de la Côte — un grain au large, la marée qui a tout changé —, deux opportunités, neuf pages d'album. Le vent de mer ajoute un quart d'heure deux fois sur cinq. Et une page « Toute la Côte » quand les six escales ont reçu leur courrier, qui dit déjà : *au large, des lanternes.*
+
+**Les compagnies existantes** reçoivent leur rive nue et leur route de la vallée par une migration, sans rien perdre. Un parcours de bout en bout joue tout cela dans un vrai navigateur : la route fermée, le bouton inactif qui nomme la page manquante, l'ouverture, le ponton, l'achat, l'amerrissage et ses deux pages.

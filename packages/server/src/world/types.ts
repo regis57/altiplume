@@ -12,7 +12,7 @@ import type { Locale } from '../auth/validation.ts';
 /** Un texte dans chaque langue du jeu. */
 export type Text = Readonly<Record<Locale, string>>;
 
-export type RegionId = 'brume';
+export type RegionId = 'brume' | 'saline';
 
 export interface Region {
   readonly id: RegionId;
@@ -21,10 +21,16 @@ export interface Region {
   readonly description: Text;
   /** Palette dominante, pour l'écran : fond du ciel et de la terre. */
   readonly palette: { readonly sky: string; readonly ground: string; readonly accent: string };
+  /**
+   * Comment la route s'ouvre : un cachet de l'album à posséder, et des cachets à
+   * dépenser. La région de départ n'en a pas.
+   */
+  readonly route?: { readonly requires: string; readonly cost: number };
 }
 
-export type Runway = 'short' | 'medium' | 'long';
-export type Hazard = 'fog' | 'wind' | 'night' | 'ridge' | 'none';
+/** `water` : un plan d'eau — seul un hydravion s'y pose, et il ne se pose que là. */
+export type Runway = 'short' | 'medium' | 'long' | 'water';
+export type Hazard = 'fog' | 'wind' | 'night' | 'ridge' | 'seawind' | 'none';
 
 export interface Destination {
   readonly id: string;
@@ -41,11 +47,11 @@ export interface Destination {
   readonly firstDeliveryStamps: number;
 }
 
-export type CargoKind = 'letters' | 'parcels' | 'urgent' | 'fragile' | 'seeds' | 'parts' | 'medicine' | 'loveletters' | 'newspapers';
+export type CargoKind = 'letters' | 'parcels' | 'urgent' | 'fragile' | 'seeds' | 'parts' | 'medicine' | 'loveletters' | 'newspapers' | 'salt' | 'shellfish';
 
 export interface PlaneModel {
   readonly id: string;
-  readonly archetype: 'biplane' | 'monoplane' | 'trimotor';
+  readonly archetype: 'biplane' | 'monoplane' | 'trimotor' | 'seaplane';
   readonly name: Text;
   readonly description: Text;
   /** Portée en lieues, aller simple. */
@@ -139,6 +145,8 @@ export interface EventCard {
   readonly text: Text;
   readonly choices: readonly EventChoice[];
   readonly weight: 1 | 2 | 3;
+  /** Ne se tire que si la route de cette région est ouverte. */
+  readonly region?: RegionId;
 }
 
 export interface OpportunityCard {
@@ -152,11 +160,12 @@ export interface OpportunityCard {
     | { readonly type: 'fete'; readonly morale: number; readonly cost: number }
     | { readonly type: 'map'; readonly stamps: number };
   readonly weight: 1 | 2 | 3;
+  readonly region?: RegionId;
 }
 
 export type Card = ContractCard | EventCard | OpportunityCard;
 
-export type ZoneId = 'runway' | 'hangar';
+export type ZoneId = 'runway' | 'hangar' | 'ponton';
 
 export interface ZoneLevel {
   readonly level: number;
@@ -167,6 +176,8 @@ export interface ZoneLevel {
   readonly runway?: Runway;
   readonly planes?: number;
   readonly maintenance?: number;
+  /** Hydravions amarrés possibles. */
+  readonly seaplanes?: number;
 }
 
 export interface Zone {
@@ -192,7 +203,10 @@ export interface Stamp {
 }
 
 export interface World {
+  /** La région de départ. */
   readonly region: Region;
+  /** Toutes les régions, la première étant celle de départ. */
+  readonly regions: readonly Region[];
   readonly home: { readonly name: Text; readonly address: Text; readonly description: Text };
   readonly destinations: readonly Destination[];
   readonly planes: readonly PlaneModel[];

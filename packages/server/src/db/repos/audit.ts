@@ -26,7 +26,8 @@ export type AuditEvent =
   | 'company.renamed'
   | 'flight.dispatched'
   | 'card.played'
-  | 'company.built';
+  | 'company.built'
+  | 'route.opened';
 
 export function audit(
   db: Database, event: AuditEvent, playerId: string | null, meta: Record<string, string | number | boolean> = {}, now: number = Date.now(),

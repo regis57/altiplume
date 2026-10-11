@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WORLD, findDestination, findPilot, findPlane, flightDurationMs, localizeScene, localizeWorld } from '../src/world/index.ts';
+import { WORLD, cardRegion, findDestination, findPilot, findPlane, flightDurationMs, localizeScene, localizeWorld, regionDestinations } from '../src/world/index.ts';
 import { cleanCompanyName, foldName, isDeniedName, suggestNames } from '../src/world/names.ts';
 import type { Text } from '../src/world/types.ts';
 import { testApp } from './helpers.ts';
@@ -63,15 +63,35 @@ describe('le monde — intégrité', () => {
     expect(story).toContain('Crosslet Lane');
   });
 
-  it('livre la tranche v0.1 : 6 destinations, 3 avions, 4 pilotes, 20+10+4 cartes et la ligne régulière, 10 décorations', () => {
-    expect(WORLD.destinations).toHaveLength(6);
-    expect(WORLD.planes).toHaveLength(3);
+  it('livre la vallée (v0.1) : 6 destinations, 3 avions, 4 pilotes, 20+10+4 cartes et la ligne régulière, 10 décorations', () => {
+    const brume = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'brume';
+    expect(regionDestinations('brume')).toHaveLength(6);
+    expect(WORLD.planes.filter((p) => p.runway !== 'water')).toHaveLength(3);
     expect(WORLD.pilots).toHaveLength(4);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing)).toHaveLength(20);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && brume(c))).toHaveLength(20);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.standing)).toHaveLength(1);
-    expect(WORLD.cards.filter((c) => c.kind === 'event')).toHaveLength(10);
-    expect(WORLD.cards.filter((c) => c.kind === 'opportunity')).toHaveLength(4);
+    expect(WORLD.cards.filter((c) => c.kind === 'event' && brume(c))).toHaveLength(10);
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && brume(c))).toHaveLength(4);
     expect(WORLD.decorations).toHaveLength(10);
+  });
+
+  it('livre la Côte de Saline (v0.2) : 6 escales dont 3 sur l\'eau, un hydravion, 15+2+2 cartes, une route à 10 cachets', () => {
+    const saline = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'saline';
+    const escales = regionDestinations('saline');
+    expect(escales).toHaveLength(6);
+    expect(escales.filter((d) => d.runway === 'water')).toHaveLength(3);
+    expect(WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id)).toEqual(['sterne']);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && saline(c))).toHaveLength(15);
+    expect(WORLD.cards.filter((c) => c.kind === 'event' && saline(c))).toHaveLength(2);
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(2);
+    expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline']);
+    expect(WORLD.regions[1]!.route).toEqual({ requires: 's-vallee', cost: 10 });
+    expect(WORLD.region.route).toBeUndefined();
+    // Chaque escale a sa page, la Côte a la sienne, et la route aussi.
+    for (const id of ['s-cote', 's-route-saline', 's-hydravion']) expect(WORLD.stamps.some((s) => s.id === id), id).toBe(true);
+    // Le ponton accueille un hydravion au niveau 2, aucun avant.
+    const ponton = WORLD.zones.find((z) => z.id === 'ponton')!;
+    expect(ponton.levels.map((l) => l.seaplanes)).toEqual([0, 1]);
   });
 
   it('ne référence que des destinations, avions et pilotes existants', () => {
@@ -91,9 +111,9 @@ describe('le monde — intégrité', () => {
     for (const d of WORLD.destinations) expect(WORLD.stamps.some((s) => s.id === `s-${d.id}`), d.id).toBe(true);
   });
 
-  it('tient les temps de vol de la v0.1 entre 3 et 45 minutes avec le biplan, et toute la vallée à sa portée', () => {
+  it('tient les temps de vol de la vallée entre 3 et 45 minutes avec le biplan, et toute la vallée à sa portée', () => {
     const grive = findPlane('grive')!;
-    for (const d of WORLD.destinations) {
+    for (const d of regionDestinations('brume')) {
       const minutes = flightDurationMs(d, grive) / 60_000;
       expect(minutes, d.id).toBeGreaterThanOrEqual(3);
       expect(minutes, d.id).toBeLessThanOrEqual(45);
@@ -102,6 +122,22 @@ describe('le monde — intégrité', () => {
     // Le Martinet va deux fois plus vite ; le Héron ne se pose que sur piste longue.
     expect(flightDurationMs(findDestination('combe-aux-rosees')!, findPlane('martinet')!)).toBe(15 * 60_000);
     expect(findPlane('heron')!.runway).toBe('long');
+  });
+
+  it('met toute la Côte à portée de la Sterne, entre 30 et 60 minutes, et deux escales à portée des avions de la vallée', () => {
+    const sterne = findPlane('sterne')!;
+    const escales = regionDestinations('saline');
+    for (const d of escales) {
+      const minutes = flightDurationMs(d, sterne) / 60_000;
+      expect(minutes, d.id).toBeGreaterThanOrEqual(30);
+      expect(minutes, d.id).toBeLessThanOrEqual(60);
+      expect(d.distance, d.id).toBeLessThanOrEqual(sterne.range);
+      // Les escales de la Côte sont toutes plus loin que le bout de la vallée.
+      expect(d.distance).toBeGreaterThan(findDestination('combe-aux-rosees')!.distance);
+    }
+    const grive = findPlane('grive')!;
+    const reachable = escales.filter((d) => d.distance <= grive.range && d.runway !== 'water');
+    expect(reachable.map((d) => d.id)).toEqual(['port-sel', 'les-oeillets']);
   });
 
   it('rend chaque contrat rentable, et les lointains mieux payés', () => {
