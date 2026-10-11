@@ -35,6 +35,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-10 | Cadrage : thème, licence, auth sans mot de passe, pipeline, coûts | ~1 h |
 | 2026-10-10 | Choix du nom (vérifs domaines + antériorités web), premier thème musical | ~30 min |
 | 2026-10-10 | Recherche d'antériorité marques (EUIPO, registre entreprises, TMview) | ~20 min |
+| 2026-10-11 | v0.2 : la scène en 320 × 144, chaque décoration dessinée, jour et nuit | ~50 min |
 | 2026-10-10 | Document de conception v0.1 + prototype générateur de noms | ~45 min |
 | 2026-10-11 | Réglages Cloudflare et DNS, relance des mesures, mise à jour du tableau sécurité | ~20 min |
 | 2026-10-10 | Création et sécurisation du dépôt GitHub, audit par l'API | ~45 min |

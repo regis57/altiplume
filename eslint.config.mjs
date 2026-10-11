@@ -18,7 +18,7 @@ export default tseslint.config(
   },
   {
     // Les parcours de bout en bout pilotent un navigateur : du code y tourne des deux côtés.
-    files: ['scripts/e2e-*.mjs'],
+    files: ['scripts/e2e-*.mjs', 'scripts/scene-preview.mjs'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {
