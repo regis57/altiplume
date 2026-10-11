@@ -114,6 +114,23 @@ La rentabilité se joue sur le choix des lignes, l'adéquation avion/ligne, le r
 ### 4.6 Les saisons
 Une saison = deux semaines réelles, une année = huit semaines. Chaque saison modifie la météo par région et apporte un événement (la Fête des Lanternes, la Grande Brume, la Moisson de Saline) avec ses cartes et ses décorations.
 
+### 4.7 Pourquoi on revient — les récompenses
+
+Pas de série à ne pas rompre, pas d'énergie à racheter, rien qui punisse l'absence. Ce qui fait revenir, c'est ce qu'on *trouve* en revenant, et ce qu'on *garde*. Six leviers, tous dans la v0.1 sauf mention :
+
+| Levier | Ce que le joueur ressent | Où ça vit |
+|---|---|---|
+| **Le courrier arrivé** | « Pendant que je dormais, la Grive est rentrée avec quarante francs et une lettre. » Chaque retour est une petite récolte, jamais une corvée. | Vols sans tick, revenus crédités à la lecture |
+| **Les trois cartes du jour** | Une raison d'ouvrir le jeu une fois par jour, parce que la journée est différente — jamais une obligation : la main de cinq garde les cartes non jouées. | Tirage déterministe par jour |
+| **L'aérodrome qui change** | Une piste roulée, une porte neuve, une enseigne, un banc : du progrès qu'on *voit* à l'écran, qui ne régresse jamais. | Zones et décorations |
+| **Les histoires** | Un pilote qui finit par vous raconter d'où il vient. On vole *pour* entendre la suite. C'est le contenu qu'on écrit avec le plus de soin. | Affinité par vol ; scènes à 3, 7, 12 vols |
+| **L'album de cachets** | Chaque « première » colle une page dans un album de timbres : premier vol, chaque village, un vol de nuit, dix délais tenus, une histoire entendue, toute la vallée. Une collection à compléter, pas un classement. Les cachets débloquent aussi les régions. | `STAMPS` dans le monde ; page album à venir |
+| **Le compteur mondial** | « Ce mois-ci, les aviateurs du monde ont acheminé 12 408 plis. » On fait partie de quelque chose, sans se comparer à personne. | Agrégat anonyme (section 5) |
+
+En v2 s'ajoutent le défi hebdomadaire volontaire (section 5) et les saisons, dont chaque événement apporte ses cartes et ses cachets rares.
+
+Ce qu'on refuse, et pourquoi : les séries quotidiennes (elles transforment un plaisir en dette), les minuteurs d'énergie (ils vendent du temps), les classements permanents (ils récompensent la disponibilité, pas le jeu). Stardew Valley n'en a aucun et personne n'y joue moins pour autant.
+
 ---
 
 ## 5. Le social, mesuré
@@ -136,8 +153,8 @@ Le joueur fonde une compagnie ; trois noms lui sont proposés, il peut en tirer 
 - **Deux banques natives, fr et en**, jamais de traduction automatique. Un nom français traduit sonne traduit.
 - **Motifs d'époque par langue** : « {Nom} {Adj} & Cie », « Compagnie des {Lieu} », « Comptoir du {Nom} », « Messageries {Nom} » en français ; « {Adj} {Noun} & Co. », « The {Noun} Line », « {Noun}line Mail Co. », « {Place} Airmail » en anglais.
 - **Liste d'exclusion** de marques et compagnies réelles (comparaison sans accents ni casse), étoffée au fil du projet.
-- Accord grammatical en genre et nombre géré par la banque (à implémenter proprement, le prototype `tools/name_generator.py` ne le fait pas encore).
-- D'autres locales s'ajoutent par simple fichier de banque.
+- Les motifs français n'emploient que des mots féminins ou masculins déjà accordés (« Brume Dorée », « Comptoir du Zéphyr ») : pas d'accord à calculer. D'autres locales s'ajoutent par simple fichier de banque.
+- Implémentation : `packages/server/src/world/names.ts`, déterministe par graine (les trois noms proposés à un joueur sont rejouables), testée sur mille tirages contre la liste d'exclusion.
 
 ---
 

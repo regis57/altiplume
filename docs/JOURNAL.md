@@ -188,3 +188,23 @@ La page était neuve. Le script, lui, datait d'une heure. J'avais mis une règle
 La correction est celle que tous les sites sérieux appliquent : chaque script et chaque feuille de style porte dans son nom une empreinte de son contenu (`app.7b4f378b.js`). Une nouvelle version a un nouveau nom ; l'ancienne peut rester en cache un an, elle ne sera plus jamais demandée. Et la page HTML, qui désigne la version courante, n'est plus mise en cache du tout. Un test vérifie désormais ces trois en-têtes.
 
 C'est le deuxième bogue de production attrapé par une capture d'écran de Régis. Les deux fois, en moins d'une minute. Je commence à croire que c'est son super-pouvoir.
+
+---
+
+## Chapitre 8 — Le chemin de la Croisette (11 octobre 2026, nuit)
+
+Régis a dit : « Invente tout. » Et puis, une ligne plus bas : « Dans ta story, intègre le chemin de la Croisette. C'est là où j'ai grandi. »
+
+C'est le genre de phrase qu'on reçoit avec précaution. Un monde inventé est une chose ; le chemin d'enfance de quelqu'un en est une autre. J'ai cherché le mot avant d'écrire une ligne. Une *croisette*, en Lorraine comme en Provence, c'est une petite croix — de chemin, de carrefour, de pierre. La Croisette de Cannes s'appelle ainsi pour la même raison. L'anglais a un mot exact pour cela, *crosslet*, celui des blasons, et il sonne comme un vrai nom de ruelle anglaise. On n'a pas traduit Cannes.
+
+Alors tout commence là. L'aérodrome du joueur est au bout du **chemin de la Croisette** (*Crosslet Lane*). À la fourche, une petite croix de pierre penche un peu, et les pilotes la touchent du doigt avant de décoller. « Pas par superstition, dit Marthe. Pour dire au chemin qu'on revient. »
+
+**Ce qui existe maintenant**, en deux langues, testé, dans le dépôt : six villages des Vallées de Brume, chacun avec son courrier et son caractère — Pont-de-Brume la ville de marché, Les Tilleuls où les vaches ont la priorité, Moulin-Gris sous la brume, Haut-Ferrand sur sa crête, Lanterne-du-Val et sa poste du soir, Combe-aux-Rosées au bout de tout. Trois avions, trois oiseaux. Vingt contrats, dix imprévus, quatre opportunités. Deux zones à restaurer, dix décorations, douze cachets pour l'album.
+
+Et quatre pilotes. Régis a demandé autant de femmes que d'hommes — « c'est pas très années trente peut-être, mais en 2026, ça compte ». Il a raison, et ce n'était même pas difficile : Marthe Vaudrin, qui volait d'ici avant votre naissance ; Ilias Ferrant, qui envoie la moitié de sa paie à l'auberge du col ; Ysé Loranne, qui porte une lanterne de cuivre qu'elle n'a jamais allumée ; Aurèle Combray, qui répare avec du fil de fer et garde une photo dans sa casquette. Chacun a trois scènes d'histoire, à hauteur de comptoir, qui s'ouvrent au fil des vols. Je les ai écrites d'abord en français, puis en anglais — pas traduites, réécrites. Un test vérifie qu'aucune phrase n'est identique dans les deux langues.
+
+Il y a aussi un mort. Bastien, l'ancien propriétaire, celui qui a appris à voler à Marthe et mesurait les pilotes au crayon sur la poutre du hangar. Il n'apparaît jamais ; on ne le connaît que par ce que les autres en disent. C'est souvent comme ça qu'on connaît les gens qui comptent.
+
+**La question de Régis** : faut-il un système de récompense pour que les pilotes reviennent ? Oui, et il est écrit maintenant au chapitre 4.7 de la conception. Six leviers : le courrier arrivé pendant qu'on dormait, les trois cartes du jour, l'aérodrome qu'on voit changer, les histoires, l'album de cachets — une collection de « premières », pas un classement —, et le compteur mondial anonyme. Et trois refus : pas de série quotidienne, pas de minuteur d'énergie, pas de classement permanent. Stardew Valley n'a rien de tout cela et personne n'y joue moins pour autant.
+
+Les tests du monde ont attrapé quatre incohérences avant qu'un joueur les voie : un contrat de colis pour un village qui n'en recevait pas, un hameau proche mieux payé qu'une ville plus loin. Ce sont des tests sur du contenu, pas sur du code, et ils valent autant.
