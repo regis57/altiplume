@@ -171,7 +171,7 @@ Le joueur fonde une compagnie ; trois noms lui sont proposés, il peut en tirer 
 
 ## 8. Musique et son
 
-- Synthèse façon puce 2A03 (deux carrés, un triangle, un bruit), composée en Python pur dans `music/`, donc entièrement à nous et modifiable note par note.
+- Synthèse façon puce 2A03 (deux carrés, un triangle), composée en Python pur dans `tools/music/` pour l'écouter, et **jouée dans le navigateur par Web Audio** (`packages/client/src/music.ts`) à partir de la même partition : aucun fichier audio à charger, une boucle de seize mesures sans couture, et une musique qui est du code — entièrement à nous, modifiable note par note.
 - **Thème principal** : valse lumineuse en ré majeur, 96 BPM (v2 du 10 octobre). Un thème par région, une variante nuit, un thème de saison.
 - Sons courts pour les actions (tampon de cachet, moteur qui démarre, cloche d'arrivée). Jamais d'information portée **uniquement** par le son.
 - Volume musique et effets séparés, mémorisés, coupés par défaut sur mobile au premier lancement (respect de l'autoplay et du contexte).
