@@ -45,11 +45,10 @@ const g = (attrs, inner) => `<g ${attrs}>${inner}</g>`;
 const rect = (x, y, w, h, cls) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${cls}"/>`;
 
 // ---- Le ciel : trois bandes, des étoiles, des nuages ----
-// Entre deux bandes, deux lignes tramées : le dégradé à la façon des vieilles consoles.
-const dither = (y, cls) => sprite(0, y, { d: cls }, ('d.'.repeat(W / 2)) + '\n' + ('.d'.repeat(W / 2)) + '\n' + ('d...'.repeat(W / 4)));
+// Entre deux bandes, trois lignes tramées de plus en plus denses : le dégradé à la façon des vieilles consoles.
+const dither = (yBand, cls) => sprite(0, yBand - 3, { d: cls }, ['d...', '.d.d', 'ddd.'].map((m) => m.repeat(W / 4)).join('\n'));
 const sky = rect(0, 0, W, 50, 'ciel ciel-haut') + rect(0, 50, W, 24, 'ciel ciel-milieu') + rect(0, 74, W, 14, 'ciel ciel-bas')
-  + dither(47, 'ciel-milieu').replace(/y="47"/g, 'y="49"').replace(/y="48"/g, 'y="48"').replace(/y="49"/g, 'y="47"')
-  + dither(71, 'ciel-bas').replace(/y="71"/g, 'y="73"').replace(/y="73"/g, 'y="71"');
+  + dither(50, 'ciel-milieu') + dither(74, 'ciel-bas');
 const stars = [[12, 6], [40, 14], [71, 4], [96, 22], [128, 9], [150, 30], [183, 12], [207, 26], [236, 7], [262, 18], [291, 11], [310, 28], [58, 36], [172, 40], [246, 38], [20, 44]]
   .map(([x, y]) => rect(x, y, 1, 1, 'etoile')).join('');
 const cloud = (x, y) => sprite(x, y, { c: 'nuage', o: 'nuage-ombre' }, `
