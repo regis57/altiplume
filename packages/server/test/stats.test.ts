@@ -15,7 +15,7 @@ describe('le compteur mondial', () => {
     const cookie = sessionCookie(await t.json('POST', '/v1/auth/verify', { token: t.lastToken() }));
     await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, cookie);
     t.ctx.db.prepare('DELETE FROM company_hand').run();
-    t.ctx.db.prepare("INSERT INTO company_hand (company_id, card, drawn_at) SELECT id, 'c-journal', 0 FROM companies").run();
+    t.ctx.db.prepare("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'c-journal', 0 FROM companies").run();
     const s = (await t.json('GET', '/v1/company', undefined, cookie)).json();
     await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: s.planes[0].id, pilot: s.pilots[0].id }, cookie);
     t.advance(11 * 60_000); // le cache de dix minutes est dépassé, et le vol est arrivé

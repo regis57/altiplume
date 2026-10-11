@@ -168,7 +168,7 @@ describe('notifications — le courrier se pose', () => {
     await t.json('POST', '/v1/company', { name: 'Messageries de la Croisette' }, t.cookie);
     const company = t.ctx.db.prepare('SELECT id, founded_at FROM companies').get() as { id: string; founded_at: number };
     t.ctx.db.prepare('DELETE FROM company_hand WHERE company_id = ?').run(company.id);
-    t.ctx.db.prepare('INSERT INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, 'c-journal', company.founded_at);
+    t.ctx.db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, 'c-journal', company.founded_at);
     const state = (await t.json('GET', '/v1/company', undefined, t.cookie)).json();
     const r = await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: state.planes[0].id, pilot: state.pilots[0].id }, t.cookie);
     expect(r.statusCode).toBe(201);

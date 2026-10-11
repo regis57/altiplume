@@ -317,3 +317,5 @@ Un paragraphe de conception et vingt minutes. Les tests vérifient qu'elle part 
 Non, on ne peut pas — pas sur iPhone. Apple interdit à tout site de se poser lui-même sur l'écran d'accueil ; seul le geste Partager → « Sur l'écran d'accueil » le fait, pour tous les sites du monde. Sur Android, Chrome propose l'installation et le jeu a déjà son bouton.
 
 Ce qu'on peut faire, c'est ne pas laisser chercher. Sur iPhone, hors application installée, l'aérodrome montre maintenant une fiche avec les deux gestes dessinés en pixels — le carré à la flèche, puis le carré au plus — et explique pourquoi : plein écran, et les notifications. « Plus tard » la replie pour une semaine. Deux gestes, c'est le minimum qu'Apple nous laisse ; on les montre avec le doigt.
+
+*Au passage, le test instable de ce matin est démasqué : il glissait une carte précise dans la main du joueur, et un jour sur cent le tirage quotidien l'y avait déjà mise — doublon, erreur. Il ne s'en formalise plus.*
