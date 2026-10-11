@@ -12,7 +12,7 @@ import type { Locale } from '../auth/validation.ts';
 /** Un texte dans chaque langue du jeu. */
 export type Text = Readonly<Record<Locale, string>>;
 
-export type RegionId = 'brume' | 'saline';
+export type RegionId = 'brume' | 'saline' | 'archipel';
 
 export interface Region {
   readonly id: RegionId;

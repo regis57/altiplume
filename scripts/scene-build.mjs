@@ -388,9 +388,44 @@ ${seaplane}
 ${flying}
 </svg>`;
 
+
+// ---- Les vignettes des régions : 160 × 48, une par route, dans la section « Les routes » ----
+const VW = 160; const VH = 48;
+function vignette(id, inner) {
+  return `<template id="vignette-${id}"><svg class="vignette vignette-${id}" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" aria-hidden="true">${inner}</svg></template>`;
+}
+// Vallées de Brume : collines douces, brume basse, un village, la croix.
+const vBrume = vignette('brume',
+  rect(0, 0, VW, 30, 'v-ciel') + rect(0, 22, VW, 8, 'v-brume')
+  + sprite(0, 14, { h: 'v-colline-loin' }, '......hhhhhhhhhhhhhhhh..............hhhhhhhhhhhhhhhhhhhhhhhhhh....................hhhhhhhhhhhhhhhhhhhhhhhhh.........................hhhhhhhhhhhhhhhh\n..hhhhhhhhhhhhhhhhhhhhhhhhhh....hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh........hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh..........hhhhhhhhhhhhhhhhhhhhhhhhhhhh\nhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+  + rect(0, 30, VW, 18, 'v-sol')
+  + sprite(100, 20, { m: 'v-mur', t: 'v-toit', f: 'v-fenetre' }, '...tttttt...\n..tttttttt..\n.tttttttttt.\n.mmmmmmmmmm.\n.mmfmmmmfmm.\n.mmmmmmmmmm.\n.mmmmmmmmmm.')
+  + sprite(118, 24, { m: 'v-mur', t: 'v-toit' }, '.ttttt.\nttttttt\n.mmmmm.\n.mmmmm.\n.mmmmm.')
+  + sprite(20, 24, { f: 'feuillage', c: 'feuillage-clair', t: 'tronc' }, '..cc..\n.cffc.\ncfffff\n.ffff.\n..tt..\n..tt..')
+  + sprite(42, 26, { f: 'feuillage', t: 'tronc' }, '.ff.\nffff\n.tt.')
+  + sprite(70, 30, { c: 'v-croix' }, '.c.\nccc\n.c.\n.c.\n.c.')
+  + [8, 56, 88, 134, 150].map((x) => rect(x, 36 + (x % 3), 2, 1, 'herbe')).join(''));
+// Côte de Saline : marais salants blancs, la mer, le phare.
+const vSaline = vignette('saline',
+  rect(0, 0, VW, 26, 'v-ciel-saline') + rect(0, 26, VW, 22, 'v-mer')
+  + [[6, 30, 10], [40, 34, 8], [90, 29, 12], [130, 36, 9], [60, 42, 7], [150, 31, 6]].map(([x, y, w]) => rect(x, y, w, 1, 'v-reflet')).join('')
+  + sprite(0, 20, { s: 'v-sel', d: 'v-digue', e: 'v-eau-sel' }, 'ssssssssssssssssssssssssssssssssssss....\nsdddddddddsdddddddddsdddddddddsddddd....\nsdeeeeeeedsdeeeeeeedsdeeeeeeedsdeeed....\nsdeeeeeeedsdeeeeeeedsdeeeeeeedsdeeed....\nsdddddddddsdddddddddsdddddddddsddddd....\nssssssssssssssssssssssssssssssssssss....\n..........................................\n..........................................')
+  + sprite(120, 6, { p: 'v-phare', b: 'v-phare-bande', l: 'v-lumiere', r: 'v-rocher' }, '...ll...\n..llll..\n...pp...\n...bb...\n...pp...\n...bb...\n...pp...\n..pppp..\n.rrrrrr.\nrrrrrrrr')
+  + sprite(70, 18, { a: 'aile', f: 'fuselage', s: 'flotteur' }, '..aaaaaa..\n.ffffffff.\n..s....s..')
+  + sprite(28, 36, { b: 'v-barque' }, 'b....b\nbbbbbb\n.bbbb.'));
+// Archipel des Lanternes : nuit, îles basses, lanternes et leurs reflets.
+const vArchipel = vignette('archipel',
+  rect(0, 0, VW, 28, 'v-nuit') + rect(0, 28, VW, 20, 'v-mer-nuit')
+  + [[10, 4], [27, 9], [48, 3], [70, 7], [95, 5], [118, 10], [140, 4], [155, 8], [33, 15], [84, 13], [128, 16]].map(([x, y]) => rect(x, y, 1, 1, 'etoile-vignette')).join('')
+  + sprite(134, 4, { m: 'v-lune' }, '.mmmm.\nmmmmmm\nmmmmmm\n.mmmm.')
+  + sprite(0, 24, { i: 'v-ile' }, '....iiiiiiii................iiiiiiiiiiiiii..........................iiiiiiiiii.................iiiiiiiiiiiiiiii..........\n..iiiiiiiiiiii............iiiiiiiiiiiiiiiiii......................iiiiiiiiiiiiii..............iiiiiiiiiiiiiiiiiiii......\niiiiiiiiiiiiiiii........iiiiiiiiiiiiiiiiiiiiii..................iiiiiiiiiiiiiiiiii..........iiiiiiiiiiiiiiiiiiiiiiii....')
+  + [[12, 20], [36, 18], [52, 21], [76, 20], [104, 18], [122, 21], [144, 19]].map(([x, y]) => sprite(x, y, { l: 'v-lanterne', h: 'v-halo', p: 'v-piquet' }, '.h.\nhlh\n.h.\n.p.\n.p.\n.p.') + rect(x + 1, 29, 1, 3, 'v-reflet-lanterne')).join('')
+  + sprite(60, 8, { a: 'aile', f: 'fuselage', s: 'flotteur' }, '..aaaaaa..\n.ffffffff.\n..s....s..'));
+const vignettes = vBrume + vSaline + vArchipel;
+
 const html = readFileSync(page, 'utf8');
 const start = html.indexOf('<!-- scene:start -->'); const end = html.indexOf('<!-- scene:end -->');
 if (start < 0 || end < 0) throw new Error('repères scene:start / scene:end introuvables dans aerodrome.html');
-const next = html.slice(0, start) + '<!-- scene:start -->\n      ' + svg.replace(/\n/g, '\n      ') + '\n      ' + html.slice(end);
+const next = html.slice(0, start) + '<!-- scene:start -->\n      ' + svg.replace(/\n/g, '\n      ') + '\n      ' + vignettes + '\n      ' + html.slice(end);
 writeFileSync(page, next);
 process.stdout.write(`scène : ${(svg.match(/<rect/g) ?? []).length} rectangles\n`);

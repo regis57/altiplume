@@ -67,7 +67,7 @@ describe('le monde — intégrité', () => {
     const brume = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'brume';
     expect(regionDestinations('brume')).toHaveLength(6);
     expect(WORLD.planes.filter((p) => p.runway !== 'water')).toHaveLength(3);
-    expect(WORLD.pilots).toHaveLength(4);
+    expect(WORLD.pilots.filter((p) => p.starter || ['ilias', 'yse', 'aurele'].includes(p.id))).toHaveLength(4);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && brume(c))).toHaveLength(20);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.standing)).toHaveLength(1);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && brume(c))).toHaveLength(10);
@@ -80,18 +80,39 @@ describe('le monde — intégrité', () => {
     const escales = regionDestinations('saline');
     expect(escales).toHaveLength(6);
     expect(escales.filter((d) => d.runway === 'water')).toHaveLength(3);
-    expect(WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id)).toEqual(['sterne']);
+    expect(WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id)).toEqual(['sterne', 'goeland']);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && saline(c))).toHaveLength(15);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && saline(c))).toHaveLength(2);
-    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(2);
-    expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline']);
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(3); // + le Goéland, vendu à Port-Sel
+    expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline', 'archipel']);
     expect(WORLD.regions[1]!.route).toEqual({ requires: 's-vallee', cost: 10 });
     expect(WORLD.region.route).toBeUndefined();
     // Chaque escale a sa page, la Côte a la sienne, et la route aussi.
     for (const id of ['s-cote', 's-route-saline', 's-hydravion']) expect(WORLD.stamps.some((s) => s.id === id), id).toBe(true);
     // Le ponton accueille un hydravion au niveau 2, aucun avant.
     const ponton = WORLD.zones.find((z) => z.id === 'ponton')!;
-    expect(ponton.levels.map((l) => l.seaplanes)).toEqual([0, 1]);
+    expect(ponton.levels.map((l) => l.seaplanes)).toEqual([0, 1, 2]);
+  });
+
+  it("livre l'Archipel des Lanternes (v0.2) : 6 îles sur l'eau, la plupart de nuit, 12+2+1 cartes, le Goéland, une route à 15 cachets, deux pilotes de plus", () => {
+    const archipel = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'archipel';
+    const iles = regionDestinations('archipel');
+    expect(iles).toHaveLength(6);
+    expect(iles.every((d) => d.runway === 'water')).toBe(true);
+    expect(iles.filter((d) => d.hazard === 'night').length).toBeGreaterThanOrEqual(4);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && archipel(c))).toHaveLength(12);
+    expect(WORLD.cards.filter((c) => c.kind === 'event' && archipel(c))).toHaveLength(2);
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && archipel(c))).toHaveLength(1);
+    expect(WORLD.regions[2]!.route).toEqual({ requires: 's-cote', cost: 15 });
+    for (const id of ['s-archipel', 's-route-archipel']) expect(WORLD.stamps.some((s) => s.id === id), id).toBe(true);
+    // Le Goéland atteint tout ; la Sterne n'atteint les îles qu'avec un pilote de Longues routes (× 1,2 → 16,8).
+    const goeland = findPlane('goeland')!; const sterne = findPlane('sterne')!;
+    for (const d of iles) expect(d.distance).toBeLessThanOrEqual(goeland.range);
+    expect(iles.filter((d) => d.distance <= sterne.range * 1.2).map((d) => d.id)).toEqual(['ile-aux-fanaux', 'grand-recif', 'sainte-lueur']);
+    expect(iles.some((d) => d.distance > sterne.range * 1.2)).toBe(true);
+    // Six pilotes, parité gardée, une Nocturne pour les îles.
+    expect(WORLD.pilots).toHaveLength(6);
+    expect(WORLD.pilots.filter((p) => p.traits.includes('nightowl')).length).toBeGreaterThanOrEqual(2);
   });
 
   it('ne référence que des destinations, avions et pilotes existants', () => {

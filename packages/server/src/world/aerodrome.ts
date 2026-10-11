@@ -30,6 +30,7 @@ export const ZONES: readonly Zone[] = [
     levels: [
       { level: 1, cost: 0, seaplanes: 0, name: { fr: 'La rive', en: 'The bank' }, description: { fr: "La rivière passe au bout de la piste, lente et assez large. Rien n'y est amarré. Pas encore.", en: 'The river runs past the end of the strip, slow and wide enough. Nothing is moored there. Not yet.' } },
       { level: 2, cost: 1500, seaplanes: 1, name: { fr: 'Ponton sur la rivière', en: 'River pontoon' }, description: { fr: "Des planches sur pilotis, deux bollards, une échelle. Un hydravion peut s'y amarrer — et partir pour la Côte.", en: 'Planks on piles, two bollards, a ladder. A seaplane can moor here — and leave for the Shore.' } },
+      { level: 3, cost: 2800, seaplanes: 2, name: { fr: 'Double ponton et lanterne', en: 'Double pontoon and lantern' }, description: { fr: "Un second ponton en face du premier, et une lanterne de cuivre au bout, pour rentrer de nuit. Deux hydravions à quai.", en: 'A second pontoon facing the first, and a copper lantern at the end, for coming home at night. Two seaplanes moored.' } },
     ],
   },
 ];
@@ -75,4 +76,13 @@ export const STAMPS: readonly Stamp[] = [
   { id: 's-ile-sainte-ambre', name: { fr: 'Île Sainte-Ambre', en: 'Amber Holm' }, description: { fr: "Première livraison à l'île du large.", en: 'First delivery to the island offshore.' } },
   { id: 's-hydravion', name: { fr: 'Sur l\'eau', en: 'On the water' }, description: { fr: "Le premier amerrissage de la compagnie.", en: 'The company\'s first landing on water.' } },
   { id: 's-cote', name: { fr: 'Toute la Côte', en: 'The whole Shore' }, description: { fr: "Les six escales de la Côte de Saline ont reçu votre courrier. Au large, des lanternes.", en: 'All six stops on Saltshore have had your mail. Out at sea, lanterns.' } },
+  // L'Archipel des Lanternes
+  { id: 's-route-archipel', name: { fr: 'La route des îles', en: 'The island road' }, description: { fr: "La carte des passes, une lanterne de cuivre : l'Archipel des Lanternes est ouvert.", en: 'The chart of the channels, a copper lantern: the Lantern Isles are open.' } },
+  { id: 's-ile-aux-fanaux', name: { fr: 'Île-aux-Fanaux', en: 'Beacon Holm' }, description: { fr: "Première livraison aux douze lanternes.", en: 'First delivery to the twelve lanterns.' } },
+  { id: 's-grand-recif', name: { fr: 'Grand-Récif', en: 'Long Reef' }, description: { fr: "Première livraison dans le lagon.", en: 'First delivery in the lagoon.' } },
+  { id: 's-sainte-lueur', name: { fr: 'Sainte-Lueur', en: 'Glimmerkirk' }, description: { fr: "Première livraison aux enfants du ponton.", en: 'First delivery to the children on the jetty.' } },
+  { id: 's-le-rocher-noir', name: { fr: 'Le Rocher-Noir', en: 'Blackstack' }, description: { fr: "Première livraison aux guetteurs.", en: 'First delivery to the watchers.' } },
+  { id: 's-anse-des-lanternes', name: { fr: 'Anse-des-Lanternes', en: 'Lanterncove' }, description: { fr: "Première livraison à la fabrique de lanternes.", en: 'First delivery to the lantern works.' } },
+  { id: 's-ile-du-bout', name: { fr: "Île-du-Bout", en: 'Lastholm' }, description: { fr: "Première livraison à la dernière île.", en: 'First delivery to the last island.' } },
+  { id: 's-archipel', name: { fr: "Tout l'Archipel", en: 'The whole Isles' }, description: { fr: "Les six îles ont reçu votre courrier. Après, il n'y a plus que la mer — et le Grand Blanc.", en: 'All six islands have had your mail. Beyond, only the sea — and the Great White.' } },
 ];

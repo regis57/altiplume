@@ -280,6 +280,9 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       const water = stops.filter((d) => d.runway === 'water').length;
       const open = c.regions.includes(r.id);
       const li = el('li', open ? 'route ouverte' : 'route');
+      // La vignette de la région, dessinée par scripts/scene-build.mjs.
+      const tpl = document.getElementById(`vignette-${r.id}`) as HTMLTemplateElement | null;
+      if (tpl) li.append(tpl.content.cloneNode(true));
       li.append(el('h3', undefined, r.name));
       li.append(el('p', 'tagline', r.tagline));
       li.append(el('p', undefined, r.description));

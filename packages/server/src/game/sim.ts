@@ -53,7 +53,7 @@ export function canLand(plane: PlaneModel, destination: Destination): boolean {
 }
 
 /** Le cachet « toute la région » de chaque région. */
-const REGION_STAMP: Record<RegionId, string> = { brume: 's-vallee', saline: 's-cote' };
+const REGION_STAMP: Record<RegionId, string> = { brume: 's-vallee', saline: 's-cote', archipel: 's-archipel' };
 
 /** Les régions dont la route est ouverte ; celle de départ l'est toujours. */
 export function unlockedRegions(db: Database, companyId: string): RegionId[] {
