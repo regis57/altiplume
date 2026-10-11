@@ -12,6 +12,7 @@ export async function testApp(startAt = Date.UTC(2026, 9, 11, 9, 0, 0)) {
     db: openDatabase({ path: ':memory:' }),
     config: loadConfig({ NODE_ENV: 'test', PORT: '3000', PUBLIC_ORIGIN: 'http://localhost:3000' }),
     mailer,
+    push: null,
     now: () => clock,
   };
   const app = await buildApp(ctx, { clientDir: '/nonexistent' });

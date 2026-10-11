@@ -35,6 +35,8 @@ const common = { bundle: true, target: ['es2022'], minify: !watch, sourcemap: wa
 await build({ ...common, entryPoints: [join(root, 'src/main.ts')], format: 'esm', outfile: join(dist, 'app.js') });
 // Le script de thème est classique (pas un module) : il doit s'exécuter avant le rendu.
 await build({ ...common, entryPoints: [join(root, 'src/theme.ts')], format: 'iife', outfile: join(dist, 'theme.js') });
+// Le service worker garde un nom fixe : le navigateur le redemande à chaque visite (no-cache côté serveur).
+await build({ ...common, entryPoints: [join(root, 'src/sw.ts')], format: 'iife', outfile: join(dist, 'sw.js') });
 
 
 // Empreinte dans le nom : chaque version a un nom neuf, le cache ne peut pas se

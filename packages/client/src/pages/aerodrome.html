@@ -62,9 +62,14 @@ title: Mon aérodrome
           <div><dt data-i18n="game.francs">Francs</dt><dd id="francs">—</dd></div>
           <div><dt data-i18n="game.stamps">Cachets</dt><dd id="cachets">—</dd></div>
         </dl>
-        <button class="bouton secondaire musique" type="button" data-action="toggle-music" aria-pressed="false" data-i18n="music.on">♪ Musique</button>
+        <div class="actions boutons-ambiance">
+          <button class="bouton secondaire musique" type="button" data-action="toggle-music" aria-pressed="false" data-i18n="music.on">♪ Musique</button>
+          <button class="bouton secondaire musique cache" type="button" data-action="toggle-push" aria-pressed="false" data-i18n="push.on">🔔 Me prévenir à l'arrivée</button>
+          <button class="bouton secondaire musique cache" type="button" data-action="install" data-i18n="install.button">Installer l'application</button>
+        </div>
       </div>
     </div>
+    <p class="aide cache" id="push-aide"></p>
 
     <ul class="nouvelles" id="nouvelles" aria-live="polite"></ul>
 

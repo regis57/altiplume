@@ -221,7 +221,7 @@ Objectif ferme, pas une case à cocher. Le choix de l'interface en DOM rend l'es
 |---|---|---|---|
 | Scène | Phaser 3 | MIT | Mûr, pixel-perfect, grande communauté |
 | Interface | DOM + CSS, TypeScript sans framework lourd | — | Accessibilité, légèreté, longévité |
-| PWA | Service worker, manifest | — | Installable, coquille hors-ligne, notifications |
+| PWA | Service worker, manifest, Web Push écrit dans le dépôt (VAPID + aes128gcm, node:crypto) | — | Installable, notifications « courrier arrivé » ; pas de cache hors-ligne : le serveur fait autorité (décision du 11/10) |
 | API | Node 22 LTS + Fastify | MIT | Rapide, léger sur un NAS, écosystème sûr |
 | Auth | Code propre au projet (lien magique, sessions) + SimpleWebAuthn pour les passkeys | MIT | Sans mot de passe ; chaque ligne du flux est dans le dépôt et testée (décision du 11/10, voir journal) |
 | Base | SQLite via `node:sqlite` (intégré à Node), mode WAL | — | Aucune dépendance native ; un fichier, suffisant jusqu'à des dizaines de milliers de joueurs |

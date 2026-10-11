@@ -66,6 +66,7 @@ export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): vo
     const sessions = ctx.db.prepare('SELECT created_at, last_used_at, expires_at FROM sessions WHERE player_id = ?').all(p.id);
     const events = ctx.db.prepare('SELECT at, event, meta FROM audit WHERE player_id = ? ORDER BY at').all(p.id);
     const passkeys = ctx.db.prepare('SELECT name, device_type, backed_up, created_at, last_used_at FROM passkeys WHERE player_id = ? ORDER BY created_at').all(p.id);
+    const notifications = ctx.db.prepare('SELECT endpoint, created_at, last_used_at FROM push_subscriptions WHERE player_id = ? ORDER BY created_at').all(p.id);
     audit(ctx.db, 'player.exported', p.id, {}, now);
     const payload = {
       exportedAt: new Date(now).toISOString(),
@@ -77,6 +78,7 @@ export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): vo
       },
       sessions,
       passkeys, // noms et dates seulement : la clé publique n'est pas une donnée sur la personne
+      notifications, // adresses d'abonnement aux notifications, sans les clés
       events,
       game: (() => { const c = findCompanyByPlayer(ctx.db, p.id); return c ? loadCompanyState(ctx.db, c) : null; })(),
     };

@@ -12,6 +12,7 @@ import { registerAuthRoutes } from './auth/routes.ts';
 import { registerPasskeyRoutes } from './auth/passkeys.ts';
 import { registerDeviceRoutes } from './auth/device.ts';
 import { registerAccountRoutes } from './account/routes.ts';
+import { registerPushRoutes } from './push/routes.ts';
 import { registerGameRoutes } from './game/routes.ts';
 import { registerHealth } from './routes/health.ts';
 import { registerWorldRoutes } from './routes/world.ts';
@@ -73,6 +74,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   registerPasskeyRoutes(app, ctx);
   registerDeviceRoutes(app, ctx);
   registerAccountRoutes(app, ctx);
+  registerPushRoutes(app, ctx);
   registerGameRoutes(app, ctx);
 
   // Réponses d'erreur uniformes et muettes : jamais de trace, jamais de chemin.
@@ -100,7 +102,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
         // la version courante des bundles. Sinon un navigateur garde une page neuve
         // avec un script d'il y a une heure — vu en production le 11/10/2026.
         if (/\.[a-f0-9]{8}\.(js|css)$/.test(path)) reply.header('cache-control', 'public, max-age=31536000, immutable');
-        else if (path.endsWith('.html')) reply.header('cache-control', 'no-cache');
+        else if (path.endsWith('.html') || path.endsWith('/sw.js') || path.endsWith('/manifest.webmanifest')) reply.header('cache-control', 'no-cache');
       },
     });
   }

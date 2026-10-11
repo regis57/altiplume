@@ -54,7 +54,7 @@ describe('fichiers du client', () => {
     const app = await buildApp({
       db: openDatabase({ path: ':memory:' }),
       config: loadConfig({ NODE_ENV: 'production', PORT: '3000', PUBLIC_ORIGIN: 'https://altiplume.test', MAIL_API_KEY: 'x' }),
-      mailer: new ConsoleMailer(() => undefined), now: () => Date.now(),
+      mailer: new ConsoleMailer(() => undefined), push: null, now: () => Date.now(),
     }, { clientDir: dir });
     const html = await app.inject({ method: 'GET', url: '/' });
     expect(html.statusCode).toBe(200);

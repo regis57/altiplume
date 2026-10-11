@@ -276,3 +276,19 @@ Régis a fusionné les sept PR de la nuit en une heure, et la première chose qu
 Sa compagnie, elle, est réparée par la base elle-même au démarrage : une migration cherche « des la Croisette » et le corrige. Il n'a rien à refaire.
 
 La matinée a aussi appris quelque chose sur GitHub : des PR empilées et des fusions « squash » ne font pas bon ménage. Chaque fusion transformait la suivante en champ de conflits, parce que les mêmes changements existaient sous deux formes. Le remède a été simple — réaligner chaque branche sur `main` après chaque fusion — mais il demandait d'être là. Prochaine fois : une PR à la fois, ou des branches indépendantes.
+
+---
+
+## Chapitre 14 — « Votre courrier est arrivé » (11 octobre 2026, 13 h)
+
+Jusqu'ici, on revenait à l'aérodrome parce qu'on y pensait. À partir de maintenant, c'est l'aérodrome qui vient à vous.
+
+**L'application.** Altiplume s'installe sur l'écran d'accueil du téléphone, avec son icône — la plume en pixels, générée en PNG depuis la même grille que le logo. Elle s'ouvre plein écran, sans barre d'adresse. Rien n'est mis en cache : un jeu en temps réel n'a rien à gagner à vivre hors ligne, et le serveur reste le seul à savoir ce qui est vrai.
+
+**La notification.** Un bouton cloche sur l'aérodrome. Rien n'est demandé au chargement, jamais : c'est la personne qui appuie, le navigateur demande la permission, et le jeu reçoit une adresse d'abonnement et deux clés. Quand un vol se pose, le serveur — qui regarde ses vols toutes les trente secondes — chiffre « Marthe s'est posée à Pont-de-Brume. +30 F · délai tenu. » pour cet appareil et l'envoie au service de notification du navigateur, qui le transporte sans pouvoir le lire. Un vol prévient une fois, jamais deux ; un vol posé depuis plus d'une heure ne prévient plus, on l'a vu depuis.
+
+**Pourquoi j'ai écrit le chiffrement moi-même.** Il existe une bibliothèque pour ça. Mais c'est deux cents lignes de standard — un échange de clés, une dérivation, un chiffrement authentifié, une signature — et une clé secrète passe par là. J'ai préféré que chaque ligne soit dans le dépôt, lisible, et testée par un *second* programme écrit dans le test, qui joue le rôle du navigateur et déchiffre ce que le premier a chiffré. Si l'un des deux se trompe, le test le voit. Ils sont d'accord.
+
+**Apple.** Sur iPhone, les notifications d'un site web n'existent que si le site est installé sur l'écran d'accueil. Le jeu le dit à la place de cacher le bouton. C'est leur règle ; on l'explique.
+
+La clé secrète se génère sur le NAS lui-même, par la même image que le jeu, et ne quitte jamais le `.env`. Neuf tests de plus — cent trente-six en tout.

@@ -11,6 +11,8 @@ export interface Config {
   readonly publicOrigin: string;
   readonly databasePath: string;
   readonly mail: { readonly apiKey: string | null; readonly from: string };
+  /** Clés VAPID pour les notifications ; absentes, les notifications sont simplement indisponibles. */
+  readonly push: { readonly publicKey: string; readonly privateKey: string; readonly subject: string } | null;
   /** Vrai derrière le tunnel Cloudflare : les en-têtes X-Forwarded-* sont fiables. */
   readonly trustProxy: boolean;
 }
@@ -43,6 +45,15 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     throw new ConfigError('MAIL_API_KEY est requis en production : sans lui, aucun lien de connexion ne part');
   }
 
+  const vapidPublic = env['VAPID_PUBLIC_KEY']?.trim() || null;
+  const vapidPrivate = env['VAPID_PRIVATE_KEY']?.trim() || null;
+  if ((vapidPublic === null) !== (vapidPrivate === null)) {
+    throw new ConfigError('VAPID_PUBLIC_KEY et VAPID_PRIVATE_KEY vont ensemble');
+  }
+  const push = vapidPublic && vapidPrivate
+    ? { publicKey: vapidPublic, privateKey: vapidPrivate, subject: env['VAPID_SUBJECT']?.trim() || `mailto:${env['MAIL_FROM'] ?? 'courrier@altiplume.com'}` }
+    : null;
+
   return {
     env: nodeEnv as Config['env'],
     host: env['HOST'] ?? '127.0.0.1',
@@ -50,6 +61,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     publicOrigin,
     databasePath: env['DATABASE_PATH'] ?? './data/altiplume.db',
     mail: { apiKey, from: env['MAIL_FROM'] ?? 'courrier@altiplume.com' },
+    push,
     trustProxy: env['TRUST_PROXY'] === '1' || isProd,
   };
 }

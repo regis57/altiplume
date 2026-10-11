@@ -8,6 +8,8 @@ import { purgeExpiredChallenges } from './db/repos/passkeys.ts';
 import { purgeExpiredDeviceCodes } from './db/repos/deviceCodes.ts';
 import { BrevoMailer, ConsoleMailer, type Mailer } from './mail/mailer.ts';
 import type { AppContext } from './context.ts';
+import { WebPushSender } from './push/webpush.ts';
+import { notifyArrivals } from './push/routes.ts';
 
 let config;
 try {
@@ -22,7 +24,8 @@ const mailer: Mailer = config.mail.apiKey
   ? new BrevoMailer(config.mail.apiKey, config.mail.from)
   : new ConsoleMailer();
 
-const ctx: AppContext = { db, config, mailer, now: () => Date.now() };
+const push = config.push ? new WebPushSender(config.push) : null;
+const ctx: AppContext = { db, config, mailer, push, now: () => Date.now() };
 const app = await buildApp(ctx, { logger: true });
 
 // Ménage : pas de tâche de fond pour le jeu, mais un balayage horaire des
@@ -37,9 +40,20 @@ const housekeeping = setInterval(() => {
 }, 3_600_000);
 housekeeping.unref();
 
+// Le courrier qui se pose : toutes les trente secondes, on prévient les joueurs
+// dont un vol vient d'arriver. Sans clés VAPID, on marque seulement les vols.
+let notifying = false;
+const courrier = setInterval(() => {
+  if (notifying) return;
+  notifying = true;
+  notifyArrivals(ctx).catch((error) => app.log.error(error)).finally(() => { notifying = false; });
+}, 30_000);
+courrier.unref();
+
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, () => {
     clearInterval(housekeeping);
+    clearInterval(courrier);
     app.close().then(
       () => { db.close(); process.exit(0); },
       () => process.exit(1),
@@ -50,6 +64,7 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
 try {
   await app.listen({ port: config.port, host: config.host });
   if (!config.mail.apiKey) app.log.warn('MAIL_API_KEY absent : les liens de connexion s\'affichent dans la console.');
+  if (!config.push) app.log.warn('VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY absents : pas de notifications « courrier arrivé ».');
 } catch (error) {
   app.log.error(error);
   process.exit(1);

@@ -16,6 +16,7 @@ d'Altiplume (personne physique, France). Version du 11 octobre 2026.
 | **Durée** | Tant que le compte existe. Suppression automatique après 24 mois d'inactivité, précédée de deux avertissements. Suppression immédiate à la demande, depuis le compte. |
 | **Sécurité** | Aucun mot de passe. Jetons de connexion et de session stockés sous forme d'empreinte SHA-256 uniquement, à usage unique ou à expiration. Serveur non exposé directement (tunnel sortant). Conteneur non-root, lecture seule. Transport chiffré (TLS). |
 | **Sauvegardes** | Copie cohérente de la base chaque nuit sur le NAS, conservée 30 jours (rotation automatique), puis copie hors du NAS par Hyper Backup. Un compte effacé disparaît donc des sauvegardes au plus tard 30 jours après son effacement. |
+| **Notifications** | Sur demande explicite de la personne (bouton), le navigateur fournit une adresse d'abonnement et deux clés de chiffrement, conservées tant que la personne ne retire pas l'abonnement (cinq appareils au plus), supprimées avec le compte ou dès que le service de notification signale l'abonnement mort. Contenu envoyé : nom du pilote, village, montant — chiffré pour l'appareil seul ; le service de notification (Google, Mozilla ou Apple selon le navigateur) ne peut pas le lire. |
 
 ## Traitement 2 — Sessions et liens de connexion
 

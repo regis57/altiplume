@@ -626,6 +626,8 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 /* ---- La scène vivante ---- */
 
 .caisse-et-musique { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.boutons-ambiance { gap: 0.4rem; }
+#push-aide { margin: 0.4rem 0 0; }
 .musique { width: auto; min-height: 40px; padding: 0.4rem 0.8rem; font-size: 0.95rem; }
 .musique[aria-pressed='true'] { border-color: var(--laiton); color: var(--laiton); }
 .scene .avion-vol { fill: #2a2f33; }
