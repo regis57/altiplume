@@ -116,6 +116,41 @@ Les passkeys sont liées au domaine `altiplume.com` : une clé créée sur le si
 public ne fonctionne pas en local, et inversement. C'est une protection contre le
 hameçonnage, pas un défaut.
 
+### En un clic : la tâche planifiée (recommandé depuis le 11/10)
+
+La même procédure, exécutée par le NAS lui-même. À faire une fois :
+
+1. **Panneau de configuration → Planificateur de tâches → Créer → Tâche planifiée →
+   Script défini par l'utilisateur.**
+2. Onglet *Général* : nom `Altiplume - redéployer`, utilisateur **root**, décocher
+   *Activé* (on ne veut pas qu'elle tourne toute seule ; on la lancera à la main).
+3. Onglet *Paramètres de tâche* : cocher **Enregistrer les résultats de sortie** et
+   choisir un dossier (par exemple `docker/altiplume/journal`) — c'est là qu'on lira le
+   `exit 0`. Optionnel : *Envoyer les détails d'exécution par e-mail*.
+4. Dans **Exécuter la commande**, coller le contenu de `scripts/nas-redeploy.sh`
+   (fichier du dépôt) tel quel.
+5. OK. DSM prévient que le script tourne en root : c'est nécessaire pour parler à
+   Docker ; accepter.
+
+Ensuite, à chaque fusion sur `main` : **Planificateur de tâches → sélectionner la
+tâche → Exécuter → Oui**. Une minute plus tard, le fichier de sortie se termine par :
+
+```
+== OK — exit 0
+```
+
+Ce que fait le script, dans l'ordre : arrêt et nettoyage du projet ; suppression des
+images `ghcr.io/regis57/altiplume` et `cloudflare/cloudflared` ; nouveau téléchargement
+et recréation des conteneurs depuis `docker/altiplume` (le `.env` et le volume de
+données ne sont pas touchés) ; attente que le conteneur se déclare sain ; appel de
+`/healthz` depuis l'intérieur du conteneur — aucun port n'est ouvert, donc c'est le seul
+endroit d'où on peut le joindre. S'il échoue, il affiche les quarante dernières lignes du
+journal du conteneur et finit en `exit 1`.
+
+Si DSM ne trouve pas `/usr/local/bin/docker-compose`, remplacer dans le script
+`COMPOSE="/usr/local/bin/docker-compose -p altiplume"` par
+`COMPOSE="/usr/local/bin/docker compose -p altiplume"`.
+
 ## Revenir en arrière
 
 Chaque image porte aussi une étiquette `sha-xxxxxxxxxxxx` correspondant au commit.
