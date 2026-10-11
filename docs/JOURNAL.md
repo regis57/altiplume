@@ -319,3 +319,15 @@ Non, on ne peut pas — pas sur iPhone. Apple interdit à tout site de se poser 
 Ce qu'on peut faire, c'est ne pas laisser chercher. Sur iPhone, hors application installée, l'aérodrome montre maintenant une fiche avec les deux gestes dessinés en pixels — le carré à la flèche, puis le carré au plus — et explique pourquoi : plein écran, et les notifications. « Plus tard » la replie pour une semaine. Deux gestes, c'est le minimum qu'Apple nous laisse ; on les montre avec le doigt.
 
 *Au passage, le test instable de ce matin est démasqué : il glissait une carte précise dans la main du joueur, et un jour sur cent le tirage quotidien l'y avait déjà mise — doublon, erreur. Il ne s'en formalise plus.*
+
+---
+
+## Chapitre 17 — La vache sur la piste (11 octobre 2026, 14 h 45)
+
+« Comment je peux faire décoller Marthe si j'ai une vache sur la piste ? Rien n'a été bloqué. »
+
+Régis a raison, et c'est le genre de chose qu'on ne voit qu'en jouant. Les imprévus étaient des cartes comme les autres : on pouvait les laisser dans un coin et expédier quand même. Une vache qui n'empêche rien n'est pas une vache, c'est une illustration.
+
+Désormais, un imprévu en main **bloque la piste** : aucun vol ne part — ligne régulière comprise — tant qu'on n'a pas tranché, et on ne peut pas le « laisser passer » : il n'a plus ce bouton. Le bouton *Expédier* des contrats se grise avec une ligne rouge qui dit pourquoi. On choisit — attendre le fermier, pousser la bête, payer — et la piste se libère.
+
+C'est un petit changement de règle et une grande différence de sens : le jeu dit maintenant ce qu'il montre.

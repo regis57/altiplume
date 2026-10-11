@@ -642,3 +642,5 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .gestes li::before { content: counter(geste); grid-row: 1 / span 2; display: none; }
 .gestes svg { fill: var(--encre); background: var(--papier-ombre); border-radius: var(--rayon); padding: 4px; width: 40px; height: 40px; }
 .gestes strong { color: var(--encre); }
+
+.carte .bloque { color: var(--cachet-encre); margin: 0 0 0.5rem; }

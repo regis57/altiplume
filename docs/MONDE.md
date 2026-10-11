@@ -97,7 +97,10 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 - **20 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
   un délai souple (tenu → bonus ; dépassé → rien). Les lointains paient mieux ; chaque
   contrat couvre au moins le salaire et l'entretien d'un vol.
-- **10 imprévus** : brume tenace, vache sur la piste, moteur qui tousse, pilote
+- **10 imprévus** — et **un imprévu en main bloque la piste** : rien ne décolle, ligne
+  régulière comprise, tant qu'on n'a pas tranché, et on ne peut pas le « laisser
+  passer » (règle du 11/10 : « comment je peux faire décoller Marthe si j'ai une
+  vache sur la piste ? ») : brume tenace, vache sur la piste, moteur qui tousse, pilote
   enrhumé, vent de crête, un sac en trop, averse, le bac en grève, la nuit qui tombe
   tôt, une lettre sans adresse. Chacun se résout par un choix — payer, attendre,
   risquer — et chaque choix a ses chiffres.

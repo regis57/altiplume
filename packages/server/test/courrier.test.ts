@@ -77,6 +77,8 @@ describe('le courrier — expédier', () => {
     const send = (card: string, plane = grive, pilot = marthe) => t.json('POST', '/v1/company/flights', { card, plane, pilot }, t.cookie);
     expect((await send('c-inconnue')).json().error).toBe('card_unknown');
     expect((await send('e-brume')).json().error).toBe('card_not_contract');
+    // L'imprévu en main bloque tout le reste : on le retire pour tester les autres refus.
+    t.ctx.db.prepare("DELETE FROM company_hand WHERE card = 'e-brume'").run();
     expect((await send('c-journal', 'xxx')).json().error).toBe('plane_unknown');
     expect((await send('c-journal', grive, 'xxx')).json().error).toBe('pilot_unknown');
     expect((await send('c-farine')).json().error).toBe('plane_too_small'); // 3 sacs, la Grive en porte 2
@@ -199,6 +201,8 @@ describe('le courrier — expédier', () => {
     const s0 = (await t.json('GET', '/v1/company', undefined, cookie)).json();
     const one = { 'pont-de-brume': 'c-journal', 'les-tilleuls': 'c-miel', 'moulin-gris': 'c-tissu', 'haut-ferrand': 'c-pieces', 'lanterne-du-val': 'c-amour', 'combe-aux-rosees': 'c-medicaments' } as const;
     for (const [dest, card] of Object.entries(one)) {
+      // Le tirage du jour a pu poser un imprévu : il bloquerait la piste, on le tranche d'office.
+      t.ctx.db.prepare("DELETE FROM company_hand WHERE card LIKE 'e-%'").run();
       t.ctx.db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES ((SELECT id FROM companies), ?, ?)').run(card, t.ctx.now());
       const r = await t.json('POST', '/v1/company/flights', { card, plane: s0.planes[0].id, pilot: s0.pilots[0].id }, cookie);
       expect(r.statusCode, dest).toBe(201);
@@ -283,6 +287,32 @@ describe('la ligne régulière', () => {
     for (let i = 0; i < 200; i += 1) expect(drawCards(makeRng(i), [], 1)).not.toContain('c-ligne-reguliere');
     // Et on ne peut pas la défausser.
     expect((await t.json('DELETE', '/v1/company/cards/c-ligne-reguliere', {}, t.cookie)).statusCode).toBe(404);
+    await t.app.close();
+  });
+});
+
+describe('un imprévu bloque la piste', () => {
+  it('rien ne décolle tant qu\'il n\'est pas tranché, et il ne se laisse pas passer', async () => {
+    const t = await company();
+    t.clearHand(); t.give('c-journal'); t.give('e-vache');
+    const s0 = await t.state();
+    expect(s0.pendingEvent).toBe('e-vache');
+    const blocked = await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie);
+    expect(blocked.statusCode).toBe(400);
+    expect(blocked.json().error).toBe('event_pending');
+    // La ligne régulière non plus.
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-ligne-reguliere', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie)).json().error).toBe('event_pending');
+    // On ne peut pas l'ignorer.
+    const discard = await t.json('DELETE', '/v1/company/cards/e-vache', {}, t.cookie);
+    expect(discard.statusCode).toBe(409);
+    expect(discard.json().error).toBe('event_must_decide');
+    // On tranche : la piste se libère.
+    const { findCard } = await import('../src/world/index.ts');
+    const choice = (findCard('e-vache') as unknown as { choices: { id: string }[] }).choices[0]!.id;
+    expect((await t.json('POST', '/v1/company/cards/e-vache/play', { choice }, t.cookie)).statusCode).toBe(200);
+    const s1 = await t.state();
+    expect(s1.pendingEvent).toBeNull();
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie)).statusCode).toBe(201);
     await t.app.close();
   });
 });
