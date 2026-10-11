@@ -632,3 +632,5 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .musique[aria-pressed='true'] { border-color: var(--laiton); color: var(--laiton); }
 .scene .avion-vol { fill: #2a2f33; }
 [data-moment='nuit'] .scene .avion-vol { fill: #9fb6c4; }
+
+.carte.reguliere { border-style: dashed; border-color: var(--laiton); }

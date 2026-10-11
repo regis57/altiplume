@@ -91,6 +91,9 @@ avant le début du jeu ; il n'apparaît que dans ce que les autres en disent.
 Trois par jour, dans une main de cinq. Tirage déterministe (graine par joueur et par
 jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 
+- **La ligne régulière** : le sac de Pont-de-Brume, toujours disponible, jamais tirée,
+  18 F sans bonus. La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
+  11/10 après la première partie de Régis : à 14 h, il n'avait plus rien à expédier).
 - **20 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
   un délai souple (tenu → bonus ; dépassé → rien). Les lointains paient mieux ; chaque
   contrat couvre au moins le salaire et l'entretien d'un vol.

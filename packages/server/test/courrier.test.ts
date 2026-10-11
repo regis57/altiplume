@@ -260,3 +260,29 @@ describe('le courrier — imprévus et opportunités', () => {
     await t.app.close();
   });
 });
+
+describe('la ligne régulière', () => {
+  it('part la main vide, autant de fois qu\'on veut, et n\'est jamais tirée', async () => {
+    const t = await company();
+    t.clearHand();
+    const s0 = await t.state();
+    expect(s0.hand).toEqual([]);
+    const r = await t.json('POST', '/v1/company/flights', { card: 'c-ligne-reguliere', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie);
+    expect(r.statusCode).toBe(201);
+    expect(r.json().flights[0].destination).toBe('pont-de-brume');
+    expect(r.json().hand).toEqual([]);
+    const f = r.json().flights[0];
+    t.advance(2 * (f.arrivesAt - f.departedAt) + 1);
+    const s1 = await t.state();
+    expect(s1.francs).toBe(300 - 14 + 18); // 18 F, pas de bonus
+    // Encore, dès que l'avion est rentré.
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-ligne-reguliere', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie)).statusCode).toBe(201);
+    // Jamais dans un tirage.
+    const { drawCards } = await import('../src/game/sim.ts');
+    const { makeRng } = await import('../src/sim/rng.ts');
+    for (let i = 0; i < 200; i += 1) expect(drawCards(makeRng(i), [], 1)).not.toContain('c-ligne-reguliere');
+    // Et on ne peut pas la défausser.
+    expect((await t.json('DELETE', '/v1/company/cards/c-ligne-reguliere', {}, t.cookie)).statusCode).toBe(404);
+    await t.app.close();
+  });
+});
