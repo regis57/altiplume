@@ -634,3 +634,11 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 [data-moment='nuit'] .scene .avion-vol { fill: #9fb6c4; }
 
 .carte.reguliere { border-style: dashed; border-color: var(--laiton); }
+
+/* ---- La fiche « Sur l'écran d'accueil » (iPhone) ---- */
+.fiche-installer { border: 2px dashed var(--laiton); }
+.gestes { list-style: none; padding: 0; margin: 0.8rem 0; display: grid; gap: 0.8rem; counter-reset: geste; }
+.gestes li { display: grid; grid-template-columns: auto 1fr; gap: 0.8rem; align-items: center; counter-increment: geste; }
+.gestes li::before { content: counter(geste); grid-row: 1 / span 2; display: none; }
+.gestes svg { fill: var(--encre); background: var(--papier-ombre); border-radius: var(--rayon); padding: 4px; width: 40px; height: 40px; }
+.gestes strong { color: var(--encre); }

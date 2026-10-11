@@ -57,6 +57,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Sauvegarde nocturne de la base (copie cohérente, intégrité, rotation, restauration) | ~20 min |
 | 2026-10-11 | « Ton courrier est arrivé » : application installable, Web Push écrit à la main (VAPID, aes128gcm), notification à l'atterrissage | ~1 h 30 |
 | 2026-10-11 | La ligne régulière : toujours un sac à faire partir | ~20 min |
+| 2026-10-11 | Fiche iPhone « Sur l'écran d'accueil », deux gestes dessinés | ~20 min |
 
 ## Revenus (à partir du lancement)
 
