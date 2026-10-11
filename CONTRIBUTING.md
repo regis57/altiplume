@@ -54,3 +54,11 @@ langue a sa propre banque de mots, native.
 ## Code de conduite
 
 Voir [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## Le wiki
+
+Le wiki GitHub est une **copie** du dossier `docs/`, publiée automatiquement par le
+workflow `Wiki` après chaque fusion sur `main` qui touche la documentation. On ne
+modifie jamais le wiki à la main : on modifie `docs/`, et le wiki suit. Une seule
+condition, une fois : le wiki doit exister (GitHub → onglet *Wiki* → *Create the
+first page* → enregistrer n'importe quoi ; la synchronisation l'écrasera).
