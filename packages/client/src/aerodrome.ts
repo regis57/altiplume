@@ -9,6 +9,7 @@ import { formatDate, getLocale, t, translatePage } from './i18n.ts';
 import { formatRemaining } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
+import { setupPasskeyInvitation } from './passkeys.ts';
 
 type Json = Record<string, unknown>;
 interface ApiResult { readonly status: number; readonly body: Json }
@@ -170,6 +171,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   animateScene(c);
   musicButton();
   setupInstall();
+  void setupPasskeyInvitation(api, setMessage);
   void setupNotifications(api, setMessage);
   clockOffset = c.now - Date.now();
   const allBusy = c.planes.length > 0 && c.planes.every((p) => p.busyUntil !== null);

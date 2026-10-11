@@ -68,6 +68,31 @@ try {
   await page.click('#verify button[type=submit]');
   await page.waitForURL(`${ORIGIN}/aerodrome`);
   await page.waitForSelector('#fondation:not(.cache)'); // connecté, sans compagnie encore
+
+  // Fonder, puis l'invitation « Revenir d'un geste » sur le premier écran.
+  await page.waitForSelector('.choix-nom');
+  await page.fill('#nom-perso', 'Messageries de la Croisette');
+  await page.click('#fonder button[type=submit]');
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  await page.waitForSelector('#fiche-passkey:not(.cache)');
+  await page.click('[data-action=passkey-later]');
+  assert(await page.$eval('#fiche-passkey', (e) => e.classList.contains('cache')), '« Plus tard » replie l\'invitation');
+  await page.reload(); await page.waitForSelector('#aerodrome:not(.cache)'); await page.waitForTimeout(400);
+  assert(await page.$eval('#fiche-passkey', (e) => e.classList.contains('cache')), 'elle reste repliée trois jours');
+  await page.evaluate(() => localStorage.removeItem('altiplume.passkey.plus-tard'));
+  await page.reload(); await page.waitForSelector('#fiche-passkey:not(.cache)');
+  await page.click('[data-action=passkey-create]');
+  await page.waitForSelector('#jeu-message.ok');
+  assert(await page.$eval('#fiche-passkey', (e) => e.classList.contains('cache')), 'la clé créée, l\'invitation disparaît');
+  await page.reload(); await page.waitForSelector('#aerodrome:not(.cache)'); await page.waitForTimeout(400);
+  assert(await page.$eval('#fiche-passkey', (e) => e.classList.contains('cache')), 'et ne revient plus');
+  const first = await cdp.send('WebAuthn.getCredentials', { authenticatorId });
+  assert(first.credentials.length === 1, 'une clé créée depuis l\'aérodrome');
+
+  // Un second appareil (autre authenticateur) : le premier refuserait, à juste titre, une deuxième clé pour le même compte.
+  await cdp.send('WebAuthn.addVirtualAuthenticator', {
+    options: { protocol: 'ctap2', transport: 'usb', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true },
+  });
   await page.goto(`${ORIGIN}/compte`);
   assert((await page.textContent('#fiche-nickname')) === 'Pilote', 'compte ouvert');
 
@@ -75,9 +100,9 @@ try {
   await page.waitForSelector('[data-action=passkey-add]:not(.cache)');
   await page.click('[data-action=passkey-add]');
   await page.waitForSelector('#passkeys-message.ok');
-  await page.waitForSelector('#passkeys-list li');
+  await page.waitForSelector('#passkeys-list li:nth-child(2)');
   const creds = await cdp.send('WebAuthn.getCredentials', { authenticatorId });
-  assert(creds.credentials.length === 1, 'une clé dans l\'authenticateur virtuel');
+  assert(creds.credentials.length === 1, 'le premier appareil garde sa clé');
   assert(creds.credentials[0].isResidentCredential, 'clé découvrable');
   const rpId = creds.credentials[0].rpId;
   assert(rpId === 'localhost', `rpId = ${rpId}`);
@@ -104,8 +129,9 @@ try {
   await page.waitForURL(`${ORIGIN}/aerodrome`);
   await page.goto(`${ORIGIN}/compte`);
   assert((await page.textContent('#fiche-nickname')) === 'Pilote', 'connecté par passkey');
-  const lastUsed = await page.textContent('#passkeys-list .aide');
-  assert(!/jamais/.test(lastUsed), 'dernier usage renseigné');
+  // Deux clés : celle qui vient de servir porte une date, l'autre « jamais utilisée ».
+  const usages = await page.$$eval('#passkeys-list .aide', (els) => els.map((e) => e.textContent));
+  assert(usages.some((u) => !/jamais/.test(u)), `dernier usage renseigné (${usages.join(' | ')})`);
 
   // ---- Le PC : anonyme, affiche un QR ; le téléphone approuve ----
   const pc = await browser.newContext({ viewport: { width: 1280, height: 800 }, locale: 'fr-FR' });
@@ -173,7 +199,9 @@ try {
 
   // Supprimer la passkey : elle ne connecte plus.
   await page.goto(`${ORIGIN}/compte`);
-  await page.waitForSelector('#passkeys-list li');
+  await page.waitForSelector('#passkeys-list li:nth-child(2)');
+  await page.click('#passkeys-list li:nth-child(2) .danger');
+  await page.waitForFunction(() => document.querySelectorAll('#passkeys-list li').length === 1);
   await page.click('#passkeys-list .danger');
   await page.waitForSelector('#passkeys-empty:not(.cache)');
   await page.click('[data-action=logout]');

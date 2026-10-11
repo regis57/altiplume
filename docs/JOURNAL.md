@@ -331,3 +331,10 @@ Régis a raison, et c'est le genre de chose qu'on ne voit qu'en jouant. Les impr
 Désormais, un imprévu en main **bloque la piste** : aucun vol ne part — ligne régulière comprise — tant qu'on n'a pas tranché, et on ne peut pas le « laisser passer » : il n'a plus ce bouton. Le bouton *Expédier* des contrats se grise avec une ligne rouge qui dit pourquoi. On choisit — attendre le fermier, pousser la bête, payer — et la piste se libère.
 
 C'est un petit changement de règle et une grande différence de sens : le jeu dit maintenant ce qu'il montre.
+## Chapitre 18 — Revenir d'un geste (11 octobre 2026, 15 h 10)
+
+Régis a filmé ses cinq premières minutes sur iPhone, avec un compte neuf. Le chemin tient : inscription, email, « Ouvrir », trois noms, « Wings of Saltshore », la fiche « Sur l'écran d'accueil » — qu'il a suivie, et l'icône est apparue —, la cloche. Puis sa remarque : « il faut inviter, dès le premier écran, à créer sa passkey. Sinon c'est pénible. »
+
+Il a raison. La passkey était rangée dans « Mon compte », là où personne ne va le premier jour. Or c'est elle qui décide si revenir est un geste ou une corvée : avec, c'est l'empreinte ; sans, c'est un email à attendre.
+
+L'aérodrome porte maintenant, tant qu'aucune clé n'existe, une invitation en trois lignes : *Revenir d'un geste — Créer ma passkey — Plus tard*. « Plus tard » la fait taire trois jours, puis elle revient, gentiment. Dès qu'une clé existe, elle disparaît pour de bon et la gestion reste dans « Mon compte », comme avant. Le même code sert aux deux endroits ; le parcours de bout en bout, avec l'authenticateur virtuel, joue l'invitation, le « plus tard », la création et la disparition.
