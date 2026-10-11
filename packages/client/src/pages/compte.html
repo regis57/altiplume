@@ -1,7 +1,10 @@
 title: Mon compte
 ---
 <div class="lecture">
-  <h1 data-i18n="account.title">Mon compte</h1>
+  <div class="entete-page">
+    <h1 data-i18n="account.title">Mon compte</h1>
+    <button class="bouton secondaire" type="button" data-action="logout" data-i18n="account.logout">Se déconnecter</button>
+  </div>
   <div class="message" id="account-message" role="alert" aria-live="polite"></div>
   <dl class="fiche">
     <dt data-i18n="account.nickname">Pseudonyme</dt><dd id="fiche-nickname">—</dd>
@@ -45,7 +48,6 @@ title: Mon compte
     <p data-i18n="account.dataText">Tout ce que le jeu sait de vous tient dans un fichier. Vous pouvez l'emporter, ou tout effacer — immédiatement et définitivement.</p>
     <div class="actions">
       <a class="bouton secondaire" href="/v1/account/export" download data-i18n="account.export">Télécharger mes données</a>
-      <button class="bouton secondaire" type="button" data-action="logout" data-i18n="account.logout">Se déconnecter</button>
     </div>
   </section>
 

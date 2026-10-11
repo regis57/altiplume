@@ -498,6 +498,42 @@ async function pageCompte(): Promise<void> {
   });
 }
 
+// ---- Jour / nuit ----
+
+const THEME_KEY = 'altiplume.theme';
+type Theme = 'light' | 'dark';
+
+/** Le thème effectivement affiché : le choix enregistré, sinon celui du système. */
+function currentTheme(): Theme {
+  const forced = document.documentElement.dataset['theme'];
+  if (forced === 'dark' || forced === 'light') return forced;
+  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme: Theme | null): void {
+  if (theme) document.documentElement.dataset['theme'] = theme;
+  else delete document.documentElement.dataset['theme'];
+  try {
+    if (theme) localStorage.setItem(THEME_KEY, theme); else localStorage.removeItem(THEME_KEY);
+  } catch { /* sans stockage, le choix vaut pour cette page */ }
+  updateThemeButton();
+}
+
+function updateThemeButton(): void {
+  const button = document.querySelector<HTMLButtonElement>('[data-action=toggle-theme]');
+  if (!button) return;
+  const dark = currentTheme() === 'dark';
+  button.dataset['i18nAria'] = dark ? 'theme.toLight' : 'theme.toDark';
+  button.setAttribute('aria-label', t(dark ? 'theme.toLight' : 'theme.toDark'));
+  button.setAttribute('aria-pressed', dark ? 'true' : 'false');
+  // La barre du navigateur mobile suit : brume de jour, nuit sinon.
+  document.querySelectorAll<HTMLMetaElement>('meta[name=theme-color]').forEach((m) => m.remove());
+  const meta = document.createElement('meta');
+  meta.name = 'theme-color';
+  meta.content = dark ? '#1f262c' : '#cfd8dd';
+  document.head.append(meta);
+}
+
 /** Affiche « Se connecter » ou « Mon compte » selon la session, sans bloquer la page. */
 async function updateNav(): Promise<void> {
   const r = await api('GET', '/v1/account').catch(() => ({ status: 0, body: {} as Json }));
@@ -512,6 +548,11 @@ function main(): void {
     setLocale(getLocale() === 'fr' ? 'en' : 'fr');
     translatePage();
   });
+  updateThemeButton();
+  document.querySelector('[data-action=toggle-theme]')?.addEventListener('click', () => {
+    applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeButton);
 
   const page = document.documentElement.dataset['page'];
   switch (page) {

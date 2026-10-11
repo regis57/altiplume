@@ -173,9 +173,10 @@ a:hover { color: var(--laiton-clair); }
   color: var(--encre);
   text-decoration: none;
 }
-.marque svg { width: 2rem; height: 1rem; }
-.avion { fill: var(--encre); }
-.avion-helice { fill: var(--cachet); }
+.marque .plume { width: 1.75rem; height: 1.75rem; }
+.plume .px-k { fill: var(--encre); }
+.plume .px-l { fill: var(--laiton); }
+.plume .px-r { fill: var(--cachet); }
 
 .entete nav { display: flex; gap: 0.25rem; }
 .entete nav a,
@@ -190,7 +191,25 @@ a:hover { color: var(--laiton-clair); }
   text-decoration: none;
   cursor: pointer;
 }
-.entete nav a:hover, .entete nav button:hover { color: var(--encre); background: rgba(0, 0, 0, 0.05); }
+@media (hover: hover) {
+  .entete nav a:hover, .entete nav button:hover { color: var(--encre); background: rgba(0, 0, 0, 0.05); }
+}
+.entete nav a, .entete nav button { white-space: nowrap; }
+@media (max-width: 30rem) {
+  .marque { font-size: 1.25rem; gap: 0.45rem; }
+  .entete nav a, .entete nav button { padding-inline: 0.5rem; }
+}
+.entete nav button svg { display: block; fill: currentColor; }
+/* Jour/nuit : on montre l'icône de ce qu'on obtiendra en cliquant. */
+.icone-lune { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .icone-lune { display: block; }
+  :root:not([data-theme='light']) .icone-soleil { display: none; }
+}
+:root[data-theme='dark'] .icone-lune { display: block; }
+:root[data-theme='dark'] .icone-soleil { display: none; }
+:root[data-theme='light'] .icone-lune { display: none; }
+:root[data-theme='light'] .icone-soleil { display: block; }
 
 main { padding-block: 1rem 3rem; }
 
@@ -383,6 +402,9 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 /* ---- Pages de lecture (compte, mentions) ---- */
 
 .lecture { max-width: var(--mesure); }
+.entete-page { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem 1rem; margin: 1.2rem 0 0.8rem; }
+.entete-page h1 { margin: 0; }
+.entete-page .bouton { width: auto; }
 .lecture h1 { max-width: none; font-size: clamp(1.8rem, 4vw, 2.4rem); }
 .lecture h2 { font-family: var(--police-titre); font-weight: 600; font-size: 1.4rem; margin-top: 2rem; }
 .lecture p, .lecture li { max-width: var(--mesure); }

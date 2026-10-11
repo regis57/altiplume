@@ -31,16 +31,10 @@ for (const [pkg, pattern] of fonts) {
   }
 }
 
-await build({
-  entryPoints: [join(root, 'src/main.ts')],
-  bundle: true,
-  format: 'esm',
-  target: ['es2022'],
-  outfile: join(dist, 'app.js'),
-  minify: !watch,
-  sourcemap: watch ? 'inline' : false,
-  legalComments: 'none',
-});
+const common = { bundle: true, target: ['es2022'], minify: !watch, sourcemap: watch ? 'inline' : false, legalComments: 'none' };
+await build({ ...common, entryPoints: [join(root, 'src/main.ts')], format: 'esm', outfile: join(dist, 'app.js') });
+// Le script de thème est classique (pas un module) : il doit s'exécuter avant le rendu.
+await build({ ...common, entryPoints: [join(root, 'src/theme.ts')], format: 'iife', outfile: join(dist, 'theme.js') });
 
 
 // Empreinte dans le nom : chaque version a un nom neuf, le cache ne peut pas se
@@ -52,6 +46,7 @@ function fingerprint(file) {
   return `/${named}`;
 }
 const appJs = fingerprint('app.js');
+const themeJs = fingerprint('theme.js');
 const stylesCss = fingerprint('styles.css');
 
 // Pages : un gabarit commun, et pour chaque page un fichier qui ne contient que
@@ -69,6 +64,7 @@ for (const file of readdirSync(pagesDir)) {
     .replaceAll('{{title}}', title)
     .replaceAll('{{page}}', page)
     .replaceAll('{{app}}', appJs)
+    .replaceAll('{{theme}}', themeJs)
     .replaceAll('{{styles}}', stylesCss)
     .replace('{{content}}', content);
   writeFileSync(join(dist, file), html);
