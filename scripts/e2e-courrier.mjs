@@ -96,7 +96,7 @@ try {
   assert((await page.textContent('#francs')) === '286', 'coût débité : 300 − 14');
   const vol = await page.textContent('#vols .vol');
   assert(vol.includes('Pont-de-Brume') && vol.includes('Prosper') && vol.includes('En route'), `vol affiché (${vol})`);
-  assert(await page.$eval('.scene .avion', (e) => e.classList.contains('cache')), 'la Grive a quitté le parking de la scène');
+  assert(await page.$eval('#place-a', (e) => !e.dataset.modele), 'la Grive a quitté sa place au parking de la scène');
   assert((await page.textContent('#bord')).includes('Départ pour Pont-de-Brume'), 'livre de bord : départ');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-3-en-vol.png'), fullPage: true });
 

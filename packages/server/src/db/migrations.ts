@@ -317,4 +317,12 @@ export const MIGRATIONS: readonly Migration[] = [
       ALTER TABLE flights ADD COLUMN convoy TEXT;
     `,
   },
+  {
+    version: 13,
+    name: 'la-tour',
+    sql: `
+      -- La tour (12/10) : une quatrième zone à restaurer. Chaque compagnie a son poteau.
+      INSERT OR IGNORE INTO company_zones (company_id, zone, level) SELECT id, 'tour', 1 FROM companies;
+    `,
+  },
 ];

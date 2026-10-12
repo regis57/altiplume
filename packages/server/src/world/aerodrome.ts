@@ -33,6 +33,17 @@ export const ZONES: readonly Zone[] = [
       { level: 3, cost: 2800, seaplanes: 2, name: { fr: 'Double ponton et lanterne', en: 'Double pontoon and lantern' }, description: { fr: "Un second ponton en face du premier, et une lanterne de cuivre au bout, pour rentrer de nuit. Deux hydravions à quai.", en: 'A second pontoon facing the first, and a copper lantern at the end, for coming home at night. Two seaplanes moored.' } },
     ],
   },
+  {
+    // La tour : la zone que la conception promettait depuis la v0.1 (« la tour, le café et
+    // l'atelier viendront »). Elle ne fait pas voler plus loin ; elle fait voler plus tranquille.
+    id: 'tour',
+    name: { fr: 'La tour', en: 'The tower' },
+    levels: [
+      { level: 1, cost: 0, name: { fr: 'Un poteau', en: 'A post' }, description: { fr: "Un poteau planté au bord du pré, et personne en haut. On regarde le ciel depuis le seuil du hangar, en plissant les yeux.", en: 'A post at the edge of the meadow, and nobody up it. You read the sky from the hangar doorstep, squinting.' } },
+      { level: 2, cost: 1200, weather: 0.75, name: { fr: 'La vigie', en: 'The lookout' }, description: { fr: "Une plate-forme sur quatre poteaux, une échelle, une longue-vue et un baromètre. Quelqu'un monte voir le temps avant chaque départ : la brume et le vent de mer surprennent un quart moins souvent.", en: 'A platform on four posts, a ladder, a telescope and a barometer. Someone climbs up to check the weather before every departure: fog and sea wind catch you out a quarter less often.' } },
+      { level: 3, cost: 3000, weather: 0.75, night: 0.7, name: { fr: 'La tour et son feu', en: 'The tower and its beacon' }, description: { fr: "Une vraie tour, une pièce vitrée en haut, et un feu tournant qui balaie la vallée la nuit. On rentre de nuit en visant la Croisette : les vols de nuit cassent un tiers moins.", en: 'A real tower, a glazed room at the top, and a turning beacon that sweeps the valley at night. You come home in the dark aiming for Crosslet: night flights break down a third less often.' } },
+    ],
+  },
 ];
 
 export const DECORATIONS: readonly Decoration[] = [
@@ -45,6 +56,8 @@ export const DECORATIONS: readonly Decoration[] = [
   { id: 'd-lanterne', cost: 40, morale: 2, name: { fr: 'Lanterne de piste', en: 'Strip lantern' }, description: { fr: "Une lanterne de cuivre au bout de la piste, côté chemin. Pour ceux qui rentrent tard.", en: 'A copper lantern at the end of the strip, lane side. For those who come home late.' } },
   { id: 'd-pommier', cost: 45, morale: 1, name: { fr: 'Le pommier', en: 'The apple tree' }, description: { fr: "Un pommier des Tilleuls, planté près du banc. Il donnera dans trois ans. On a le temps.", en: 'A Lindenhollow apple tree planted by the bench. It will fruit in three years. There is time.' } },
   { id: 'd-cafe', cost: 80, morale: 3, name: { fr: 'Tables du café', en: 'Café tables' }, description: { fr: "Deux tables et des chaises dépareillées devant le comptoir. C'est là que les histoires se racontent.", en: 'Two tables and mismatched chairs in front of the counter. This is where the stories get told.' } },
+  { id: 'd-pigeonnier', cost: 60, morale: 2, name: { fr: 'Le pigeonnier', en: 'The dovecote' }, description: { fr: "Un pigeonnier sur son mât, entre la manche à air et le drapeau. Les pigeons voyageurs portaient le courrier avant vous ; ils ont droit à une retraite.", en: 'A dovecote on its pole, between the windsock and the flag. Carrier pigeons took the mail before you did; they have earned a retirement.' } },
+  { id: 'd-ruches', cost: 45, morale: 1, name: { fr: 'Les ruches', en: 'The beehives' }, description: { fr: "Deux ruches au pied du pommier. La cire de Lanterne-du-Val a fait une cloche ; celle-ci fera des bougies pour le café.", en: 'Two hives at the foot of the apple tree. Lanternhollow wax made a bell; this lot will make candles for the café.' } },
   { id: 'd-peinture', cost: 120, morale: 3, name: { fr: 'Peinture du hangar', en: 'Hangar paint' }, description: { fr: "Vert de gris, avec la porte en rouge cachet. On le voit depuis Pont-de-Brume, paraît-il.", en: 'Verdigris, with the door in postmark red. They say you can see it from Mistbridge.' } },
 ];
 

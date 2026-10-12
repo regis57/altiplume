@@ -2,7 +2,8 @@
 /**
  * Aperçus de la scène : une compagnie avec tout posé et tout restauré, à
  * l'aube, le jour, au crépuscule et la nuit — et la version nue du premier
- * jour, puis les quatre saisons. Treize images dans le dossier demandé, pour
+ * jour — au premier jour, à l'âge du milieu, tout restauré — puis les quatre
+ * saisons. Dix-sept images dans le dossier demandé, pour
  * juger les pixels avant de pousser.
  *
  *   node scripts/scene-preview.mjs dossier-de-sortie
@@ -68,12 +69,19 @@ try {
   };
   await shoot('premier-jour');
 
-  // Tout posé, tout restauré, la Sterne au ponton.
   const db = new DatabaseSync(dbPath);
-  db.exec("UPDATE company_zones SET level = 3 WHERE zone IN ('runway', 'hangar')");
-  db.exec("UPDATE company_zones SET level = 2 WHERE zone = 'ponton'");
-  db.exec("INSERT OR IGNORE INTO company_decorations (company_id, decoration, placed_at) SELECT c.id, d.id, 0 FROM companies c, (SELECT 'd-fleurs' AS id UNION SELECT 'd-banc' UNION SELECT 'd-manche' UNION SELECT 'd-enseigne' UNION SELECT 'd-drapeau' UNION SELECT 'd-boite' UNION SELECT 'd-lanterne' UNION SELECT 'd-pommier' UNION SELECT 'd-cafe' UNION SELECT 'd-peinture') d");
-  db.exec("INSERT INTO company_planes (id, company_id, model, wear, acquired_at) SELECT 'sterne-1', id, 'sterne', 0, 0 FROM companies");
+  const plane = (id, model) => db.exec(`INSERT INTO company_planes (id, company_id, model, wear, acquired_at) SELECT '${id}', id, '${model}', 0, 0 FROM companies`);
+  // L'âge du milieu : appentis, vigie, un Martinet à côté de la Grive.
+  db.exec("UPDATE company_zones SET level = 2 WHERE zone IN ('runway', 'hangar', 'tour')");
+  plane('martinet-1', 'martinet');
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  await shoot('milieu');
+  // Tout posé, tout restauré : l'atelier, la tour et son feu, une flotte complète au parking et au ponton.
+  db.exec("UPDATE company_zones SET level = 3");
+  db.exec("INSERT OR IGNORE INTO company_decorations (company_id, decoration, placed_at) SELECT c.id, d.id, 0 FROM companies c, (SELECT 'd-fleurs' AS id UNION SELECT 'd-banc' UNION SELECT 'd-manche' UNION SELECT 'd-enseigne' UNION SELECT 'd-drapeau' UNION SELECT 'd-boite' UNION SELECT 'd-lanterne' UNION SELECT 'd-pommier' UNION SELECT 'd-cafe' UNION SELECT 'd-peinture' UNION SELECT 'd-pigeonnier' UNION SELECT 'd-ruches') d");
+  db.exec("DELETE FROM company_planes WHERE model = 'martinet'");
+  plane('heron-1', 'heron'); plane('pic-1', 'pic'); plane('sterne-1', 'sterne'); plane('goeland-1', 'goeland');
   db.close();
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');

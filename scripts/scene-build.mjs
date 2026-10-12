@@ -203,9 +203,51 @@ const HANGAR_ART = `
 ....wwWwwwwWwwwwWwwwwWwwwwWwwwwWddddddddddddddddddddddddddddWwwwwWww.......
 ....ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss.......
 `;
-const hangar = g('class="hangar" id="scene-hangar"', sprite(222, 70, {
+// Le hangar grandit avec son niveau (data-niveau sur le groupe) :
+// 1 — la porte de travers : de la rouille sur la tôle, la porte qui bâille, une planche qui manque ;
+// 2 — un appentis contre le mur gauche, avec l'établi derrière la fenêtre ;
+// 3 — l'atelier à toit en dents de scie sur la droite, et sa cheminée qui fume.
+// Tout est dans le groupe du hangar : la peinture (d-peinture) repeint aussi les ajouts.
+const HANGAR_LEGEND = {
   r: 'toit', R: 'toit-clair', w: 'mur', W: 'mur-clair', d: 'porte', D: 'porte-clair', v: 'vitre', c: 'cheminee', b: 'bardage', s: 'seuil',
-}, HANGAR_ART));
+};
+const hangarRust = g('class="niveau-1-seul"',
+  [[246, 79, 3], [256, 76, 2], [262, 78, 2], [271, 80, 4], [251, 81, 3], [236, 81, 2]].map(([x, y, w]) => rect(x, y, w, 1, 'rouille')).join('')
+  + rect(266, 87, 2, 11, 'porte-ombre') + rect(232, 90, 1, 5, 'porte-ombre'));
+const LEAN_TO = `
+...........RR
+.........RRrr
+.......RRrrrr
+.....RRrrrrrr
+...RRrrrrrrrr
+.RRrrrrrrrrrr
+wwwwwwwwwwwww
+wWwwvvvwwWwww
+wWwwvvvwwWwww
+wwwwwwwwwwwww
+wWwwwwwwwWwww
+sssssssssssss
+`;
+const hangarLeanTo = g('class="niveau-2-plus"', sprite(213, 86, HANGAR_LEGEND, LEAN_TO));
+const WORKSHOP = `
+..RR.......RR.......RR.....
+.RvR......RvR......RvR.....
+RvvRRRRRRRvvRRRRRRRvvRRRRRR
+rrrrrrrrrrrrrrrrrrrrrrrrrrr
+wWwwwWwwwwWwwwwWwwwwWwwwwWw
+wWwvvvvvwWwwwwWwvvvvvwWwwww
+wWwvvvvvwWwwwwWwvvvvvwWwwww
+wWwwwWwwwwWwwwwWwwwwWwwwwWw
+wWwwwWwwddddddwwWwwwWwwwwWw
+wWwwwWwwdDDDDdwwWwwwWwwwwWw
+wWwwwWwwdDDDDdwwWwwwWwwwwWw
+wWwwwWwwdDDDDdwwWwwwWwwwwWw
+sssssssssssssssssssssssssss
+`;
+const hangarWorkshop = g('class="niveau-3-seul"', sprite(291, 85, HANGAR_LEGEND, WORKSHOP)
+  + rect(312, 78, 2, 7, 'cheminee')
+  + g('class="fumee"', rect(312, 74, 2, 2, 'fumee-a') + rect(314, 70, 3, 2, 'fumee-b') + rect(311, 66, 2, 2, 'fumee-a')));
+const hangar = g('class="hangar" id="scene-hangar"', sprite(222, 70, HANGAR_LEGEND, HANGAR_ART) + hangarRust + hangarLeanTo + hangarWorkshop);
 
 // L'enseigne : une planche au-dessus de la porte, le nom peint dessus.
 const sign = g('class="enseigne cache" id="scene-enseigne"',
@@ -220,7 +262,7 @@ ttttttt.
 ttttttt.
 `) + g('class="cache" id="scene-manche-raie"', rect(164, 90, 2, 2, 'toile-raie')));
 
-// Le biplan : deux ailes, des haubans, deux roues, l'hélice.
+// Les avions, un dessin par modèle, le nez à droite. Le biplan sert aussi au vol qui traverse la scène.
 const BIPLANE = `
 .....aaaaaaaaaaaaaaaaaa......
 .....a..b..b..b..b..a........
@@ -230,8 +272,63 @@ const BIPLANE = `
 .......r.........r......f.pp.
 ......rrr.......rrr.....f....
 `;
-const PLANE_LEGEND = { a: 'aile', b: 'hauban', f: 'fuselage', e: 'empennage', p: 'helice', r: 'roue' };
-const parked = g('class="avion"', sprite(186, 110, PLANE_LEGEND, BIPLANE));
+// Le Martinet : un monoplan bas, fin, une verrière, un seul sac.
+const MONOPLANE = `
+.e.........................
+.ee........................
+.eeffffffffffvvvfffffffff.p
+..fffffffffffffffffffffffpp
+.......aaaaaaaaaaaaaa....p.
+..........r.......r........
+`;
+// Le Héron : une aile haute, trois moteurs, une carlingue en tôle ondulée.
+const TRIMOTOR = `
+........aaaaaaaaaaaaaaaaaaaaaaaaaa....
+.e...........m...........m............
+.ee.........mmp.........mmp...........
+.eeffffffffffffffffffffffffffvvvfff.mm.
+..fFfFfFfFfFfFfFfFfFfFfFfFfFfFfFfFffmmp
+..fffffffffffffffffffffffffffffffff.mm.
+...........h...........h..............
+..........rrr.........rrr.............
+`;
+// Le Pic : une aile haute sur des haubans, des pneus ballons.
+const HIGHWING = `
+....aaaaaaaaaaaaaaaaaa...
+......h...........h......
+e......h.........h.......
+eeffffffffffffffvvfff.p..
+.fffffffffffffffffffffpp.
+...h.................p...
+..rrr...........rrr......
+..rrr...........rrr......
+`;
+// Le Goéland : une coque au lieu des flotteurs, deux moteurs sur l'aile.
+const GULL = `
+.......aaaaaaaaaaaaaaaaaaaaaa.....
+..............mp.......mp.........
+.e............m.........m.........
+.eeffffffffffffffffffffffvvff.....
+..ccccccccccccccccccccccccccc.....
+...cccccccccccccccccccccccc.......
+.....s..................s.........
+`;
+const SEAPLANE = `
+......aaaaaaaaaaaaaa......
+......h....h....h...ee....
+...ffffffffffffffffffff.pp
+...fffffffffffffffffffffpp
+.....h.......h........f.pp
+...ssssssss..sssssssss....
+`;
+const PLANE_LEGEND = { a: 'aile', b: 'hauban', h: 'hauban', f: 'fuselage', F: 'tole', e: 'empennage', p: 'helice', r: 'roue', v: 'verriere', m: 'moteur', c: 'coque', s: 'flotteur' };
+const LAND_MODELS = { grive: BIPLANE, martinet: MONOPLANE, heron: TRIMOTOR, pic: HIGHWING };
+const WATER_MODELS = { sterne: SEAPLANE, goeland: GULL };
+// Une place de parking : tous les modèles y sont dessinés, un seul se montre (data-modele).
+// « bottom » est la ligne des roues (ou de la ligne de flottaison) : chaque dessin y pose les siennes.
+const place = (id, x, bottom, models) => g(`class="place" id="${id}"`,
+  Object.entries(models).map(([m, art]) => g(`class="avion modele modele-${m}"`, sprite(x, bottom - art.split('\n').filter(Boolean).length + 1, PLANE_LEGEND, art))).join(''));
+const parking = place('place-a', 186, 116, LAND_MODELS) + place('place-b', 250, 110, LAND_MODELS) + place('place-c', 82, 117, LAND_MODELS);
 const flying = g('class="avion avion-vol cache" id="scene-avion-vol"', sprite(0, 0, PLANE_LEGEND, BIPLANE));
 
 // ---- La rivière, le ponton, la Sterne ----
@@ -246,14 +343,12 @@ pppppppppppppppp..
 ..l.....l.....l...
 ..l.....l.....l...
 `));
-const seaplane = g('class="hydravion cache" id="scene-hydravion"', sprite(20, 131, { a: 'aile', f: 'fuselage', e: 'empennage', p: 'helice', s: 'flotteur', h: 'hauban' }, `
-......aaaaaaaaaaaaaa......
-......h....h....h...ee....
-...ffffffffffffffffffff.pp
-...fffffffffffffffffffffpp
-.....h.......h........f.pp
-...ssssssss..sssssssss....
+// Le second ponton (niveau 3) : un ponton flottant au milieu de la rivière, et sa place.
+const pontoon2 = g('class="ponton cache" id="scene-ponton-2"', sprite(40, 139, { p: 'planches', P: 'planches-clair', b: 'bollard' }, `
+.b..........b.
+pPpPpPpPpPpPpP
 `));
+const mooring = place('place-eau-1', 20, 136, WATER_MODELS) + place('place-eau-2', 56, 142, WATER_MODELS);
 
 // ---- Les décorations ----
 const flowers = g('class="fleurs cache" id="scene-fleurs"', sprite(226, 92, { r: 'fleur', j: 'fleur2', v: 'feuilles', b: 'bac' }, `
@@ -357,6 +452,124 @@ const cafe = g('class="cafe cache" id="scene-cafe"', sprite(60, 100, { u: 'paras
 .c......pppp......c.
 `));
 
+// ---- La tour : un poteau, puis la vigie, puis la tour et son feu (data-niveau) ----
+const POST = `
+b
+b
+bb
+b
+b
+b
+b
+b
+b
+b
+b
+b
+b
+b
+`;
+const LOOKOUT = `
+.rrrrrrrrrrrrrr.
+rrrrrrrrrrrrrrrr
+.l............l.
+.l............l.
+.bbbbbbbbbbbbbb.
+.b............b.
+bbbbbbbbbbbbbbbb
+.l..l......l..l.
+.l..l.e....l..l.
+.l..lx.e..xl..l.
+.l..l.x.ex.l..l.
+.l..l..x.ex...l.
+.l..l.x..xe...l.
+.l..lx....xe..l.
+.l..l......le.l.
+.l..l......l.el.
+.l..l......l..l.
+.l..l......l..l.
+.l..l......l..l.
+.l..l......l..l.
+.l..l......l..l.
+`;
+const TOWER = `
+.........ff.........
+........mmmm........
+....rrrrrrrrrrrr....
+...rrrrrrrrrrrrrr...
+..rrrrrrrrrrrrrrrr..
+..wvvvvvvvvvvvvvvw..
+..wvvvvwvvvvwvvvvw..
+..wvvvvwvvvvwvvvvw..
+..wwwwwwwwwwwwwwww..
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwvvvwWwWwW...
+...WwWwWvvvWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwWwWwWwWw...
+...wWwWwWwWwWwWwW...
+...WwWwWwddWwWwWw...
+...wWwWwWddwWwWwW...
+...WwWwWwddWwWwWw...
+...wWwWwWddwWwWwW...
+...ssssssssssssss...
+`;
+const towerLegend = { b: 'tour-bois', r: 'tour-toit', l: 'tour-bois', e: 'tour-echelle', x: 'tour-croix', w: 'tour-mur', W: 'tour-mur-clair', v: 'tour-vitre', d: 'tour-porte', s: 'tour-socle', m: 'tour-lanterne', f: 'feu' };
+const tower = g('class="tour" id="scene-tour"',
+  g('class="niveau-1-seul"', sprite(98, 93, towerLegend, POST) + rect(99, 93, 4, 2, 'tour-drapeau'))
+  + g('class="niveau-2-seul"', sprite(90, 86, towerLegend, LOOKOUT))
+  + g('class="niveau-3-seul"', sprite(88, 73, towerLegend, TOWER)));
+// Le pigeonnier sur son mât, entre la manche à air et le drapeau ; les ruches au pied du pommier.
+const dovecote = g('class="pigeonnier cache" id="scene-pigeonnier"', sprite(172, 82, { r: 'tour-toit', w: 'pigeonnier-mur', k: 'pigeonnier-trou', b: 'tour-bois', m: 'mat', g: 'pigeon' }, `
+...rr...
+..rrrr.g
+.rrrrrr.
+rrrrrrrr
+.wwwwww.
+.wkwwkw.
+.wwwwww.
+bbbbbbbb
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+....m...
+`));
+const hives = g('class="ruches cache" id="scene-ruches"', sprite(139, 100, { r: 'paille', R: 'paille-clair', k: 'ruche-entree', s: 'tour-socle', a: 'abeille' }, `
+.a........
+.rR...rR..
+rRrr.rRrr.
+rrRr.rrRr.
+rkrr.rrkr.
+rrrr.rrrr.
+ssss.ssss.
+`));
+
 // ---- Les saisons : ce qui n'apparaît qu'en leur temps (data-saison sur la page) ----
 // La neige sur le toit du hangar : la pente entière, tirée du dessin même du toit
 // (lignes 2 à 10), avec une colonne d'ombre toutes les cinq.
@@ -395,6 +608,7 @@ ${path}
 ${cross}
 ${runway}
 ${runwayLong}
+${tower}
 ${hangar}
 ${snowRoof}
 ${sign}
@@ -402,14 +616,17 @@ ${flowers}
 ${flag}
 ${windsock}
 ${appleTree}
+${hives}
+${dovecote}
 ${lantern}
 ${letterbox}
 ${bench}
 ${cafe}
-${parked}
+${parking}
 ${river}
 ${pontoon}
-${seaplane}
+${pontoon2}
+${mooring}
 ${leaves}
 ${flakes}
 ${flying}

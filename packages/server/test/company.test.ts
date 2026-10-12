@@ -48,7 +48,7 @@ describe('la compagnie', () => {
     expect(c.pilots[0]).toMatchObject({ pilot: 'prosper', affinity: 0, morale: 10, fatigue: 0, busyUntil: null });
     expect(c.hand).toHaveLength(3);
     expect(c.flights).toEqual([]);
-    expect(c.zones).toEqual({ runway: 1, hangar: 1, ponton: 1 });
+    expect(c.zones).toEqual({ runway: 1, hangar: 1, ponton: 1, tour: 1 });
     expect(c.regions).toEqual(['brume']);
     expect(c.decorations).toEqual([]);
     expect(c.album.map((s: { id: string }) => s.id)).toEqual(['s-fondation']);

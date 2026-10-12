@@ -650,6 +650,39 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 @media (prefers-reduced-motion: reduce) { .scene .nuage-lent { animation: none; } }
 
 /* L'aube */
+/* L'aérodrome qui grandit. Le hangar et la tour montrent ce qui va avec leur niveau
+   (data-niveau) ; chaque place de parking montre le dessin du modèle qui y dort
+   (data-modele), et rien quand l'avion est en vol. */
+.scene .niveau-1-seul, .scene .niveau-2-plus, .scene .niveau-2-seul, .scene .niveau-3-seul { display: none; }
+.scene [data-niveau='1'] .niveau-1-seul, .scene [data-niveau='2'] .niveau-2-seul, .scene [data-niveau='3'] .niveau-3-seul,
+.scene [data-niveau='2'] .niveau-2-plus, .scene [data-niveau='3'] .niveau-2-plus { display: inline; }
+.scene .hangar .rouille { fill: #8a5a3a; }
+.scene .hangar .porte-ombre { fill: #1b1f22; }
+.scene .hangar .fumee-a { fill: #c9c9c4; opacity: 0.8; } .scene .hangar .fumee-b { fill: #dededa; opacity: 0.6; }
+@keyframes fumer { from { transform: translateY(0); opacity: 0.9; } to { transform: translate(3px, -6px); opacity: 0.2; } }
+.scene .hangar .fumee { animation: fumer 4s ease-out infinite; }
+.scene .tour-bois { fill: #6b4a2a; } .scene .tour-echelle { fill: #8a6a3a; } .scene .tour-croix { fill: #5a3d22; }
+.scene .tour-toit { fill: #8c4a3a; } .scene .tour-mur { fill: #a07f48; } .scene .tour-mur-clair { fill: #b8955a; }
+.scene .tour-vitre { fill: #a9c8de; } .scene .tour-porte { fill: #4a3424; } .scene .tour-socle { fill: #7d7d77; }
+.scene .tour-lanterne { fill: #3a3a38; } .scene .feu { fill: #7a7a72; } .scene .tour-drapeau { fill: #b23a2f; }
+@keyframes balayer { 0%, 45% { fill: #f3dc8a; } 50%, 95% { fill: #3a3a38; } 100% { fill: #f3dc8a; } }
+[data-moment='nuit'] .scene .feu, [data-moment='crepuscule'] .scene .feu { animation: balayer 2.4s steps(1) infinite; }
+[data-moment='nuit'] .scene .tour-vitre { fill: #f3dc8a; }
+.scene .pigeonnier-mur { fill: #f1ece0; } .scene .pigeonnier-trou { fill: #2a2f33; } .scene .pigeon { fill: #9aa3a8; }
+.scene .paille { fill: #c9a24a; } .scene .paille-clair { fill: #e0bf6a; } .scene .ruche-entree { fill: #3a2a1a; } .scene .abeille { fill: #f3d24a; }
+.scene .place .modele { display: none; }
+.scene .place[data-modele='grive'] .modele-grive, .scene .place[data-modele='martinet'] .modele-martinet,
+.scene .place[data-modele='heron'] .modele-heron, .scene .place[data-modele='pic'] .modele-pic,
+.scene .place[data-modele='sterne'] .modele-sterne, .scene .place[data-modele='goeland'] .modele-goeland { display: inline; }
+.scene .avion .verriere { fill: #a9c8de; } .scene .avion .moteur { fill: #3a3a38; } .scene .avion .tole { fill: #c3c8cc; }
+.scene .avion .flotteur { fill: #4fb3b0; } .scene .avion .coque { fill: #e9ecef; }
+.scene .modele-martinet .fuselage { fill: #7d2f22; } .scene .modele-martinet .empennage, .scene .modele-martinet .helice { fill: #2a2f33; }
+.scene .modele-heron .fuselage { fill: #9aa0a4; } .scene .modele-heron .aile { fill: #b6bcc0; } .scene .modele-heron .empennage { fill: #2f4f7a; } .scene .modele-heron .helice { fill: #2a2f33; }
+.scene .modele-pic .fuselage { fill: #2f4f7a; } .scene .modele-pic .aile { fill: #e6c67a; } .scene .modele-pic .empennage { fill: #b23a2f; }
+.scene .modele-sterne .empennage { fill: #4fb3b0; }
+.scene .modele-goeland .fuselage { fill: #2a2f33; } .scene .modele-goeland .empennage { fill: #4fb3b0; } .scene .modele-goeland .helice { fill: #2a2f33; }
+@media (prefers-reduced-motion: reduce) { .scene .hangar .fumee, [data-moment='nuit'] .scene .feu, [data-moment='crepuscule'] .scene .feu { animation: none; } }
+
 /* Les saisons (data-saison, celle du calendrier). Les éléments saisonniers ne se
    montrent qu'en leur temps ; les couleurs de la terre et des arbres changent, le
    ciel reste celui de l'heure. Les règles de nuit, plus bas, gardent le dernier mot. */

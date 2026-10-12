@@ -330,20 +330,37 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 
 ## L'aérodrome
 
-Trois zones à restaurer (la tour, le café et l'atelier viendront) :
+Quatre zones à restaurer (le café et l'atelier de peinture viendront peut-être) :
 
 - **La piste** : pré fauché → piste roulée (900 F, le Martinet se pose) → grande piste
   (2 400 F, le Héron se pose).
 - **Le hangar** : porte de travers (1 avion) → porte neuve et établi (700 F, 2 avions,
-  entretien moins cher) → atelier (2 000 F, 3 avions).
+  entretien moins cher) → atelier (2 000 F, 3 avions). **On le voit grandir** : au
+  premier niveau, de la rouille sur la tôle, la porte qui bâille et une planche qui
+  manque ; au deuxième, un appentis contre le mur gauche, l'établi derrière la
+  fenêtre ; au troisième, un atelier à toit en dents de scie sur la droite, dont la
+  cheminée fume. La peinture du hangar repeint aussi les ajouts.
 - **Le ponton** (v0.2) : la rive nue → ponton sur la rivière (1 500 F, un hydravion
-  s'amarre) → double ponton et lanterne (2 800 F, deux hydravions). L'hydravion ne compte pas dans le hangar, et le hangar ne compte pas
-  pour lui.
+  s'amarre) → double ponton et lanterne (2 800 F, deux hydravions : le second au
+  ponton flottant du milieu de la rivière). L'hydravion ne compte pas dans le hangar,
+  et le hangar ne compte pas pour lui.
+- **La tour** (v0.3, promise dès la conception) : un poteau → la vigie (1 200 F : on
+  monte voir le temps avant chaque départ, et la brume et le vent de mer retardent un
+  quart moins souvent) → la tour et son feu (3 000 F : un feu tournant balaie la
+  vallée la nuit, et les vols de nuit ont un tiers d'incidents en moins). Le feu
+  clignote dans la scène au crépuscule et la nuit.
 
-Et dix décorations, sans effet sur la simulation sauf un léger moral : jardinières,
+**Les avions sont sur le terrain.** Chaque avion au repos a sa place et son dessin :
+la Grive en biplan, le Martinet en monoplan rouge, le Héron en trimoteur de tôle
+ondulée, le Pic avec ses pneus ballons ; la Sterne au ponton, le Goéland avec sa
+coque blanche. Un avion en vol laisse sa place vide.
+
+Et douze décorations, sans effet sur la simulation sauf un léger moral : jardinières,
 le banc, la manche à air rayée, l'enseigne, le drapeau de la vallée, la boîte aux
 lettres au bout du chemin, la lanterne de piste, le pommier, les tables du café, la
-peinture du hangar.
+peinture du hangar — et, depuis la v0.3, **le pigeonnier** (les pigeons voyageurs
+portaient le courrier avant vous ; ils ont droit à une retraite) et **les ruches**
+au pied du pommier.
 
 ## Les règles du vol (v0.1)
 

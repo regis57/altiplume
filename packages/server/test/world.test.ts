@@ -80,7 +80,8 @@ describe('le monde — intégrité', () => {
     expect(WORLD.cards.filter((c) => c.kind === 'event' && !c.season && brume(c))).toHaveLength(10);
     // Quatre à la v0.1, plus la Grive et le Héron d'occasion, qu'on ne pouvait pas acheter avant le fret lourd.
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && brume(c))).toHaveLength(6);
-    expect(WORLD.decorations).toHaveLength(10);
+    // Dix à la v0.1 ; le pigeonnier et les ruches sont venus avec l'aérodrome qui grandit.
+    expect(WORLD.decorations.filter((d) => !['d-pigeonnier', 'd-ruches'].includes(d.id))).toHaveLength(10);
   });
 
   it('livre la Côte de Saline (v0.2) : 6 escales dont 3 sur l\'eau, un hydravion, 15+2+2 cartes, une route à 10 cachets', () => {
