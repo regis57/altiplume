@@ -284,8 +284,8 @@ fait tomber `connect-src 'self'`, les trois notes A+ mesurées, l'argument « z�
 traqueur », et imposé un bandeau de consentement. Le jeu coûte une dizaine d'euros
 par an ; il n'a pas besoin de vendre l'attention de ses joueurs pour vivre.
 
-- **Buy Me a Coffee, par étapes.** Depuis le 12/10, le lien existe **sur la page
-  GitHub du dépôt seulement** (`.github/FUNDING.yml` et la section *Soutenir* du
+- **Buy Me a Coffee, par étapes** — une bière, sur la page de l'auteur. Depuis le
+  12/10, le lien existe **sur la page GitHub du dépôt seulement** (`.github/FUNDING.yml` et la section *Soutenir* du
   README) : ceux qui lisent le code peuvent remercier, les joueurs ne voient rien.
   Dans le jeu, plus tard, et alors un lien sortant dans les crédits et les
   réglages, jamais un script embarqué : rien ne se charge depuis chez eux tant

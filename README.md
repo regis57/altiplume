@@ -78,10 +78,14 @@ Le déploiement sur un NAS Synology, sans ligne de commande, est décrit dans
 
 Altiplume est gratuit, sans publicité et sans traqueur, et le restera : il coûte
 une dizaine d'euros par an, le prix du nom de domaine. Si l'aventure vous plaît,
-vous pouvez offrir un café : **[buymeacoffee.com/regis57](https://buymeacoffee.com/regis57)**.
+vous pouvez offrir une bière :
 
-Un café ne donne rien dans le jeu — ni francs, ni cachets, ni raccourci. C'est un
-merci, rien d'autre. Et le lien n'existe qu'ici, sur cette page : le jeu n'en
+[![Offrir une bière — Buy me a beer](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20beer&emoji=%F0%9F%8D%BA&slug=regis57&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://buymeacoffee.com/regis57)
+
+(ou simplement [buymeacoffee.com/regis57](https://buymeacoffee.com/regis57)).
+
+Une bière ne donne rien dans le jeu — ni francs, ni cachets, ni raccourci. C'est
+un merci, rien d'autre. Et le lien n'existe qu'ici, sur cette page : le jeu n'en
 parle pas, et rien ne se charge depuis chez eux quand on y joue.
 
 ## Licence
