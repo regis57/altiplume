@@ -5,7 +5,7 @@
  * `/v1/world` dans la langue courante. Cette page ne calcule rien de ce qui a une
  * valeur : elle affiche.
  */
-import { formatDate, getLocale, t, translatePage } from './i18n.ts';
+import { formatDate, getLocale, placeAfter, t, translatePage } from './i18n.ts';
 import { formatRemaining } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
@@ -21,7 +21,7 @@ interface WorldView {
   regions: { id: string; name: string; tagline: string; description: string; route?: { requires: string; cost: number } }[];
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
-  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
@@ -33,10 +33,12 @@ interface Flight {
   id: string; card: string; destination: string; plane: string; pilot: string;
   departedAt: number; arrivesAt: number; busyUntil: number; deadlineAt: number; reward: number; bonus: number;
   status: 'en_route' | 'returning' | 'done'; progress: number; settled: boolean;
+  /** Fret lourd : le second équipage du convoi. */
+  wing?: { plane: string; pilot: string };
 }
 type News =
   | { kind: 'cards.drawn'; count: number }
-  | { kind: 'flight.arrived'; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean }
+  | { kind: 'flight.arrived'; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean; wing?: { pilot: string; plane: string } }
   | { kind: 'stamp'; stamp: string };
 
 interface CompanyView {
@@ -436,10 +438,15 @@ function renderNews(world: WorldView, c: CompanyView): void {
     const li = el('li', 'nouvelle');
     if (n.kind === 'cards.drawn') li.textContent = `${t('news.cards')} ${n.count}`;
     else if (n.kind === 'flight.arrived') {
-      // L'accord suit le genre du pilote : « est rentré » ou « est rentrée ».
+      // L'accord suit le genre : « est rentré », « est rentrée » ; pour un convoi, « sont rentrés »,
+      // ou « sont rentrées » si ce sont deux pilotes femmes.
       const tpl = world.pilots.find((x) => x.id === n.pilot);
-      const arrived = t(tpl?.gender === 'f' ? 'news.arrivedF' : 'news.arrived');
-      li.textContent = `${pilotTemplateName(world, n.pilot)} ${arrived} ${destName(world, n.destination)} · +${n.francs} F` +
+      const wingTpl = n.wing ? world.pilots.find((x) => x.id === n.wing!.pilot) : undefined;
+      const arrived = n.wing
+        ? t(tpl?.gender === 'f' && wingTpl?.gender === 'f' ? 'news.arrivedPlF' : 'news.arrivedPl')
+        : t(tpl?.gender === 'f' ? 'news.arrivedF' : 'news.arrived');
+      const who = n.wing ? `${pilotTemplateName(world, n.pilot)} ${t('game.and')} ${pilotTemplateName(world, n.wing.pilot)}` : pilotTemplateName(world, n.pilot);
+      li.textContent = `${who} ${placeAfter(arrived, destName(world, n.destination))} · +${n.francs} F` +
         (n.bonus ? ` · ${t('news.onTime')}` : '') + (n.incident ? ` · ${t('news.incident')}` : '');
       li.classList.add('bonne');
     } else { li.textContent = `${t('news.stamp')} ${stampName(world, n.stamp)}`; li.classList.add('cachet-nouveau'); }
@@ -459,7 +466,9 @@ function renderFlights(api: Api, setMessage: SetMessage, world: WorldView, c: Co
     const li = el('li', 'vol');
     const card = world.cards.find((x) => x.id === f.card);
     li.append(el('h3', undefined, `${card?.title ?? ''} → ${destName(world, f.destination)}`));
-    li.append(el('p', 'aide', `${pilotName(world, c, f.pilot)} · ${planeName(world, c, f.plane)}`));
+    li.append(el('p', 'aide', f.wing
+      ? `${t('flight.convoy')} · ${pilotName(world, c, f.pilot)} ${t('game.and')} ${pilotName(world, c, f.wing.pilot)} · ${planeName(world, c, f.plane)} ${t('game.and')} ${planeName(world, c, f.wing.plane)}`
+      : `${pilotName(world, c, f.pilot)} · ${planeName(world, c, f.plane)}`));
     const bar = el('div', 'jauge');
     bar.setAttribute('role', 'progressbar');
     bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100');
@@ -485,8 +494,8 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
   for (const id of shown) {
     const card = world.cards.find((x) => x.id === id);
     if (!card) continue;
-    const li = el('li', `carte ${card.kind}${card.standing ? ' reguliere' : ''}`);
-    li.append(el('p', 'carte-genre', card.standing ? t('card.standing') : t(`card.${card.kind}`)));
+    const li = el('li', `carte ${card.kind}${card.standing ? ' reguliere' : ''}${card.heavy ? ' lourd' : ''}`);
+    li.append(el('p', 'carte-genre', card.standing ? t('card.standing') : card.heavy ? t('card.heavy') : t(`card.${card.kind}`)));
     li.append(el('h3', undefined, card.title));
     li.append(el('p', undefined, card.text));
     const actions = el('div', 'actions');
@@ -544,67 +553,112 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
   }
 }
 
-/** Le petit formulaire d'expédition, dans la carte : avion, pilote, estimation, envoi. */
+/**
+ * Le petit formulaire d'expédition, dans la carte : avion, pilote, estimation, envoi.
+ *
+ * Fret lourd : quand l'avion choisi ne porte pas tous les sacs, un second équipage
+ * apparaît — un avion d'escorte et son pilote — et l'estimation devient celle du
+ * convoi : le plus lent des deux, les deux salaires, les deux entretiens.
+ */
 function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyView, cardId: string, host: HTMLElement): void {
   host.querySelector('.expedition')?.remove();
   const card = world.cards.find((x) => x.id === cardId);
   const dest = world.destinations.find((d) => d.id === card?.destination);
   if (!card || !dest) return;
+  const bags = card.bags ?? 1;
   const form = el('form', 'expedition');
   form.noValidate = true;
-  const planeField = el('div', 'champ');
-  const planeLabel = el('label', undefined, t('card.plane')); planeLabel.htmlFor = `avion-${cardId}`;
-  const planeSelect = el('select'); planeSelect.id = planeLabel.htmlFor; planeSelect.name = 'plane';
-  for (const p of c.planes) {
-    const m = world.planes.find((x) => x.id === p.model);
-    const o = el('option', undefined, `${m?.name ?? p.model}${p.busyUntil ? ` — ${t('card.busy')}` : ''}`);
-    o.value = p.id; o.disabled = p.busyUntil !== null || (m?.capacity ?? 0) < (card.bags ?? 1);
-    planeSelect.append(o);
-  }
-  planeField.append(planeLabel, planeSelect);
-  const pilotField = el('div', 'champ');
-  const pilotLabel = el('label', undefined, t('card.pilot')); pilotLabel.htmlFor = `pilote-${cardId}`;
-  const pilotSelect = el('select'); pilotSelect.id = pilotLabel.htmlFor; pilotSelect.name = 'pilot';
-  for (const p of c.pilots) {
-    const tpl = world.pilots.find((x) => x.id === p.pilot);
-    // Fatigué : l'accord suit le genre du pilote, et on dit dans combien de temps il repart.
-    const tired = p.restedAt !== null;
-    const rest = tired
-      ? ` — ${t(tpl?.gender === 'f' ? 'card.tiredF' : 'card.tired')} · ${t('card.restedIn')} ${formatRemaining((p.restedAt ?? 0) - Date.now(), getLocale())}`
-      : '';
-    const o = el('option', undefined, `${tpl?.name ?? p.pilot}${p.busyUntil ? ` — ${t('card.busy')}` : rest}`);
-    o.value = p.id; o.disabled = p.busyUntil !== null || tired;
-    pilotSelect.append(o);
-  }
-  pilotField.append(pilotLabel, pilotSelect);
+  const modelOf = (planeId: string) => world.planes.find((x) => x.id === c.planes.find((p) => p.id === planeId)?.model);
+
+  const planeOptions = (select: HTMLSelectElement, exclude?: string) => {
+    const keep = select.value;
+    select.replaceChildren();
+    for (const p of c.planes) {
+      if (p.id === exclude) continue;
+      const m = world.planes.find((x) => x.id === p.model);
+      const o = el('option', undefined, `${m?.name ?? p.model} · ${m?.capacity ?? 0} ${t((m?.capacity ?? 0) === 1 ? 'game.bag' : 'game.bags')}${p.busyUntil ? ` — ${t('card.busy')}` : ''}`);
+      o.value = p.id; o.disabled = p.busyUntil !== null;
+      select.append(o);
+    }
+    if ([...select.options].some((o) => o.value === keep && !o.disabled)) select.value = keep;
+    else select.value = [...select.options].find((o) => !o.disabled)?.value ?? '';
+  };
+  const pilotOptions = (select: HTMLSelectElement, exclude?: string) => {
+    const keep = select.value;
+    select.replaceChildren();
+    for (const p of c.pilots) {
+      if (p.id === exclude) continue;
+      const tpl = world.pilots.find((x) => x.id === p.pilot);
+      // Fatigué : l'accord suit le genre du pilote, et on dit dans combien de temps il repart.
+      const tired = p.restedAt !== null;
+      const rest = tired
+        ? ` — ${t(tpl?.gender === 'f' ? 'card.tiredF' : 'card.tired')} · ${t('card.restedIn')} ${formatRemaining((p.restedAt ?? 0) - Date.now(), getLocale())}`
+        : '';
+      const o = el('option', undefined, `${tpl?.name ?? p.pilot}${p.busyUntil ? ` — ${t('card.busy')}` : rest}`);
+      o.value = p.id; o.disabled = p.busyUntil !== null || tired;
+      select.append(o);
+    }
+    if ([...select.options].some((o) => o.value === keep && !o.disabled)) select.value = keep;
+    else select.value = [...select.options].find((o) => !o.disabled)?.value ?? '';
+  };
+  const field = (label: string, id: string, select: HTMLSelectElement) => {
+    const f = el('div', 'champ');
+    const l = el('label', undefined, label); l.htmlFor = id; select.id = id;
+    f.append(l, select);
+    return f;
+  };
+
+  const planeSelect = el('select'); planeSelect.name = 'plane';
+  const pilotSelect = el('select'); pilotSelect.name = 'pilot';
+  planeOptions(planeSelect); pilotOptions(pilotSelect);
+  // Le convoi : caché tant qu'un seul avion suffit.
+  const convoy = el('fieldset', 'convoi cache');
+  const legend = el('legend', undefined, t('card.convoy'));
+  const wingPlane = el('select'); wingPlane.name = 'wingPlane';
+  const wingPilot = el('select'); wingPilot.name = 'wingPilot';
+  convoy.append(legend, field(t('card.wingPlane'), `escorte-${cardId}`, wingPlane), field(t('card.wingPilot'), `second-${cardId}`, wingPilot));
   const estimate = el('p', 'aide');
-  const update = () => {
-    const owned = c.planes.find((p) => p.id === planeSelect.value);
-    const m = world.planes.find((x) => x.id === owned?.model);
-    const hired = c.pilots.find((p) => p.id === pilotSelect.value);
-    const tpl = world.pilots.find((x) => x.id === hired?.pilot);
-    if (!m || !tpl) { estimate.textContent = ''; return; }
-    const minutes = Math.round((dest.distance / m.speed) * 60);
+
+  const needsWing = () => (modelOf(planeSelect.value)?.capacity ?? 0) < bags;
+  const crewCost = (planeId: string, pilotId: string) => {
+    const m = modelOf(planeId);
+    const tpl = world.pilots.find((x) => x.id === c.pilots.find((p) => p.id === pilotId)?.pilot);
+    if (!m || !tpl) return null;
     // Le même calcul que le serveur : un hangar équipé divise l'entretien.
     const hangar = world.zones.find((z) => z.id === 'hangar')?.levels.find((l) => l.level === (c.zones['hangar'] ?? 1));
-    const cost = Math.round(tpl.wage + m.upkeep / (hangar?.maintenance ?? 1));
+    return { minutes: Math.round((dest.distance / m.speed) * 60), cost: Math.round(tpl.wage + m.upkeep / (hangar?.maintenance ?? 1)), capacity: m.capacity };
+  };
+  const update = () => {
+    const wing = needsWing();
+    convoy.classList.toggle('cache', !wing);
+    if (wing) { planeOptions(wingPlane, planeSelect.value); pilotOptions(wingPilot, pilotSelect.value); }
+    const lead = crewCost(planeSelect.value, pilotSelect.value);
+    const second = wing ? crewCost(wingPlane.value, wingPilot.value) : null;
+    if (!lead || (wing && !second)) { estimate.textContent = wing ? t('card.convoyNone') : ''; return; }
+    const minutes = Math.max(lead.minutes, second?.minutes ?? 0);
+    const cost = lead.cost + (second?.cost ?? 0);
     // La ligne régulière : rien à payer maintenant, le tarif moins l'avance à l'arrivée.
     const money = card.standing
       ? `${t('card.postAdvances')} · ${t('card.net')} ≈ +${Math.max(0, (card.reward ?? 0) - cost)} F`
       : `${t('card.cost')} ≈ ${cost} F`;
-    estimate.textContent = `≈ ${formatRemaining(minutes * 60_000, getLocale())} ${t('card.oneWay')} · ${money}`;
+    const carried = lead.capacity + (second?.capacity ?? 0);
+    const short = carried < bags ? ` · ${t('card.convoyShort').replace('{a}', String(carried)).replace('{b}', String(bags))}` : '';
+    estimate.textContent = `${wing ? `${t('flight.convoy')} · ` : ''}≈ ${formatRemaining(minutes * 60_000, getLocale())} ${t('card.oneWay')} · ${money}${short}`;
   };
-  planeSelect.addEventListener('change', update); pilotSelect.addEventListener('change', update);
+  for (const s of [planeSelect, pilotSelect, wingPlane, wingPilot]) s.addEventListener('change', update);
+
   const actions = el('div', 'actions');
   const go = el('button', 'bouton'); go.type = 'submit'; go.textContent = t('card.send');
   const cancel = el('button', 'bouton secondaire'); cancel.type = 'button'; cancel.textContent = t('card.cancel');
   cancel.addEventListener('click', () => form.remove());
   actions.append(go, cancel);
-  form.append(planeField, pilotField, estimate, actions);
+  form.append(field(t('card.plane'), `avion-${cardId}`, planeSelect), field(t('card.pilot'), `pilote-${cardId}`, pilotSelect), convoy, estimate, actions);
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     go.disabled = true;
-    const r = await api('POST', '/v1/company/flights', { card: cardId, plane: planeSelect.value, pilot: pilotSelect.value }).catch(() => null);
+    const body: Record<string, string> = { card: cardId, plane: planeSelect.value, pilot: pilotSelect.value };
+    if (needsWing()) { body['wingPlane'] = wingPlane.value; body['wingPilot'] = wingPilot.value; }
+    const r = await api('POST', '/v1/company/flights', body).catch(() => null);
     if (r && r.status === 201) { setMessage('jeu-message', 'card.sent', 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
     else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); go.disabled = false; }
   });
@@ -621,8 +675,8 @@ function renderLogbook(world: WorldView, c: CompanyView): void {
     const li = el('li');
     const when = el('span', 'aide', formatDate(e.at, 'short') + ' ' + new Date(e.at).toLocaleTimeString(getLocale() === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit' }));
     let what: string;
-    if (e.kind === 'flight.departed') what = `${t('log.departed')} ${destName(world, e.ref ?? '')}`;
-    else if (e.kind === 'flight.arrived') what = `${t('log.arrived')} ${destName(world, e.ref ?? '')}`;
+    if (e.kind === 'flight.departed') what = placeAfter(t('log.departed'), destName(world, e.ref ?? ''));
+    else if (e.kind === 'flight.arrived') what = placeAfter(t('log.arrived'), destName(world, e.ref ?? ''));
     else if (e.kind === 'purchase.plane') what = `${t('log.bought')} ${world.planes.find((p) => p.id === e.ref)?.name ?? ''}`;
     else if (e.kind === 'hire.pilot') what = `${t('log.hired')} ${pilotTemplateName(world, e.ref ?? '')}`;
     else if (e.kind === 'route.opened') what = `${t('log.route')} ${world.regions.find((r) => r.id === e.ref)?.name ?? ''}`;

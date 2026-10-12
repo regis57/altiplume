@@ -12,6 +12,15 @@ function contract(id: string, destination: string, cargo: CargoKind, bags: numbe
 }
 
 /**
+ * Le fret lourd : plus de sacs qu'aucun avion capable de se poser là-bas n'en porte
+ * seul. Il part en convoi — deux avions, deux pilotes, deux salaires — et paie en
+ * conséquence. Il peut coller une page d'album, ou en attendre une pour se tirer.
+ */
+function heavy(id: string, destination: string, cargo: CargoKind, bags: number, reward: number, softDeadlineHours: number, bonus: number, weight: 1 | 2 | 3, title: Text, text: Text, extra: { stamp?: string; requires?: string } = {}): ContractCard {
+  return { ...contract(id, destination, cargo, bags, reward, softDeadlineHours, bonus, weight, title, text), heavy: true, ...extra };
+}
+
+/**
  * La ligne régulière : le sac de Pont-de-Brume part quand on veut, même la main
  * vide. Elle paie peu et n'a pas de bonus — c'est le pain de la compagnie, pas sa
  * fortune — mais elle garantit qu'on peut toujours faire voler quelqu'un.
@@ -49,9 +58,11 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: 'Courrier du hameau', en: 'Hamlet mail' },
     { fr: "Les Tilleuls n'ont pas de bureau de poste. Leurs lettres passent par vous, et par la boîte en bois clouée au tilleul.", en: 'Lindenhollow has no post office. Their letters go through you, and through the wooden box nailed to the linden tree.' }),
   // Moulin-Gris — brume et farine
-  contract('c-farine', 'moulin-gris', 'parcels', 3, 61, 24, 14, 1,
+  // Fret lourd depuis le 12/10 : trois sacs pleins, et aucun avion qui se pose au moulin n'en porte plus de deux.
+  // C'était une carte impossible à livrer depuis la v0.1.
+  heavy('c-farine', 'moulin-gris', 'parcels', 3, 140, 24, 25, 1,
     { fr: 'Sacs de farine', en: 'Flour sacks' },
-    { fr: "Trois sacs de farine pour la boulangère de Pont-de-Brume, qui préfère la farine de Moulin-Gris à toute autre.", en: 'Three sacks of flour for the Mistbridge baker, who prefers Greymill flour to any other.' }),
+    { fr: "Trois sacs de farine de Moulin-Gris pour la boulangère de Pont-de-Brume, qui n'en veut pas d'autre. Trois sacs pleins : une Grive n'en soulève que deux.", en: 'Three sacks of Greymill flour for the Mistbridge baker, who will have no other. Three full sacks: a Thrush lifts only two.' }),
   contract('c-tissu', 'moulin-gris', 'fragile', 1, 53, 12, 14, 2,
     { fr: 'Le tissu de la mariée', en: 'The bride\'s cloth' },
     { fr: "Un rouleau de tissu brodé pour une noce à Moulin-Gris. Fragile, et attendu avec impatience.", en: 'A roll of embroidered cloth for a wedding in Greymill. Fragile, and impatiently awaited.' }),
@@ -96,9 +107,10 @@ export const CONTRACTS: readonly ContractCard[] = [
   contract('c-capitainerie', 'port-sel', 'letters', 2, 128, 24, 19, 1,
     { fr: 'Le sac de la capitainerie', en: "The harbourmaster's bag" },
     { fr: "Deux sacs pour le port : les lettres de toute la Côte, qui passent par la capitainerie avant de prendre le bateau.", en: "Two bags for the harbour: letters for the whole Shore, which pass through the harbourmaster's office before taking the boat." }),
-  contract('c-sel-gris', 'port-sel', 'salt', 3, 133, 48, 14, 1,
+  // Fret lourd depuis le 12/10 (même défaut que la farine : impossible à livrer depuis la v0.2).
+  heavy('c-sel-gris', 'port-sel', 'salt', 3, 330, 48, 40, 1,
     { fr: 'Sel pour les quais', en: 'Salt for the quays' },
-    { fr: "Trois sacs de sel gris des Œillets à porter au port, où les saleurs de poisson l'attendent. Lourd, et sans aucune urgence.", en: 'Three sacks of Panbrook grey salt for the harbour, where the fish-salters are waiting. Heavy, and in no hurry at all.' }),
+    { fr: "Trois sacs de sel gris des Œillets à porter au port, où les saleurs de poisson l'attendent. Lourd — deux avions —, et sans aucune urgence.", en: "Three sacks of Panbrook grey salt for the harbour, where the fish-salters are waiting. Heavy — two planes' worth — and in no hurry at all." }),
   contract('c-urgent-port', 'port-sel', 'urgent', 1, 150, 3, 50, 2,
     { fr: "Le pli de l'armateur", en: "The shipowner's letter" },
     { fr: "Un armateur de Port-Sel doit signer avant la marée du soir, sinon le bateau part sans sa cargaison. Un seul pli, qui vaut un bateau.", en: 'A Saltharbour shipowner must sign before the evening tide, or the boat sails without its cargo. One letter, worth a ship.' }),
@@ -116,7 +128,8 @@ export const CONTRACTS: readonly ContractCard[] = [
   contract('c-dispensaire', 'marais-blanc', 'medicine', 1, 164, 6, 50, 2,
     { fr: 'Le dispensaire du marais', en: 'The fen clinic' },
     { fr: "La fièvre des marais revient avec la saison. Le dispensaire de Marais-Blanc a besoin de quinine avant la nuit.", en: 'The fen fever is back with the season. The Whitefen clinic needs quinine before nightfall.' }),
-  contract('c-pilotis', 'marais-blanc', 'parcels', 3, 158, 48, 17, 1,
+  // Deux sacs depuis le 12/10 : à trois, aucun avion qui se pose au marais ne les portait.
+  contract('c-pilotis', 'marais-blanc', 'parcels', 2, 158, 48, 17, 1,
     { fr: 'Colis pour les pilotis', en: 'Parcels for the stilts' },
     { fr: "Des lampes, de la toile cirée, un accordéon. Marais-Blanc commande tout ce qui ne pousse pas dans la vase.", en: 'Lamps, oilcloth, an accordion. Whitefen orders everything that does not grow in mud.' }),
   contract('c-lettres-marais', 'marais-blanc', 'letters', 2, 169, 24, 17, 1,
@@ -229,6 +242,24 @@ export const CONTRACTS: readonly ContractCard[] = [
   contract('c-creux', 'le-hetre-roi', 'loveletters', 1, 232, 12, 56, 3,
     { fr: "Une lettre pour le creux de l'arbre", en: 'A letter for the hollow tree' },
     { fr: "Une lettre à glisser dans le creux du Hêtre-Roi, là où le facteur des bois relevait le courrier le jeudi. Quelqu'un passera la prendre. Personne ne dit qui.", en: 'A letter to slip into the hollow of the King Beech, where the forest postman used to collect on Thursdays. Someone will come by for it. Nobody says who.' }),
+  // ---- Le fret lourd : deux avions pour un courrier ----
+  heavy('c-pressoir', 'les-tilleuls', 'parcels', 3, 150, 48, 30, 2,
+    { fr: 'Le pressoir des Tilleuls', en: 'The Lindenhollow press' },
+    { fr: "Le pressoir à cidre du hameau a rendu l'âme la veille de la récolte. Le neuf arrive en pièces de Pont-de-Brume : trois caisses, trop lourdes pour une seule Grive. Les pommes, elles, n'attendront pas.", en: "The hamlet's cider press gave out the day before the harvest. The new one comes in pieces from Mistbridge: three crates, too heavy for a single Thrush. The apples won't wait." }),
+  heavy('c-chaudiere', 'combe-aux-rosees', 'parcels', 6, 420, 72, 60, 2,
+    { fr: 'La chaudière du dispensaire', en: "The clinic's boiler" },
+    { fr: "Le dispensaire de Combe-aux-Rosées a passé l'hiver dernier à trois couvertures par lit. La chaudière neuve pèse six sacs : il faudra le Héron, et quelqu'un pour voler à côté de lui.", en: 'The Dewcombe clinic spent last winter at three blankets a bed. The new boiler weighs six bags: it will take the Heron, and someone flying alongside it.' }),
+  heavy('c-treuil', 'port-sel', 'parcels', 3, 380, 48, 50, 2,
+    { fr: 'Le treuil de la capitainerie', en: "The harbourmaster's winch" },
+    { fr: "Le treuil qui hisse les barques sur la cale a cassé sa couronne. Une pièce neuve de Haut-Ferrand, en trois caisses de fonte. Le capitaine a déjà calé deux barques sur des tonneaux.", en: 'The winch that hauls boats up the slipway has cracked its crown wheel. A new one from Ferncrest, in three crates of cast iron. The harbourmaster has already propped two boats up on barrels.' }),
+  heavy('c-bronze', 'sonnefeuille', 'copper', 3, 520, 72, 70, 2,
+    { fr: 'Le bronze de la cloche', en: 'Bronze for the bell' },
+    { fr: "Pour la cloche de frère Anselme : du cuivre de Vert-de-Gris et de l'étain de la Côte, en lingots. Trois sacs que seul un Pic peut poser dans le verger — et un Pic n'en porte que deux.", en: "For Brother Anselm's bell: Verdigris copper and tin from the Shore, in ingots. Three bags that only a Woodpecker can set down in the orchard — and a Woodpecker carries two." },
+    { stamp: 's-fonderie', requires: 's-sonnefeuille' }),
+  heavy('c-cloche', 'sainte-lueur', 'fragile', 6, 1400, 96, 160, 3,
+    { fr: 'La cloche de Sainte-Lueur', en: 'The Glimmerkirk bell' },
+    { fr: "Elle est coulée. Frère Anselme l'a fait sonner une fois dans le verger, une seule, pour savoir. Six sacs de bronze sous une bâche, et une chapelle sur l'eau qui n'a jamais eu de cloche. Il faut deux hydravions, et les enfants le savent déjà.", en: "It is cast. Brother Anselm rang it once in the orchard, just once, to be sure. Six bags of bronze under a tarpaulin, and a chapel on the water that has never had a bell. It takes two seaplanes, and the children already know." },
+    { stamp: 's-cloche', requires: 's-fonderie' }),
 ];
 
 export const EVENTS: readonly EventCard[] = [
@@ -387,6 +418,18 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     title: { fr: "Un Martinet d'occasion", en: 'A second-hand Swift' },
     text: { fr: "Un pilote de Pont-de-Brume raccroche. Son Martinet est en bon état et il le laisse pour un bon prix, à qui en prendra soin.", en: 'A Mistbridge pilot is hanging up his goggles. His Swift is in good shape and he\'ll let it go for a fair price, to someone who will look after it.' },
     offer: { type: 'plane', model: 'martinet', price: 2600 },
+  },
+  {
+    kind: 'opportunity', id: 'o-grive', weight: 2,
+    title: { fr: 'Une Grive à Moulin-Gris', en: 'A Thrush at Greymill' },
+    text: { fr: "Le meunier de Moulin-Gris envoyait sa farine par avion ; il l'envoie maintenant par camion. Sa Grive dort dans la grange, entoilée de frais, avec une odeur de farine qui ne partira jamais.", en: 'The Greymill miller used to send his flour by air; now he sends it by lorry. His Thrush sleeps in the barn, freshly doped, with a smell of flour that will never come out.' },
+    offer: { type: 'plane', model: 'grive', price: 1500 },
+  },
+  {
+    kind: 'opportunity', id: 'o-heron', weight: 3,
+    title: { fr: 'Le Héron des Messageries', en: "The carriers' Heron" },
+    text: { fr: "Les Messageries de Pont-de-Brume remplacent leur trimoteur par deux camions. Le Héron est à vendre : trois moteurs révisés, cinq sacs dans la soute. Il lui faut la grande piste — c'est à ça qu'elle sert.", en: "The Mistbridge carriers are replacing their trimotor with two lorries. The Heron is for sale: three engines overhauled, five bags in the hold. It needs the long strip — that's what the long strip is for." },
+    offer: { type: 'plane', model: 'heron', price: 5600 },
   },
   {
     kind: 'opportunity', id: 'o-pilote', weight: 2,

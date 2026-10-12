@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { WORLD, cardRegion, findDestination, findPilot, findPlane, flightDurationMs, localizeScene, localizeWorld, regionDestinations } from '../src/world/index.ts';
+import { WORLD, cardRegion, findCard, findDestination, findPilot, findPlane, flightDurationMs, localizeScene, localizeWorld, regionDestinations } from '../src/world/index.ts';
+import { canLand } from '../src/game/sim.ts';
 import { cleanCompanyName, foldName, isDeniedName, suggestNames } from '../src/world/names.ts';
 import type { Text } from '../src/world/types.ts';
 import { testApp } from './helpers.ts';
@@ -72,10 +73,13 @@ describe('le monde — intégrité', () => {
     // Les avions de la vallée : une piste ordinaire (ni l'eau, ni la clairière).
     expect(WORLD.planes.filter((p) => ['short', 'medium', 'long'].includes(p.runway)).map((p) => p.id)).toEqual(['grive', 'martinet', 'heron']);
     expect(WORLD.pilots.filter((p) => p.starter || ['ilias', 'yse', 'aurele'].includes(p.id))).toHaveLength(4);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && brume(c))).toHaveLength(20);
+    // Les vingt de la v0.1 (la farine est devenue du fret lourd), sans le fret lourd ajouté ensuite.
+    const ajoutes = ['c-pressoir', 'c-chaudiere', 'c-treuil', 'c-bronze', 'c-cloche'];
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && !ajoutes.includes(c.id) && brume(c))).toHaveLength(20);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.standing)).toHaveLength(1);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && brume(c))).toHaveLength(10);
-    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && brume(c))).toHaveLength(4);
+    // Quatre à la v0.1, plus la Grive et le Héron d'occasion, qu'on ne pouvait pas acheter avant le fret lourd.
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && brume(c))).toHaveLength(6);
     expect(WORLD.decorations).toHaveLength(10);
   });
 
@@ -85,7 +89,7 @@ describe('le monde — intégrité', () => {
     expect(escales).toHaveLength(6);
     expect(escales.filter((d) => d.runway === 'water')).toHaveLength(3);
     expect(WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id)).toEqual(['sterne', 'goeland']);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && saline(c))).toHaveLength(15);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.id !== 'c-treuil' && saline(c))).toHaveLength(15);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && saline(c))).toHaveLength(2);
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(3); // + le Goéland, vendu à Port-Sel
     expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline', 'archipel', 'cuivre']);
@@ -104,7 +108,7 @@ describe('le monde — intégrité', () => {
     expect(iles).toHaveLength(6);
     expect(iles.every((d) => d.runway === 'water')).toBe(true);
     expect(iles.filter((d) => d.hazard === 'night').length).toBeGreaterThanOrEqual(4);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && archipel(c))).toHaveLength(12);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.heavy && archipel(c))).toHaveLength(12);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && archipel(c))).toHaveLength(2);
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && archipel(c))).toHaveLength(1);
     expect(WORLD.regions[2]!.route).toEqual({ requires: 's-cote', cost: 15 });
@@ -125,7 +129,7 @@ describe('le monde — intégrité', () => {
     expect(escales).toHaveLength(6);
     expect(escales.filter((d) => d.runway === 'clearing').map((d) => d.id)).toEqual(['sonnefeuille', 'vert-de-gris', 'le-hetre-roi']);
     expect(escales.filter((d) => d.hazard === 'canopy').length).toBeGreaterThanOrEqual(3);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && cuivre(c))).toHaveLength(12);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.heavy && cuivre(c))).toHaveLength(12);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && cuivre(c))).toHaveLength(2);
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && cuivre(c))).toHaveLength(3);
     // Une seconde route part de la vallée : on choisit par où l'on grandit, la mer ou les arbres.
@@ -161,6 +165,34 @@ describe('le monde — intégrité', () => {
     // Les escales le savent aussi.
     expect(findDestination('les-scieries')!.description.fr).toContain('Solenn');
     expect(findDestination('le-hetre-roi')!.description.fr).toContain('facteur des bois');
+  });
+
+  it('ne propose aucun contrat impossible : un avion achetable suffit pour un sac ordinaire, deux pour le fret lourd', () => {
+    // Les avions qu'un joueur peut réellement posséder : ceux du départ, et ceux qu'une carte vend.
+    const buyable = new Set([...WORLD.start.planes, ...WORLD.cards.flatMap((c) => (c.kind === 'opportunity' && c.offer.type === 'plane' ? [c.offer.model] : []))]);
+    expect([...buyable].sort()).toEqual(WORLD.planes.map((p) => p.id).sort()); // le Héron et une seconde Grive s'achètent enfin
+    for (const c of WORLD.cards) {
+      if (c.kind !== 'contract') continue;
+      const d = findDestination(c.destination)!;
+      // Ceux qui se posent là-bas et y vont (avec, au mieux, un pilote de Longues routes).
+      const fit = WORLD.planes.filter((p) => buyable.has(p.id) && canLand(p, d) && d.distance <= p.range * 1.2).map((p) => p.capacity).sort((a, b) => b - a);
+      expect(fit.length, `${c.id} : aucun avion ne se pose à ${d.id}`).toBeGreaterThan(0);
+      if (c.heavy) {
+        expect(c.bags, `${c.id} : un seul avion suffirait`).toBeGreaterThan(fit[0]!);
+        expect(c.bags, `${c.id} : même deux avions ne suffisent pas`).toBeLessThanOrEqual(fit[0]! + (fit[1] ?? fit[0]!));
+      } else {
+        expect(c.bags, `${c.id} : aucun avion ne porte ${c.bags} sacs jusqu'à ${d.id}`).toBeLessThanOrEqual(fit[0]!);
+      }
+    }
+  });
+
+  it('enchaîne la cloche : la cire, puis le bronze en convoi, puis la cloche en convoi', () => {
+    const bronze = findCard('c-bronze')!; const cloche = findCard('c-cloche')!;
+    expect(bronze.kind === 'contract' && bronze.heavy && bronze.requires === 's-sonnefeuille' && bronze.stamp === 's-fonderie').toBe(true);
+    expect(cloche.kind === 'contract' && cloche.heavy && cloche.requires === 's-fonderie' && cloche.stamp === 's-cloche' && cloche.destination === 'sainte-lueur').toBe(true);
+    for (const id of ['s-convoi', 's-fonderie', 's-cloche']) expect(WORLD.stamps.some((s) => s.id === id), id).toBe(true);
+    // Cinq nouveaux, et deux anciens qui l'étaient sans le savoir : la farine et le sel.
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.heavy).map((c) => c.id).sort()).toEqual(['c-bronze', 'c-chaudiere', 'c-cloche', 'c-farine', 'c-pressoir', 'c-sel-gris', 'c-treuil']);
   });
 
   it('ne référence que des destinations, avions et pilotes existants', () => {
@@ -217,7 +249,8 @@ describe('le monde — intégrité', () => {
       expect(c.reward).toBeGreaterThan(grive.upkeep + prosper.wage);
     }
     const byDistance = WORLD.destinations.map((d) => {
-      const rewards = WORLD.cards.flatMap((c) => (c.kind === 'contract' && c.destination === d.id ? [c.reward] : []));
+      // Le fret lourd paie deux équipages : il se compare à lui-même, pas aux sacs ordinaires.
+      const rewards = WORLD.cards.flatMap((c) => (c.kind === 'contract' && !c.heavy && c.destination === d.id ? [c.reward] : []));
       return { distance: d.distance, avg: rewards.reduce((a, b) => a + b, 0) / rewards.length };
     }).sort((a, b) => a.distance - b.distance);
     for (let i = 1; i < byDistance.length; i += 1) expect(byDistance[i]!.avg).toBeGreaterThan(byDistance[i - 1]!.avg);

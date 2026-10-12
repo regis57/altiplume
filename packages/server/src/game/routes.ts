@@ -40,7 +40,12 @@ const sceneSchema = {
 const dispatchSchema = {
   body: {
     type: 'object', required: ['card', 'plane', 'pilot'], additionalProperties: false,
-    properties: { card: { type: 'string', maxLength: 40 }, plane: { type: 'string', maxLength: 40 }, pilot: { type: 'string', maxLength: 40 } },
+    properties: {
+      card: { type: 'string', maxLength: 40 }, plane: { type: 'string', maxLength: 40 }, pilot: { type: 'string', maxLength: 40 },
+      // Fret lourd : le second équipage du convoi. Les deux, ou aucun.
+      wingPlane: { type: 'string', maxLength: 40 }, wingPilot: { type: 'string', maxLength: 40 },
+    },
+    dependencies: { wingPlane: ['wingPilot'], wingPilot: ['wingPlane'] },
   },
 } as const;
 
@@ -55,7 +60,8 @@ const cardSchema = {
 
 /** L'état de la compagnie tel que le client le reçoit, à l'instant `now`. */
 function view(db: Database, state: CompanyState, now: number, news: News[] = []) {
-  const flights = listFlights(db, state.company.id, now).map((f) => {
+  const rows = listFlights(db, state.company.id, now);
+  const all = rows.map((f) => {
     const arrivesAt = f.departed_at + f.duration_ms;
     const back = busyUntil(f);
     const status = now >= back ? 'done' : now >= arrivesAt ? 'returning' : 'en_route';
@@ -63,10 +69,17 @@ function view(db: Database, state: CompanyState, now: number, news: News[] = [])
       id: f.id, card: f.card, destination: f.destination, plane: f.plane_id, pilot: f.pilot_id,
       departedAt: f.departed_at, arrivesAt, busyUntil: back, deadlineAt: f.deadline_at, reward: f.reward, bonus: f.bonus,
       status, progress: Math.min(1, Math.max(0, (now - f.departed_at) / (2 * f.duration_ms))), settled: f.settled_at !== null,
+      convoy: f.convoy,
     };
   });
-  const busyPlanes = new Map(flights.filter((f) => f.status !== 'done').map((f) => [f.plane, f.busyUntil]));
-  const busyPilots = new Map(flights.filter((f) => f.status !== 'done').map((f) => [f.pilot, f.busyUntil]));
+  // Un convoi est un seul vol pour le joueur : la tête porte l'ailier, l'ailier ne s'affiche pas.
+  const flights = all.filter((f) => f.convoy === null || f.convoy === f.id).map(({ convoy, ...f }) => {
+    const wing = convoy ? all.find((w) => w.convoy === convoy && w.id !== f.id) : undefined;
+    return wing ? { ...f, wing: { plane: wing.plane, pilot: wing.pilot } } : f;
+  });
+  // Mais les deux avions et les deux pilotes sont occupés.
+  const busyPlanes = new Map(all.filter((f) => f.status !== 'done').map((f) => [f.plane, f.busyUntil]));
+  const busyPilots = new Map(all.filter((f) => f.status !== 'done').map((f) => [f.pilot, f.busyUntil]));
   return {
     name: state.company.name,
     francs: state.company.francs,
@@ -132,11 +145,12 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const playerId = request.player!.id;
     const c = current(playerId, now);
     if (!c) return reply.code(404).send({ error: 'no_company' });
-    const body = request.body as { card: string; plane: string; pilot: string };
-    const plan = planDispatch(ctx.db, c.company, body.card, body.plane, body.pilot, now);
+    const body = request.body as { card: string; plane: string; pilot: string; wingPlane?: string; wingPilot?: string };
+    const wing = body.wingPlane && body.wingPilot ? { plane: body.wingPlane, pilot: body.wingPilot } : undefined;
+    const plan = planDispatch(ctx.db, c.company, body.card, body.plane, body.pilot, now, wing);
     if (!plan.ok) return reply.code(400).send({ error: plan.error });
     const flight = dispatch(ctx.db, c.company, playerId, plan.plan, now);
-    audit(ctx.db, 'flight.dispatched', playerId, { destination: flight.destination }, now);
+    audit(ctx.db, 'flight.dispatched', playerId, { destination: flight.destination, ...(plan.plan.wing ? { convoy: true } : {}) }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(201).send({ flight: flight.id, ...view(ctx.db, state, now, c.news) });
   });

@@ -109,7 +109,7 @@ try {
   await page.waitForSelector('#aerodrome:not(.cache)');
   const coquillages = page.locator('#main .carte', { hasText: 'Les coquillages du matin' });
   await coquillages.locator('button', { hasText: 'Expédier' }).click();
-  await coquillages.locator('select[name=plane]').selectOption({ label: 'Sterne S-1' });
+  await coquillages.locator('select[name=plane]').selectOption({ label: 'Sterne S-1 · 3 sacs' });
   const estimate = await coquillages.locator('.expedition .aide').textContent();
   assert(/45 min/.test(estimate), `estimation « 45 min » (${estimate})`);
   await coquillages.locator('button', { hasText: 'Envoyer' }).click();

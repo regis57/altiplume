@@ -55,7 +55,7 @@ export const ARCHIPEL_DESTINATIONS: readonly Destination[] = [
       fr: "L'île de la chapelle et de l'école. Les enfants attendent le courrier sur le ponton avec leurs lanternes, et comptent les hublots.",
       en: 'The island of the chapel and the school. The children wait for the mail on the jetty with their lanterns, counting the portholes.',
     },
-    distance: 16, runway: 'water', hazard: 'night', mail: ['letters', 'newspapers', 'parcels', 'medicine'], firstDeliveryStamps: 3,
+    distance: 16, runway: 'water', hazard: 'night', mail: ['letters', 'newspapers', 'parcels', 'medicine', 'fragile'], firstDeliveryStamps: 3,
   },
   {
     id: 'le-rocher-noir', region: 'archipel',

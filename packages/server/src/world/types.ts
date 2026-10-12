@@ -133,6 +133,15 @@ export interface ContractCard {
   readonly weight: 1 | 2 | 3;
   /** Ligne régulière : jamais tirée, toujours disponible, sans bonus. */
   readonly standing?: true;
+  /**
+   * Fret lourd : plus de sacs qu'aucun avion capable de se poser là-bas n'en porte
+   * seul. Il part en convoi, à deux avions et deux pilotes.
+   */
+  readonly heavy?: true;
+  /** Une page d'album que la livraison colle (en plus de celle de l'escale). */
+  readonly stamp?: string;
+  /** Une page d'album qu'il faut déjà avoir pour que la carte se tire. */
+  readonly requires?: string;
 }
 
 export interface EventChoice {
