@@ -64,7 +64,14 @@ COPY --chown=node:node packages/server ./packages/server
 COPY --from=build --chown=node:node /app/packages/client/dist ./packages/client/dist
 
 # Répertoire de données, seul endroit accessible en écriture (monté en volume).
-RUN mkdir -p /data && chown node:node /data
+# Et l'image finale n'a rien à installer : npm, npx, corepack et yarn s'en vont.
+# Moins de code embarqué, moins de failles à surveiller (c'est souvent dans npm
+# que Trivy en trouve), et rien à détourner. Trivy passe l'image au crible avant
+# chaque publication : voir .github/workflows/release.yml.
+RUN mkdir -p /data && chown node:node /data \
+ && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+           /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+           /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 VOLUME ["/data"]
 
 USER node
