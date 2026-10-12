@@ -11,3 +11,5 @@ docs
 music
 tools
 *.md
+# Les tests restent dans le dépôt : l'image n'en a pas besoin.
+packages/*/test
