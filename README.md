@@ -74,6 +74,16 @@ L'image de l'API est publiée sur `ghcr.io/regis57/altiplume` à chaque fusion s
 Le déploiement sur un NAS Synology, sans ligne de commande, est décrit dans
 [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
 
+## Soutenir
+
+Altiplume est gratuit, sans publicité et sans traqueur, et le restera : il coûte
+une dizaine d'euros par an, le prix du nom de domaine. Si l'aventure vous plaît,
+vous pouvez offrir un café : **[buymeacoffee.com/regis57](https://buymeacoffee.com/regis57)**.
+
+Un café ne donne rien dans le jeu — ni francs, ni cachets, ni raccourci. C'est un
+merci, rien d'autre. Et le lien n'existe qu'ici, sur cette page : le jeu n'en
+parle pas, et rien ne se charge depuis chez eux quand on y joue.
+
 ## Licence
 
 Deux régimes distincts, et la distinction compte :
