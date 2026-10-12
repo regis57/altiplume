@@ -265,11 +265,11 @@ Cible : OWASP ASVS niveau 2.
 ## 13. RGPD et conformité
 
 - **Registre des traitements** tenu dans `docs/legal/`.
-- **Bases légales** : exécution du contrat pour le compte et le jeu ; consentement pour la publicité personnalisée (bandeau certifié Google) et pour le futur classement volontaire.
+- **Bases légales** : exécution du contrat pour le compte et le jeu ; consentement pour le futur classement volontaire. Pas de publicité, donc pas de bandeau de consentement (décision du 12/10, § 14).
 - **Droits** : export JSON complet en un clic, suppression immédiate en cascade, rectification du pseudonyme, tout depuis les réglages.
 - **Conservation** : compte inactif supprimé après 24 mois, avec deux avertissements par email.
 - **Mineurs** : âge minimum 15 ans (France), déclaration à l'inscription, langage adapté à tous les âges dans le jeu.
-- **Sous-traitants** listés dans la politique de confidentialité : Cloudflare, Brevo, Google (AdSense). Transferts hors UE documentés.
+- **Sous-traitants** listés dans la politique de confidentialité : Cloudflare, Brevo. Transferts hors UE documentés. Aucune régie publicitaire.
 - **Documents** : mentions légales, CGU, politique de confidentialité, politique cookies, tous en FR et EN, relus par un professionnel avant lancement.
 - **Statut** : micro-entreprise dès les premiers revenus.
 
@@ -277,11 +277,22 @@ Cible : OWASP ASVS niveau 2.
 
 ## 14. Monétisation, et ses limites
 
-- **Un seul bandeau**, hors de la zone de jeu, jamais entre un geste et son résultat.
-- **Publicités récompensées** (H5 Games Ads, sur candidature) strictement optionnelles : un contrat bonus, jamais une condition de progression. Pas de formulation du type « soutenez-nous », interdite par Google.
-- **Récupération anti-adblock** de Google sur PC (message non fermable avec bouton « Soutenir » vers Buy Me a Coffee) ; rappel doux seulement sur mobile.
-- **Buy Me a Coffee** dans les crédits et les réglages. Un don offre une plaque gravée au café de l'aérodrome : visible, cosmétique, sans effet sur le jeu.
-- **Jamais** : coffres aléatoires payants, achat de francs ou de cachets, timers à racheter, publicité interstitielle non sollicitée.
+**Décision du 12 octobre 2026 : pas de publicité.** Ni AdSense, ni publicités
+récompensées, ni récupération anti-bloqueur. Le plan d'origine (ci-dessous, barré
+dans l'esprit) supposait une régie Google : une seule balise publicitaire aurait
+fait tomber `connect-src 'self'`, les trois notes A+ mesurées, l'argument « zéro
+traqueur », et imposé un bandeau de consentement. Le jeu coûte une dizaine d'euros
+par an ; il n'a pas besoin de vendre l'attention de ses joueurs pour vivre.
+
+- **Buy Me a Coffee, plus tard** — pas tout de suite. Un lien sortant dans les
+  crédits et les réglages, jamais un script embarqué : rien ne se charge depuis
+  chez eux tant qu'on n'a pas cliqué. Un don offre une plaque gravée au café de
+  l'aérodrome : visible, cosmétique, sans effet sur le jeu.
+- **Jamais** : publicité, coffres aléatoires payants, achat de francs ou de
+  cachets, timers à racheter.
+
+*Abandonné le 12/10 :* un bandeau AdSense hors de la zone de jeu ; des publicités
+récompensées H5 Games Ads ; la récupération anti-bloqueur de Google sur PC.
 
 ---
 
@@ -299,15 +310,15 @@ Ce qu'on livre d'abord, pour jouer vite et apprendre vite :
 - Thème musical principal + 6 sons.
 - Pipeline complet, hébergement NAS.
 
-Hors v0.1 : classement, saisons, autres régions, publicité (on attend d'avoir du trafic pour AdSense).
+Hors v0.1 : classement, saisons, autres régions. (La publicité, prévue ici à l'origine, est abandonnée : § 14.)
 
 ## 16. Feuille de route
 
 | Version | Contenu | Repère |
 |---|---|---|
 | **v0.1** | La tranche ci-dessus | Jouable par des proches |
-| **v0.2** | Côte de Saline + Archipel, hydravion, histoires de pilotes, décoration complète | Ouverture publique, AdSense |
-| **v0.3** | Saisons et événements, défi hebdomadaire volontaire, publicités récompensées | Première « année » de jeu |
+| **v0.2** | Côte de Saline + Archipel, hydravion, histoires de pilotes, décoration complète | Ouverture publique, en essai |
+| **v0.3** | Saisons et événements, la Forêt de Cuivre, le fret lourd, l'aérodrome qui grandit | Première « année » de jeu |
 | **v1.0** | Les sept régions, cinq avions, 20 pilotes, bande-son complète | Passage VPS si nécessaire |
 
 ## 17. Risques et parades
@@ -316,7 +327,7 @@ Hors v0.1 : classement, saisons, autres régions, publicité (on attend d'avoir 
 |---|---|
 | Volume de pixel art (sept régions) | Palette commune, tilesets réutilisables, une région à la fois, v0.1 n'en a qu'une |
 | Dérive de périmètre d'un développeur seul | Ce document fait foi ; tout ajout passe par une entrée au JOURNAL et un arbitrage |
-| Refus AdSense ou H5 Games Ads | Le jeu ne dépend pas de la pub ; Buy Me a Coffee suffit à couvrir 10 €/an |
+| Financement | Pas de publicité (décision du 12/10) ; Buy Me a Coffee, plus tard, suffit à couvrir ~10 €/an |
 | Bande passante du NAS | Statique servi et mis en cache par Cloudflare ; l'API ne transporte que du JSON léger |
 | Conflit de marque tardif | Vérification INPI/EUIPO avant achat ; dépôt INPI envisagé dès les premiers revenus |
 | Triche | Serveur autoritatif dès la première ligne, RNG côté serveur, ledger append-only |

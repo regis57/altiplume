@@ -17,8 +17,8 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | Mémoire du DS218+ | 0 € | — | **déjà là** | Le NAS a 6 Go de RAM depuis avant le projet ; rien à acheter |
 | optionnel | Dépôt de marque INPI (1 classe) | ~190 € | ponctuel | option | Une fois le nom définitif choisi |
 | plus tard | VPS européen (OVH VPS-1) | 7,79 €/mois | mensuel | prévu | Quand le NAS ne suffit plus |
-| plus tard | AdSense + bandeau de consentement Google | 0 € | — | prévu | Revenus, pas coût |
-| plus tard | Buy Me a Coffee | 5 % + frais Stripe par don | par transaction | prévu | Revenus, pas coût |
+| 2026-10-12 | AdSense + bandeau de consentement Google | — | — | **abandonné** | Décision : pas de publicité (CONCEPTION § 14) |
+| plus tard | Buy Me a Coffee (lien sortant, pas de script) | 5 % + frais Stripe par don | par transaction | prévu, pas tout de suite | Revenus, pas coût |
 
 ## Totaux
 
@@ -75,6 +75,6 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 
 ## Revenus (à partir du lancement)
 
-| Mois | AdSense | Buy Me a Coffee | Total |
-|---|---|---|---|
-| — | — | — | — |
+| Mois | Buy Me a Coffee | Total |
+|---|---|---|
+| — | — | — |

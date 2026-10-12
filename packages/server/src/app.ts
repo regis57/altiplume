@@ -7,6 +7,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
 import type { AppContext } from './context.ts';
 import { registerSecurityHeaders } from './http/security.ts';
+import { englishPages, rewriteLanguage } from './http/langue.ts';
 import { registerSessionHook } from './auth/session.ts';
 import { registerAuthRoutes } from './auth/routes.ts';
 import { registerPasskeyRoutes } from './auth/passkeys.ts';
@@ -34,8 +35,12 @@ const DEFAULT_CLIENT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../
  */
 export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Promise<FastifyInstance> {
   const production = ctx.config.env === 'production';
+  const clientDir = options.clientDir ?? DEFAULT_CLIENT_DIR;
+  const pagesEn = englishPages(clientDir);
   const app = Fastify({
     logger: options.logger ?? false,
+    // `/aide?lang=en` → l'exemplaire anglais de la page, pour les aperçus de liens partagés.
+    rewriteUrl: (req) => rewriteLanguage(req.url ?? '/', req.method, pagesEn),
     trustProxy: ctx.config.trustProxy,
     bodyLimit: 16 * 1024,
     // Pas d'identifiant de requête dans les en-têtes de réponse : rien à corréler.
@@ -91,7 +96,6 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   });
   app.setNotFoundHandler((_request, reply) => reply.code(404).send({ error: 'not_found' }));
 
-  const clientDir = options.clientDir ?? DEFAULT_CLIENT_DIR;
   if (existsSync(clientDir)) {
     await app.register(fastifyStatic, {
       root: clientDir,

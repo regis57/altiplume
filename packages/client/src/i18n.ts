@@ -655,6 +655,13 @@ const DICT: Record<Locale, Record<string, string>> = { fr: FR, en: EN };
 let current: Locale = detect();
 
 function detect(): Locale {
+  // Un lien partagé dit sa langue (« ?lang=en ») : il passe avant l'habitude du navigateur,
+  // et devient le choix retenu — celui qui ouvre un lien anglais veut lire en anglais.
+  const asked = new URLSearchParams(location.search).get('lang');
+  if (asked === 'fr' || asked === 'en') {
+    try { localStorage.setItem(STORAGE_KEY, asked); } catch { /* sans importance */ }
+    return asked;
+  }
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'fr' || stored === 'en') return stored;
@@ -714,10 +721,27 @@ export function translatePage(): void {
   document.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => {
     el.classList.toggle('cache', el.dataset['lang'] !== current);
   });
+  // Le titre de l'onglet suit la langue (une page peut le reprendre : l'aérodrome y met son nom).
+  const title = document.documentElement.dataset[current === 'fr' ? 'titleFr' : 'titleEn'];
+  if (title) document.title = `${title} — Altiplume`;
+  syncLanguageInAddress();
   const toggle = document.querySelector<HTMLButtonElement>('[data-action=toggle-lang]');
   if (toggle) {
     toggle.textContent = current === 'fr' ? 'EN' : 'FR';
     toggle.setAttribute('aria-label', current === 'fr' ? 'Switch to English' : 'Passer en français');
     toggle.lang = current === 'fr' ? 'en' : 'fr';
   }
+}
+
+/**
+ * L'adresse porte la langue : en anglais, « ?lang=en » ; en français, rien. Ainsi un
+ * lien copié depuis la barre d'adresse montre, une fois collé dans une conversation,
+ * la carte de partage dans la langue où on lisait. Les autres paramètres sont gardés.
+ */
+function syncLanguageInAddress(): void {
+  const url = new URL(location.href);
+  const had = url.searchParams.get('lang');
+  if (current === 'en') url.searchParams.set('lang', 'en');
+  else url.searchParams.delete('lang');
+  if (url.searchParams.get('lang') !== had) history.replaceState(history.state, '', url);
 }

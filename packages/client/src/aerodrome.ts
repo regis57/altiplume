@@ -218,6 +218,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   section.classList.remove('cache');
   const root = $('jeu');
   if (root) root.dataset['moment'] = momentOfDay(new Date().getHours());
+  document.documentElement.dataset['titleFr'] = c.name;
+  document.documentElement.dataset['titleEn'] = c.name;
   document.title = `${c.name} — Altiplume`;
 
   const name = $('t-compagnie'); if (name) name.textContent = c.name;

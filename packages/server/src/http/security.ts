@@ -45,7 +45,8 @@ export function registerSecurityHeaders(app: FastifyInstance, production: boolea
   app.addHook('onRequest', async (request, reply) => {
     if (!production || request.url === '/healthz') return;
     if (request.headers['x-forwarded-proto'] === 'http') {
-      return reply.code(301).redirect(`https://${request.hostname}${request.url}`);
+      // L'adresse demandée, pas celle qu'une réécriture interne aurait produite.
+      return reply.code(301).redirect(`https://${request.hostname}${request.originalUrl}`);
     }
   });
 
@@ -56,7 +57,10 @@ export function registerSecurityHeaders(app: FastifyInstance, production: boolea
     reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
     reply.header('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=()');
     reply.header('Cross-Origin-Opener-Policy', 'same-origin');
-    reply.header('Cross-Origin-Resource-Policy', 'same-origin');
+    // Une seule exception, étroite : les cartes de partage sont faites pour être
+    // affichées ailleurs (un client Mastodon, un blog qui cite le jeu). Rien d'autre
+    // ne sort de chez nous — ni page, ni script, ni donnée.
+    reply.header('Cross-Origin-Resource-Policy', /^\/partage\/altiplume-(fr|en)\.png$/.test(request.url) ? 'cross-origin' : 'same-origin');
     reply.header('Cross-Origin-Embedder-Policy', 'require-corp');
     // HSTS ne vaut qu'en HTTPS ; une réponse en clair ne doit pas le porter.
     if (production && request.headers['x-forwarded-proto'] !== 'http') {

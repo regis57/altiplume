@@ -22,7 +22,8 @@
     "build": "npm run build -w @altiplume/client",
     "start": "node --no-warnings=ExperimentalWarning packages/server/src/server.ts",
     "e2e": "node scripts/e2e-passkeys.mjs && node scripts/e2e-courrier.mjs && node scripts/e2e-saline.mjs",
-    "vapid": "node --no-warnings=ExperimentalWarning scripts/vapid-keys.mjs"
+    "vapid": "node --no-warnings=ExperimentalWarning scripts/vapid-keys.mjs",
+    "partage": "npm run build && node scripts/partage-build.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -79,7 +79,7 @@ d'Altiplume (personne physique, France). Version du 11 octobre 2026.
 ## Traitements prévus, non encore actifs
 
 - **Données de jeu** (aérodrome, pilotes, vols) : exécution du contrat, durée du compte. Arriveront avec la première version jouable ; ce registre sera mis à jour.
-- **Publicité** (Google AdSense) : consentement, via une plateforme de gestion du consentement certifiée. Non actif. Ce registre, la politique de confidentialité et les CGU seront mis à jour avant toute activation.
+- **Publicité** : aucune. Décision du 12/10/2026 : pas de régie publicitaire, donc ni traitement à ce titre ni bandeau de consentement. Un éventuel lien de don (Buy Me a Coffee) sera un lien sortant, sans script ni cookie chargé depuis le site.
 
 ## Droits des personnes
 
