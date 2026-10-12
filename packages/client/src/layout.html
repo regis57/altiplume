@@ -36,6 +36,12 @@
             <svg class="icone-lune" viewBox="0 0 11 11" width="18" height="18" aria-hidden="true" shape-rendering="crispEdges"><rect x="4" y="1" width="3" height="1"/><rect x="3" y="2" width="2" height="1"/><rect x="2" y="3" width="2" height="5"/><rect x="3" y="8" width="2" height="1"/><rect x="4" y="9" width="4" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/></svg>
           </button>
         </nav>
+        <!-- Ce qui tourne, exactement : le stade du projet et la version, gravés à la
+             construction. Le survol donne le commit ; la page dit ce qu'« essai » veut dire. -->
+        <a class="etiquette" href="/version" data-i18n-aria="version.aria" aria-label="Version et stade du projet" title="v{{version}} · {{revision}} · {{builtOn}}">
+          <span class="etiquette-stade" data-i18n="version.stage">essai</span>
+          <span class="etiquette-version">v{{version}}</span>
+        </a>
       </header>
       <main id="contenu">
 {{content}}
@@ -46,6 +52,7 @@
         <a href="/cgu" data-i18n="footer.terms">Conditions d'utilisation</a>
         <a href="/aide" data-i18n="footer.help">Comment on joue</a>
         <a href="/contact" data-i18n="footer.contact">Nous écrire</a>
+        <a href="/version" data-i18n="footer.version">Version</a>
         <a href="https://github.com/regis57/altiplume" rel="noopener">Code source (AGPL-3.0)</a>
       </footer>
     </div>
