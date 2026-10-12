@@ -518,7 +518,7 @@ Deux heures plus tôt, une PR fusionnée, un redéploiement lancé — et la pro
 
 Vérifié dans un vrai Chromium, en 390 et en 1280 pixels, de jour comme de nuit, en français comme en anglais : l'étiquette tient sur la ligne de navigation sans la bousculer, elle disparaît à l'impression, et elle annonce « Version et stade du projet » aux lecteurs d'écran.
 
-## Chapitre 33 — Par avion (12 octobre 2026, 19 h 30)
+## Chapitre 33 — Par avion (12 octobre 2026, 19 h)
 
 « Fais les cartes de partage social, dans chaque langue. Et décision : pas d'AdSense. Je mettrai seulement Buy Me a Coffee, plus tard. Pas tout de suite. »
 
@@ -534,7 +534,7 @@ Ce détail-là n'est pas décoratif. Depuis 1929, l'Union postale universelle im
 
 **Et la décision, consignée.** Pas de publicité : ni bandeau, ni vidéos récompensées, ni message anti-bloqueur. Le document de conception prévoyait AdSense depuis le premier jour ; il dit maintenant pourquoi on y renonce — une seule balise de régie aurait fait tomber `connect-src 'self'`, les trois notes A+ mesurées, l'argument « zéro traqueur », et imposé un bandeau de consentement, pour un jeu qui coûte dix euros par an. La politique de confidentialité, le registre des traitements et le suivi des coûts disent la même chose. Buy Me a Coffee viendra plus tard, sous la forme d'un simple lien sortant : rien ne se chargera depuis chez eux tant qu'on n'aura pas cliqué.
 
-## Chapitre 34 — La Forêt de Cuivre (12 octobre 2026, 21 h)
+## Chapitre 34 — La Forêt de Cuivre (12 octobre 2026, 19 h 45)
 
 « Fais A, et ne te rate pas sur le storytelling. »
 
@@ -558,7 +558,7 @@ Le monde avait deux lanternes de cuivre et aucune forêt. Ysé portait la sienne
 
 Douze contrats, deux imprévus, trois opportunités, neuf pages d'album. L'aide en ligne présente maintenant les deux routes de la vallée, et pas seulement la Côte.
 
-## Chapitre 35 — Deux avions pour un courrier (12 octobre 2026, 22 h)
+## Chapitre 35 — Deux avions pour un courrier (12 octobre 2026, 20 h 15)
 
 Rosalie l'avait dit en posant le doigt sur le poids de sa cloche : « Ça ne tiendra jamais dans un seul avion. » Le jeu ne savait pas faire voler deux avions ensemble. Il sait, maintenant.
 
@@ -575,7 +575,7 @@ Le test reste : un contrat ordinaire se livre avec un seul avion achetable, un f
 
 **Et une faute de français, vieille aussi.** « Prosper est rentré de Les Tilleuls. » Les nouvelles et le livre de bord disent maintenant « des Tilleuls », « au Hêtre-Roi », « aux Œillets », « départ pour les Scieries », et même l'article qu'on dit sans l'écrire : « de l'Île-du-Bout », « au Phare de Brisant ». L'anglais n'avait rien à contracter.
 
-## Chapitre 36 — Les saisons (12 octobre 2026, 23 h)
+## Chapitre 36 — Les saisons (12 octobre 2026, 20 h 30)
 
 Le document de conception avait mis un repère sur la v0.3 : *la première année de jeu*. Une année, il faut qu'elle passe.
 
@@ -589,7 +589,7 @@ Le document de conception avait mis un repère sur la v0.3 : *la première anné
 
 **Une année, dans l'album.** La première livraison de chaque saison colle sa page — Premier printemps, Premier été, Premier automne, Premier hiver — et les quatre réunies en collent une cinquième : « Une année. Quatre saisons sur la piste de la Croisette. Le chemin vous connaît. » Elle ne peut pas s'obtenir en moins d'un an, et elle ne demande rien d'autre que de revenir.
 
-## Chapitre 37 — L'aérodrome qui grandit (12 octobre 2026, 23 h 45)
+## Chapitre 37 — L'aérodrome qui grandit (12 octobre 2026, 20 h 45)
 
 Le 11 octobre, en regardant la scène pour la première fois, Régis avait demandé « un hangar d'aéroport plus appealing… mais j'imagine que ça évolue aussi dans le jeu, n'est-ce pas ? » La réponse honnête était : assez peu. Restaurer le hangar changeait la couleur d'une porte. Acheter un Héron ne changeait rien du tout : il n'y avait qu'un seul avion dessiné sur le terrain, toujours le même biplan.
 
@@ -604,3 +604,25 @@ Le 11 octobre, en regardant la scène pour la première fois, Régis avait deman
 Une migration donne son poteau à chaque compagnie déjà fondée. Le script d'aperçu de la scène montre maintenant les trois âges de l'aérodrome — premier jour, milieu, tout restauré — en plus des heures et des saisons : dix-sept images à regarder avant de pousser.
 
 Les quatre chapitres de « A » sont écrits : la Forêt de Cuivre, le fret lourd, les saisons, l'aérodrome qui grandit. Ils tiennent ensemble par leurs fils — le cuivre des lanternes, le sac de Bastien, la cloche de Sainte-Lueur, la chaudière de la Combe qui a encore froid l'hiver, les ruches au pied du pommier — et c'est à eux qu'il faudra répondre en écrivant la suite.
+
+## Chapitre 38 — Le crible (12 octobre 2026, 21 h 50)
+
+« Dis-moi si Trivy et OWASP ZAP, avec Semgrep et Socket/OSV, sont gratuits, et si oui comment mettre en œuvre chacun. Ne fais pas sans mon go. »
+
+Puis le go : « Fais PR par PR, et donne-moi la séquence exacte. »
+
+La veille, l'interlude sécurité avait regardé le site **de l'extérieur** : ce que Mozilla, Qualys ou Google voient d'altiplume.com, trois A+. Il restait l'autre moitié, celle qu'aucune plateforme publique ne voit : ce qu'il y a **dans** l'image, ce que répond l'application quand on la visite page par page, ce que dit le code, ce que font les paquets qu'on installe. Quatre outils, tous gratuits, une PR chacun.
+
+**Le premier piège était dans les outils eux-mêmes.** En mars 2026, l'action GitHub officielle de Trivy a été compromise : ses étiquettes de version ont été réécrites pour pointer vers du code piégé, et le binaire 0.69.4 l'était aussi. Quiconque écrivait `uses: aquasecurity/trivy-action@v0` dans son workflow, comme le proposait la documentation, a donné ses secrets à un inconnu en croyant se protéger. Le dépôt avait déjà une règle — aucune action tierce, seulement celles de GitHub, épinglées par empreinte —, elle a pris tout son sens. Les quatre contrôleurs sont donc pris de la même façon : le **binaire officiel**, téléchargé depuis la release du projet, dans **une version qui a quelques semaines de recul** — Opengrep v1.30.1 et pas la v1.30.2 sortie cinq jours plus tôt —, et son **empreinte SHA-256** inscrite dans le workflow, vérifiée à chaque exécution avant de lancer quoi que ce soit. Pour Trivy, l'empreinte vient du fichier de sommes de la release ; pour ZAP, du manifeste que le projet publie ; pour Opengrep, j'ai vérifié la signature Sigstore à la main avant d'épingler : signée par le workflow de publication du dépôt opengrep, et personne d'autre.
+
+**Trivy** passe maintenant l'image au crible avant chaque publication. L'ordre a changé : l'image est construite, chargée, démarrée, scannée, et **seulement ensuite** publiée. Une faille critique dont le correctif existe déjà bloque la publication — le NAS garde alors la version d'avant, ce qui vaut mieux qu'une version trouée. Le lundi, l'image en service est rescannée : une faille découverte après coup ne doit pas attendre la prochaine mise à jour pour se voir. Au passage, l'image a perdu npm, npx, corepack et yarn. Elle n'a rien à installer ; c'est souvent dans npm que Trivy trouve ses failles ; et un outil absent ne peut pas être détourné. La CI vérifie qu'ils ne reviennent pas.
+
+**OWASP ZAP** visite l'aérodrome comme un joueur curieux, mais un joueur qui lit chaque en-tête. En passif seulement : il ne lance aucune attaque et n'envoie aucun formulaire — on ne bombarde pas son propre aérodrome, même en essai. La CI démarre l'image exactement comme sur le NAS, en production, en lecture seule, et ZAP en fait le tour : cinquante-huit adresses, l'API comprise. Avant d'ouvrir la PR, je l'ai lancé ici. **Aucune alerte haute ; aucune moyenne réelle.** Il en a levé une moyenne quand même : « absence de jeton anti-CSRF » sur la page de l'aérodrome. C'était un `<form method="dialog">`, qui ferme une boîte de dialogue et n'envoie rien à personne ; les vrais envois passent par l'API, qui n'accepte que du JSON avec un cookie `SameSite=Lax`. Et une faible : « message d'erreur de débogage » dans les conditions d'utilisation — la phrase anglaise « still under construction », qui dit que le jeu est en essai. Les deux sont déclarées faux positifs dans le plan de ZAP, chacune avec sa raison. Puis la contre-épreuve : sans ces deux déclarations, le contrôle échoue. Un garde-fou qui ne mord jamais ne garde rien.
+
+**Opengrep** relit le code. C'est la reprise libre de Semgrep, née quand Semgrep a refermé une partie de son moteur ; mêmes règles, même syntaxe. Le premier passage a rendu **cent cinquante trouvailles**. Cent cinq venaient de règles écrites pour d'autres projets : jQuery, parce que le client appelle `$` son raccourci vers `getElementById` ; React et i18next, parce que le dictionnaire maison a des clés qui leur ressemblent ; `replaceAll`, « non portable » pour des navigateurs qui n'existent plus. Ces trois familles sont écartées dans le workflow, chacune avec sa raison écrite à côté. Deux trouvailles étaient de niveau ERROR, et c'était une seule ligne : l'unique endroit où le client écrit du HTML. Il vient du dictionnaire embarqué, jamais du réseau, et passe par la politique Trusted Types du site ; c'est voulu, et c'est maintenant annoté, avec la raison. Les vingt-huit restantes ont été lues une par une, et aucune n'est réelle. **Zéro ERROR.** Ce sera la règle à chaque PR.
+
+**Socket** regarde les dépendances autrement que `npm audit`. L'audit demande « ce paquet a-t-il une faille connue ? » ; Socket demande « que fait-il ? » — un script lancé à l'installation, un accès réseau inattendu, du code obscurci, un mainteneur qui vient de changer, un nom qui imite un paquet connu. C'est la forme qu'ont prise les attaques de ces derniers mois, et un audit de failles ne la voit pas. Socket est le seul des quatre qui demandait une main humaine : une application GitHub s'installe par le propriétaire du dépôt, pas par un agent. Régis l'a installée sur ce seul dépôt ; le premier rapport est arrivé, vert, dans la minute qui a suivi la fusion.
+
+**Une chose n'a pas pu être mesurée ici**, et il faut le dire : la base de failles de Trivy n'est pas joignable depuis la machine où j'écris. Le premier vrai passage de Trivy a donc eu lieu dans la CI de sa propre PR. Il est vert : aucune faille critique corrigeable. Le détail des failles élevées vit dans le résumé du job, pas dans ce journal.
+
+Les quatre PR fusionnées, tout est vert sur `main`, et le Release qui a publié l'aérodrome qui grandit est passé par Trivy avant de pousser l'image. La page [Sécurité](Securite) a maintenant deux moitiés : ce qui se voit du dehors, ce qui se contrôle du dedans. Et une troisième, plus courte chaque soir : ce qui n'a pas encore été fait — l'accessibilité, avec les personnes concernées ; Blacklight ; nmap depuis l'extérieur ; Have I Been Pwned ; OSV-Scanner ; ZAP contre le site public ; une passkey sur un vrai appareil.

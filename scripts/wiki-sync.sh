@@ -18,6 +18,7 @@ copy() { # <source> <page>
 }
 
 copy docs/LES-24-HEURES.md "Les-24-heures"
+copy docs/JOUR-2.md     "Jour-2"
 copy docs/JOURNAL.md    "Journal"
 copy docs/COUTS.md      "Couts"
 copy docs/MONDE.md      "Monde"
@@ -35,6 +36,7 @@ gratuit, sans mot de passe. Le jeu : [altiplume.com](https://altiplume.com). Le 
 (AGPL-3.0) : [github.com/regis57/altiplume](https://github.com/regis57/altiplume).
 
 - **[Les 24 heures](Les-24-heures)** — le résumé : chronologie, décisions clefs, échanges structurants.
+- **[Jour 2](Jour-2)** — le deuxième jour : faire grandir le jeu sans rien casser, puis tout passer au crible.
 - **[Journal](Journal)** — le récit de l'aventure, chapitre par chapitre.
 - **[Coûts](Couts)** — ce que le projet coûte, euro par euro, et le temps passé.
 - **[Monde](Monde)** — les Vallées de Brume, les pilotes, les avions, les cartes.
@@ -52,6 +54,7 @@ cat > "$WIKI/_Sidebar.md" <<'SIDE'
 **Altiplume**
 - [Accueil](Home)
 - [Les 24 heures](Les-24-heures)
+- [Jour 2](Jour-2)
 - [Journal](Journal)
 - [Coûts](Couts)
 - [Monde](Monde)

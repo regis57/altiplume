@@ -19,8 +19,8 @@ au terme d'un défi : un vendredi soir, un dossier vide ; le lendemain après-mi
 jeu installable sur téléphone, sans mot de passe, conforme au RGPD, hébergé sur un
 NAS domestique sans aucun port ouvert, et une notification « ton courrier est
 arrivé » reçue sur un iPhone à 14 h 23. Le résumé — chronologie, décisions clefs —
-est [Les 24 heures](https://github.com/regis57/altiplume/wiki/Les-24-heures) ; le
-récit complet, le [Journal](https://github.com/regis57/altiplume/wiki/Journal) ; les
+est [Les 24 heures](https://github.com/regis57/altiplume/wiki/Les-24-heures), et la
+suite, [Jour 2](https://github.com/regis57/altiplume/wiki/Jour-2) ; le récit complet, le [Journal](https://github.com/regis57/altiplume/wiki/Journal) ; les
 coûts (un nom de domaine, environ dix euros) sont dans
 [Coûts](https://github.com/regis57/altiplume/wiki/Couts).
 
@@ -28,10 +28,13 @@ coûts (un nom de domaine, environ dix euros) sont dans
   pilotes et leurs histoires, les cartes du jour, la ligne régulière, l'album de
   cachets, l'aérodrome à restaurer et décorer, le mode nuit, l'installation sur
   l'écran d'accueil et les notifications.
-- **v0.2** (en cours) — la Côte de Saline (six escales dont trois sur l'eau,
-  l'hydravion Sterne, le ponton, la route qui s'ouvre contre des cachets) est
-  fusionnée ; la scène redessinée en 320 × 144 avec chaque décoration visible ;
-  l'Archipel des Lanternes vient ensuite.
+- **v0.2** (livrée) — la Côte de Saline (six escales dont trois sur l'eau,
+  l'hydravion Sterne, le ponton) et l'Archipel des Lanternes (six îles, les vols de
+  nuit, le Goéland) ; la scène redessinée en 320 × 144 avec chaque décoration visible.
+- **Vers la v0.3** (12 octobre) — la Forêt de Cuivre et une route qui bifurque, le
+  Pic et ses clairières, les convois de fret lourd, les saisons du calendrier,
+  l'aérodrome qui se voit grandir (hangar, tour, chaque avion à sa place) ; dix
+  pilotes, cinq femmes et cinq hommes.
 - **Sécurité, vérifiée de l'extérieur** le 11 octobre : Observatory A+,
   securityheaders A+, SSL Labs A+, SPF/DKIM/DMARC ; **et de l'intérieur** depuis le
   12 octobre, à chaque PR : Trivy sur l'image, OWASP ZAP sur l'application, Opengrep
