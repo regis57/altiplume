@@ -33,7 +33,9 @@ coûts (un nom de domaine, environ dix euros) sont dans
   fusionnée ; la scène redessinée en 320 × 144 avec chaque décoration visible ;
   l'Archipel des Lanternes vient ensuite.
 - **Sécurité, vérifiée de l'extérieur** le 11 octobre : Observatory A+,
-  securityheaders A+, SSL Labs A+, SPF/DKIM/DMARC ; le détail, l'avant/après et ce
+  securityheaders A+, SSL Labs A+, SPF/DKIM/DMARC ; **et de l'intérieur** depuis le
+  12 octobre, à chaque PR : Trivy sur l'image, OWASP ZAP sur l'application, Opengrep
+  et CodeQL sur le code, Socket sur les dépendances. Le détail, l'avant/après et ce
   qui reste à faire sont dans [Sécurité](https://github.com/regis57/altiplume/wiki/Securite),
   contrôlés chaque semaine.
 
