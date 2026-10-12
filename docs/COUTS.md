@@ -34,6 +34,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 |---|---|---|
 | 2026-10-10 | Cadrage : thème, licence, auth sans mot de passe, pipeline, coûts | ~1 h |
 | 2026-10-10 | Choix du nom (vérifs domaines + antériorités web), premier thème musical | ~30 min |
+| 2026-10-12 | Minutage des vols à la seconde ; Garance Thuillier et Hedda Vilmorin, parité rétablie | ~45 min |
 | 2026-10-10 | Recherche d'antériorité marques (EUIPO, registre entreprises, TMview) | ~20 min |
 | 2026-10-11 | v0.2 : la scène en 320 × 144, chaque décoration dessinée, jour et nuit | ~50 min |
 | 2026-10-11 | Boîte `bonjour@altiplume.com` (Cloudflare Email Routing) et formulaire de contact anti-robots | ~40 min |

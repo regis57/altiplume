@@ -464,3 +464,25 @@ Une migration fait le reste : les compagnies déjà fondées gardent leur pilote
 **Une règle a sauté au passage, et il faut le dire.** Le 11 octobre, la première consigne de Régis sur le monde était : *« si tu utilises des prénoms, aie autant de personnages hommes que femmes »*. Marthe partie, l'effectif est de deux femmes pour quatre hommes. Je ne l'ai pas corrigé de ma propre initiative — ce sont ses personnages — mais je ne l'ai pas non plus laissé passer en silence : le test qui vérifiait la parité vérifie maintenant l'écart exact, avec la date et la raison. Il échouera si quelqu'un y touche sans le vouloir, et il redeviendra une vraie parité quand les deux prochaines pilotes arriveront. Elles sont décrites dans la bible du monde, avec leurs régions et leurs traits.
 
 **Et les tarifs montent.** La ligne régulière passe de 18 à 25 francs, et tous les contrats suivent dans la même proportion — un facteur 25/18, appliqué aux récompenses comme aux primes de délai. Les coûts, eux, ne bougent pas : un aller-retour sur la ligne régulière rapporte maintenant 11 francs nets au lieu de 4. La progression est plus généreuse d'environ 40 %. Les trois garde-fous tiennent : aucun contrat ne coûte plus qu'il ne rapporte, les villages lointains restent mieux payés que les proches, et la ligne régulière n'a toujours pas de prime.
+
+## Chapitre 29 — Les minutes qui ne bougeaient pas (12 octobre 2026, 12 h)
+
+« Le rafraîchissement du voyage — la barre de temps et les minutes affichées — n'est pas correct, je crois. »
+
+Il avait raison, et le défaut n'était pas celui qu'on croit. Les chiffres étaient justes : trente minutes d'aller, trente de retour, et « arrivée dans 5 min, retour dans 35 min » décrivait exactement la situation. Le problème, c'est qu'ils ne **bougeaient** pas. La page ne se redessinait qu'une fois toutes les trente secondes, en redemandant tout au serveur. Entre deux, la barre restait figée et les minutes aussi. On regarde son téléphone, rien ne change, on en conclut que c'est cassé — et on a raison d'en douter.
+
+Désormais une horloge locale bat **à la seconde**, et ne touche que deux choses : la largeur de la jauge et la ligne de texte. Aucun réseau. Le serveur n'est redemandé que lorsqu'il a quelque chose de neuf à dire — un vol qui se pose, un avion qui rentre — ou quand on revient sur l'onglet après une mise en veille, parce que les minuteurs d'un onglet caché sont gelés par le navigateur. Résultat mesuré dans un vrai Chromium : le compte à rebours descend tout seul, aucun appel réseau pendant seize secondes, et au moment exact de l'atterrissage la page se resynchronise d'elle-même et affiche les nouvelles. Avant, il fallait attendre jusqu'à trente secondes.
+
+**Et une étiquette manquait.** « En route · 5 min · retour dans 35 min » : ce « 5 min » tout nu ne disait pas de quoi il parlait. Il dit maintenant « arrivée dans 5 min ».
+
+## Chapitre 30 — Garance et Hedda (12 octobre 2026, 12 h 30)
+
+« Rétablis la parité homme-femme pour le futur. Que l'histoire tienne ensemble. »
+
+Deux pilotes, donc, et pas n'importe lesquelles : celles qui manquaient aux fils déjà tendus.
+
+**Garance Thuillier**, vingt-neuf ans, de Pont-de-Brume — la ville de marché de l'autre côté de la rivière, celle du tout premier contrat. Elle a grandi sur le quai, cachée entre les caisses de poisson, à noter les atterrissages de la Croisette avant de savoir écrire. *Tête brûlée* et *Cœur de village* : elle se pose trop court et déteste s'éloigner. Son histoire répond à celle de Prosper : il garde depuis le premier jour un crayon dont il n'a jamais dit pour qui, et sur la poutre du hangar il n'y a qu'une seule marque. Garance, treize ans après son premier vol seul, demande qu'on trace la sienne.
+
+**Hedda Vilmorin**, quarante-neuf ans, du **Grand Blanc** — la région que personne n'a encore atteinte. *Longues routes* et *Économe* : au nord, le litre de trop est du poids et le litre qui manque est de la glace. Elle répond à Teodor, qui laisse une lettre à la dernière lanterne pour un frère resté dans le désert. Elle ne lui apporte pas de nouvelles — ce serait trop facile, et faux. Elle lui explique ce que le nord fait des lettres : il les garde dans une boîte, parfois dix ans, et parfois quelqu'un revient et son nom est dessus. Elle lui donne une raison de continuer à écrire.
+
+Huit pilotes, quatre femmes, quatre hommes, huit lieux d'origine. La parité, rompue le matin même par un renommage, est rétablie le jour même — et le test est redevenu strict. La bible du monde a maintenant une section « Les fils qui se rejoignent » : la poutre de Bastien, les lettres qui attendent, la lanterne de cuivre, la croix du chemin. Pour que ceux qui écriront les suivants sachent à quoi ils répondent.

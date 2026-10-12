@@ -124,13 +124,14 @@ porte plus loin et plus lourd, et préfère la nuit calme au vent de mer.
 
 ## Les pilotes
 
-Six pilotes, six régions d'origine.
+Huit pilotes, quatre femmes et quatre hommes, huit lieux d'origine.
 
-> **Parité.** La règle du projet, depuis le premier jour, est « autant de femmes que
-> d'hommes ». Le renommage du 12 octobre (Marthe Vaudrin → Prosper Chickenman, homme)
-> l'a rompue : **deux femmes pour quatre hommes**. Les deux prochains pilotes seront
-> des femmes. Un test enregistre cet écart : il échouera si quelqu'un y touche sans
-> le vouloir. Chacun a deux
+> **Parité.** La règle du projet, depuis le premier jour. Le renommage du 12 octobre
+> (Marthe Vaudrin → Prosper Chickenman, homme) l'avait rompue ; Garance Thuillier et
+> Hedda Vilmorin la rétablissent le jour même. Un test la vérifie à chaque PR.
+
+L'ordre du tableau est aussi l'ordre de recrutement : la carte « pilote de passage »
+propose toujours le premier qui n'est pas encore embauché. Chacun a deux
 traits (qui changent des chiffres de la simulation, pas seulement une phrase) et une
 histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 
@@ -142,12 +143,34 @@ histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 | **Aurèle Combray** (*Aurel*) | 58 | Côte de Saline | Mains d'or · Longues routes | *Le moteur qui tousse* — du fil de fer, la photo dans la casquette, l'atelier qu'il ne vendra pas |
 | **Solenn Darrieux** | 36 | Forêt de Cuivre | Nocturne · Mains d'or | *La lanterne de la forêt* — ce qu'on voit la nuit, le moteur de son père, la lanterne de cuivre au bout du ponton |
 | **Teodor Vashti** | 41 | Désert de Verre | Longues routes · Porte-bonheur | *Le compte des étoiles* — trois chiffres sur la manche, le foulard du frère, la lettre vers le Grand Blanc |
+| **Garance Thuillier** | 29 | Pont-de-Brume | Tête brûlée · Cœur de village | *De l'autre côté de la rivière* — le quai du marché, trois mètres de trop, la seconde marque sur la poutre |
+| **Hedda Vilmorin** | 49 | Grand Blanc | Longues routes · Économe | *Ce que le nord garde* — le litre de trop, les boîtes de la dernière lanterne, pourquoi elle est descendue |
 
 Prosper est là dès le premier jour. Les autres passent au café et se recrutent
 avec une carte « pilote de passage ». **Bastien**, l'ancien propriétaire, est mort
 avant le début du jeu ; il n'apparaît que dans ce que les autres en disent.
 
-### Les traits
+### Les fils qui se rejoignent
+
+Les histoires ne sont pas indépendantes : elles se répondent, et il faut que cela
+reste vrai quand on en ajoute.
+
+- **La poutre de Bastien.** Prosper montre une marque au crayon, seule sur la poutre,
+  et garde un crayon « depuis le premier jour » sans dire pour qui. Garance, treize ans
+  après son premier vol seul, demande à être mesurée : c'est lui qui trace la seconde.
+- **Les lettres qui attendent.** Teodor laisse une lettre à la dernière lanterne de
+  l'Île-du-Bout, pour un frère resté dans le désert (et le contrat *Une lettre vers le
+  Grand Blanc* fait la même chose). Hedda, qui vient du nord, explique ce que deviennent
+  ces lettres : elles attendent dans une boîte, parfois dix ans, et parfois quelqu'un
+  revient. Elle ne lui donne pas de nouvelles de son frère — elle lui donne la raison
+  de continuer à écrire.
+- **La lanterne de cuivre.** Solenn la porte à la ceinture, la tient de sa mère, et
+  finit par l'accrocher au bout du ponton. C'est sous cette lanterne que Hedda raconte
+  pourquoi elle est descendue du Grand Blanc.
+- **La croix du chemin.** On la touche avant de décoller « pour dire au chemin qu'on
+  revient ». Prosper l'explique au premier chapitre ; tout le monde le fait ensuite.
+
+## Les traits
 
 | Trait | Anglais | Effet |
 |---|---|---|
@@ -240,11 +263,9 @@ merci du vent) et un **long-courrier terrestre** pour le Grand Blanc (très gran
 portée, grande piste obligatoire, chauffage de cabine). Un **autogire** reste en débat :
 il se pose n'importe où, ce qui rendrait les niveaux de piste inutiles.
 
-**Pilotes.** Deux femmes d'abord, pour rétablir la parité : une des **Hauts-Plateaux
-d'Ocre** (traits *Tête brûlée* et *Longues routes*, l'altitude et l'air rare) et une du
-**Grand Blanc** (*Nocturne* et *Mains d'or*, la nuit polaire et les moteurs qui gèlent).
-Puis un pilote du **Désert de Verre** et un de l'**Archipel** quand ces régions auront
-leurs propres histoires. Objectif v1.0 : vingt pilotes, parité tenue.
+**Pilotes.** Les deux prochains seront des hommes, pour que la parité tienne à dix :
+un de la **Forêt de Cuivre** et un de l'**Archipel des Lanternes**, quand ces régions
+auront des escales à eux. Objectif v1.0 : vingt pilotes, parité tenue à chaque palier.
 
 **Au-delà.** Les saisons (v0.3), les quatre régions restantes, et le fret lourd — un
 courrier qui demande deux avions au lieu d'un.

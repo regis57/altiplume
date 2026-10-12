@@ -102,6 +102,53 @@ export const PILOTS: readonly PilotTemplate[] = [
     },
   },
   {
+    id: 'garance', gender: 'f', age: 29,
+    name: { fr: 'Garance Thuillier', en: 'Garance Thuillier' },
+    origin: { fr: 'Pont-de-Brume', en: 'Mistbridge' },
+    traits: ['daredevil', 'homeheart'],
+    portrait: { fr: "Petite, vive, une écharpe nouée serré et des lunettes d'aviateur remontées sur le front même au sol. Elle parle vite et atterrit court.", en: 'Small, quick, a tightly knotted scarf and flying goggles pushed up on her forehead even on the ground. She talks fast and lands short.' },
+    greeting: { fr: "J'ai grandi de l'autre côté de la rivière, à vous regarder vous poser. Vous avez une place, ou je dois encore regarder ?", en: "I grew up on the other side of the river, watching you land. Have you got a seat, or do I keep watching?" },
+    wage: 9, starter: false,
+    story: {
+      title: { fr: "De l'autre côté de la rivière", en: 'The Other Side of the River' },
+      scenes: [
+        {
+          affinity: 3,
+          title: { fr: 'Le quai du marché', en: 'The market quay' },
+          lines: [
+            { who: 'narrator', text: { fr: "Au retour de Pont-de-Brume, Garance ne descend pas tout de suite. Elle regarde le quai du marché, de l'autre côté de l'eau.", en: 'Back from Mistbridge, Garance does not climb out straight away. She looks at the market quay, on the other side of the water.' } },
+            { who: 'pilot', text: { fr: "C'est là que je me mettais. Entre les caisses de poisson, pour que le poissonnier ne me voie pas. De là, on voit toute la piste de la Croisette.", en: "That's where I used to stand. Between the fish crates, so the fishmonger wouldn't see me. From there you can see the whole Crosslet strip." } },
+            { who: 'you', text: { fr: "Vous regardiez quoi ?", en: 'What were you watching?' } },
+            { who: 'pilot', text: { fr: "Les atterrissages. Un bon, on l'entend avant de le voir : le moteur baisse, et plus rien. J'ai appris à les noter avant de savoir écrire.", en: "The landings. You hear a good one before you see it: the engine drops, and then nothing. I was grading them before I could write." } },
+            { who: 'narrator', text: { fr: "Elle saute du marchepied. Vous n'avez pas entendu le moteur baisser, tout à l'heure. Vous ne lui direz pas.", en: 'She jumps down from the step. You did not hear her engine drop just now. You will not tell her.' } },
+          ],
+        },
+        {
+          affinity: 7,
+          title: { fr: 'Trop court', en: 'Too short' },
+          lines: [
+            { who: 'narrator', text: { fr: "Garance se pose aux Tilleuls en deux fois moins de pré qu'il n'en faut. Les vaches n'ont pas bougé. Prosper, lui, a posé sa tasse.", en: 'Garance lands at Lindenhollow in half the meadow it takes. The cows did not move. Prosper, though, has put down his cup.' } },
+            { who: 'pilot', text: { fr: "Quoi ? Il restait de la place.", en: 'What? There was room to spare.' } },
+            { who: 'you', text: { fr: "Il en restait trois mètres.", en: 'Three metres of it.' } },
+            { who: 'pilot', text: { fr: "Trois mètres, c'est trois mètres. Je sais ce que la Grive peut faire. C'est tout ce que j'ai appris sur mon quai : ce que les avions peuvent faire, et ce que les pilotes croient qu'ils peuvent faire. Ce n'est pas pareil.", en: "Three metres is three metres. I know what the Thrush can do. That's all I ever learned on my quay: what planes can do, and what pilots think they can do. They aren't the same." } },
+            { who: 'narrator', text: { fr: "Prosper reprend sa tasse. Il ne dit rien, mais il la regarde ranger l'avion, et il hoche la tête une fois.", en: 'Prosper picks up his cup again. He says nothing, but he watches her put the plane away, and nods once.' } },
+          ],
+        },
+        {
+          affinity: 12,
+          title: { fr: 'La poutre', en: 'The beam' },
+          lines: [
+            { who: 'narrator', text: { fr: "Un soir, Garance s'arrête devant la poutre du hangar, là où une seule marque au crayon est tracée à hauteur d'épaule.", en: 'One evening, Garance stops in front of the hangar beam, where a single pencil mark is drawn at shoulder height.' } },
+            { who: 'pilot', text: { fr: "Prosper m'a expliqué. Bastien mesurait les pilotes ici, le jour de leur premier vol seul. Moi, mon premier vol seul, je l'ai fait à seize ans, sur un appareil qui n'était pas à moi, et personne ne m'a mesurée.", en: "Prosper explained it to me. Bastien measured pilots here, the day of their first solo. My first solo was at sixteen, in a machine that wasn't mine, and nobody measured me." } },
+            { who: 'you', text: { fr: "Vous voulez qu'on le fasse maintenant ?", en: 'Do you want us to do it now?' } },
+            { who: 'pilot', text: { fr: "Treize ans après ? Oui. Pas pour la marque. Pour qu'il y en ait deux sur cette poutre au lieu d'une.", en: "Thirteen years late? Yes. Not for the mark. So that there are two on this beam instead of one." } },
+            { who: 'narrator', text: { fr: "Prosper sort son crayon. Il le tenait depuis le premier jour, et il n'a jamais dit pour qui.", en: 'Prosper takes out his pencil. He has been carrying it since the first day, and he never said who for.' } },
+          ],
+        },
+      ],
+    },
+  },
+  {
     id: 'yse', gender: 'f', age: 31,
     name: { fr: 'Ysé Loranne', en: 'Ysé Loranne' },
     origin: { fr: 'Archipel des Lanternes', en: 'Lantern Isles' },
@@ -282,6 +329,53 @@ export const PILOTS: readonly PilotTemplate[] = [
             { who: 'you', text: { fr: "Vous l'avez laissée ?", en: 'Did you leave it?' } },
             { who: 'pilot', text: { fr: "Je l'ai laissée. Et j'en ai mis une à côté. Pour mon frère. Le désert et la glace, c'est le même endroit, vu d'assez haut : un endroit où on ne revient pas, et où quelqu'un pose quand même une lettre.", en: "I left it. And I put one beside it. For my brother. The desert and the ice are the same place, seen from high enough: a place you don't come back from, where someone still leaves a letter." } },
             { who: 'narrator', text: { fr: "Il écrit trois chiffres sur sa manche. Il ne les efface pas, cette fois.", en: 'He writes three numbers on his sleeve. This time, he does not rub them out.' } },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'hedda', gender: 'f', age: 49,
+    name: { fr: 'Hedda Vilmorin', en: 'Hedda Vilmorin' },
+    origin: { fr: 'Grand Blanc', en: 'Great White' },
+    traits: ['longhaul', 'thrifty'],
+    portrait: { fr: "Grande, lente à parler, une parka usée jusqu'à la trame et des gants qu'elle ne quitte jamais tout à fait. Elle calcule le carburant à voix haute, par habitude.", en: 'Tall, slow to speak, a parka worn through and gloves she never quite takes off. She counts fuel out loud, from habit.' },
+    greeting: { fr: "Je descends du nord. Là-haut, on vole loin ou on ne vole pas. J'ai entendu dire que vous ouvriez des lignes.", en: "I've come down from the north. Up there you fly far or you don't fly. I hear you've been opening routes." },
+    wage: 12, starter: false,
+    story: {
+      title: { fr: 'Ce que le nord garde', en: 'What the North Keeps' },
+      scenes: [
+        {
+          affinity: 3,
+          title: { fr: 'Le litre de trop', en: 'The extra litre' },
+          lines: [
+            { who: 'narrator', text: { fr: "Avant chaque vol, Hedda vide un peu du réservoir. Un seau, pas plus, qu'elle repose près du hangar.", en: 'Before each flight, Hedda drains a little from the tank. A bucket, no more, which she sets down beside the hangar.' } },
+            { who: 'you', text: { fr: "Vous enlevez du carburant ?", en: 'You take fuel out?' } },
+            { who: 'pilot', text: { fr: "Je mets ce qu'il faut, plus un quart. Pas plus. Au Grand Blanc, le litre de trop, c'est du poids ; le litre qui manque, c'est la glace. On apprend vite où est la ligne.", en: "I put in what's needed, plus a quarter. No more. In the Great White, the extra litre is weight; the missing litre is the ice. You learn fast where the line is." } },
+            { who: 'pilot', text: { fr: "Ici, vous avez des villages partout. Vous n'imaginez pas le luxe que c'est.", en: "Here you have villages everywhere. You have no idea what a luxury that is." } },
+            { who: 'narrator', text: { fr: "Elle laisse le seau. Le lendemain, il est vide : quelqu'un a rempli la lampe du hangar avec.", en: 'She leaves the bucket. The next day it is empty: someone has filled the hangar lamp from it.' } },
+          ],
+        },
+        {
+          affinity: 7,
+          title: { fr: 'Les boîtes de la dernière lanterne', en: 'The boxes at the last lantern' },
+          lines: [
+            { who: 'narrator', text: { fr: "Au retour de l'Île-du-Bout, Hedda pose une petite boîte en fer-blanc sur l'établi. Teodor s'approche sans rien demander.", en: 'Back from Lastholm, Hedda sets a small tin box on the workbench. Teodor comes over without asking anything.' } },
+            { who: 'pilot', text: { fr: "Au nord, chaque poste a une boîte comme celle-ci. On y met les lettres pour ceux qui sont partis plus loin. Elles attendent. Parfois trois ans, parfois dix.", en: "Up north, every post has a box like this one. You put in the letters for those who've gone further. They wait. Sometimes three years, sometimes ten." } },
+            { who: 'you', text: { fr: "Et ensuite ?", en: 'And then?' } },
+            { who: 'pilot', text: { fr: "Ensuite quelqu'un revient, et il y a son nom dessus. Ça arrive. Pas souvent. Mais ça arrive, et ce jour-là il n'y a rien de plus important au monde que cette boîte.", en: "Then someone comes back, and their name is on one. It happens. Not often. But it happens, and on that day there is nothing in the world more important than that box." } },
+            { who: 'narrator', text: { fr: "Teodor ne dit rien. Il sort, et il reste longtemps à regarder le nord.", en: 'Teodor says nothing. He goes outside, and stands a long while looking north.' } },
+          ],
+        },
+        {
+          affinity: 12,
+          title: { fr: 'Pourquoi elle est descendue', en: 'Why she came south' },
+          lines: [
+            { who: 'narrator', text: { fr: "Un soir d'hiver, sous la lanterne de cuivre du ponton, Hedda parle sans qu'on lui demande.", en: 'One winter evening, under the copper lantern on the pontoon, Hedda speaks without being asked.' } },
+            { who: 'pilot', text: { fr: "Vingt-deux ans au Grand Blanc. J'ai porté du courrier à des gens que je n'ai jamais vus, dans des endroits qui n'ont pas de nom sur les cartes. Un jour, j'ai posé l'appareil et je me suis dit : je ne sais plus à quoi ressemble quelqu'un qui attend sa lettre.", en: "Twenty-two years in the Great White. I carried mail to people I never saw, in places with no name on the charts. One day I set the machine down and thought: I no longer know what someone waiting for their letter looks like." } },
+            { who: 'you', text: { fr: "Et maintenant ?", en: 'And now?' } },
+            { who: 'pilot', text: { fr: "Maintenant je le sais. Ils sont douze sur un ponton avec des lanternes de couleur, et ils comptent les hublots. Je volerai encore loin, mais je veux voir qui reçoit.", en: "Now I know. They're twelve on a jetty with coloured lanterns, counting the portholes. I'll still fly far, but I want to see who receives." } },
+            { who: 'narrator', text: { fr: "Elle regarde vers le nord, une dernière fois, puis rentre. Elle n'a pas remis ses gants.", en: 'She looks north, one last time, then goes inside. She has not put her gloves back on.' } },
           ],
         },
       ],

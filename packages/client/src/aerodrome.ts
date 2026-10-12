@@ -56,7 +56,62 @@ interface CompanyView {
 
 /** Décalage entre l'horloge du serveur et la nôtre, pour les comptes à rebours. */
 let clockOffset = 0;
-let refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * Le minutage des vols.
+ *
+ * Les comptes à rebours battent **à la seconde, sans réseau** : seules la largeur
+ * de la jauge et la ligne de texte sont retouchées. On ne redemande l'état au
+ * serveur que lorsqu'il a quelque chose de neuf à dire — un vol qui se pose, un
+ * avion qui rentre — ou en revenant sur l'onglet. Avant, la page ne bougeait
+ * qu'une fois toutes les trente secondes : les minutes semblaient fausses parce
+ * qu'elles étaient simplement figées.
+ */
+interface Minute { readonly flight: Flight; readonly fill: HTMLElement; readonly bar: HTMLElement; readonly status: HTMLElement }
+let minutes: Minute[] = [];
+let ticker: ReturnType<typeof setInterval> | null = null;
+let resync: (() => void) | null = null;
+let lastResync = 0;
+/** Garde-fou : deux resynchronisations ne se suivent jamais de moins de cinq secondes. */
+const RESYNC_GUARD_MS = 5_000;
+/** Filet de sécurité : même sans jalon franchi, on revérifie toutes les deux minutes. */
+const RESYNC_IDLE_MS = 120_000;
+
+function paintMinute(m: Minute, now: number): void {
+  const total = m.flight.busyUntil - m.flight.departedAt;
+  const pct = Math.round(Math.min(1, Math.max(0, (now - m.flight.departedAt) / total)) * 100);
+  m.fill.style.width = `${pct}%`;
+  m.bar.setAttribute('aria-valuenow', String(pct));
+  const landed = now >= m.flight.arrivesAt;
+  m.status.textContent = landed
+    ? `${t('flight.returning')} · ${t('flight.back')} ${formatRemaining(m.flight.busyUntil - now, getLocale())}`
+    : `${t('flight.enRoute')} · ${t('flight.arrival')} ${formatRemaining(m.flight.arrivesAt - now, getLocale())} · ${t('flight.back')} ${formatRemaining(m.flight.busyUntil - now, getLocale())}`;
+}
+
+function tick(): void {
+  if (minutes.length === 0) return;
+  const now = Date.now() + clockOffset;
+  for (const m of minutes) paintMinute(m, now);
+  // Un jalon franchi (atterrissage ou retour) : le serveur a du neuf — nouvelles, francs, cachets.
+  const milestone = minutes.some((m) => (now >= m.flight.arrivesAt && !m.flight.settled) || now >= m.flight.busyUntil);
+  const idle = now - lastResync > RESYNC_IDLE_MS;
+  if ((milestone || idle) && now - lastResync > RESYNC_GUARD_MS && resync) {
+    lastResync = now;
+    resync();
+  }
+}
+
+/** Revenir sur l'onglet après une mise en veille : les minuteurs ont été gelés, on resynchronise. */
+function watchVisibility(): void {
+  if (document.body.dataset['visibilite']) return;
+  document.body.dataset['visibilite'] = '1';
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    tick();
+    const now = Date.now() + clockOffset;
+    if (minutes.length > 0 && now - lastResync > RESYNC_GUARD_MS && resync) { lastResync = now; resync(); }
+  });
+}
 
 const SCENE_AFFINITY = [3, 7, 12];
 
@@ -185,9 +240,11 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   renderFlights(api, setMessage, world, c);
   renderHand(api, setMessage, world, c);
   renderLogbook(world, c);
-  if (refreshTimer) clearInterval(refreshTimer);
-  // Les vols avancent sans nous ; on redemande l'état toutes les trente secondes s'il y en a.
-  if (c.flights.some((f) => f.status !== 'done')) refreshTimer = setInterval(() => void refresh(api, setMessage, world), 30_000);
+  // Les vols avancent sans nous : l'horloge locale bat à la seconde, et ne redemande
+  // l'état au serveur qu'à un atterrissage, un retour, ou en revenant sur l'onglet.
+  resync = () => { void refresh(api, setMessage, world); };
+  watchVisibility();
+  if (ticker === null) ticker = setInterval(tick, 1_000);
 
   // Pilotes
   const pilots = $('pilotes');
@@ -394,6 +451,7 @@ function renderFlights(api: Api, setMessage: SetMessage, world: WorldView, c: Co
   const active = c.flights.filter((f) => f.status !== 'done');
   $('vols-vide')?.classList.toggle('cache', active.length > 0);
   const now = Date.now() + clockOffset;
+  minutes = [];
   for (const f of active) {
     const li = el('li', 'vol');
     const card = world.cards.find((x) => x.id === f.card);
@@ -402,15 +460,14 @@ function renderFlights(api: Api, setMessage: SetMessage, world: WorldView, c: Co
     const bar = el('div', 'jauge');
     bar.setAttribute('role', 'progressbar');
     bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100');
-    const pct = Math.round(Math.min(1, Math.max(0, (now - f.departedAt) / (f.busyUntil - f.departedAt))) * 100);
-    bar.setAttribute('aria-valuenow', String(pct));
-    const fill = el('div', 'jauge-remplie'); fill.style.width = `${pct}%`;
+    const fill = el('div', 'jauge-remplie');
     bar.append(fill);
     li.append(bar);
-    const status = f.status === 'returning'
-      ? `${t('flight.returning')} · ${formatRemaining(f.busyUntil - now, getLocale())}`
-      : `${t('flight.enRoute')} · ${formatRemaining(f.arrivesAt - now, getLocale())} · ${t('flight.back')} ${formatRemaining(f.busyUntil - now, getLocale())}`;
-    li.append(el('p', 'aide', status));
+    const status = el('p', 'aide');
+    li.append(status);
+    const m: Minute = { flight: f, fill, bar, status };
+    paintMinute(m, now);
+    minutes.push(m);
     list.append(li);
   }
 }
