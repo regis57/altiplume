@@ -36,7 +36,7 @@ export const ZONES: readonly Zone[] = [
 ];
 
 export const DECORATIONS: readonly Decoration[] = [
-  { id: 'd-fleurs', cost: 20, morale: 1, name: { fr: 'Jardinières', en: 'Flower boxes' }, description: { fr: "Des géraniums sous les fenêtres du hangar. Marthe dit que ça ne sert à rien. Elle les arrose.", en: 'Geraniums under the hangar windows. Martha says they are pointless. She waters them.' } },
+  { id: 'd-fleurs', cost: 20, morale: 1, name: { fr: 'Jardinières', en: 'Flower boxes' }, description: { fr: "Des géraniums sous les fenêtres du hangar. Prosper dit que ça ne sert à rien. Il les arrose.", en: 'Geraniums under the hangar windows. Prosper says they are pointless. He waters them.' } },
   { id: 'd-banc', cost: 30, morale: 1, name: { fr: 'Le banc', en: 'The bench' }, description: { fr: "Un banc face à la piste, pour regarder rentrer les avions.", en: 'A bench facing the strip, to watch the planes come home.' } },
   { id: 'd-manche', cost: 25, morale: 1, name: { fr: 'Manche à air rayée', en: 'Striped windsock' }, description: { fr: "Rouge et blanche, comme sur la Côte. On la voit depuis le village.", en: 'Red and white, like on the Shore. You can see it from the village.' } },
   { id: 'd-enseigne', cost: 60, morale: 2, name: { fr: "L'enseigne", en: 'The sign' }, description: { fr: "Le nom de la compagnie peint sur une planche, au-dessus de la porte du hangar. Ça y est, ça existe.", en: 'The company name painted on a board above the hangar door. There — it exists.' } },

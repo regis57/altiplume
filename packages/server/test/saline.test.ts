@@ -85,11 +85,11 @@ describe('la Côte de Saline — l\'hydravion', () => {
     t.wholeValley(10);
     await t.open();
     const s = await t.state();
-    const grive = s.planes[0].id; const marthe = s.pilots[0].id;
-    let r = await t.fly('c-coquillages', grive, marthe);
+    const grive = s.planes[0].id; const prosper = s.pilots[0].id;
+    let r = await t.fly('c-coquillages', grive, prosper);
     expect(r.statusCode).toBe(400);
     expect(r.json().error).toBe('needs_seaplane');
-    r = await t.fly('c-capitainerie', grive, marthe);
+    r = await t.fly('c-capitainerie', grive, prosper);
     expect(r.statusCode).toBe(201);
     await t.app.close();
   });
@@ -118,12 +118,12 @@ describe('la Côte de Saline — l\'hydravion', () => {
     t.give('o-martinet');
     expect((await t.json('POST', '/v1/company/cards/o-martinet/play', {}, t.cookie)).json().error).toBe('hangar_full');
 
-    const sterne = s.planes[1].id; const marthe = s.pilots[0].id;
+    const sterne = s.planes[1].id; const prosper = s.pilots[0].id;
     // La Sterne ne se pose pas sur une digue.
-    r = await t.fly('c-sauniers', sterne, marthe);
+    r = await t.fly('c-sauniers', sterne, prosper);
     expect(r.json().error).toBe('needs_water');
     // Mais sur l'eau, oui : 10,5 lieues à 14 l/h, trois quarts d'heure.
-    r = await t.fly('c-coquillages', sterne, marthe);
+    r = await t.fly('c-coquillages', sterne, prosper);
     expect(r.statusCode).toBe(201);
     const flight = r.json().flights.find((f: { destination: string }) => f.destination === 'anse-aux-goemons');
     expect(flight.arrivesAt - flight.departedAt).toBeGreaterThanOrEqual(45 * 60_000);

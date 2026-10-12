@@ -26,8 +26,8 @@ describe('le jeu ne bloque jamais une compagnie', () => {
     expect(r.statusCode).toBe(201);
     expect(r.json().francs).toBe(3); // rien n'est débité au départ
     t.advance(HOUR);
-    // Tarif 18 F, salaire de Marthe et entretien de la Grive 14 F : 4 F nets.
-    expect((await t.state()).francs).toBe(3 + 18 - 14);
+    // Tarif 25 F, salaire de Prosper et entretien de la Grive 14 F : 11 F nets.
+    expect((await t.state()).francs).toBe(3 + 25 - 14);
     await t.app.close();
   });
 
@@ -76,8 +76,8 @@ describe('le jeu ne bloque jamais une compagnie', () => {
       t.advance(HOUR);
       s = await t.state();
     }
-    expect(s.francs).toBe(16); // quatre allers-retours, 4 F chacun
-    expect(s.francs).toBeGreaterThanOrEqual(14); // de quoi avancer les frais d'un contrat avec Marthe et la Grive
+    expect(s.francs).toBe(44); // quatre allers-retours, 11 F chacun
+    expect(s.francs).toBeGreaterThanOrEqual(14); // de quoi avancer les frais d'un contrat avec Prosper et la Grive
     await t.app.close();
   });
 });
@@ -156,7 +156,7 @@ describe('ce que l\'aérodrome promet, il le fait', () => {
       t.ctx.db.prepare('UPDATE company_pilots SET fatigue = 0').run();
       return before - (r.json().francs as number);
     };
-    expect(await cost()).toBe(14); // Marthe 8 F + Grive 6 F
+    expect(await cost()).toBe(14); // Prosper 8 F + Grive 6 F
     t.ctx.db.prepare("UPDATE company_zones SET level = 3 WHERE zone = 'hangar'").run();
     expect(await cost()).toBe(12); // 8 + 6 ÷ 1,5
     await t.app.close();

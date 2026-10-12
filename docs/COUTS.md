@@ -65,6 +65,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | 2026-10-11 | L'invitation « Revenir d'un geste » : la passkey proposée dès le premier écran | ~30 min |
 | 2026-10-11 | Les cinq premières minutes : deux colonnes sur PC, fiche « Premier vol », adresse sous le cachet | ~35 min |
 | 2026-10-11 | v0.2 : l'Archipel des Lanternes (six îles, le Goéland, deux pilotes, trois vignettes de région) | ~60 min |
+| 2026-10-12 | Prosper Chickenman remplace Marthe Vaudrin ; tarifs relevés (ligne régulière 18 → 25 F) | ~30 min |
 | 2026-10-11 | Publication automatique de la documentation dans le wiki GitHub | ~20 min |
 | 2026-10-11 | Fiche iPhone « Sur l'écran d'accueil », deux gestes dessinés | ~20 min |
 | 2026-10-11 | Un imprévu bloque la piste (cohérence des cartes) | ~25 min |

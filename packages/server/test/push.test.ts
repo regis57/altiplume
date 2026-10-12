@@ -182,7 +182,7 @@ describe('notifications — le courrier se pose', () => {
     expect(await notifyArrivals(t.ctx)).toBe(0); // en vol
     t.advance(flight.arrivesAt - flight.departedAt + 1);
     expect(await notifyArrivals(t.ctx)).toBe(1);
-    expect(t.push.sent[0]!.message).toEqual({ title: 'Votre courrier est arrivé', body: "Marthe Vaudrin s'est posée à Pont-de-Brume. +30 F · délai tenu.", url: '/aerodrome', tag: 'courrier' });
+    expect(t.push.sent[0]!.message).toEqual({ title: 'Votre courrier est arrivé', body: "Prosper Chickenman s'est posé à Pont-de-Brume. +41 F · délai tenu.", url: '/aerodrome', tag: 'courrier' });
     expect(await notifyArrivals(t.ctx)).toBe(0); // jamais deux fois
     expect(t.push.sent).toHaveLength(1);
     await t.app.close();
@@ -195,7 +195,7 @@ describe('notifications — le courrier se pose', () => {
     t.advance(flight.arrivesAt - flight.departedAt + 1);
     await notifyArrivals(t.ctx);
     expect(t.push.sent[0]!.message.title).toBe('Your mail has arrived');
-    expect(t.push.sent[0]!.message.body).toMatch(/^Martha Vaudrin has landed at Mistbridge\. \+30 F · deadline met\.$/);
+    expect(t.push.sent[0]!.message.body).toMatch(/^Prosper Chickenman has landed at Mistbridge\. \+41 F · deadline met\.$/);
     await t.app.close();
   });
 

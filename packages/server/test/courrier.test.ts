@@ -78,8 +78,8 @@ describe('le courrier — expédier', () => {
     const t = await company();
     t.clearHand(); t.give('c-journal'); t.give('c-farine'); t.give('c-medicaments'); t.give('e-brume');
     const s = await t.state();
-    const grive = s.planes[0].id; const marthe = s.pilots[0].id;
-    const send = (card: string, plane = grive, pilot = marthe) => t.json('POST', '/v1/company/flights', { card, plane, pilot }, t.cookie);
+    const grive = s.planes[0].id; const prosper = s.pilots[0].id;
+    const send = (card: string, plane = grive, pilot = prosper) => t.json('POST', '/v1/company/flights', { card, plane, pilot }, t.cookie);
     expect((await send('c-inconnue')).json().error).toBe('card_unknown');
     expect((await send('e-brume')).json().error).toBe('card_not_contract');
     // L'imprévu en main bloque tout le reste : on le retire pour tester les autres refus.
@@ -106,7 +106,7 @@ describe('le courrier — expédier', () => {
     const s1 = r.json();
     const card = findCard('c-journal')!;
     expect(card.kind).toBe('contract');
-    // Coût : salaire de Marthe (8) + entretien de la Grive (6).
+    // Coût : salaire de Prosper (8) + entretien de la Grive (6).
     expect(s1.francs).toBe(300 - 14);
     expect(s1.hand).toEqual([]);
     expect(s1.flights).toHaveLength(1);
@@ -138,14 +138,14 @@ describe('le courrier — expédier', () => {
     s = await t.state();
     expect(s.flights[0].status).toBe('returning');
     expect(s.flights[0].settled).toBe(true);
-    expect(s.francs).toBe(286 + 24 + 6); // récompense + bonus de délai (4 h)
-    expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 30, bonus: true, incident }));
+    expect(s.francs).toBe(286 + 33 + 8); // récompense + bonus de délai (4 h)
+    expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 41, bonus: true, incident }));
     expect(s.news.map((n: { kind: string; stamp?: string }) => n.stamp).filter(Boolean)).toEqual(['s-premier-vol', 's-pont-de-brume']);
     expect(s.pilots[0].affinity).toBe(1);
     expect(s.pilots[0].morale).toBe(incident ? 10 : 11);
     expect(s.planes[0].wear).toBeGreaterThanOrEqual(5);
     expect(s.album.map((a: { id: string }) => a.id)).toEqual(['s-fondation', 's-premier-vol', 's-pont-de-brume']);
-    expect((await t.state()).francs).toBe(316); // pas de double encaissement
+    expect((await t.state()).francs).toBe(327); // pas de double encaissement
     // Rentré, disponible.
     t.advance(duration);
     s = await t.state();
@@ -164,8 +164,8 @@ describe('le courrier — expédier', () => {
     t.advance(3 * 3_600_000 + 1);
     const s = await t.state();
     const arrived = s.news.find((n: { kind: string }) => n.kind === 'flight.arrived');
-    expect(arrived).toMatchObject({ bonus: false, francs: 42 });
-    expect(s.francs).toBe(300 - 14 + 42);
+    expect(arrived).toMatchObject({ bonus: false, francs: 58 });
+    expect(s.francs).toBe(300 - 14 + 58);
     await t.app.close();
   });
 
@@ -173,13 +173,13 @@ describe('le courrier — expédier', () => {
     const t = await company();
     t.clearHand();
     const s0 = await t.state();
-    const grive = s0.planes[0].id; const marthe = s0.pilots[0].id;
-    // Marthe a « Cœur de village » : fatigue ×1,25 ; Combe-aux-Rosées est loin (×2) → 3 par vol.
+    const grive = s0.planes[0].id; const prosper = s0.pilots[0].id;
+    // Prosper a « Cœur de village » : fatigue ×1,25 ; Combe-aux-Rosées est loin (×2) → 3 par vol.
     t.ctx.db.prepare("UPDATE company_planes SET model = 'heron'").run(); // pour atteindre la Combe avec 1 sac... la Grive y va aussi (8 lieues)
     t.ctx.db.prepare("UPDATE company_planes SET model = 'grive'").run();
     for (let i = 0; i < 3; i += 1) {
       t.give('c-medicaments');
-      const r = await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: marthe }, t.cookie);
+      const r = await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: prosper }, t.cookie);
       expect(r.statusCode, `vol ${i}`).toBe(201);
       t.advance(2 * 30 * 60_000 * 1.5); // aller-retour, avec marge pour brume/aléa
       await t.state();
@@ -188,11 +188,11 @@ describe('le courrier — expédier', () => {
     let s = await t.state();
     expect(s.pilots[0].fatigue).toBeGreaterThanOrEqual(8);
     t.give('c-medicaments');
-    expect((await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: marthe }, t.cookie)).json().error).toBe('pilot_tired');
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: prosper }, t.cookie)).json().error).toBe('pilot_tired');
     t.advance(3 * FATIGUE_RECOVERY_MS);
     s = await t.state();
     expect(s.pilots[0].fatigue).toBeLessThanOrEqual(6);
-    expect((await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: marthe }, t.cookie)).statusCode).toBe(201);
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: prosper }, t.cookie)).statusCode).toBe(201);
     await t.app.close();
   });
 
@@ -260,7 +260,7 @@ describe('le courrier — imprévus et opportunités', () => {
 
     t.give('o-pilote');
     const hired = (await t.json('POST', '/v1/company/cards/o-pilote/play', {}, t.cookie)).json();
-    expect(hired.pilots.map((p: { pilot: string }) => p.pilot)).toEqual(['marthe', 'ilias']);
+    expect(hired.pilots.map((p: { pilot: string }) => p.pilot)).toEqual(['prosper', 'ilias']);
     expect(hired.ref).toBe('ilias');
 
     t.give('o-fete');
@@ -284,7 +284,7 @@ describe('la ligne régulière', () => {
     const f = r.json().flights[0];
     t.advance(2 * (f.arrivesAt - f.departedAt) + 1);
     const s1 = await t.state();
-    expect(s1.francs).toBe(300 - 14 + 18); // 18 F, pas de bonus
+    expect(s1.francs).toBe(300 + 25 - 14); // 25 F moins l'avance, pas de bonus
     // Encore, dès que l'avion est rentré.
     expect((await t.json('POST', '/v1/company/flights', { card: 'c-ligne-reguliere', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie)).statusCode).toBe(201);
     // Jamais dans un tirage.

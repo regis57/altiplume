@@ -24,7 +24,7 @@ export const WORLD: World = {
   zones: ZONES,
   decorations: DECORATIONS,
   stamps: STAMPS,
-  start: { francs: 300, stamps: 0, planes: ['grive'], pilots: ['marthe'] },
+  start: { francs: 300, stamps: 0, planes: ['grive'], pilots: ['prosper'] },
 };
 
 export function text(t: Text, locale: Locale): string {

@@ -289,4 +289,13 @@ export const MIGRATIONS: readonly Migration[] = [
       CREATE INDEX players_last_seen ON players(last_seen_at);
     `,
   },
+  {
+    version: 10,
+    name: 'prosper',
+    sql: `
+      -- Marthe Vaudrin devient Prosper Chickenman (12/10) : les compagnies existantes
+      -- gardent leur pilote, son affinité, son moral et les scènes déjà vues.
+      UPDATE company_pilots SET pilot = 'prosper' WHERE pilot = 'marthe';
+    `,
+  },
 ];
