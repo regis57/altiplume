@@ -13,6 +13,14 @@ const root = dirname(fileURLToPath(import.meta.url));
 const dist = join(root, 'dist');
 const watch = process.argv.includes('--watch');
 
+// Ce qui est construit, exactement. La version vient du dépôt (package.json), le
+// commit et la date de la chaîne de publication, qui les passe en arguments de
+// construction de l'image. En local, personne ne prétend être une version publiée :
+// c'est « dev ».
+const version = process.env.APP_VERSION || JSON.parse(readFileSync(join(root, '..', '..', 'package.json'), 'utf8')).version;
+const revision = process.env.APP_REVISION || 'dev';
+const builtAt = process.env.APP_BUILT_AT || new Date().toISOString();
+
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(join(dist, 'fonts'), { recursive: true });
 
@@ -68,8 +76,13 @@ for (const file of readdirSync(pagesDir)) {
     .replaceAll('{{app}}', appJs)
     .replaceAll('{{theme}}', themeJs)
     .replaceAll('{{styles}}', stylesCss)
-    .replace('{{content}}', content);
+    .replace('{{content}}', content)
+    // Après le contenu : une page peut citer la version elle aussi.
+    .replaceAll('{{version}}', version)
+    .replaceAll('{{revision}}', revision)
+    .replaceAll('{{builtAt}}', builtAt)
+    .replaceAll('{{builtOn}}', builtAt.slice(0, 10));
   writeFileSync(join(dist, file), html);
 }
 
-console.error(`client construit dans ${dist}`);
+console.error(`client construit dans ${dist} — v${version} (${revision}, ${builtAt.slice(0, 10)})`);

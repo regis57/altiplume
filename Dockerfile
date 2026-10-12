@@ -6,8 +6,19 @@
 # Les étiquettes seront remplacées par des empreintes (sha256:...) une fois la
 # chaîne de publication en place ; Dependabot suit déjà ce fichier.
 
+# Ce qui est construit, exactement : la chaîne de publication passe la version, le
+# commit et la date. Sans ces arguments (construction locale), le client affiche la
+# version du dépôt et « dev » : personne ne prétend être une image publiée.
+ARG APP_VERSION
+ARG APP_REVISION
+ARG APP_BUILT_AT
+
 # --- Étape 1 : construire le client (a besoin des dépendances de développement)
 FROM node:22.23-alpine AS build
+ARG APP_VERSION
+ARG APP_REVISION
+ARG APP_BUILT_AT
+ENV APP_VERSION=$APP_VERSION APP_REVISION=$APP_REVISION APP_BUILT_AT=$APP_BUILT_AT
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/server/package.json packages/server/
@@ -26,10 +37,24 @@ RUN npm ci --omit=dev --ignore-scripts
 
 # --- Étape 3 : image finale
 FROM node:22.23-alpine AS runtime
+ARG APP_VERSION
+ARG APP_REVISION
+ARG APP_BUILT_AT
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=3000 \
-    DATABASE_PATH=/data/altiplume.db
+    DATABASE_PATH=/data/altiplume.db \
+    APP_VERSION=$APP_VERSION \
+    APP_REVISION=$APP_REVISION \
+    APP_BUILT_AT=$APP_BUILT_AT
+
+# Étiquettes standard (OCI) : ce que `docker inspect` doit pouvoir dire de l'image.
+LABEL org.opencontainers.image.title="Altiplume" \
+      org.opencontainers.image.source="https://github.com/regis57/altiplume" \
+      org.opencontainers.image.licenses="AGPL-3.0-or-later" \
+      org.opencontainers.image.version=$APP_VERSION \
+      org.opencontainers.image.revision=$APP_REVISION \
+      org.opencontainers.image.created=$APP_BUILT_AT
 WORKDIR /app
 
 # L'utilisateur « node » existe déjà dans l'image officielle : on ne tourne pas en root.

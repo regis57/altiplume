@@ -9,7 +9,8 @@
  *  - MDN HTTP Observatory (API publique) : note et tests échoués.
  *  - Qualys SSL Labs (API publique, résultat en cache ≤ 24 h) : note TLS.
  *  - DNS (Google DNS sur HTTPS) : SPF, DKIM Brevo, DMARC, CAA, adresses.
- *  - Le site lui-même : les en-têtes attendus, et la redirection HTTP → HTTPS.
+ *  - Le site lui-même : les en-têtes attendus, la redirection HTTP → HTTPS, et la
+ *    version réellement déployée (/v1/version).
  *
  * `--strict` rend un code de sortie 1 si un résultat est sous l'attendu — c'est
  * le mode du workflow hebdomadaire. securityheaders.com n'a pas d'API : il se
@@ -112,6 +113,18 @@ try {
   row('HTTP → HTTPS', '301 vers https', redirected ? `${clear.status} → ${loc}` : `${clear.status} sans redirection`, redirected,
     redirected ? '' : 'Cloudflare → SSL/TLS → Edge Certificates → « Always Use HTTPS » : activé (le serveur redirige aussi depuis la v0.2)');
 } catch (e) { row('Le site', '—', `indisponible (${e.message})`, null); }
+
+// ---- Ce qui tourne vraiment ----
+// Une image publiée dit son numéro et son commit. Si le NAS répond « dev », c'est
+// qu'il ne tourne pas une image de la chaîne de publication — ou qu'un redéploiement
+// a échoué sans le dire. C'est arrivé le 12/10, à dix minutes près.
+try {
+  const v = await json(`https://${host}/v1/version`);
+  const connue = typeof v.version === 'string' && v.version !== 'dev' && typeof v.revision === 'string' && v.revision !== 'dev';
+  row('Version déployée', 'une version publiée (pas « dev »)',
+    `v${v.version} · ${v.revision}${v.builtAt ? ' · ' + String(v.builtAt).slice(0, 10) : ''} · ${v.stage}`, connue,
+    connue ? '' : 'Rejouer la tâche de redéploiement du NAS : le conteneur ne tourne pas une image publiée');
+} catch (e) { row('Version déployée', 'une version publiée (pas « dev »)', `indisponible (${e.message})`, null); }
 
 // ---- Rapport ----
 const mark = (ok) => (ok === null ? '·' : ok ? '✓' : '✗');

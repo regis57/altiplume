@@ -503,3 +503,17 @@ Mesuré sur la ligne régulière, sans souffler une seule minute entre deux dép
 **Deux détails de lecture, au passage.** La liste des pilotes disait « trop fatigué·e » ; maintenant que chacun a un genre, elle dit « trop fatigué » ou « trop fatiguée », et surtout elle ajoute **dans combien de temps il reprend son service**. Une attente qu'on sait finir n'est plus la même attente. Le joueur continue de voir dix crans — une heure de vol par cran — et pas des minutes : la mécanique est interne, la lecture reste simple.
 
 Les anciennes valeurs de fatigue n'avaient plus le même sens : une migration offre une nuit de repos à tous les pilotes en service. Le test « jamais bloqué » garde la trace du défaut avec sa date, et vérifie désormais la trentaine d'allers-retours et le retour en service dans l'heure.
+
+## Chapitre 32 — Dire ce qui tourne (12 octobre 2026, 18 h 30)
+
+« Affiche un ruban sur le site en haut à droite avec la version. Je pense qu'il faut indiquer qu'on expérimente à ce stade. »
+
+Deux heures plus tôt, une PR fusionnée, un redéploiement lancé — et la production servait encore l'image d'avant. Dix minutes à s'en apercevoir, parce que rien, nulle part, ne disait ce qui tournait. C'est exactement le trou que ce chapitre bouche.
+
+**Une étiquette en haut à droite de chaque page** : `ESSAI v0.2.0`. Petite, en pointillés, le mot du stade au rouge du cachet. Au survol, la version exacte : `v0.2.0 · 7f3a91c4d2b1 · 2026-10-12`, le commit précis. Elle mène à **`/version`**, une page qui dit en français et en anglais ce qu'« essai » veut dire : le jeu se joue de bout en bout, mais les règles sont réajustées quand elles se révèlent mauvaises — la fatigue, le matin même —, une partie peut devenir plus facile ou plus exigeante d'un jour à l'autre, et c'est le stade du projet, pas un accident. Avec, en regard, ce qui ne bougera pas : **rien n'est effacé**, l'absence n'est jamais punie, les données appartiennent au joueur. Et ce qui peut arriver : un petit serveur chez son auteur, aucune garantie de disponibilité, c'est gratuit.
+
+**Le numéro ne peut pas mentir**, parce que personne ne le saisit à la main. La version vient de `package.json` — passé de `0.0.1`, resté là depuis le premier jour, à `0.2.0`, ce que le jeu est vraiment. Le commit et la date sont gravés par la chaîne de publication, en arguments de construction de l'image, et le client les écrit dans chaque page au moment où il se construit. Hors conteneur, tout cela vaut « dev » : une construction locale ne prétend pas être une image publiée. L'image porte aussi les étiquettes standard OCI, celles que `docker inspect` sait lire.
+
+**Et la machine peut le lire aussi.** Une route publique `/v1/version` rend les mêmes trois valeurs — rien de secret, le dépôt est public sous AGPL et l'étiquette l'affiche déjà. La sonde `/healthz`, elle, reste muette : ce n'est pas son rôle. Surtout, **le contrôle de sécurité hebdomadaire lit maintenant cette route** et marque un point sous l'attendu si le NAS répond « dev » ou ne répond pas : un redéploiement qui échoue en silence ne pourra plus passer inaperçu une semaine.
+
+Vérifié dans un vrai Chromium, en 390 et en 1280 pixels, de jour comme de nuit, en français comme en anglais : l'étiquette tient sur la ligne de navigation sans la bousculer, elle disparaît à l'impression, et elle annonce « Version et stade du projet » aux lecteurs d'écran.

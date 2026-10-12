@@ -65,6 +65,10 @@ try {
   await page.click('#fonder button[type=submit]');
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#t-compagnie')) === 'Les Ailes de la Croisette', 'compagnie fondée');
+  // L'étiquette de version, en haut à droite de chaque page : le stade et ce qui tourne.
+  const etiquette = (await page.textContent('.etiquette')).replace(/\s+/g, ' ').trim();
+  assert(/^essai v\d+\.\d+\.\d+$/.test(etiquette), `étiquette de version (${etiquette})`);
+  assert((await page.getAttribute('.etiquette', 'href')) === '/version', 'elle mène à la page « essai »');
   assert((await page.textContent('#francs')) === '300', '300 francs au départ');
   const drawn = await page.$$eval('#main .carte:not(.reguliere)', (c) => c.length);
   assert(drawn === 3, `trois cartes du jour (${drawn})`);

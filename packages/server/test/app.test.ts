@@ -10,6 +10,18 @@ describe('application', () => {
     await t.app.close();
   });
 
+  it('dit ce qui tourne, et reste muet sur la sonde', async () => {
+    const t = await testApp();
+    const r = await t.app.inject({ method: 'GET', url: '/v1/version' });
+    expect(r.statusCode).toBe(200);
+    // Hors conteneur, personne ne prétend être une image publiée.
+    expect(r.json()).toEqual({ version: 'dev', revision: 'dev', builtAt: null, stage: 'essai' });
+    expect(r.headers['cache-control']).toBe('no-cache');
+    // La sonde, elle, ne dit toujours rien de la version.
+    expect((await t.app.inject({ method: 'GET', url: '/healthz' })).json()).toEqual({ status: 'ok' });
+    await t.app.close();
+  });
+
   it('pose les en-têtes de sécurité sur chaque réponse', async () => {
     const t = await testApp();
     const response = await t.app.inject({ method: 'GET', url: '/healthz' });

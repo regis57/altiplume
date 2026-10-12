@@ -71,12 +71,21 @@ jobs:
           fi
           echo "tags=${tags}" >> "$GITHUB_OUTPUT"
           echo "short=${short}" >> "$GITHUB_OUTPUT"
+          # Ce que l'image dira d'elle-même : la version du dépôt (ou celle de
+          # l'étiquette), le commit exact, la date de construction. Le client les
+          # grave dans chaque page et le serveur les sert sur /v1/version.
+          if [ "$REF_TYPE" = "tag" ]; then version="${REF_NAME#v}"; else version="$(node -p "require('./package.json').version")"; fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "built_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
 
       - name: Construire (sans publier)
         if: github.event_name == 'pull_request'
         run: |
           docker buildx build \
             --platform linux/amd64 \
+            --build-arg APP_VERSION="${{ steps.meta.outputs.version }}" \
+            --build-arg APP_REVISION="${{ steps.meta.outputs.short }}" \
+            --build-arg APP_BUILT_AT="${{ steps.meta.outputs.built_at }}" \
             --tag "${IMAGE}:pr-${{ github.event.number }}" \
             --load \
             .
@@ -114,6 +123,9 @@ jobs:
           # et une trace de construction, lisibles par `docker buildx imagetools inspect`.
           docker buildx build \
             --platform linux/amd64 \
+            --build-arg APP_VERSION="${{ steps.meta.outputs.version }}" \
+            --build-arg APP_REVISION="${{ steps.meta.outputs.short }}" \
+            --build-arg APP_BUILT_AT="${{ steps.meta.outputs.built_at }}" \
             --sbom=true \
             --provenance=mode=max \
             --push \

@@ -202,6 +202,50 @@ a:hover { color: var(--laiton-clair); }
   .entete nav a, .entete nav button { padding-inline: 0.5rem; }
 }
 .entete nav button svg { fill: currentColor; }
+/* L'étiquette de version, en haut à droite : le stade du projet et ce qui tourne.
+   Petite, en chiffres alignés, jamais au-dessus du texte — elle informe, elle ne
+   réclame pas l'attention. Le survol donne le commit exact. */
+.etiquette {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px dashed var(--brume-fonce);
+  border-radius: var(--rayon);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--encre-douce);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.etiquette-stade {
+  font-family: var(--police-titre);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cachet);
+}
+.etiquette-version { font-variant-numeric: tabular-nums; }
+@media (hover: hover) {
+  .etiquette:hover { border-style: solid; color: var(--encre); }
+}
+@media print { .etiquette { display: none; } }
+
+/* La fiche de version : deux colonnes serrées, les valeurs en chiffres alignés. */
+.fiche-version {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 1rem;
+  margin: 1.2rem 0;
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--papier-ombre);
+  border-radius: var(--rayon);
+}
+.fiche-version dt { color: var(--encre-douce); }
+.fiche-version dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+
 /* Jour/nuit : on montre l'icône de ce qu'on obtiendra en cliquant. */
 .icone-soleil { display: block; }
 .icone-lune { display: none; }
