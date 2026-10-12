@@ -284,10 +284,13 @@ fait tomber `connect-src 'self'`, les trois notes A+ mesurées, l'argument « z�
 traqueur », et imposé un bandeau de consentement. Le jeu coûte une dizaine d'euros
 par an ; il n'a pas besoin de vendre l'attention de ses joueurs pour vivre.
 
-- **Buy Me a Coffee, plus tard** — pas tout de suite. Un lien sortant dans les
-  crédits et les réglages, jamais un script embarqué : rien ne se charge depuis
-  chez eux tant qu'on n'a pas cliqué. Un don offre une plaque gravée au café de
-  l'aérodrome : visible, cosmétique, sans effet sur le jeu.
+- **Buy Me a Coffee, par étapes.** Depuis le 12/10, le lien existe **sur la page
+  GitHub du dépôt seulement** (`.github/FUNDING.yml` et la section *Soutenir* du
+  README) : ceux qui lisent le code peuvent remercier, les joueurs ne voient rien.
+  Dans le jeu, plus tard, et alors un lien sortant dans les crédits et les
+  réglages, jamais un script embarqué : rien ne se charge depuis chez eux tant
+  qu'on n'a pas cliqué. Un don ne donnera jamais d'avantage ; au mieux une plaque
+  gravée au café de l'aérodrome, visible et cosmétique.
 - **Jamais** : publicité, coffres aléatoires payants, achat de francs ou de
   cachets, timers à racheter.
 

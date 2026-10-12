@@ -18,7 +18,7 @@ Les lignes « prévu » deviennent « payé » dès que la dépense est faite.
 | optionnel | Dépôt de marque INPI (1 classe) | ~190 € | ponctuel | option | Une fois le nom définitif choisi |
 | plus tard | VPS européen (OVH VPS-1) | 7,79 €/mois | mensuel | prévu | Quand le NAS ne suffit plus |
 | 2026-10-12 | AdSense + bandeau de consentement Google | — | — | **abandonné** | Décision : pas de publicité (CONCEPTION § 14) |
-| plus tard | Buy Me a Coffee (lien sortant, pas de script) | 5 % + frais Stripe par don | par transaction | prévu, pas tout de suite | Revenus, pas coût |
+| 2026-10-12 | Buy Me a Coffee — lien sur la page GitHub seulement (`.github/FUNDING.yml`, README) | 5 % + frais Stripe par don | par transaction | **en place (GitHub)** | Revenus, pas coût ; rien dans le jeu à ce stade |
 
 ## Totaux
 

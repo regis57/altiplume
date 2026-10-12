@@ -1,0 +1,10 @@
+# Le bouton « Sponsor » de la page GitHub du dépôt.
+#
+# À ce stade, c'est le seul endroit où le lien de don existe : rien dans le jeu,
+# rien sur altiplume.com. Buy Me a Coffee est une page extérieure, atteinte par
+# un clic volontaire ; aucun script ni cookie n'est chargé depuis chez eux, ni
+# ici ni sur le site (la CSP du jeu ne le laisserait pas entrer de toute façon).
+#
+# Le jeu reste gratuit et sans publicité, et un don ne donne rien dans la partie :
+# voir docs/CONCEPTION.md § 14.
+buy_me_a_coffee: regis57
