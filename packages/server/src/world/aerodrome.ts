@@ -85,4 +85,14 @@ export const STAMPS: readonly Stamp[] = [
   { id: 's-anse-des-lanternes', name: { fr: 'Anse-des-Lanternes', en: 'Lanterncove' }, description: { fr: "Première livraison à la fabrique de lanternes.", en: 'First delivery to the lantern works.' } },
   { id: 's-ile-du-bout', name: { fr: "Île-du-Bout", en: 'Lastholm' }, description: { fr: "Première livraison à la dernière île.", en: 'First delivery to the last island.' } },
   { id: 's-archipel', name: { fr: "Tout l'Archipel", en: 'The whole Isles' }, description: { fr: "Les six îles ont reçu votre courrier. Après, il n'y a plus que la mer — et le Grand Blanc.", en: 'All six islands have had your mail. Beyond, only the sea — and the Great White.' } },
+  // La Forêt de Cuivre
+  { id: 's-route-cuivre', name: { fr: 'La route de la forêt', en: 'The forest road' }, description: { fr: "Un droit de passage signé par les gardes, une place sur le champ de foire de Villechaudron : la Forêt de Cuivre est ouverte.", en: 'A right of way signed by the foresters, a berth on the Kettleby fairground: Copperwood is open.' } },
+  { id: 's-les-charbonnieres', name: { fr: 'Les Charbonnières', en: 'Charwood' }, description: { fr: "Première livraison dans la fumée des meules.", en: 'First delivery through the kiln smoke.' } },
+  { id: 's-villechaudron', name: { fr: 'Villechaudron', en: 'Kettleby' }, description: { fr: "Première livraison aux cent marteaux.", en: 'First delivery to the hundred hammers.' } },
+  { id: 's-les-scieries', name: { fr: 'Les Scieries', en: 'Millhurst' }, description: { fr: "Première livraison sur le parc à grumes.", en: 'First delivery on the log yard.' } },
+  { id: 's-sonnefeuille', name: { fr: 'Sonnefeuille', en: 'Ringleaf' }, description: { fr: "Première livraison dans le verger des moines, au son des cloches.", en: "First delivery to the monks' orchard, to the sound of bells." } },
+  { id: 's-vert-de-gris', name: { fr: 'Vert-de-Gris', en: 'Verdigris' }, description: { fr: "Première livraison à la mine verte.", en: 'First delivery to the green mine.' } },
+  { id: 's-le-hetre-roi', name: { fr: 'Le Hêtre-Roi', en: 'Kingbeech' }, description: { fr: "Première livraison au cœur de la forêt.", en: 'First delivery to the heart of the forest.' } },
+  { id: 's-clairiere', name: { fr: 'Dans la clairière', en: 'Into the clearing' }, description: { fr: "Le premier atterrissage de la compagnie entre les arbres.", en: "The company's first landing among the trees." } },
+  { id: 's-foret', name: { fr: 'Toute la forêt', en: 'The whole wood' }, description: { fr: "Les six clairières ont reçu votre courrier. Sous les hêtres, on connaît maintenant le bruit de votre moteur.", en: 'All six clearings have had your mail. Under the beeches, they know the sound of your engine now.' } },
 ];

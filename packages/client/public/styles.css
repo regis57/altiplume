@@ -797,6 +797,18 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .vignette .v-ile { fill: #2a3a46; } .vignette .v-lanterne { fill: #f0a848; } .vignette .v-halo { fill: #f0a848; opacity: 0.35; } .vignette .v-piquet { fill: #3a3a38; } .vignette .v-reflet-lanterne { fill: #f0a848; opacity: 0.4; }
 [data-moment='nuit'] .vignette .v-ciel { fill: #1b2634; } [data-moment='nuit'] .vignette .v-sol { fill: #2a3a30; } [data-moment='nuit'] .vignette .v-colline-loin { fill: #2f3b47; } [data-moment='nuit'] .vignette .v-brume { fill: #2b333e; }
 [data-moment='nuit'] .vignette .v-ciel-saline { fill: #263241; } [data-moment='nuit'] .vignette .v-mer { fill: #1f3d3c; } [data-moment='nuit'] .vignette .v-sel { fill: #8a8a80; } [data-moment='nuit'] .vignette .v-digue { fill: #6a6a60; } [data-moment='nuit'] .vignette .v-eau-sel { fill: #4a6a68; }
+/* Les vignettes vivent hors de la grande scène : leurs arbres, leur herbe et leurs
+   avions avaient besoin de couleurs à eux (ils s'affichaient en noir depuis la v0.2). */
+.vignette .feuillage { fill: #4f7a45; } .vignette .feuillage-clair { fill: #6f9a5a; } .vignette .tronc { fill: #6b4a2a; } .vignette .herbe { fill: #6d8f5a; }
+.vignette .aile { fill: #c9b27a; } .vignette .fuselage { fill: #2a2f33; } .vignette .flotteur { fill: #e9ecef; }
+/* La Forêt de Cuivre : hêtres roux, toit vert-de-gris, le Pic dans la clairière. */
+.vignette .v-ciel-cuivre { fill: #ecd2ad; } .vignette .v-brume-cuivre { fill: #f4e4cc; opacity: 0.85; } .vignette .v-cime-loin { fill: #c7956a; }
+.vignette .v-cime-claire { fill: #e09a52; } .vignette .v-cime { fill: #b8733a; } .vignette .v-cime-sombre { fill: #874e26; } .vignette .v-tronc { fill: #4a3424; }
+.vignette .v-foret-fond { fill: #9a6440; } .vignette .v-foret-ombre { fill: #c7956a; } .vignette .v-tronc-loin { fill: #6e4630; } .vignette .v-sous-bois { fill: #3b4a30; } .vignette .v-clairiere { fill: #8a9a5b; } .vignette .v-feuille { fill: #c2652c; } .vignette .v-fumee { fill: #b9b2a8; }
+.vignette .v-clocher { fill: #a39d8f; } .vignette .v-toit-vert { fill: #5f9e86; } .vignette .v-baie { fill: #3a3631; }
+.vignette .v-aile { fill: #c9b27a; } .vignette .v-hauban { fill: #6b5a3a; } .vignette .v-fuselage { fill: #7d2f22; } .vignette .v-empennage { fill: #5a2219; } .vignette .v-helice { fill: #3a3631; } .vignette .v-roue { fill: #1f2326; }
+[data-moment='nuit'] .vignette .v-ciel-cuivre { fill: #2a2630; } [data-moment='nuit'] .vignette .v-brume-cuivre { fill: #3a3440; } [data-moment='nuit'] .vignette .v-cime-loin { fill: #3d3330; }
+[data-moment='nuit'] .vignette .v-cime-claire { fill: #6e4a2c; } [data-moment='nuit'] .vignette .v-cime { fill: #563620; } [data-moment='nuit'] .vignette .v-cime-sombre { fill: #3a2414; } [data-moment='nuit'] .vignette .v-clairiere { fill: #3a4430; } [data-moment='nuit'] .vignette .v-sous-bois { fill: #1f271b; } [data-moment='nuit'] .vignette .v-foret-fond { fill: #2e221c; } [data-moment='nuit'] .vignette .v-foret-ombre { fill: #3d3330; }
 
 /* ---- La scène vivante ---- */
 

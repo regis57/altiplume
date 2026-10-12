@@ -381,4 +381,100 @@ export const PILOTS: readonly PilotTemplate[] = [
       ],
     },
   },
+  // ---- v0.3 : la Forêt de Cuivre — un homme, une femme ; la parité tient à dix ----
+  {
+    id: 'gaspard', gender: 'm', age: 52,
+    name: { fr: 'Gaspard Sorbier', en: 'Gaspard Sorbier' },
+    origin: { fr: 'Villechaudron', en: 'Kettleby' },
+    traits: ['weathersense', 'thrifty'],
+    portrait: { fr: "Un homme sec aux jambes de marcheur, une besace de cuir en bandoulière même quand elle est vide, et une barbe grise où il reste toujours une feuille rousse.", en: 'A wiry man with a walker\'s legs, a leather satchel across his chest even when it is empty, and a grey beard that always has a copper leaf caught in it.' },
+    greeting: { fr: "Trente ans que je porte le courrier de la forêt à pied. On dit que vos avions passent au-dessus. Moi, je connais chaque clairière par en dessous.", en: 'Thirty years carrying the forest\'s mail on foot. They say your planes fly over it. I know every clearing from underneath.' },
+    wage: 8, starter: false,
+    story: {
+      title: { fr: 'Trente ans à pied', en: 'Thirty Years on Foot' },
+      scenes: [
+        {
+          affinity: 3,
+          title: { fr: 'Par en dessous', en: 'From underneath' },
+          lines: [
+            { who: 'narrator', text: { fr: "Au-dessus de la Forêt de Cuivre, Gaspard colle le front au hublot. Il ne regarde pas le cap. Il regarde les trous dans les feuilles.", en: 'Over Copperwood, Gaspard presses his forehead to the window. He is not watching the heading. He is watching the gaps in the leaves.' } },
+            { who: 'pilot', text: { fr: "Là, le sentier des Charbonnières. Là, la source où je remplissais la gourde. Et là — vous voyez la tache claire ? — le pré où les sangliers m'ont fait monter dans un arbre, l'hiver de mes vingt ans.", en: 'There, the Charwood path. There, the spring where I filled my flask. And there — see the pale patch? — the meadow where the boar sent me up a tree, the winter I turned twenty.' } },
+            { who: 'you', text: { fr: "Vous la reconnaissez, d'aussi haut ?", en: 'You can tell, from this high?' } },
+            { who: 'pilot', text: { fr: "C'est la même forêt. Simplement, je ne l'avais jamais vue à l'endroit.", en: "It's the same forest. I'd just never seen it right side up." } },
+            { who: 'narrator', text: { fr: "Il compte les clairières jusqu'à l'atterrissage, à voix basse, comme on compte des marches dans le noir.", en: 'He counts the clearings all the way down, under his breath, the way you count stairs in the dark.' } },
+          ],
+        },
+        {
+          affinity: 7,
+          title: { fr: 'Le creux du Hêtre-Roi', en: 'The hollow in the King Beech' },
+          lines: [
+            { who: 'narrator', text: { fr: "Au Hêtre-Roi, Gaspard descend avant que l'hélice ait fini de tourner. Il va droit à l'arbre — il faut six personnes pour en faire le tour — et passe le bras dans un creux, à hauteur d'homme.", en: 'At Kingbeech, Gaspard climbs down before the propeller has stopped. He goes straight to the tree — it takes six people to ring it with their arms — and reaches into a hollow at head height.' } },
+            { who: 'pilot', text: { fr: "Ma boîte aux lettres. Ceux du fond des bois y laissaient leur courrier, et je passais le jeudi. Trois jours de marche pour un aller.", en: 'My letterbox. The people from deep in the woods left their mail in here, and I came by on Thursdays. Three days\' walk, one way.' } },
+            { who: 'narrator', text: { fr: "Il en ressort une enveloppe verdie par la mousse. Pas d'adresse. Juste : « Au facteur. »", en: 'He brings out an envelope gone green with moss. No address. Just: "To the postman."' } },
+            { who: 'you', text: { fr: "Elle est pour vous ?", en: "It's for you?" } },
+            { who: 'pilot', text: { fr: "Depuis que j'ai arrêté, c'est à moi qu'ils écrivent. Pour me dire que le courrier arrive, maintenant, et qu'il arrive vite. Et qu'ils regrettent un peu le jeudi.", en: 'Since I stopped, they write to me. To tell me the mail comes now, and comes fast. And that they miss Thursdays, a little.' } },
+            { who: 'narrator', text: { fr: "Le soir, au café, Hedda écoute l'histoire du creux sans rien dire. Puis, seulement : « Chez nous, c'était une boîte en fer-blanc. »", en: 'That evening, in the café, Hedda listens to the story of the hollow without a word. Then, only: "Back home it was a tin box."' } },
+          ],
+        },
+        {
+          affinity: 12,
+          title: { fr: 'Le sac de Bastien', en: "Bastien's bag" },
+          lines: [
+            { who: 'narrator', text: { fr: "Gaspard entre au hangar avec un vieux sac de toile sous le bras, raide de poussière, renforcé de cuir aux coins. Sur le rabat, au pochoir à moitié effacé : CROISETTE.", en: 'Gaspard comes into the hangar with an old canvas mailbag under his arm, stiff with dust, leather at the corners. On the flap, in half-faded stencil: CROSSLET.' } },
+            { who: 'pilot', text: { fr: "Il y a trente ans, un biplan est passé au-dessus du Hêtre-Roi et a lâché ce sac dans la clairière. Le premier courrier tombé du ciel dans la forêt. J'avais vingt-deux ans ; c'est moi qui l'ai porté le reste du chemin.", en: 'Thirty years ago, a biplane flew over Kingbeech and dropped this bag in the clearing. The first mail that ever fell out of the sky into the forest. I was twenty-two; I carried it the rest of the way.' } },
+            { who: 'you', text: { fr: "Bastien.", en: 'Bastien.' } },
+            { who: 'pilot', text: { fr: "Il a fait trois passages pour être sûr qu'on l'avait vu. Je lui ai fait signe avec ma casquette, il a battu des ailes. Je ne l'ai jamais rencontré. J'ai gardé le sac en me disant qu'un jour, je le rapporterais.", en: 'He made three passes to be sure someone had seen. I waved my cap and he rocked his wings. I never met him. I kept the bag, telling myself that one day I\'d bring it back.' } },
+            { who: 'narrator', text: { fr: "Il l'accroche au clou, sous la poutre aux marques de crayon. Prosper le regarde faire sans un mot. Puis il touche le sac du bout des doigts, comme la croix du chemin de la Croisette.", en: 'He hangs it on the nail, under the beam with the pencil marks. Prosper watches without a word. Then he touches the bag with his fingertips, the way he touches the cross on Crosslet Lane.' } },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'rosalie', gender: 'f', age: 26,
+    name: { fr: 'Rosalie Martel', en: 'Rosalie Martel' },
+    origin: { fr: 'Haut-Ferrand', en: 'Ferncrest' },
+    traits: ['goldenhands', 'homeheart'],
+    portrait: { fr: "Des avant-bras de forgeronne, une cicatrice blanche sur le dos d'une main, et un petit marteau de chaudronnier passé à la ceinture, comme d'autres portent un couteau.", en: "A smith's forearms, a white scar across the back of one hand, and a small coppersmith's hammer through her belt, the way other people carry a knife." },
+    greeting: { fr: "Mon père tient la forge de Haut-Ferrand. Ça fait des mois que vous portez ses pièces : je suis venue voir qui.", en: "My father keeps the forge at Ferncrest. You've been flying his parts for months — I came to see who." },
+    wage: 9, starter: false,
+    story: {
+      title: { fr: 'La marque au marteau', en: 'The Hammer Mark' },
+      scenes: [
+        {
+          affinity: 3,
+          title: { fr: 'Ce qui sonne encore', en: 'While it still rings' },
+          lines: [
+            { who: 'narrator', text: { fr: "La Grive est rentrée de Haut-Ferrand le capot cabossé : un caillou levé par le vent de crête. Rosalie ne demande pas d'outil. Elle sort le petit marteau de sa ceinture.", en: 'The Thrush came back from Ferncrest with a dented cowling: a stone thrown up by the ridge wind. Rosalie doesn\'t ask for tools. She takes the little hammer from her belt.' } },
+            { who: 'narrator', text: { fr: "Dix minutes, une centaine de coups très légers, et la tôle est lisse.", en: 'Ten minutes, a hundred very light blows, and the metal is smooth.' } },
+            { who: 'you', text: { fr: "On aurait changé la pièce.", en: "We'd have replaced the part." } },
+            { who: 'pilot', text: { fr: "À Haut-Ferrand, on ne jette pas ce qui sonne encore. Écoutez.", en: "At Ferncrest, you don't throw away anything that still rings. Listen." } },
+            { who: 'narrator', text: { fr: "Elle tapote le capot. Il sonne clair, comme une cloche qu'on aurait couchée sur le flanc.", en: 'She taps the cowling. It rings clear, like a bell laid on its side.' } },
+          ],
+        },
+        {
+          affinity: 7,
+          title: { fr: 'Le poinçon', en: "The maker's mark" },
+          lines: [
+            { who: 'narrator', text: { fr: "Rosalie demande à voir la petite lanterne de cuivre de Solenn. Solenn la lui tend sans comprendre. Rosalie la retourne et passe le pouce sur le fond.", en: "Rosalie asks to see Solenn's little copper lantern. Solenn hands it over without understanding. Rosalie turns it upside down and runs her thumb across the base." } },
+            { who: 'pilot', text: { fr: "Un marteau et une étoile. C'est le poinçon de ma grand-mère. Elle était chaudronnière à Villechaudron, avant que la famille monte à Haut-Ferrand.", en: "A hammer and a star. That's my grandmother's mark. She was a coppersmith at Kettleby, before the family moved up to Ferncrest." } },
+            { who: 'narrator', text: { fr: "Solenn ne dit rien pendant un moment. « Ma mère l'a achetée à la fabrique de l'Anse-des-Lanternes, dit-elle enfin. Au bout du monde. »", en: 'Solenn says nothing for a while. "My mother bought it at the Lanterncove works," she says at last. "At the end of the world."' } },
+            { who: 'pilot', text: { fr: "Le cuivre de la forêt part aux îles en feuilles, et revient en lanternes. Ma grand-mère disait qu'on ne sait jamais qui on éclaire.", en: "Copperwood's copper goes out to the Isles in sheets and comes back as lanterns. My grandmother used to say you never know who you're lighting." } },
+            { who: 'narrator', text: { fr: "Elle rend la lanterne. Solenn la tient un peu différemment, maintenant.", en: 'She hands the lantern back. Solenn holds it a little differently now.' } },
+          ],
+        },
+        {
+          affinity: 12,
+          title: { fr: 'La cloche de Sonnefeuille', en: 'The Ringleaf bell' },
+          lines: [
+            { who: 'narrator', text: { fr: "Un soir, Rosalie déplie sur l'établi un dessin à l'encre : une cloche, ses cotes, son épaisseur, la courbe de ses flancs.", en: 'One evening Rosalie spreads an ink drawing across the workbench: a bell, its measurements, its thickness, the curve of its sides.' } },
+            { who: 'pilot', text: { fr: "Les moines de Sonnefeuille fondaient les cloches de toute la forêt. La dernière a quarante ans. Le vieux frère Anselme veut en couler une encore, une seule, avant de ne plus pouvoir. Il m'a demandé de l'aider.", en: 'The Ringleaf monks cast the bells for the whole forest. The last one is forty years old. Old Brother Anselm wants to pour one more — just one — before he no longer can. He asked me to help.' } },
+            { who: 'you', text: { fr: "Pour qui ?", en: 'Who is it for?' } },
+            { who: 'pilot', text: { fr: "Pour Sainte-Lueur. La chapelle de l'île n'a jamais eu de cloche : les enfants guettent le courrier en comptant les hublots. Je voudrais qu'ils l'entendent arriver.", en: 'For Glimmerkirk. The island chapel has never had a bell: the children watch for the mail by counting portholes. I\'d like them to hear it coming.' } },
+            { who: 'narrator', text: { fr: "Elle pose le doigt sur le chiffre écrit sous la cloche : son poids. Puis elle vous regarde. « Ça ne tiendra jamais dans un seul avion. »", en: 'She puts her finger on the number written under the bell: its weight. Then she looks at you. "It\'ll never fit in one plane."' } },
+          ],
+        },
+      ],
+    },
+  },
 ];

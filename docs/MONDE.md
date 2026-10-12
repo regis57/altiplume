@@ -106,6 +106,48 @@ collent « Tout l'Archipel ». Deux imprévus (la lanterne éteinte, la nuit des
 une opportunité (quelqu'un sur le ponton), et le Goéland, vendu à Port-Sel une fois la
 Côte ouverte.
 
+## La Forêt de Cuivre (*Copperwood*) — v0.3
+
+Derrière la crête de Haut-Ferrand commence une hêtraie si vieille que ses feuilles
+restent aux branches tout l'hiver, couleur de cuivre (les botanistes disent
+*marcescence* ; les gens de la forêt disent que les arbres gardent leur monnaie).
+Sous elle, une mine : **c'est le cuivre de la forêt que la fabrique de
+l'Anse-des-Lanternes martèle en lanternes**, et qui revient éclairer les îles et
+jusqu'au ponton de la Croisette. Les deux lanternes de cuivre du jeu, celle d'Ysé et
+celle de Solenn, sont nées ici.
+
+**La route s'ouvre** contre **12 cachets**, une fois « Toute la vallée » dans
+l'album — comme la Côte, sans l'attendre : **deux routes partent de la vallée**, la
+mer ou les arbres, et le joueur choisit par où il grandit. La page « La route de la
+forêt » s'ajoute à l'album.
+
+| Escale | Anglais | Lieues | Vol (Pic) | Piste | Particularité | Courrier |
+|---|---|---|---|---|---|---|
+| **Les Charbonnières** | Charwood | 7 | 32 min | courte | Le camp des charbonniers, les meules qui fument ; sous-bois | lettres, colis, pièces |
+| **Villechaudron** | Kettleby | 8 | 37 min | moyenne | Les cent marteaux des chaudronniers, le bureau de poste de la forêt | cuivre, lettres, colis, urgent |
+| **Les Scieries** | Millhurst | 9 | 42 min | courte | Trois scieries, le parc à grumes ; le père de Solenn y a réparé toutes les roues ; sous-bois | pièces, lettres, colis |
+| **Sonnefeuille** | Ringleaf | 10 | 46 min | **clairière** | L'abbaye, la fonderie de cloches ; les moines sonnent pour guider l'approche ; sous-bois | lettres, fragile, semences |
+| **Vert-de-Gris** | Verdigris | 11 | 51 min | **clairière** | La vieille mine ; tout y est vert ; sous-bois | pièces, médicaments, lettres, cuivre |
+| **Le Hêtre-Roi** | Kingbeech | 12 | 55 min | **clairière** | L'arbre du cœur de la forêt, le creux où le facteur des bois relevait le courrier ; nuit | lettres, lettres d'amour, journaux |
+
+**La clairière** est une piste plus courte qu'une piste courte. Seul le **Pic** s'y
+pose ; lui, en revanche, se pose partout sur la terre et décolle de la Croisette
+sans qu'on ait roulé la piste. Les Charbonnières et Villechaudron sont à portée de la
+Grive ; les Scieries aussi, avec un pilote de Longues routes (8 × 1,2 = 9,6). Le
+premier atterrissage en clairière colle « Dans la clairière » ; les six escales,
+« Toute la forêt ».
+
+**L'humidité des sous-bois** (les Charbonnières, les Scieries, Sonnefeuille,
+Vert-de-Gris) multiplie le risque d'incident par **1,5** : les moteurs y toussent.
+Un pilote aux Mains d'or compense en partie. Le Hêtre-Roi suit la règle des lanternes :
+une arrivée après le coucher du soleil vaut « Vol de nuit ».
+
+Douze contrats, deux imprévus (un hêtre en travers de la clairière, l'humidité qui
+fait tousser le moteur) et trois opportunités (le Pic du receveur de Villechaudron,
+le relevé des clairières du garde, quelqu'un à la lisière) ne se tirent qu'une fois
+la route ouverte. Deux contrats préparent la suite : la cire pour le moule de
+Sonnefeuille, et une lettre pour le creux du Hêtre-Roi.
+
 ## Les avions
 
 | Modèle | Anglais | Type | Portée | Sacs | Vitesse | Fiabilité | Piste | Prix |
@@ -116,19 +158,23 @@ Côte ouverte.
 
 | **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 5 400 F (4 400 F en occasion, à Port-Sel) |
 | **Goéland G-4** | Gull G-4 | hydravion long-courrier | 22 | 4 | 16 l/h | 91 % | **eau** | 7 800 F (6 600 F en occasion, à Port-Sel) |
+| **Pic P-1** | Woodpecker W-1 | monoplan à aile haute | 12 | 2 | 13 l/h | 93 % | **clairière** | 4 200 F (3 600 F en occasion, à Villechaudron) |
 
-Cinq oiseaux, cinq caractères : la Grive pardonne tout, le Martinet file et
+Six oiseaux, six caractères : la Grive pardonne tout, le Martinet file et
 casse, le Héron porte et exige une grande piste, la Sterne se pose sur l'eau — et
 seulement sur l'eau. Elle ne dort pas au hangar : il lui faut un **ponton**. Le Goéland
-porte plus loin et plus lourd, et préfère la nuit calme au vent de mer.
+porte plus loin et plus lourd, et préfère la nuit calme au vent de mer. Le **Pic** se
+pose où se pose un pic : sur cinquante pas, entre les arbres. Il n'est pas rapide ; il
+n'a pas besoin de l'être. Il dort au hangar, comme la Grive.
 
 ## Les pilotes
 
-Huit pilotes, quatre femmes et quatre hommes, huit lieux d'origine.
+Dix pilotes, cinq femmes et cinq hommes, dix lieux d'origine.
 
 > **Parité.** La règle du projet, depuis le premier jour. Le renommage du 12 octobre
 > (Marthe Vaudrin → Prosper Chickenman, homme) l'avait rompue ; Garance Thuillier et
-> Hedda Vilmorin la rétablissent le jour même. Un test la vérifie à chaque PR.
+> Hedda Vilmorin la rétablissent le jour même. La Forêt de Cuivre en amène deux de plus,
+> un homme et une femme. Un test la vérifie à chaque PR.
 
 L'ordre du tableau est aussi l'ordre de recrutement : la carte « pilote de passage »
 propose toujours le premier qui n'est pas encore embauché. Chacun a deux
@@ -145,6 +191,8 @@ histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 | **Teodor Vashti** | 41 | Désert de Verre | Longues routes · Porte-bonheur | *Le compte des étoiles* — trois chiffres sur la manche, le foulard du frère, la lettre vers le Grand Blanc |
 | **Garance Thuillier** | 29 | Pont-de-Brume | Tête brûlée · Cœur de village | *De l'autre côté de la rivière* — le quai du marché, trois mètres de trop, la seconde marque sur la poutre |
 | **Hedda Vilmorin** | 49 | Grand Blanc | Longues routes · Économe | *Ce que le nord garde* — le litre de trop, les boîtes de la dernière lanterne, pourquoi elle est descendue |
+| **Gaspard Sorbier** | 52 | Villechaudron (Forêt de Cuivre) | Météo dans la peau · Économe | *Trente ans à pied* — la forêt vue à l'endroit, le creux du Hêtre-Roi, le sac de Bastien |
+| **Rosalie Martel** | 26 | Haut-Ferrand | Mains d'or · Cœur de village | *La marque au marteau* — ce qui sonne encore, le poinçon sur la lanterne de Solenn, la cloche de Sonnefeuille |
 
 Prosper est là dès le premier jour. Les autres passent au café et se recrutent
 avec une carte « pilote de passage ». **Bastien**, l'ancien propriétaire, est mort
@@ -169,6 +217,21 @@ reste vrai quand on en ajoute.
   pourquoi elle est descendue du Grand Blanc.
 - **La croix du chemin.** On la touche avant de décoller « pour dire au chemin qu'on
   revient ». Prosper l'explique au premier chapitre ; tout le monde le fait ensuite.
+- **Le sac de Bastien.** Il y a trente ans, Bastien a lâché un sac de courrier dans la
+  clairière du Hêtre-Roi — le premier courrier tombé du ciel dans la forêt. Gaspard,
+  jeune facteur des bois, l'a porté le reste du chemin et a gardé le sac. Il le
+  rapporte, et l'accroche sous la poutre aux marques de crayon. Prosper le touche comme
+  la croix du chemin.
+- **Les boîtes et les arbres.** Le creux du Hêtre-Roi était la boîte aux lettres du fond
+  des bois ; Hedda y reconnaît les boîtes en fer-blanc du nord. Le contrat *Une lettre
+  pour le creux de l'arbre* fait vivre ce creux dans le jeu.
+- **Le cuivre et les lanternes.** Le cuivre de Vert-de-Gris part aux îles en feuilles et
+  revient en lanternes. Rosalie reconnaît sur la lanterne de Solenn le poinçon de sa
+  grand-mère, chaudronnière à Villechaudron : « on ne sait jamais qui on éclaire ».
+- **La cloche de Sainte-Lueur.** La chapelle de l'île n'a jamais eu de cloche ; les
+  enfants comptent les hublots. Rosalie et le vieux frère Anselme veulent en couler une
+  à Sonnefeuille — et elle ne tiendra pas dans un seul avion. C'est la porte du fret
+  lourd.
 
 ## Les traits
 
@@ -238,7 +301,7 @@ peinture du hangar.
 - **Aléas**, tirés d'une graine par joueur et par vol, donc rejouables : un incident
   (probabilité 1 − fiabilité, aggravée par l'usure ; **× 2 la nuit aux lanternes**, ÷ 4
   pour un pilote Nocturne ; **× 0,75 à 20 de moral, × 1,25 à 0** — un pilote heureux
-  casse moins) allonge le vol de 30 % et use l'avion ; la brume de Moulin-Gris ajoute vingt minutes une fois sur deux (une sur
+  casse moins ; **× 1,5 dans les sous-bois de la forêt**) allonge le vol de 30 % et use l'avion ; la brume de Moulin-Gris ajoute vingt minutes une fois sur deux (une sur
   quatre avec « Météo dans la peau »).
 - **À l'arrivée** : la récompense, plus le bonus si le délai souple est tenu ; jamais
   de pénalité. Affinité +1 avec le pilote ; moral +1 si à l'heure, −1 si incident.
@@ -259,7 +322,9 @@ peinture du hangar.
 
 Douze pages pour la vallée : Fondation, Premier vol, une par village, Vol de nuit,
 À l'heure (dix délais tenus), Une histoire, Toute la vallée. Neuf pour la Côte : La
-route de la Côte, une par escale, Sur l'eau, Toute la Côte. Une collection, pas un
+route de la Côte, une par escale, Sur l'eau, Toute la Côte. Huit pour l'Archipel : La
+route des îles, une par île, Tout l'Archipel. Neuf pour la forêt : La route de la
+forêt, une par escale, Dans la clairière, Toute la forêt. Une collection, pas un
 classement.
 
 ## Ce qui viendra (prévu, pas encore écrit)
@@ -268,14 +333,15 @@ classement.
 un **planeur postal** léger pour les plateaux (décollage court, pas de carburant, à la
 merci du vent) et un **long-courrier terrestre** pour le Grand Blanc (très grande
 portée, grande piste obligatoire, chauffage de cabine). Un **autogire** reste en débat :
-il se pose n'importe où, ce qui rendrait les niveaux de piste inutiles.
+il se pose n'importe où, ce qui rendrait les niveaux de piste inutiles — le Pic en a
+pris la part raisonnable.
 
-**Pilotes.** Les deux prochains seront des hommes, pour que la parité tienne à dix :
-un de la **Forêt de Cuivre** et un de l'**Archipel des Lanternes**, quand ces régions
-auront des escales à eux. Objectif v1.0 : vingt pilotes, parité tenue à chaque palier.
+**Pilotes.** Dix, cinq femmes et cinq hommes. Les deux suivants seront une femme et un
+homme, pour que la parité tienne à chaque palier ; objectif v1.0 : vingt pilotes.
 
-**Au-delà.** Les saisons (v0.3), les quatre régions restantes, et le fret lourd — un
-courrier qui demande deux avions au lieu d'un.
+**Au-delà.** Le fret lourd — un courrier qui demande deux avions au lieu d'un, et dont
+la cloche de Sonnefeuille sera le plus beau ; les saisons (v0.3) ; les trois régions
+restantes : les Hauts-Plateaux d'Ocre, le Désert de Verre, le Grand Blanc.
 
 ## Ce qu'on commence avec
 

@@ -50,7 +50,8 @@ export interface FlightRow {
   deadline_at: number; reward: number; bonus: number; incident: number; settled_at: number | null;
 }
 
-const RUNWAY_ORDER: Record<Runway, number> = { short: 0, medium: 1, long: 2, water: 3 };
+/** Une clairière est plus courte qu'une piste courte : seul le Pic s'y pose, et lui se pose partout sur la terre. */
+const RUNWAY_ORDER: Record<Runway, number> = { clearing: 0, short: 1, medium: 2, long: 3, water: 4 };
 
 /** Un hydravion se pose sur l'eau et seulement sur l'eau ; les autres, sur une piste assez longue. */
 export function canLand(plane: PlaneModel, destination: Destination): boolean {
@@ -59,7 +60,7 @@ export function canLand(plane: PlaneModel, destination: Destination): boolean {
 }
 
 /** Le cachet « toute la région » de chaque région. */
-const REGION_STAMP: Record<RegionId, string> = { brume: 's-vallee', saline: 's-cote', archipel: 's-archipel' };
+const REGION_STAMP: Record<RegionId, string> = { brume: 's-vallee', saline: 's-cote', archipel: 's-archipel', cuivre: 's-foret' };
 
 /** Les régions dont la route est ouverte ; celle de départ l'est toujours. */
 export function unlockedRegions(db: Database, companyId: string): RegionId[] {
@@ -175,6 +176,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       const hour = new Date(arrivedAt).getUTCHours();
       if (dest?.hazard === 'night' && (hour >= 20 || hour < 6)) stamps.push('s-nuit');
       if (dest?.runway === 'water') stamps.push('s-hydravion');
+      if (dest?.runway === 'clearing') stamps.push('s-clairiere');
       if (deadlinesMet >= 10) stamps.push('s-delai');
       for (const s of stamps) {
         if (!awardStamp(db, company.id, s, arrivedAt)) continue;
@@ -217,7 +219,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
 export type DispatchError =
   | 'card_unknown' | 'card_not_contract' | 'plane_unknown' | 'pilot_unknown' | 'plane_busy' | 'pilot_busy' | 'pilot_tired'
-  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked';
+  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'needs_clearing_plane' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked';
 
 export interface DispatchPlan {
   readonly card: ContractCard;
@@ -256,6 +258,7 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
   if (!canLand(model, destination)) {
     if (destination.runway === 'water') return { ok: false, error: 'needs_seaplane' };
     if (model.runway === 'water') return { ok: false, error: 'needs_water' };
+    if (destination.runway === 'clearing') return { ok: false, error: 'needs_clearing_plane' };
     return { ok: false, error: 'runway_too_short' };
   }
   if (destination.distance > model.range * traitFactor(template, 'range')) return { ok: false, error: 'out_of_range' };
@@ -278,20 +281,30 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
   return { ok: true, plan: { card, destination, plane, model, pilot, template, durationMs, cost } };
 }
 
+/**
+ * La probabilité d'un incident mécanique sur ce vol, dans [0, 1].
+ *
+ * Elle part de la fiabilité de l'avion (au trait du pilote près, et entamée par
+ * l'usure), puis se multiplie : la nuit aux lanternes la double (÷ 4 pour un pilote
+ * Nocturne) ; le moral la fait varier de × 0,75 (20) à × 1,25 (0) ; l'humidité des
+ * sous-bois de la Forêt de Cuivre la multiplie par 1,5.
+ */
+export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template'>, now: number): number {
+  const hour = new Date(now).getUTCHours();
+  const nightFlight = plan.destination.hazard === 'night' && (hour >= 20 || hour < 6);
+  const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') : 1;
+  const moraleFactor = 1 + (10 - plan.pilot.morale) / 40;
+  const canopyFactor = plan.destination.hazard === 'canopy' ? 1.5 : 1;
+  const baseReliability = Math.min(1, plan.model.reliability * traitFactor(plan.template, 'reliability') * (1 - plan.plane.wear / 400));
+  return Math.min(1, (1 - baseReliability) * nightFactor * moraleFactor * canopyFactor);
+}
+
 /** Expédie : débite le coût, fatigue le pilote, tire l'aléa du vol, enregistre le vol. */
 export function dispatch(db: Database, company: Company, playerId: string, plan: DispatchPlan, now: number): FlightRow {
   return transaction(db, () => {
     const row = db.prepare('SELECT flights_count FROM companies WHERE id = ?').get(company.id) as { flights_count: number };
     const rng = makeRng(deriveSeed(playerId, row.flights_count, 'flight'));
-    // La nuit aux lanternes : le risque d'incident double, sauf pour un pilote Nocturne (÷ 4).
-    const hour = new Date(now).getUTCHours();
-    const nightFlight = plan.destination.hazard === 'night' && (hour >= 20 || hour < 6);
-    const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') : 1;
-    // Le moral compte : un pilote heureux casse moins (20 → risque × 0,75), un pilote abattu plus (0 → × 1,25).
-    const moraleFactor = 1 + (10 - plan.pilot.morale) / 40;
-    const baseReliability = Math.min(1, plan.model.reliability * traitFactor(plan.template, 'reliability') * (1 - plan.plane.wear / 400));
-    const reliability = 1 - Math.min(1, (1 - baseReliability) * nightFactor * moraleFactor);
-    const incident = rng() > reliability;
+    const incident = rng() > 1 - incidentRisk(plan, now);
     let durationMs = plan.durationMs;
     if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk')) durationMs += FOG_DELAY_MS;
     if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk')) durationMs += SEAWIND_DELAY_MS;
