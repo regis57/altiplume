@@ -69,7 +69,8 @@ describe('le monde — intégrité', () => {
   it('livre la vallée (v0.1) : 6 destinations, 3 avions, 4 pilotes, 20+10+4 cartes et la ligne régulière, 10 décorations', () => {
     const brume = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'brume';
     expect(regionDestinations('brume')).toHaveLength(6);
-    expect(WORLD.planes.filter((p) => p.runway !== 'water')).toHaveLength(3);
+    // Les avions de la vallée : une piste ordinaire (ni l'eau, ni la clairière).
+    expect(WORLD.planes.filter((p) => ['short', 'medium', 'long'].includes(p.runway)).map((p) => p.id)).toEqual(['grive', 'martinet', 'heron']);
     expect(WORLD.pilots.filter((p) => p.starter || ['ilias', 'yse', 'aurele'].includes(p.id))).toHaveLength(4);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && brume(c))).toHaveLength(20);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.standing)).toHaveLength(1);
@@ -87,7 +88,7 @@ describe('le monde — intégrité', () => {
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && saline(c))).toHaveLength(15);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && saline(c))).toHaveLength(2);
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(3); // + le Goéland, vendu à Port-Sel
-    expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline', 'archipel']);
+    expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline', 'archipel', 'cuivre']);
     expect(WORLD.regions[1]!.route).toEqual({ requires: 's-vallee', cost: 10 });
     expect(WORLD.region.route).toBeUndefined();
     // Chaque escale a sa page, la Côte a la sienne, et la route aussi.
@@ -113,9 +114,53 @@ describe('le monde — intégrité', () => {
     for (const d of iles) expect(d.distance).toBeLessThanOrEqual(goeland.range);
     expect(iles.filter((d) => d.distance <= sterne.range * 1.2).map((d) => d.id)).toEqual(['ile-aux-fanaux', 'grand-recif', 'sainte-lueur']);
     expect(iles.some((d) => d.distance > sterne.range * 1.2)).toBe(true);
-    // Six pilotes, parité gardée, une Nocturne pour les îles.
-    expect(WORLD.pilots).toHaveLength(8);
+    // Huit pilotes à la v0.2, parité gardée, une Nocturne pour les îles.
+    expect(WORLD.pilots.length).toBeGreaterThanOrEqual(8);
     expect(WORLD.pilots.filter((p) => p.traits.includes('nightowl')).length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("livre la Forêt de Cuivre (v0.3) : 6 escales dont 3 clairières, le Pic, 12+2+3 cartes, une seconde route depuis la vallée à 12 cachets, deux pilotes", () => {
+    const cuivre = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'cuivre';
+    const escales = regionDestinations('cuivre');
+    expect(escales).toHaveLength(6);
+    expect(escales.filter((d) => d.runway === 'clearing').map((d) => d.id)).toEqual(['sonnefeuille', 'vert-de-gris', 'le-hetre-roi']);
+    expect(escales.filter((d) => d.hazard === 'canopy').length).toBeGreaterThanOrEqual(3);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && cuivre(c))).toHaveLength(12);
+    expect(WORLD.cards.filter((c) => c.kind === 'event' && cuivre(c))).toHaveLength(2);
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && cuivre(c))).toHaveLength(3);
+    // Une seconde route part de la vallée : on choisit par où l'on grandit, la mer ou les arbres.
+    expect(WORLD.regions.find((r) => r.id === 'cuivre')!.route).toEqual({ requires: 's-vallee', cost: 12 });
+    for (const id of ['s-route-cuivre', 's-clairiere', 's-foret']) expect(WORLD.stamps.some((s) => s.id === id), id).toBe(true);
+    // Le Pic atteint tout, entre une demi-heure et une heure ; la Grive, deux escales seule et une troisième avec un pilote de Longues routes.
+    const pic = findPlane('pic')!; const grive = findPlane('grive')!;
+    expect(pic.runway).toBe('clearing');
+    for (const d of escales) {
+      const minutes = flightDurationMs(d, pic) / 60_000;
+      expect(minutes, d.id).toBeGreaterThanOrEqual(30);
+      expect(minutes, d.id).toBeLessThanOrEqual(60);
+      expect(d.distance, d.id).toBeLessThanOrEqual(pic.range);
+    }
+    const land = escales.filter((d) => d.runway !== 'clearing');
+    expect(land.filter((d) => d.distance <= grive.range).map((d) => d.id)).toEqual(['les-charbonnieres', 'villechaudron']);
+    expect(land.filter((d) => d.distance <= grive.range * 1.2).map((d) => d.id)).toEqual(['les-charbonnieres', 'villechaudron', 'les-scieries']);
+    // Dix pilotes : cinq femmes, cinq hommes. Gaspard et Rosalie arrivent les derniers.
+    expect(WORLD.pilots).toHaveLength(10);
+    expect(WORLD.pilots.slice(-2).map((p) => [p.id, p.gender])).toEqual([['gaspard', 'm'], ['rosalie', 'f']]);
+  });
+
+  it('tisse les histoires entre elles : la forêt répond à ce qui existe déjà', () => {
+    const story = (id: string) => JSON.stringify(findPilot(id)!.story);
+    // Gaspard rapporte le sac de Bastien sous la poutre de Prosper ; Hedda reconnaît les boîtes du nord.
+    expect(story('gaspard')).toContain('Bastien');
+    expect(story('gaspard')).toContain('poutre');
+    expect(story('gaspard')).toContain('Hedda');
+    // Rosalie reconnaît le poinçon de sa grand-mère sur la lanterne de Solenn, et prépare la cloche de Sainte-Lueur.
+    expect(story('rosalie')).toContain('Solenn');
+    expect(story('rosalie')).toContain('Sainte-Lueur');
+    expect(story('rosalie')).toContain('Villechaudron');
+    // Les escales le savent aussi.
+    expect(findDestination('les-scieries')!.description.fr).toContain('Solenn');
+    expect(findDestination('le-hetre-roi')!.description.fr).toContain('facteur des bois');
   });
 
   it('ne référence que des destinations, avions et pilotes existants', () => {

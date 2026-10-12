@@ -12,7 +12,7 @@ import type { Locale } from '../auth/validation.ts';
 /** Un texte dans chaque langue du jeu. */
 export type Text = Readonly<Record<Locale, string>>;
 
-export type RegionId = 'brume' | 'saline' | 'archipel';
+export type RegionId = 'brume' | 'saline' | 'archipel' | 'cuivre';
 
 export interface Region {
   readonly id: RegionId;
@@ -28,9 +28,14 @@ export interface Region {
   readonly route?: { readonly requires: string; readonly cost: number };
 }
 
-/** `water` : un plan d'eau — seul un hydravion s'y pose, et il ne se pose que là. */
-export type Runway = 'short' | 'medium' | 'long' | 'water';
-export type Hazard = 'fog' | 'wind' | 'night' | 'ridge' | 'seawind' | 'none';
+/**
+ * `water` : un plan d'eau — seul un hydravion s'y pose, et il ne se pose que là.
+ * `clearing` : une clairière, plus courte qu'une piste courte — seul un avion
+ * fait pour (le Pic) s'y pose ; lui, en revanche, se pose partout sur la terre.
+ */
+export type Runway = 'clearing' | 'short' | 'medium' | 'long' | 'water';
+/** `canopy` : l'humidité des sous-bois — le risque d'incident est multiplié par 1,5. */
+export type Hazard = 'fog' | 'wind' | 'night' | 'ridge' | 'seawind' | 'canopy' | 'none';
 
 export interface Destination {
   readonly id: string;
@@ -47,11 +52,11 @@ export interface Destination {
   readonly firstDeliveryStamps: number;
 }
 
-export type CargoKind = 'letters' | 'parcels' | 'urgent' | 'fragile' | 'seeds' | 'parts' | 'medicine' | 'loveletters' | 'newspapers' | 'salt' | 'shellfish';
+export type CargoKind = 'letters' | 'parcels' | 'urgent' | 'fragile' | 'seeds' | 'parts' | 'medicine' | 'loveletters' | 'newspapers' | 'salt' | 'shellfish' | 'copper';
 
 export interface PlaneModel {
   readonly id: string;
-  readonly archetype: 'biplane' | 'monoplane' | 'trimotor' | 'seaplane';
+  readonly archetype: 'biplane' | 'monoplane' | 'trimotor' | 'seaplane' | 'highwing';
   readonly name: Text;
   readonly description: Text;
   /** Portée en lieues, aller simple. */

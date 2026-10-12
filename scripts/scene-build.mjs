@@ -421,7 +421,33 @@ const vArchipel = vignette('archipel',
   + sprite(0, 24, { i: 'v-ile' }, '....iiiiiiii................iiiiiiiiiiiiii..........................iiiiiiiiii.................iiiiiiiiiiiiiiii..........\n..iiiiiiiiiiii............iiiiiiiiiiiiiiiiii......................iiiiiiiiiiiiii..............iiiiiiiiiiiiiiiiiiii......\niiiiiiiiiiiiiiii........iiiiiiiiiiiiiiiiiiiiii..................iiiiiiiiiiiiiiiiii..........iiiiiiiiiiiiiiiiiiiiiiii....')
   + [[12, 20], [36, 18], [52, 21], [76, 20], [104, 18], [122, 21], [144, 19]].map(([x, y]) => sprite(x, y, { l: 'v-lanterne', h: 'v-halo', p: 'v-piquet' }, '.h.\nhlh\n.h.\n.p.\n.p.\n.p.') + rect(x + 1, 29, 1, 3, 'v-reflet-lanterne')).join('')
   + sprite(60, 8, { a: 'aile', f: 'fuselage', s: 'flotteur' }, '..aaaaaa..\n.ffffffff.\n..s....s..'));
-const vignettes = vBrume + vSaline + vArchipel;
+// Forêt de Cuivre : une hêtraie rousse, la fumée des charbonniers, le clocher de
+// Sonnefeuille au toit vert-de-gris, et le Pic posé dans la clairière.
+const CROWN = [
+  '....cccccc....',
+  '..cckkkkkkcc..',
+  '.ckkkkkkkkkkc.',
+  'ckkkkkkkkkkkkc',
+  'kkkkkkkkkkkkks',
+  'kkkkkkkkkkkkss',
+  '.kkkkkkkkkksss',
+  '..sskkkkkssss.',
+  '....sssssss...',
+].join('\n');
+const crown = (x, y) => sprite(x, y, { c: 'v-cime-claire', k: 'v-cime', s: 'v-cime-sombre' }, CROWN) + rect(x + 6, y + 9, 2, 48 - y - 9, 'v-tronc');
+const vCuivre = vignette('cuivre',
+  rect(0, 0, VW, 24, 'v-ciel-cuivre') + rect(0, 16, VW, 8, 'v-brume-cuivre')
+  + sprite(0, 18, { h: 'v-cime-loin' }, '...hhhh......hhhhhh....hhhh.....hhhhhh......hhhhh.....hhhh......hhhhhh.....hhhhh......hhhh....hhhhhh......hhhh.....hhhhhh.....hhhh......hhhhh....hhh\n.hhhhhhhh..hhhhhhhhhh.hhhhhhh.hhhhhhhhhh..hhhhhhhhh.hhhhhhhh..hhhhhhhhhh.hhhhhhhhh..hhhhhhh.hhhhhhhhhh..hhhhhhhh.hhhhhhhhhh.hhhhhhh...hhhhhhhhh.hhhhhhh\nhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+  + rect(0, 21, VW, 17, 'v-foret-fond')
+  + sprite(0, 21, { d: 'v-foret-ombre' }, ['d.d.', '.d.d'].map((m) => m.repeat(VW / 4)).join('\n'))
+  + [2, 15, 27, 41, 58, 70, 84, 96, 112, 125, 139, 151].map((x) => rect(x, 26 + (x % 5), 1, 12, 'v-tronc-loin')).join('')
+  + sprite(128, 4, { g: 'v-toit-vert', s: 'v-clocher', b: 'v-baie' }, '...gg...\n..gggg..\n.gggggg.\ngggggggg\n.ssssss.\n.sbssbs.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.\n.ssssss.')
+  + sprite(14, 2, { f: 'v-fumee' }, '.......ff.\n......f...\n.....ff...\n......ff..\n.......f..\n......ff..\n.....ff...\n.....f....\n......f...\n.....ff...\n....ff....\n.....f....\n....ff....\n....f.....\n.....f....\n....ff....\n....f.....\n....f.....\n...ff.....\n....f.....\n....f.....')
+  + rect(0, 38, VW, 10, 'v-sous-bois') + rect(56, 36, 52, 12, 'v-clairiere') + rect(54, 38, 56, 10, 'v-clairiere')
+  + [[-4, 24], [7, 21], [19, 25], [31, 22], [43, 26], [106, 25], [118, 21], [131, 24], [144, 22], [154, 26]].map(([x, y]) => crown(x, y)).join('')
+  + [[60, 44], [66, 41], [71, 46], [89, 43], [97, 45], [102, 40], [84, 47], [63, 47]].map(([x, y]) => rect(x, y, 1, 1, 'v-feuille')).join('')
+  + sprite(72, 33, { a: 'v-aile', h: 'v-hauban', f: 'v-fuselage', e: 'v-empennage', p: 'v-helice', r: 'v-roue' }, 'aaaaaaaaaaaaaa..\n...h......h.....\n...h......h.....\n.pfffffffffffe..\n..ffffffffff.ee.\n...r.......r....'));
+const vignettes = vBrume + vSaline + vArchipel + vCuivre;
 
 const html = readFileSync(page, 'utf8');
 const start = html.indexOf('<!-- scene:start -->'); const end = html.indexOf('<!-- scene:end -->');
