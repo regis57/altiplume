@@ -98,6 +98,18 @@ try {
   assert(vol.includes('Pont-de-Brume') && vol.includes('Prosper') && vol.includes('En route'), `vol affiché (${vol})`);
   assert(await page.$eval('#place-a', (e) => !e.dataset.modele), 'la Grive a quitté sa place au parking de la scène');
   assert((await page.textContent('#bord')).includes('Départ pour Pont-de-Brume'), 'livre de bord : départ');
+
+  // La Grive est en l'air : la ligne régulière ne doit proposer ni avion d'escorte
+  // ni départ. Défaut du 12/10 : sans avion choisi, le formulaire croyait la charge
+  // trop lourde et montrait le convoi à qui n'a qu'un seul avion.
+  const reguliere = page.locator('#main .carte.reguliere');
+  await reguliere.locator('button', { hasText: 'Expédier' }).click();
+  await reguliere.locator('.expedition');
+  assert(await reguliere.locator('.expedition .convoi').evaluate((e) => e.classList.contains('cache')), 'convoi caché quand on n\'a qu\'un avion');
+  assert(await reguliere.locator('.expedition button[type=submit]').evaluate((e) => e.disabled), 'bouton « Envoyer » fermé : aucun avion au sol');
+  const sansAvion = await reguliere.locator('.expedition .aide').textContent();
+  assert(/Aucun avion au sol/.test(sansAvion), `message « aucun avion au sol » (${sansAvion})`);
+  await reguliere.locator('button', { hasText: 'Annuler' }).click();
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-3-en-vol.png'), fullPage: true });
 
   // Six minutes plus tard (dans la base) : arrivée, encaissement, cachets.

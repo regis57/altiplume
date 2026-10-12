@@ -6,6 +6,7 @@
  * valeur : elle affiche.
  */
 import { formatDate, getLocale, placeAfter, t, translatePage } from './i18n.ts';
+import { convoyState } from './convoi.ts';
 import { formatRemaining } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
@@ -569,7 +570,9 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
  *
  * Fret lourd : quand l'avion choisi ne porte pas tous les sacs, un second équipage
  * apparaît — un avion d'escorte et son pilote — et l'estimation devient celle du
- * convoi : le plus lent des deux, les deux salaires, les deux entretiens.
+ * convoi : le plus lent des deux, les deux salaires, les deux entretiens. Tant
+ * qu'aucun avion n'est choisi, ou qu'il n'y a pas de quoi former un second
+ * équipage, on ne montre rien du convoi : voir convoi.ts.
  */
 function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyView, cardId: string, host: HTMLElement): void {
   host.querySelector('.expedition')?.remove();
@@ -622,15 +625,27 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
   const planeSelect = el('select'); planeSelect.name = 'plane';
   const pilotSelect = el('select'); pilotSelect.name = 'pilot';
   planeOptions(planeSelect); pilotOptions(pilotSelect);
-  // Le convoi : caché tant qu'un seul avion suffit.
+  // Le convoi : caché tant qu'un seul avion suffit, et tant qu'aucun avion n'est choisi.
   const convoy = el('fieldset', 'convoi cache');
   const legend = el('legend', undefined, t('card.convoy'));
   const wingPlane = el('select'); wingPlane.name = 'wingPlane';
   const wingPilot = el('select'); wingPilot.name = 'wingPilot';
   convoy.append(legend, field(t('card.wingPlane'), `escorte-${cardId}`, wingPlane), field(t('card.wingPilot'), `second-${cardId}`, wingPilot));
   const estimate = el('p', 'aide');
+  const actions = el('div', 'actions');
+  const go = el('button', 'bouton'); go.type = 'submit'; go.textContent = t('card.send');
+  const cancel = el('button', 'bouton secondaire'); cancel.type = 'button'; cancel.textContent = t('card.cancel');
+  cancel.addEventListener('click', () => form.remove());
+  actions.append(go, cancel);
 
-  const needsWing = () => (modelOf(planeSelect.value)?.capacity ?? 0) < bags;
+  /** Ce que vaut la flotte à cet instant : au sol, libre, et pour les pilotes, reposée. */
+  const state = () => convoyState({
+    capacity: planeSelect.value ? modelOf(planeSelect.value)?.capacity ?? null : null,
+    bags,
+    freePlanes: c.planes.filter((p) => p.busyUntil === null).length,
+    freePilots: c.pilots.filter((p) => p.busyUntil === null && p.restedAt === null).length,
+  });
+  const needsWing = () => state() === 'ask';
   const crewCost = (planeId: string, pilotId: string) => {
     const m = modelOf(planeId);
     const tpl = world.pilots.find((x) => x.id === c.pilots.find((p) => p.id === pilotId)?.pilot);
@@ -645,6 +660,11 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
     const wing = needsWing();
     convoy.classList.toggle('cache', !wing);
     if (wing) { planeOptions(wingPlane, planeSelect.value); pilotOptions(wingPilot, pilotSelect.value); }
+    // Rien ne peut partir : on le dit, et on ferme le bouton plutôt que de laisser
+    // le joueur buter sur une erreur du serveur.
+    const nothing = !planeSelect.value ? 'card.noPlane' : !pilotSelect.value ? 'card.noPilot' : state() === 'impossible' ? 'card.convoyNone' : null;
+    go.disabled = nothing !== null;
+    if (nothing) { estimate.textContent = t(nothing); return; }
     const lead = crewCost(planeSelect.value, pilotSelect.value);
     const second = wing ? crewCost(wingPlane.value, wingPilot.value) : null;
     if (!lead || (wing && !second)) { estimate.textContent = wing ? t('card.convoyNone') : ''; return; }
@@ -660,11 +680,6 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
   };
   for (const s of [planeSelect, pilotSelect, wingPlane, wingPilot]) s.addEventListener('change', update);
 
-  const actions = el('div', 'actions');
-  const go = el('button', 'bouton'); go.type = 'submit'; go.textContent = t('card.send');
-  const cancel = el('button', 'bouton secondaire'); cancel.type = 'button'; cancel.textContent = t('card.cancel');
-  cancel.addEventListener('click', () => form.remove());
-  actions.append(go, cancel);
   form.append(field(t('card.plane'), `avion-${cardId}`, planeSelect), field(t('card.pilot'), `pilote-${cardId}`, pilotSelect), convoy, estimate, actions);
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
