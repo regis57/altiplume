@@ -1,0 +1,102 @@
+# Plan OWASP ZAP — passif seulement.
+#
+# ZAP visite le site comme un joueur curieux : il suit les liens, lit chaque
+# réponse et signale ce qui cloche (en-têtes, cookies, fuites d'information).
+# Il n'attaque rien : pas de scan actif, pas de formulaire envoyé. On ne
+# bombarde pas son propre aérodrome, même en essai.
+#
+# La cible vient de l'environnement : ZAP_CIBLE (par défaut le conteneur
+# démarré par .github/workflows/zap.yml) et ZAP_RAPPORTS (dossier des rapports).
+env:
+  contexts:
+    - name: altiplume
+      urls:
+        - ${ZAP_CIBLE}
+      includePaths:
+        - ${ZAP_CIBLE}.*
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: passiveScan-config
+    parameters:
+      scanOnlyInScope: true
+      maxAlertsPerRule: 10
+    rules:
+      # « Modern Web Application » : une simple information, pas un défaut.
+      - id: 10109
+        threshold: off
+
+  # Faux positifs vérifiés à la main, un par un, avec la raison.
+  - type: alertFilter
+    alertFilters:
+      # <form method="dialog"> ferme une boîte de dialogue dans la page : il
+      # n'envoie rien au serveur. Les vrais envois passent par l'API, qui
+      # n'accepte que du JSON, avec un cookie SameSite=Lax (voir app.ts).
+      - ruleId: 10202
+        newRisk: False Positive
+        url: .*/aerodrome.*
+        urlRegex: true
+        evidence: <form method="dialog">
+      # « still under construction » est une phrase des CGU anglaises (le jeu est
+      # en essai), pas un message d'erreur de serveur.
+      - ruleId: 10023
+        newRisk: False Positive
+        url: .*/cgu.*
+        urlRegex: true
+        evidence: under construction
+
+  # Les adresses que le spider ne trouve pas seul : l'API et les cartes de partage.
+  - type: requestor
+    requests:
+      - url: ${ZAP_CIBLE}/v1/version
+      - url: ${ZAP_CIBLE}/v1/world
+      - url: ${ZAP_CIBLE}/v1/world/stats
+      - url: ${ZAP_CIBLE}/v1/contact
+      # Sans session : doit répondre 401, proprement.
+      - url: ${ZAP_CIBLE}/v1/company
+        responseCode: 401
+      - url: ${ZAP_CIBLE}/v1/account
+        responseCode: 401
+      - url: ${ZAP_CIBLE}/healthz
+      - url: ${ZAP_CIBLE}/aide?lang=en
+      - url: ${ZAP_CIBLE}/partage/altiplume-fr.png
+      - url: ${ZAP_CIBLE}/partage/altiplume-en.png
+      - url: ${ZAP_CIBLE}/manifest.webmanifest
+      - url: ${ZAP_CIBLE}/n-existe-pas
+        responseCode: 404
+
+  - type: spider
+    parameters:
+      context: altiplume
+      maxDuration: 3
+      # Ne rien envoyer : ni inscription, ni message de contact.
+      postForm: false
+      processForm: false
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  # Le verdict : la moindre alerte « moyenne » ou « haute » fait échouer le contrôle.
+  - type: exitStatus
+    parameters:
+      errorLevel: Medium
+      warnLevel: Low
+
+  - type: report
+    parameters:
+      template: traditional-md
+      reportDir: ${ZAP_RAPPORTS}
+      reportFile: zap-rapport.md
+      reportTitle: Altiplume — OWASP ZAP (passif)
+    risks: [info, low, medium, high]
+    confidences: [low, medium, high, confirmed]
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: ${ZAP_RAPPORTS}
+      reportFile: zap-rapport.json
