@@ -7,7 +7,7 @@
 # chaîne de publication en place ; Dependabot suit déjà ce fichier.
 
 # --- Étape 1 : construire le client (a besoin des dépendances de développement)
-FROM node:22.22-alpine AS build
+FROM node:22.23-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/server/package.json packages/server/
@@ -17,7 +17,7 @@ COPY packages/client ./packages/client
 RUN npm run build
 
 # --- Étape 2 : dépendances de production seulement
-FROM node:22.22-alpine AS deps
+FROM node:22.23-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/server/package.json packages/server/
@@ -25,7 +25,7 @@ COPY packages/client/package.json packages/client/
 RUN npm ci --omit=dev --ignore-scripts
 
 # --- Étape 3 : image finale
-FROM node:22.22-alpine AS runtime
+FROM node:22.23-alpine AS runtime
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=3000 \
