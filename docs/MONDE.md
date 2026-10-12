@@ -242,8 +242,15 @@ peinture du hangar.
   quatre avec « Météo dans la peau »).
 - **À l'arrivée** : la récompense, plus le bonus si le délai souple est tenu ; jamais
   de pénalité. Affinité +1 avec le pilote ; moral +1 si à l'heure, −1 si incident.
-- **Fatigue** : +1 par vol (+2 au-delà de trois lieues, × « Cœur de village »), −1
-  toutes les trois heures. À 8, le pilote se repose.
+- **Fatigue** : elle se compte en **minutes de vol**, aller et retour compris, au
+  trait du pilote près (« Cœur de village » × 1,25, « Longues routes » × 0,85). Un
+  saut à Pont-de-Brume pèse dix minutes, un aller-retour de plateau une heure, une
+  traversée de l'Archipel deux heures et demie. Le pilote se repose quand il a
+  **huit heures de vol** dans les bras — une trentaine de sauts à Pont-de-Brume, sept
+  allers-retours de plateau. **En l'air, rien ne s'efface ; au sol, une minute de
+  repos efface deux minutes de vol** : une longue journée se rattrape dans
+  l'après-midi, pas le lendemain. Le joueur voit dix crans (une heure de vol par
+  cran) et le moment exact où son pilote reprend son service.
 - **Cartes** : trois par jour de jeu (minuit UTC), dans la place qui reste d'une main
   de cinq. Ce qu'on n'a pas la place de prendre, quelqu'un d'autre l'a porté : ce
   n'est pas une perte. Une carte défaussée ne revient pas le jour même.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sessionCookie, testApp } from './helpers.ts';
-import { drawCards, FATIGUE_RECOVERY_MS, HAND_SIZE } from '../src/game/sim.ts';
+import { drawCards, FATIGUE_LIMIT_MIN, HAND_SIZE } from '../src/game/sim.ts';
 import { makeRng } from '../src/sim/rng.ts';
 import { findCard, findDestination, findPlane, regionDestinations } from '../src/world/index.ts';
 
@@ -121,7 +121,7 @@ describe('le courrier — expédier', () => {
     expect(f.busyUntil - f.departedAt).toBe(2 * duration);
     expect(s1.planes[0].busyUntil).toBe(f.busyUntil);
     expect(s1.pilots[0].busyUntil).toBe(f.busyUntil);
-    expect(s1.pilots[0].fatigue).toBe(1);
+    expect(s1.pilots[0].fatigue).toBe(0); // 13 min de vol dans les bras : pas encore un cran
     expect(s1.logbook[0]).toMatchObject({ kind: 'flight.departed', francs: -14, ref: 'pont-de-brume' });
 
     // Occupé : on ne peut pas réexpédier.
@@ -169,29 +169,40 @@ describe('le courrier — expédier', () => {
     await t.app.close();
   });
 
-  it('fatigue le pilote et le repose avec le temps', async () => {
+  it('compte la fatigue en minutes de vol, et la repose deux fois plus vite', async () => {
     const t = await company();
     t.clearHand();
     const s0 = await t.state();
     const grive = s0.planes[0].id; const prosper = s0.pilots[0].id;
-    // Prosper a « Cœur de village » : fatigue ×1,25 ; Combe-aux-Rosées est loin (×2) → 3 par vol.
-    t.ctx.db.prepare("UPDATE company_planes SET model = 'heron'").run(); // pour atteindre la Combe avec 1 sac... la Grive y va aussi (8 lieues)
-    t.ctx.db.prepare("UPDATE company_planes SET model = 'grive'").run();
-    for (let i = 0; i < 3; i += 1) {
+    // Combe-aux-Rosées : 6 lieues à 12 lieues/h, une demi-heure l'aller, une heure
+    // l'aller-retour ; Prosper a « Cœur de village » (×1,25) → 75 min de vol dans les
+    // bras par voyage. Huit heures de vol avant le repos : il enchaîne sept allers-
+    // retours de plateau sans souffler une minute entre deux (on avance pile jusqu'au
+    // retour). Un saut à Pont-de-Brume, lui, pèse treize minutes : on en fait trente-cinq.
+    let flights = 0;
+    for (;;) {
       t.give('c-medicaments');
       const r = await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: prosper }, t.cookie);
-      expect(r.statusCode, `vol ${i}`).toBe(201);
-      t.advance(2 * 30 * 60_000 * 1.5); // aller-retour, avec marge pour brume/aléa
+      if (r.statusCode === 400 && r.json().error === 'pilot_tired') break;
+      expect(r.statusCode, `vol ${flights}`).toBe(201);
+      flights += 1;
+      expect(flights, 'un pilote finit par se fatiguer').toBeLessThan(20);
+      const back = r.json().flights.find((f: { destination: string }) => f.destination === 'combe-aux-rosees').busyUntil;
+      t.advance(back - t.ctx.now());
       await t.state();
-      t.ctx.db.prepare('UPDATE company_pilots SET fatigue_at = ?').run(t.ctx.now()); // pas de récupération entre deux pour le test
     }
+    expect(flights).toBeGreaterThanOrEqual(6);
     let s = await t.state();
-    expect(s.pilots[0].fatigue).toBeGreaterThanOrEqual(8);
-    t.give('c-medicaments');
-    expect((await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: prosper }, t.cookie)).json().error).toBe('pilot_tired');
-    t.advance(3 * FATIGUE_RECOVERY_MS);
+    expect(s.pilots[0].fatigue).toBeGreaterThanOrEqual(8); // huit crans sur dix : il pose sa casquette
+    expect(s.pilots[0].restedAt).toBeGreaterThan(t.ctx.now());
+    expect(s.pilots[0].restedAt).toBeLessThanOrEqual(t.ctx.now() + FATIGUE_LIMIT_MIN * 60_000);
+    // Deux heures au sol effacent quatre heures de vol : il repart le jour même, pas le lendemain.
+    // (Un ou deux incidents de vol ont pu alourdir la journée : la fatigue plafonne à dix heures,
+    // dont une heure de repos suffit à redescendre sous la limite.)
+    t.advance(2 * 3_600_000);
     s = await t.state();
-    expect(s.pilots[0].fatigue).toBeLessThanOrEqual(6);
+    expect(s.pilots[0].restedAt).toBeNull();
+    t.give('c-medicaments');
     expect((await t.json('POST', '/v1/company/flights', { card: 'c-medicaments', plane: grive, pilot: prosper }, t.cookie)).statusCode).toBe(201);
     await t.app.close();
   });
