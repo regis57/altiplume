@@ -173,9 +173,7 @@ const cross = sprite(10, 92, { p: 'croix', o: 'croix-ombre', s: 'socle' }, `
 `);
 
 // ---- Le hangar : tôle ondulée, grande porte, fenêtre, cheminée ----
-const hangar = g('class="hangar" id="scene-hangar"', sprite(222, 70, {
-  r: 'toit', R: 'toit-clair', w: 'mur', W: 'mur-clair', d: 'porte', D: 'porte-clair', v: 'vitre', c: 'cheminee', b: 'bardage', s: 'seuil',
-}, `
+const HANGAR_ART = `
 ................................cc.........................................
 ................................cc.........................................
 ..............................RRRRRRRRRRRRRRRRR............................
@@ -204,7 +202,10 @@ const hangar = g('class="hangar" id="scene-hangar"', sprite(222, 70, {
 ....wwWwwwwWwwwwWwwwwWwwwwWwwwwWdDDDDDDDDDDDDDdDDDDDDDDDDDDDdWwwwwWww.......
 ....wwWwwwwWwwwwWwwwwWwwwwWwwwwWddddddddddddddddddddddddddddWwwwwWww.......
 ....ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss.......
-`));
+`;
+const hangar = g('class="hangar" id="scene-hangar"', sprite(222, 70, {
+  r: 'toit', R: 'toit-clair', w: 'mur', W: 'mur-clair', d: 'porte', D: 'porte-clair', v: 'vitre', c: 'cheminee', b: 'bardage', s: 'seuil',
+}, HANGAR_ART));
 
 // L'enseigne : une planche au-dessus de la porte, le nom peint dessus.
 const sign = g('class="enseigne cache" id="scene-enseigne"',
@@ -356,6 +357,27 @@ const cafe = g('class="cafe cache" id="scene-cafe"', sprite(60, 100, { u: 'paras
 .c......pppp......c.
 `));
 
+// ---- Les saisons : ce qui n'apparaît qu'en leur temps (data-saison sur la page) ----
+// La neige sur le toit du hangar : la pente entière, tirée du dessin même du toit
+// (lignes 2 à 10), avec une colonne d'ombre toutes les cinq.
+const snowRoof = g('class="saisonnier hiver-seul"', sprite(222, 70, { n: 'neige', N: 'neige-ombre' },
+  HANGAR_ART.split('\n').map((line, i) => (i >= 3 && i <= 11 ? line.replace(/[Rr]/g, (_, x) => (x % 5 === 0 ? 'N' : 'n')) : line.replace(/[^.]/g, '.'))).join('\n')));
+// Des flocons, en deux nappes qui ne tombent pas à la même vitesse.
+const flake = (x, y) => rect(x, y, 1, 1, 'flocon');
+const flakes = g('class="saisonnier hiver-seul flocons"',
+  g('class="flocons-1"', [[12, 8], [40, 30], [66, 14], [93, 44], [121, 22], [148, 6], [175, 36], [203, 18], [231, 48], [258, 10], [286, 32], [312, 20], [28, 60], [84, 70], [140, 58], [196, 66], [252, 62], [304, 72]].map(([x, y]) => flake(x, y)).join(''))
+  + g('class="flocons-2"', [[20, 20], [55, 50], [80, 4], [108, 36], [134, 12], [162, 52], [190, 28], [218, 6], [244, 40], [272, 16], [298, 54], [8, 42], [116, 66], [228, 74], [168, 78]].map(([x, y]) => flake(x, y)).join('')));
+// Des feuilles rousses qui tombent des arbres, à l'automne.
+const leaf = (x, y, c) => rect(x, y, 2, 1, c);
+const leaves = g('class="saisonnier automne-seul feuilles-tombantes"',
+  [[10, 100, 'feuille-a'], [24, 96, 'feuille-b'], [122, 101, 'feuille-a'], [130, 97, 'feuille-b'], [140, 103, 'feuille-a'], [16, 106, 'feuille-b'], [126, 108, 'feuille-a'], [60, 112, 'feuille-b'], [200, 115, 'feuille-a'], [96, 117, 'feuille-b']]
+    .map(([x, y, c]) => leaf(x, y, c)).join(''));
+// Les vergers en fleur, au printemps : des pétales sur les deux feuillus du premier plan.
+const blossom = (x0, y0) => [[2, 1], [5, 0], [8, 2], [1, 3], [4, 2], [7, 4], [9, 3], [3, 5], [6, 5], [5, 3]].map(([x, y], i) => rect(x0 + x, y0 + y, 1, 1, i % 3 ? 'petale' : 'petale-clair')).join('');
+const blossoms = g('class="saisonnier printemps-seul"', blossom(6, 90) + blossom(118, 92));
+// L'été : des boutons d'or dans le pré.
+const buttercups = g('class="saisonnier ete-seul"', [[14, 109], [37, 113], [69, 108], [107, 112], [153, 109], [182, 114], [221, 110], [246, 113], [279, 108], [301, 112]].map(([x, y]) => rect(x, y, 1, 1, 'bouton-or')).join(''));
+
 const svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges">
 ${sky}
 <g class="etoiles">${stars}</g>
@@ -365,13 +387,16 @@ ${farHills}
 ${farTrees}
 ${hills}
 ${vegetation}
+${blossoms}
 ${ground}
+${buttercups}
 ${grass}
 ${path}
 ${cross}
 ${runway}
 ${runwayLong}
 ${hangar}
+${snowRoof}
 ${sign}
 ${flowers}
 ${flag}
@@ -385,6 +410,8 @@ ${parked}
 ${river}
 ${pontoon}
 ${seaplane}
+${leaves}
+${flakes}
 ${flying}
 </svg>`;
 

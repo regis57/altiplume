@@ -11,6 +11,7 @@ import { awardStamp, findCompanyByPlayer, foundCompany, loadCompanyState, rename
 import { requirePlayer } from '../auth/session.ts';
 import { isLocale, type Locale } from '../auth/validation.ts';
 import { gameDayIndex } from '../sim/day.ts';
+import { seasonOf } from '../sim/saison.ts';
 import { deriveSeed } from '../sim/rng.ts';
 import { findCard, findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
@@ -96,6 +97,8 @@ function view(db: Database, state: CompanyState, now: number, news: News[] = [])
     }),
     zones: state.zones,
     regions: unlockedRegions(db, state.company.id),
+    // La saison du calendrier, et quand elle finit : la scène et les estimations en dépendent.
+    season: (() => { const x = seasonOf(now); return { id: x.season, endsAt: x.endsAt }; })(),
     decorations: state.decorations.map((d) => d.decoration),
     album: state.stamps.map((s) => ({ id: s.stamp, earnedAt: s.earnedAt })),
     hand: listHand(db, state.company.id),

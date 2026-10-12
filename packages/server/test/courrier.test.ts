@@ -140,11 +140,12 @@ describe('le courrier — expédier', () => {
     expect(s.flights[0].settled).toBe(true);
     expect(s.francs).toBe(286 + 33 + 8); // récompense + bonus de délai (4 h)
     expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 41, bonus: true, incident }));
-    expect(s.news.map((n: { kind: string; stamp?: string }) => n.stamp).filter(Boolean)).toEqual(['s-premier-vol', 's-pont-de-brume']);
+    // Le test vit le 11 octobre : la première livraison de l'automne colle aussi sa page.
+    expect(s.news.map((n: { kind: string; stamp?: string }) => n.stamp).filter(Boolean)).toEqual(['s-premier-vol', 's-pont-de-brume', 's-automne']);
     expect(s.pilots[0].affinity).toBe(1);
     expect(s.pilots[0].morale).toBe(incident ? 10 : 11);
     expect(s.planes[0].wear).toBeGreaterThanOrEqual(5);
-    expect(s.album.map((a: { id: string }) => a.id)).toEqual(['s-fondation', 's-premier-vol', 's-pont-de-brume']);
+    expect(s.album.map((a: { id: string }) => a.id)).toEqual(['s-fondation', 's-premier-vol', 's-pont-de-brume', 's-automne']);
     expect((await t.state()).francs).toBe(327); // pas de double encaissement
     // Rentré, disponible.
     t.advance(duration);

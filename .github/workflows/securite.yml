@@ -3,6 +3,9 @@ name: Sécurité
 # Le contrôle de sécurité externe (docs/SECURITE.md) : ce que les plateformes
 # gratuites voient d'altiplume.com, comparé à l'attendu. Chaque lundi matin et
 # à la demande. Échoue tant qu'un point est sous l'attendu — c'est le but.
+#
+# Et l'image publiée, repassée sous Trivy chaque semaine : une faille découverte
+# après la publication ne doit pas attendre la prochaine mise à jour pour se voir.
 on:
   schedule:
     - cron: '17 5 * * 1' # lundi 05:17 UTC (07:17 à Paris)
@@ -35,3 +38,35 @@ jobs:
           node scripts/securite-check.mjs "$HOST" --strict | tee rapport.md
           echo "## Contrôle de sécurité externe" >> "$GITHUB_STEP_SUMMARY"
           cat rapport.md >> "$GITHUB_STEP_SUMMARY"
+
+  image:
+    name: image publiée (Trivy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Mêmes version et empreinte que .github/workflows/release.yml.
+      TRIVY_VERSION: "0.69.3"
+      TRIVY_SHA256: "1816b632dfe529869c740c0913e36bd1629cb7688bd5634f4a858c1d57c88b75"
+      IMAGE: ghcr.io/${{ github.repository }}:latest
+    steps:
+      - name: Installer Trivy (binaire officiel, empreinte vérifiée)
+        run: |
+          curl -fsSLo "$RUNNER_TEMP/trivy.tgz" \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          echo "${TRIVY_SHA256}  $RUNNER_TEMP/trivy.tgz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/trivy"
+          tar -xzf "$RUNNER_TEMP/trivy.tgz" -C "$RUNNER_TEMP/trivy" trivy
+      - name: Contrôler l'image en service
+        run: |
+          "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m \
+            --scanners vuln --severity HIGH,CRITICAL \
+            --format table --output trivy.txt "$IMAGE"
+          {
+            echo "## Trivy — l'image publiée (\`latest\`)"
+            echo
+            echo '```'
+            cat trivy.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m --skip-db-update \
+            --scanners vuln --severity CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"
