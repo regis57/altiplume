@@ -186,6 +186,49 @@ export const CONTRACTS: readonly ContractCard[] = [
   contract('c-lettre-grand-blanc', 'ile-du-bout', 'loveletters', 1, 444, 12, 67, 3,
     { fr: 'Une lettre vers le Grand Blanc', en: 'A letter towards the Great White' },
     { fr: "Une lettre pour quelqu'un parti vers le nord, à laisser à la dernière lanterne. On ne sait pas qui la prendra. On sait qu'elle doit y être.", en: 'A letter for someone gone north, to be left at the last lantern. No one knows who will collect it. Everyone knows it must be there.' }),
+  // ---- Forêt de Cuivre : ne se tirent qu'une fois la route ouverte ----
+  // Les Charbonnières
+  contract('c-charbonniers', 'les-charbonnieres', 'letters', 2, 122, 36, 17, 1,
+    { fr: 'Les lettres de la lisière', en: 'Letters for the forest edge' },
+    { fr: "Les charbonniers ne quittent pas leurs meules : un feu qu'on laisse est un feu perdu. Leurs lettres arrivent avec la fumée — c'est-à-dire avec vous.", en: 'The charcoal-burners never leave their kilns: a fire left alone is a fire lost. Their letters come in with the smoke — which is to say, with you.' }),
+  contract('c-soufflet', 'les-charbonnieres', 'parts', 1, 134, 10, 33, 2,
+    { fr: 'Le soufflet fendu', en: 'The split bellows' },
+    { fr: "Le grand soufflet de la meule du bas s'est fendu. Une pièce de cuir et de laiton, faite à Haut-Ferrand, avant que la braise s'endorme.", en: 'The big bellows on the lower kiln has split. A part in leather and brass, made in Ferncrest, before the embers go to sleep.' }),
+  // Villechaudron
+  contract('c-cuivre-mine', 'villechaudron', 'copper', 2, 146, 48, 19, 1,
+    { fr: 'Le cuivre de la mine', en: 'Copper from the mine' },
+    { fr: "Deux sacs de cuivre en feuilles, sortis de Vert-de-Gris, pour les chaudronniers. La route des charrettes est défoncée depuis l'automne ; le ciel, lui, ne l'est pas.", en: 'Two sacks of copper sheet out of Verdigris, for the smiths. The cart road has been ruined since autumn; the sky has not.' }),
+  contract('c-receveur', 'villechaudron', 'urgent', 1, 156, 4, 42, 2,
+    { fr: 'Le pli du receveur', en: "The postmaster's packet" },
+    { fr: "Un pli recommandé pour le receveur de Villechaudron : le cadastre de la forêt, signé à Pont-de-Brume, qu'il attend pour midi.", en: 'A registered packet for the Kettleby postmaster: the forest survey, signed at Mistbridge, which he expects by noon.' }),
+  // Les Scieries
+  contract('c-courroie', 'les-scieries', 'parts', 2, 152, 8, 33, 2,
+    { fr: 'La courroie de la grande roue', en: "The big wheel's belt" },
+    { fr: "La courroie de la scierie du bas a cédé, et la roue tourne dans le vide. Deux caisses de pièces, et trois scieurs assis sur les planches à vous attendre.", en: "The lower mill's drive belt has snapped, and the wheel is turning for nothing. Two crates of parts, and three sawyers sitting on the planks, waiting for you." }),
+  contract('c-scieurs', 'les-scieries', 'letters', 2, 162, 36, 19, 1,
+    { fr: 'Le courrier des scieurs', en: "The sawyers' mail" },
+    { fr: "Deux sacs pour la vallée des scieries. On les lit à voix haute pendant la pause, assis sur les grumes, pour ceux à qui personne n'écrit.", en: 'Two bags for the sawmill valley. They are read aloud at the break, sitting on the logs, for those nobody writes to.' }),
+  // Sonnefeuille
+  contract('c-simples', 'sonnefeuille', 'seeds', 2, 170, 48, 19, 1,
+    { fr: 'Les graines du jardin des simples', en: 'Seeds for the herb garden' },
+    { fr: "Les moines de Sonnefeuille soignent toute la forêt avec leur jardin. Deux sacs de graines, de la sauge à la reine-des-prés.", en: 'The Ringleaf monks doctor the whole forest from their garden. Two bags of seed, from sage to meadowsweet.' }),
+  contract('c-cire', 'sonnefeuille', 'fragile', 1, 184, 12, 42, 2,
+    { fr: 'La cire pour le moule', en: 'Wax for the mould' },
+    { fr: "Pour couler une cloche, on la modèle d'abord en cire. Une caisse de cire d'abeille de Lanterne-du-Val, calée dans le foin, qui ne doit ni chauffer ni geler.", en: 'To cast a bell, you first model it in wax. A crate of Lanternhollow beeswax, packed in hay, that must neither warm up nor freeze.' }),
+  // Vert-de-Gris
+  contract('c-mineurs', 'vert-de-gris', 'medicine', 1, 192, 6, 50, 2,
+    { fr: 'La toux des mineurs', en: "The miners' cough" },
+    { fr: "La poussière verte finit toujours par entrer dans les poitrines. Le médecin de Villechaudron envoie ce qu'il faut, et il le faut avant la nuit.", en: "The green dust always gets into chests in the end. The Kettleby doctor is sending what's needed, and it's needed before nightfall." }),
+  contract('c-lampes-mine', 'vert-de-gris', 'parts', 2, 206, 24, 28, 1,
+    { fr: 'Les lampes de la mine', en: 'Lamps for the pit' },
+    { fr: "Deux caisses de lampes de mineur, des mèches et des verres. Au fond, on ne voit que la lumière qu'on emporte.", en: 'Two crates of miners\' lamps, wicks and glasses. Down there, you only see the light you bring with you.' }),
+  // Le Hêtre-Roi
+  contract('c-garde', 'le-hetre-roi', 'newspapers', 1, 214, 48, 22, 1,
+    { fr: 'Les journaux du garde', en: "The forester's papers" },
+    { fr: "Le garde du Hêtre-Roi lit le journal de Pont-de-Brume avec une semaine de retard, et trois jours d'avance sur tout le fond des bois.", en: 'The Kingbeech forester reads the Mistbridge paper a week late, and three days ahead of everyone else in the deep woods.' }),
+  contract('c-creux', 'le-hetre-roi', 'loveletters', 1, 232, 12, 56, 3,
+    { fr: "Une lettre pour le creux de l'arbre", en: 'A letter for the hollow tree' },
+    { fr: "Une lettre à glisser dans le creux du Hêtre-Roi, là où le facteur des bois relevait le courrier le jeudi. Quelqu'un passera la prendre. Personne ne dit qui.", en: 'A letter to slip into the hollow of the King Beech, where the forest postman used to collect on Thursdays. Someone will come by for it. Nobody says who.' }),
 ];
 
 export const EVENTS: readonly EventCard[] = [
@@ -317,6 +360,25 @@ export const EVENTS: readonly EventCard[] = [
       { id: 'mail', label: { fr: 'Le courrier d\'abord', en: 'Mail first' }, outcome: { fr: "Un verre à chaque ponton, pas plus. Le sac arrive à l'heure, le pilote un peu moins.", en: 'One glass at each jetty, no more. The bag arrives on time; the pilot, a little less so.' }, effects: { delayHours: 1 } },
     ],
   },
+  // ---- Forêt de Cuivre ----
+  {
+    kind: 'event', id: 'e-hetre-couche', weight: 1, region: 'cuivre',
+    title: { fr: 'Un hêtre en travers', en: 'A beech across the strip' },
+    text: { fr: "Le vent de la nuit a couché un hêtre en travers de la clairière. Le tronc est plus gros qu'un tonneau, et les feuilles rousses couvrent tout.", en: 'The night wind has laid a beech right across the clearing. The trunk is thicker than a barrel, and copper leaves cover everything.' },
+    choices: [
+      { id: 'saw', label: { fr: 'Payer les scieurs (18 F)', en: 'Pay the sawyers (18 F)' }, outcome: { fr: "Ils montent des Scieries avec le passe-partout. Une heure plus tard, la clairière est libre et le bois déjà vendu.", en: 'They come up from Millhurst with the crosscut saw. An hour later the clearing is clear and the timber already sold.' }, effects: { francs: -18 } },
+      { id: 'wait', label: { fr: 'Attendre le débardeur', en: 'Wait for the log-hauler' }, outcome: { fr: "Le cheval du débardeur arrive à son pas. Trois heures, et une leçon sur la façon de tirer un tronc sans le fâcher.", en: "The log-hauler's horse arrives at its own pace. Three hours, and a lesson in dragging a trunk without upsetting it." }, effects: { delayHours: 3, morale: 1 } },
+    ],
+  },
+  {
+    kind: 'event', id: 'e-sous-bois', weight: 2, region: 'cuivre',
+    title: { fr: "L'humidité des sous-bois", en: 'Damp under the trees' },
+    text: { fr: "Trois jours de brouillard sous les hêtres. Le moteur a passé la nuit dans une clairière, et il tousse comme un charbonnier.", en: "Three days of mist under the beeches. The engine spent the night in a clearing, and it's coughing like a charcoal-burner." },
+    choices: [
+      { id: 'dry', label: { fr: 'Le sécher à la forge (12 F)', en: 'Dry it at the forge (12 F)' }, outcome: { fr: "Les chaudronniers de Villechaudron prêtent un coin de forge. Le moteur repart, tiède et content.", en: 'The Kettleby smiths lend a corner of their forge. The engine starts again, warm and content.' }, effects: { francs: -12 } },
+      { id: 'go', label: { fr: 'Partir quand même', en: 'Go anyway' }, outcome: { fr: "Il crache, il hésite, il prend. L'avion rentre, mais il faudra regarder les bougies de près.", en: 'It spits, it hesitates, it catches. The plane gets home, but the plugs will need a close look.' }, effects: { wear: 8 } },
+    ],
+  },
 ];
 
 export const OPPORTUNITIES: readonly OpportunityCard[] = [
@@ -368,6 +430,25 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     kind: 'opportunity', id: 'o-pilote-iles', weight: 2, region: 'archipel',
     title: { fr: 'Quelqu\'un sur le ponton', en: 'Someone on the jetty' },
     text: { fr: "À l'Anse-des-Lanternes, quelqu'un attend sur le ponton avec un sac et une lanterne, et demande si votre compagnie prend encore des pilotes.", en: 'At Lanterncove, someone is waiting on the jetty with a bag and a lantern, asking whether your company is still taking pilots.' },
+    offer: { type: 'pilot', pilot: 'rotating' },
+  },
+  // ---- Forêt de Cuivre ----
+  {
+    kind: 'opportunity', id: 'o-pic', weight: 2, region: 'cuivre',
+    title: { fr: 'Le Pic du receveur', en: "The postmaster's Woodpecker" },
+    text: { fr: "Le receveur de Villechaudron a voulu faire porter le courrier de la forêt par un Pic. Il n'a jamais appris à le piloter. L'avion attend sous une bâche, aile haute et pneus ballons, comme un oiseau qui ne sait pas qu'il vole.", en: "The Kettleby postmaster once meant to have the forest mail carried by a Woodpecker. He never learned to fly it. It waits under a tarpaulin, high wing and balloon tyres, like a bird that doesn't know it can fly." },
+    offer: { type: 'plane', model: 'pic', price: 3600 },
+  },
+  {
+    kind: 'opportunity', id: 'o-releve', weight: 3, region: 'cuivre',
+    title: { fr: 'Le relevé des clairières', en: 'The clearing survey' },
+    text: { fr: "Le garde du Hêtre-Roi vous donne une copie de son relevé : chaque clairière de la forêt, sa longueur au pas, et le côté d'où le vent du soir y descend. Un cachet pour l'album.", en: 'The Kingbeech forester gives you a copy of his survey: every clearing in the forest, its length in paces, and the side the evening wind comes down from. A stamp for the album.' },
+    offer: { type: 'map', stamps: 1 },
+  },
+  {
+    kind: 'opportunity', id: 'o-pilote-foret', weight: 2, region: 'cuivre',
+    title: { fr: 'Quelqu\'un à la lisière', en: 'Someone at the forest edge' },
+    text: { fr: "Aux Charbonnières, quelqu'un attend au bord de la piste, un sac sur l'épaule, et demande si l'avion repart vers la Croisette.", en: 'At Charwood, someone is waiting at the edge of the strip with a bag over one shoulder, asking whether the plane is going back to Crosslet.' },
     offer: { type: 'pilot', pilot: 'rotating' },
   },
 ];

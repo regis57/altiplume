@@ -53,4 +53,13 @@ export const PLANES: readonly PlaneModel[] = [
     },
     range: 22, capacity: 4, speed: 16, reliability: 0.91, runway: 'water', price: 7800, upkeep: 18, starter: false,
   },
+  {
+    id: 'pic', archetype: 'highwing',
+    name: { fr: 'Pic P-1', en: 'Woodpecker W-1' },
+    description: {
+      fr: "L'avion des clairières : une aile haute, des volets qui descendent comme des paupières, des pneus ballons. Il décolle en cinquante pas et se pose là où un autre ferait demi-tour. Il n'est pas rapide ; il n'a pas besoin de l'être.",
+      en: "The clearing plane: a high wing, flaps that drop like eyelids, balloon tyres. It takes off in fifty paces and lands where another plane would turn back. It isn't fast; it doesn't need to be.",
+    },
+    range: 12, capacity: 2, speed: 13, reliability: 0.93, runway: 'clearing', price: 4200, upkeep: 9, starter: false,
+  },
 ];

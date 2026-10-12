@@ -337,6 +337,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
     for (const r of world.regions) {
       const stops = world.destinations.filter((d) => d.region === r.id);
       const water = stops.filter((d) => d.runway === 'water').length;
+      const clearings = stops.filter((d) => d.runway === 'clearing').length;
       const open = c.regions.includes(r.id);
       const li = el('li', open ? 'route ouverte' : 'route');
       // La vignette de la région, dessinée par scripts/scene-build.mjs.
@@ -345,7 +346,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       li.append(el('h3', undefined, r.name));
       li.append(el('p', 'tagline', r.tagline));
       li.append(el('p', undefined, r.description));
-      li.append(el('p', 'aide', `${stops.length} ${t('game.stops')}${water ? ` · ${water} ${t('game.onWater')}` : ''}`));
+      li.append(el('p', 'aide', `${stops.length} ${t('game.stops')}${water ? ` · ${water} ${t('game.onWater')}` : ''}${clearings ? ` · ${clearings} ${t('game.inClearing')}` : ''}`));
       if (!r.route) {
         li.append(el('p', 'aide', t('game.routeHome')));
       } else if (open) {
