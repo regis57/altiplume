@@ -5,6 +5,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
+import { createHash, randomBytes } from 'node:crypto';
 import type { AppContext } from './context.ts';
 import { registerSecurityHeaders } from './http/security.ts';
 import { englishPages, rewriteLanguage } from './http/langue.ts';
@@ -53,12 +54,23 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   registerSecurityHeaders(app, production);
 
   await app.register(fastifyCookie);
+  // Deux compteurs par personne, pas un : l'API reste stricte (120 par minute) ; les
+  // pages et leurs fichiers ont de la marge (600), parce qu'un chargement de page,
+  // c'est une dizaine de requêtes, et qu'une famille derrière la même box partage
+  // une adresse. Avec un seul compteur, quelques pages suffisaient à épuiser le
+  // budget de l'API — et un script de page refusé laissait un bouton invisible.
+  //
+  // On ne garde pas l'adresse : la clé est une empreinte courte, salée au démarrage
+  // du serveur, en mémoire seulement. Elle ne survit pas à un redémarrage, et ne se
+  // remonte pas jusqu'à l'adresse.
+  const salt = randomBytes(16);
+  const isApi = (url: string) => url.startsWith('/v1/');
+  const who = (ip: string) => createHash('sha256').update(salt).update(ip).digest('base64url').slice(0, 16);
   await app.register(fastifyRateLimit, {
     global: true,
-    max: 120,
+    max: (request) => (isApi(request.url) ? 120 : 600),
     timeWindow: '1 minute',
-    // On ne garde pas l'adresse : la clé est une empreinte courte, en mémoire seulement.
-    keyGenerator: (request) => request.ip,
+    keyGenerator: (request) => `${isApi(request.url) ? 'api' : 'page'}:${who(request.ip)}`,
     addHeadersOnExceeding: { 'x-ratelimit-limit': false, 'x-ratelimit-remaining': false, 'x-ratelimit-reset': false },
     addHeaders: { 'x-ratelimit-limit': false, 'x-ratelimit-remaining': false, 'x-ratelimit-reset': true, 'retry-after': true },
   });

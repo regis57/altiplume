@@ -112,8 +112,10 @@ jetons sont des empreintes SHA-256 inutilisables telles quelles.
   ni script à exécuter ni puits d'injection à atteindre.
 - COOP/COEP/CORP : le document est isolé des autres origines ; aucune ressource
   tierce, donc aucune requête tierce (vie privée par construction).
-- Schémas AJV stricts sur chaque entrée, limitation de débit sur chaque action,
-  journal d'audit sans donnée personnelle.
+- Schémas AJV stricts sur chaque entrée, limitation de débit sur chaque action —
+  deux compteurs par personne depuis le 12/10 : 120 requêtes par minute sur l'API,
+  600 sur les pages et leurs fichiers ; la clé est une empreinte de l'adresse, salée
+  au démarrage, gardée en mémoire seulement —, journal d'audit sans donnée personnelle.
 - Le formulaire de contact n'est pas un relais : le destinataire vient de la
   configuration du serveur, jamais du navigateur ; rien n'est écrit en base (donc
   aucune injection SQL possible — il n'y a pas de requête) ; sujet et adresse sont
