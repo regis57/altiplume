@@ -5,10 +5,10 @@ une notification sur un iPhone le lendemain. Le deuxième jour, le 12 octobre 20
 devait prouver autre chose : qu'on peut le faire **grandir sans rien casser**. On l'a
 joué, on a écouté ce qui coinçait, on a réparé, puis on a ouvert une région, une
 mécanique, une année entière, et on a fini par passer tout l'aérodrome au crible.
-Dix-sept PR fusionnées, toutes vertes, toutes publiées sous le nom de l'auteur.
+Vingt PR fusionnées, toutes vertes, toutes publiées sous le nom de l'auteur.
 
 Cette page est le résumé de la journée, dans l'ordre où elle s'est déroulée. Le
-détail, chapitre par chapitre (28 à 38), est dans le [Journal](Journal) ; la
+détail, chapitre par chapitre (28 à 39), est dans le [Journal](Journal) ; la
 première journée, dans [Les 24 heures](Les-24-heures).
 
 ## Ce que la journée a ajouté, en une phrase
@@ -88,6 +88,12 @@ relisent tout à chaque PR.
 14. **Le manifeste de sécurité à jour.** La page [Sécurité](Securite) a maintenant
     deux moitiés — ce qui se voit du dehors, ce qui se contrôle du dedans — et la
     liste, plus courte, de ce qui reste à faire.
+15. **L'escorte fantôme.** Dernier défaut de la journée, trouvé en jouant : la Grive
+    partie, la ligne régulière proposait un avion d'escorte — une mécanique de fret
+    lourd — pour un seul sac, à qui n'a qu'un seul avion. Quand aucun avion n'est
+    choisi, la capacité retombait à zéro, et zéro est plus petit qu'un sac : **une
+    flotte absente était lue comme une flotte trop petite**. Le formulaire distingue
+    maintenant les trois cas, et le bouton « Envoyer » se ferme en disant pourquoi.
 
 ## Les décisions de la journée
 
@@ -97,7 +103,8 @@ relisent tout à chaque PR.
 - **La parité est une règle, et un test la garde.** Quand un renommage la rompt, on
   le dit, et on la rétablit le jour même.
 - **Le jeu ne bloque jamais.** La fatigue se mesure en temps de vol ; aucune saison
-  ne ferme de route ; aucun contrat n'est tiré s'il est impossible à livrer.
+  ne ferme de route ; aucun contrat n'est tiré s'il est impossible à livrer. Et
+  quand quelque chose ne peut pas partir, l'écran dit pourquoi.
 - **Dire ce qui tourne.** La version affichée vient de la chaîne de publication,
   jamais d'une saisie à la main.
 - **Chaque nouvelle histoire répond à une histoire existante.** Le monde se tient
@@ -125,6 +132,8 @@ relisent tout à chaque PR.
 - *« Ne te rate pas sur le storytelling. »* — la forêt, la cloche, les saisons,
   l'aérodrome.
 - *« Ne fais pas sans mon go. »* puis *« Fais PR par PR. »* — le crible.
+- *« La page montre le placeholder de l'avion d'escorte… qui n'est pas débloqué
+  pour moi. »* — le dernier défaut du jour, trouvé en jouant.
 
 ## Où en est le projet, ce soir
 
@@ -132,7 +141,7 @@ Un jeu complet, de la première lettre à la première année : **4 régions et 
 escales** qui s'ouvrent par deux routes, **6 avions**, **10 pilotes** (cinq femmes,
 cinq hommes) et leurs histoires croisées, **106 cartes**, **46 pages d'album**, les
 **4 saisons**, un aérodrome à quatre zones et douze décorations qui se voit grandir.
-**210 tests**, **quatre parcours de bout en bout** dans un vrai navigateur.
+**214 tests**, **quatre parcours de bout en bout** dans un vrai navigateur.
 Observatory, securityheaders, SSL Labs : **A+**. À chaque PR : CodeQL, Opengrep,
 ZAP, Trivy, Socket, `npm audit`, licences ; chaque lundi, le contrôle externe et
 l'image en service repassée sous Trivy. Jouable sur
