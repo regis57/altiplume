@@ -15,7 +15,7 @@ import { deriveSeed } from '../sim/rng.ts';
 import { findCard, findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
 import {
-  busyUntil, currentFatigue, discardCard, dispatch, listFlights, listHand, listLedger, openRegion, pendingEvent, placeDecoration, planDispatch, playCard, settle, unlockedRegions, upgradeZone, type News,
+  busyUntil, currentFatigue, discardCard, dispatch, fatiguePoints, listFlights, listHand, listLedger, openRegion, pendingEvent, placeDecoration, planDispatch, playCard, restedAt, settle, unlockedRegions, upgradeZone, type News,
 } from './sim.ts';
 import type { Database } from '../db/database.ts';
 
@@ -74,10 +74,13 @@ function view(db: Database, state: CompanyState, now: number, news: News[] = [])
     foundedAt: state.company.foundedAt,
     now,
     planes: state.planes.map((p) => ({ id: p.id, model: p.model, wear: p.wear, busyUntil: busyPlanes.get(p.id) ?? null })),
-    pilots: state.pilots.map((p) => ({
-      id: p.id, pilot: p.pilot, affinity: p.affinity, morale: p.morale, scenesSeen: p.scenesSeen,
-      fatigue: currentFatigue({ fatigue: p.fatigue, fatigue_at: p.fatigueAt }, now), busyUntil: busyPilots.get(p.id) ?? null,
-    })),
+    pilots: state.pilots.map((p) => {
+      const minutes = currentFatigue({ fatigue: p.fatigue, fatigue_at: p.fatigueAt }, now);
+      return {
+        id: p.id, pilot: p.pilot, affinity: p.affinity, morale: p.morale, scenesSeen: p.scenesSeen,
+        fatigue: fatiguePoints(minutes), restedAt: restedAt(minutes, now), busyUntil: busyPilots.get(p.id) ?? null,
+      };
+    }),
     zones: state.zones,
     regions: unlockedRegions(db, state.company.id),
     decorations: state.decorations.map((d) => d.decoration),

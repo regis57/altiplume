@@ -42,7 +42,7 @@ type News =
 interface CompanyView {
   name: string; francs: number; stamps: number; foundedAt: number; now: number;
   planes: { id: string; model: string; wear: number; busyUntil: number | null }[];
-  pilots: { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenesSeen: number; busyUntil: number | null }[];
+  pilots: { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenesSeen: number; restedAt: number | null; busyUntil: number | null }[];
   zones: Record<string, number>;
   regions: string[];
   decorations: string[];
@@ -564,8 +564,12 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
   const pilotSelect = el('select'); pilotSelect.id = pilotLabel.htmlFor; pilotSelect.name = 'pilot';
   for (const p of c.pilots) {
     const tpl = world.pilots.find((x) => x.id === p.pilot);
-    const tired = p.fatigue >= 8;
-    const o = el('option', undefined, `${tpl?.name ?? p.pilot}${p.busyUntil ? ` — ${t('card.busy')}` : tired ? ` — ${t('card.tired')}` : ''}`);
+    // Fatigué : l'accord suit le genre du pilote, et on dit dans combien de temps il repart.
+    const tired = p.restedAt !== null;
+    const rest = tired
+      ? ` — ${t(tpl?.gender === 'f' ? 'card.tiredF' : 'card.tired')} · ${t('card.restedIn')} ${formatRemaining((p.restedAt ?? 0) - Date.now(), getLocale())}`
+      : '';
+    const o = el('option', undefined, `${tpl?.name ?? p.pilot}${p.busyUntil ? ` — ${t('card.busy')}` : rest}`);
     o.value = p.id; o.disabled = p.busyUntil !== null || tired;
     pilotSelect.append(o);
   }

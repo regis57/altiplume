@@ -137,7 +137,7 @@ export const MIGRATIONS: readonly Migration[] = [
         pilot       TEXT NOT NULL,
         affinity    INTEGER NOT NULL DEFAULT 0,   -- vols faits ensemble
         morale      INTEGER NOT NULL DEFAULT 10,  -- 0..20
-        fatigue     INTEGER NOT NULL DEFAULT 0,   -- 0..10
+        fatigue     INTEGER NOT NULL DEFAULT 0,   -- minutes de vol accumulées (voir la v11)
         scenes_seen INTEGER NOT NULL DEFAULT 0,   -- scènes d'histoire déjà lues
         hired_at    INTEGER NOT NULL,
         UNIQUE (company_id, pilot)
@@ -296,6 +296,16 @@ export const MIGRATIONS: readonly Migration[] = [
       -- Marthe Vaudrin devient Prosper Chickenman (12/10) : les compagnies existantes
       -- gardent leur pilote, son affinité, son moral et les scènes déjà vues.
       UPDATE company_pilots SET pilot = 'prosper' WHERE pilot = 'marthe';
+    `,
+  },
+  {
+    version: 11,
+    name: 'fatigue-en-minutes',
+    sql: `
+      -- La fatigue ne compte plus des crans mais des minutes de vol (12/10), et le
+      -- repos va deux fois plus vite que le vol. Les anciennes valeurs n'ont plus le
+      -- même sens : la poste offre une nuit de repos à tous les pilotes en service.
+      UPDATE company_pilots SET fatigue = 0, fatigue_at = 0;
     `,
   },
 ];

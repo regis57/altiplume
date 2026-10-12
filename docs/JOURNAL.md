@@ -486,3 +486,20 @@ Deux pilotes, donc, et pas n'importe lesquelles : celles qui manquaient aux fils
 **Hedda Vilmorin**, quarante-neuf ans, du **Grand Blanc** — la région que personne n'a encore atteinte. *Longues routes* et *Économe* : au nord, le litre de trop est du poids et le litre qui manque est de la glace. Elle répond à Teodor, qui laisse une lettre à la dernière lanterne pour un frère resté dans le désert. Elle ne lui apporte pas de nouvelles — ce serait trop facile, et faux. Elle lui explique ce que le nord fait des lettres : il les garde dans une boîte, parfois dix ans, et parfois quelqu'un revient et son nom est dessus. Elle lui donne une raison de continuer à écrire.
 
 Huit pilotes, quatre femmes, quatre hommes, huit lieux d'origine. La parité, rompue le matin même par un renommage, est rétablie le jour même — et le test est redevenu strict. La bible du monde a maintenant une section « Les fils qui se rejoignent » : la poutre de Bastien, les lettres qui attendent, la lanterne de cuivre, la croix du chemin. Pour que ceux qui écriront les suivants sachent à quoi ils répondent.
+
+## Chapitre 31 — Huit heures de vol, pas huit vols (12 octobre 2026, 14 h)
+
+« La fatigue est trop longue et les missions à répétition trop courtes et vite recoupées par la fatigue. Difficile d'évoluer, je trouve. »
+
+C'était vrai, et c'était un défaut de conception, pas un réglage trop sévère : la fatigue comptait des **vols**, pas du **temps de vol**. Un aller-retour de dix minutes à Pont-de-Brume coûtait autant qu'une traversée de deux heures et demie dans l'Archipel — un point, parfois deux. Huit points et le pilote posait sa casquette. Autrement dit : **huit sauts de dix minutes, quatre-vingts minutes de jeu, puis vingt-quatre heures d'attente**, puisqu'un point ne s'effaçait qu'en trois heures. La ligne régulière, celle qui doit permettre de remonter tranquillement, était précisément celle que la règle punissait le plus.
+
+La fatigue compte maintenant des **minutes de vol**, aller et retour compris, au trait du pilote près. Un saut à Pont-de-Brume pèse dix minutes ; un aller-retour de plateau, une heure ; une traversée de l'Archipel, deux heures et demie. Un pilote se repose quand il a **huit heures de vol** dans les bras. Et surtout, deux changements qui font toute la différence :
+
+- **En l'air, rien ne s'efface** — la fatigue ne se mesure plus depuis le décollage mais depuis le retour au sol. Un pilote ne se repose pas en travaillant.
+- **Au sol, une minute de repos efface deux minutes de vol.** Une longue journée se rattrape dans l'après-midi, pas le lendemain.
+
+Mesuré sur la ligne régulière, sans souffler une seule minute entre deux départs : **36 allers-retours d'affilée et 396 francs** avant que Prosper ne pose sa casquette, contre huit avant. Et après une heure au sol, il repart. Pour les longues routes, rien ne s'est adouci : sept allers-retours de plateau suffisent encore à l'arrêter — c'est bien le but, une traversée doit se payer.
+
+**Deux détails de lecture, au passage.** La liste des pilotes disait « trop fatigué·e » ; maintenant que chacun a un genre, elle dit « trop fatigué » ou « trop fatiguée », et surtout elle ajoute **dans combien de temps il reprend son service**. Une attente qu'on sait finir n'est plus la même attente. Le joueur continue de voir dix crans — une heure de vol par cran — et pas des minutes : la mécanique est interne, la lecture reste simple.
+
+Les anciennes valeurs de fatigue n'avaient plus le même sens : une migration offre une nuit de repos à tous les pilotes en service. Le test « jamais bloqué » garde la trace du défaut avec sa date, et vérifie désormais la trentaine d'allers-retours et le retour en service dans l'heure.

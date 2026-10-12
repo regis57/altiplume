@@ -21,10 +21,16 @@ import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Ru
 
 export const HAND_SIZE = 5;
 export const DAILY_DRAW = 3;
-export const FATIGUE_MAX = 10;
-export const FATIGUE_LIMIT = 8;
-/** Un point de fatigue s'efface toutes les trois heures. */
-export const FATIGUE_RECOVERY_MS = 3 * 3_600_000;
+/**
+ * La fatigue se compte en minutes de vol, aller et retour compris : un saut à
+ * Pont-de-Brume pèse dix minutes, une traversée de l'Archipel deux heures et
+ * demie. Un pilote se repose quand il a huit heures de vol dans les bras, et
+ * au sol une minute de repos efface deux minutes de vol — une longue journée
+ * se rattrape dans l'après-midi, pas en vingt-quatre heures.
+ */
+export const FATIGUE_MAX_MIN = 10 * 60;
+export const FATIGUE_LIMIT_MIN = 8 * 60;
+export const FATIGUE_RECOVERY_RATE = 2;
 const FOG_DELAY_MS = 20 * 60_000;
 /** Le vent de mer : plus court que la brume, mais il ne prévient pas. */
 const SEAWIND_DELAY_MS = 15 * 60_000;
@@ -68,10 +74,24 @@ export function traitFactor(pilot: PilotTemplate, effect: keyof NonNullable<Retu
   return pilot.traits.reduce((f, id: TraitId) => f * (findTrait(id)?.effects[effect] ?? 1), 1);
 }
 
-/** Fatigue effective à l'instant donné : elle redescend d'un point toutes les trois heures. */
+/**
+ * Fatigue effective, en minutes de vol. `fatigue_at` est l'heure du retour au
+ * sol : en l'air, rien ne s'efface ; au sol, deux minutes de vol par minute.
+ */
 export function currentFatigue(row: Pick<PilotRow, 'fatigue' | 'fatigue_at'>, now: number): number {
-  const recovered = Math.floor(Math.max(0, now - row.fatigue_at) / FATIGUE_RECOVERY_MS);
-  return Math.max(0, row.fatigue - recovered);
+  const recovered = (Math.max(0, now - row.fatigue_at) / 60_000) * FATIGUE_RECOVERY_RATE;
+  return Math.max(0, Math.round(row.fatigue - recovered));
+}
+
+/** Ce que le joueur voit : dix crans, le pilote se repose au huitième. */
+export function fatiguePoints(minutes: number): number {
+  return Math.min(10, Math.floor(minutes / 60));
+}
+
+/** Quand ce pilote pourra repartir, ou `null` s'il peut déjà. */
+export function restedAt(minutes: number, now: number): number | null {
+  if (minutes < FATIGUE_LIMIT_MIN) return null;
+  return now + Math.ceil((minutes - FATIGUE_LIMIT_MIN + 1) / FATIGUE_RECOVERY_RATE) * 60_000;
 }
 
 /** Fin d'occupation d'un avion et d'un pilote : l'aller, puis le retour. */
@@ -231,7 +251,7 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
   const busy = db.prepare('SELECT plane_id, pilot_id FROM flights WHERE company_id = ? AND departed_at + 2 * duration_ms > ?').all(company.id, now) as { plane_id: string; pilot_id: string }[];
   if (busy.some((b) => b.plane_id === plane.id)) return { ok: false, error: 'plane_busy' };
   if (busy.some((b) => b.pilot_id === pilot.id)) return { ok: false, error: 'pilot_busy' };
-  if (currentFatigue(pilot, now) >= FATIGUE_LIMIT) return { ok: false, error: 'pilot_tired' };
+  if (currentFatigue(pilot, now) >= FATIGUE_LIMIT_MIN) return { ok: false, error: 'pilot_tired' };
   if (model.capacity < card.bags) return { ok: false, error: 'plane_too_small' };
   if (!canLand(model, destination)) {
     if (destination.runway === 'water') return { ok: false, error: 'needs_seaplane' };
@@ -277,7 +297,8 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk')) durationMs += SEAWIND_DELAY_MS;
     if (incident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
     const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(plan.template, 'wear'));
-    const fatigueGain = Math.max(1, Math.round((plan.destination.distance >= 3 ? 2 : 1) * traitFactor(plan.template, 'fatigue')));
+    // La fatigue, c'est du temps passé en l'air : l'aller et le retour, au trait du pilote près.
+    const fatigueGain = Math.max(1, Math.round(((2 * durationMs) / 60_000) * traitFactor(plan.template, 'fatigue')));
 
     // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
     const advanced = plan.card.standing === true;
@@ -292,7 +313,7 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     db.prepare('UPDATE companies SET francs = francs - ?, flights_count = flights_count + 1 WHERE id = ?').run(debit, company.id);
     db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(wear, plan.plane.id);
     db.prepare('UPDATE company_pilots SET fatigue = ?, fatigue_at = ? WHERE id = ?')
-      .run(Math.min(FATIGUE_MAX, currentFatigue(plan.pilot, now) + fatigueGain), now, plan.pilot.id);
+      .run(Math.min(FATIGUE_MAX_MIN, currentFatigue(plan.pilot, now) + fatigueGain), busyUntil({ departed_at: now, duration_ms: durationMs }), plan.pilot.id);
     ledger(db, company.id, now, 'flight.departed', -debit, plan.destination.id);
     return db.prepare('SELECT * FROM flights WHERE id = ?').get(id) as unknown as FlightRow;
   });

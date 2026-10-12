@@ -80,6 +80,35 @@ describe('le jeu ne bloque jamais une compagnie', () => {
     expect(s.francs).toBeGreaterThanOrEqual(14); // de quoi avancer les frais d'un contrat avec Prosper et la Grive
     await t.app.close();
   });
+
+  it("laisse enchaîner la ligne régulière une trentaine de fois avant le repos, et repartir dans l'heure", async () => {
+    // Le 12/10 : huit sauts à Pont-de-Brume et Prosper était cloué pour vingt-quatre
+    // heures. La fatigue compte maintenant des minutes de vol : un aller-retour de dix
+    // minutes ne pèse presque rien, et le repos va deux fois plus vite que le vol.
+    const t = await company();
+    t.setFrancs(0);
+    let flights = 0;
+    for (;;) {
+      const s = await t.state();
+      const r = await t.json('POST', '/v1/company/flights', { card: 'c-ligne-reguliere', plane: s.planes[0].id, pilot: s.pilots[0].id }, t.cookie);
+      if (r.statusCode === 400 && r.json().error === 'pilot_tired') break;
+      expect(r.statusCode, `vol ${flights}`).toBe(201);
+      flights += 1;
+      expect(flights, 'un pilote finit tout de même par se fatiguer').toBeLessThan(80);
+      t.advance(r.json().flights[0].busyUntil - t.ctx.now()); // pile le retour : pas une minute de repos
+    }
+    process.stdout.write(`VOLS=${flights} francs=${(await t.state()).francs}
+`);
+    expect(flights).toBeGreaterThanOrEqual(25); // mesuré : 36 allers-retours et 396 F (moins si les aléas de vol allongent la journée)
+    const tired = await t.state();
+    expect(tired.francs).toBeGreaterThanOrEqual(25 * 11);
+    // Il ne dort pas jusqu'au lendemain : une heure au sol et il reprend son service.
+    t.advance(HOUR);
+    const rested = await t.state();
+    expect(rested.pilots[0].restedAt).toBeNull();
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-ligne-reguliere', plane: rested.planes[0].id, pilot: rested.pilots[0].id }, t.cookie)).statusCode).toBe(201);
+    await t.app.close();
+  });
 });
 
 describe('les cachets des premières livraisons lointaines', () => {
