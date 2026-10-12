@@ -124,8 +124,8 @@ describe('les cachets des premières livraisons lointaines', () => {
       return (await t.state()).stamps as number;
     };
     const depart = (await t.state()).stamps as number; // la page « Fondation »
-    const apresPont = await fly('c-journal');        // Premier vol + Pont-de-Brume : 1 + 1
-    expect(apresPont - depart).toBe(2);
+    const apresPont = await fly('c-journal');        // Premier vol + Pont-de-Brume + Premier automne : 1 + 1 + 1
+    expect(apresPont - depart).toBe(3);
     const apresFerrand = await fly('c-pieces');      // Haut-Ferrand : 2
     expect(apresFerrand - apresPont).toBe(2);
     const apresCombe = await fly('c-medicaments');   // Combe-aux-Rosées : 3

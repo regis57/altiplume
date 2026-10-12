@@ -110,7 +110,8 @@ try {
   assert((await page.textContent('#francs')) === '327', 'encaissé : 286 + 33 + 8');
   assert((await page.textContent('#vols .vol')).includes('Sur le retour'), 'avion sur le retour');
   const gagnees = await page.$$eval('#album .page.gagnee', (p) => p.length);
-  assert(gagnees === 3, `trois pages gagnées (${gagnees})`);
+  // Fondation, Premier vol, Pont-de-Brume, et la première livraison de la saison en cours.
+  assert(gagnees === 4, `quatre pages gagnées (${gagnees})`);
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-4-arrivee.png'), fullPage: true });
 
   // Un imprévu se tranche.

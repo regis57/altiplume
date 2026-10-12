@@ -112,6 +112,8 @@ const FR: Record<string, string> = {
   'footer.version': 'Version et essai',
   'card.busy': 'en vol',
   'card.heavy': 'Fret lourd · deux avions',
+  'card.coldBonus': "+20 % l'hiver",
+  'season.until': "jusqu'au",
   'card.convoy': 'Le convoi : un second avion vole avec le premier',
   'card.wingPlane': "Avion d'escorte",
   'card.wingPilot': 'Son pilote',
@@ -446,6 +448,8 @@ const EN: Record<string, string> = {
   'footer.version': 'Version & beta',
   'card.busy': 'flying',
   'card.heavy': 'Heavy freight · two planes',
+  'card.coldBonus': '+20% in winter',
+  'season.until': 'until',
   'card.convoy': 'The convoy: a second plane flies alongside the first',
   'card.wingPlane': 'Escort plane',
   'card.wingPilot': 'Its pilot',
@@ -727,7 +731,10 @@ export function translatePage(): void {
   });
   document.querySelectorAll<HTMLElement>('[data-i18n-html]').forEach((el) => {
     const key = el.dataset['i18nHtml'];
-    // Les chaînes avec balises viennent du dictionnaire embarqué, jamais du réseau.
+    // Les chaînes avec balises viennent du dictionnaire embarqué, jamais du réseau,
+    // et passent par la politique Trusted Types « altiplume » (trusted.ts). Examiné
+    // pour Opengrep : la seule écriture HTML du client, voulue.
+    // nosemgrep: insecure-innerhtml, insecure-document-method
     if (key) el.innerHTML = trustedHtml(t(key));
   });
   // Messages composés de codes (« error.x error.y ») : re-rendus dans la langue courante.

@@ -94,6 +94,12 @@ export const STAMPS: readonly Stamp[] = [
   { id: 's-vert-de-gris', name: { fr: 'Vert-de-Gris', en: 'Verdigris' }, description: { fr: "Première livraison à la mine verte.", en: 'First delivery to the green mine.' } },
   { id: 's-le-hetre-roi', name: { fr: 'Le Hêtre-Roi', en: 'Kingbeech' }, description: { fr: "Première livraison au cœur de la forêt.", en: 'First delivery to the heart of the forest.' } },
   { id: 's-clairiere', name: { fr: 'Dans la clairière', en: 'Into the clearing' }, description: { fr: "Le premier atterrissage de la compagnie entre les arbres.", en: "The company's first landing among the trees." } },
+  // Les saisons : une page pour la première livraison de chacune, et une pour l'année entière
+  { id: 's-printemps', name: { fr: 'Premier printemps', en: 'First spring' }, description: { fr: "Une livraison au-dessus des vergers en fleur.", en: 'A delivery over the orchards in blossom.' } },
+  { id: 's-ete', name: { fr: 'Premier été', en: 'First summer' }, description: { fr: "Une livraison sous un ciel sans brume.", en: 'A delivery under a sky without fog.' } },
+  { id: 's-automne', name: { fr: 'Premier automne', en: 'First autumn' }, description: { fr: "Une livraison dans les feuilles rousses.", en: 'A delivery through the copper leaves.' } },
+  { id: 's-hiver', name: { fr: 'Premier hiver', en: 'First winter' }, description: { fr: "Une livraison dans la neige, les mains dans les poches.", en: 'A delivery through the snow, hands in pockets.' } },
+  { id: 's-annee', name: { fr: 'Une année', en: 'A year' }, description: { fr: "Quatre saisons sur la piste de la Croisette. Le chemin vous connaît.", en: 'Four seasons on the Crosslet strip. The lane knows you now.' } },
   // Le fret lourd
   { id: 's-convoi', name: { fr: 'Le premier convoi', en: 'The first convoy' }, description: { fr: "Deux avions partis ensemble pour un seul courrier, et rentrés ensemble.", en: 'Two planes out together for a single load, and home together.' } },
   { id: 's-fonderie', name: { fr: 'La coulée', en: 'The pour' }, description: { fr: "Le bronze est arrivé à Sonnefeuille. Frère Anselme a rallumé le four.", en: 'The bronze has reached Ringleaf. Brother Anselm has lit the furnace again.' } },
