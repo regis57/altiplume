@@ -1,0 +1,30 @@
+# Socket (socket.dev) — le garde-barrière des dépendances npm.
+#
+# npm audit dit si une dépendance a une faille connue. Socket regarde autre
+# chose : ce que fait réellement le paquet. Script lancé à l'installation, accès
+# réseau ou disque inattendu, code obscurci, mainteneur qui vient de changer,
+# nom qui imite un paquet connu. C'est ce qu'on a vu dans les attaques récentes
+# de la chaîne d'approvisionnement — et ce qu'un audit de failles ne voit pas.
+#
+# Socket agit par son application GitHub (installée par le propriétaire du
+# dépôt, sur ce seul dépôt) : sur chaque PR qui change une dépendance, un
+# contrôle « Socket Security » et un commentaire si quelque chose cloche.
+# Aucun secret dans le dépôt, aucun workflow à maintenir.
+#
+# Référence : https://docs.socket.dev/docs/socket-yml
+version: 2
+
+# Ne regarder que ce qui décrit les dépendances.
+triggerPaths:
+  - package.json
+  - package-lock.json
+  - packages/*/package.json
+
+githubApp:
+  enabled: true
+  # Le contrôle et le commentaire sur les PR : c'est l'essentiel.
+  pullRequestAlertsEnabled: true
+  # Le tableau « dépendances ajoutées / retirées » en commentaire de PR.
+  dependencyOverviewEnabled: true
+  # Un rapport à chaque fusion sur main.
+  projectReportsEnabled: true
