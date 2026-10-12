@@ -99,7 +99,7 @@ try {
   const offre = page.locator('#main .carte', { hasText: 'Une Sterne à Port-Sel' });
   await offre.locator('button', { hasText: 'Saisir' }).click();
   await page.waitForSelector('#jeu-message.ok');
-  await page.waitForSelector('#scene-hydravion:not(.cache)');
+  await page.waitForSelector('#place-eau-1[data-modele=sterne]');
   assert((await page.textContent('#avions')).includes('Sterne S-1'), 'la Sterne est au hangar (sur l\'eau)');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-saline-2-sterne-au-ponton.png'), fullPage: true });
 
@@ -114,7 +114,7 @@ try {
   assert(/45 min/.test(estimate), `estimation « 45 min » (${estimate})`);
   await coquillages.locator('button', { hasText: 'Envoyer' }).click();
   await page.waitForSelector('#jeu-message.ok');
-  await page.waitForSelector('#scene-hydravion.cache', { state: 'attached' });
+  await page.waitForSelector('#place-eau-1:not([data-modele])', { state: 'attached' });
   assert((await page.textContent('#vols .vol')).includes('Anse-aux-Goémons'), 'le vol vers l\'anse est affiché');
 
   // Une heure plus tard : les pages « Sur l'eau » et « Anse-aux-Goémons ».

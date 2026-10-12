@@ -101,7 +101,7 @@ export function localizeWorld(locale: Locale) {
     }),
     zones: WORLD.zones.map((z) => ({
       id: z.id, name: tx(z.name),
-      levels: z.levels.map((l) => ({ level: l.level, name: tx(l.name), description: tx(l.description), cost: l.cost, runway: l.runway, planes: l.planes, maintenance: l.maintenance, seaplanes: l.seaplanes })),
+      levels: z.levels.map((l) => ({ level: l.level, name: tx(l.name), description: tx(l.description), cost: l.cost, runway: l.runway, planes: l.planes, maintenance: l.maintenance, seaplanes: l.seaplanes, weather: l.weather, night: l.night })),
     })),
     decorations: WORLD.decorations.map((d) => ({ id: d.id, name: tx(d.name), description: tx(d.description), cost: d.cost, morale: d.morale })),
     stamps: WORLD.stamps.map((s) => ({ id: s.id, name: tx(s.name), description: tx(s.description) })),

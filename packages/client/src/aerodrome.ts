@@ -245,8 +245,6 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   void setupPasskeyInvitation(api, setMessage);
   void setupNotifications(api, setMessage);
   clockOffset = c.now - Date.now();
-  const allBusy = c.planes.length > 0 && c.planes.every((p) => p.busyUntil !== null);
-  document.querySelector('.scene .avion')?.classList.toggle('cache', allBusy);
 
   renderNews(world, c);
   renderFlights(api, setMessage, world, c);
@@ -731,10 +729,26 @@ function renderScene(c: CompanyView): void {
   const piste = $('scene-piste'); if (piste) piste.dataset['niveau'] = String(runway);
   show('scene-piste-longue', runway >= 3);
   const hangar = $('scene-hangar'); if (hangar) hangar.dataset['niveau'] = String(c.zones['hangar'] ?? 1);
-  // Le ponton sur la rivière, et la Sterne amarrée quand elle est là et au repos.
+  // Le ponton sur la rivière, et le second au niveau 3.
   show('scene-ponton', (c.zones['ponton'] ?? 1) >= 2);
-  const sterne = c.planes.find((p) => p.model === 'sterne');
-  show('scene-hydravion', sterne !== undefined && sterne.busyUntil === null);
+  show('scene-ponton-2', (c.zones['ponton'] ?? 1) >= 3);
+  // La tour grandit comme le hangar.
+  const tour = $('scene-tour'); if (tour) tour.dataset['niveau'] = String(c.zones['tour'] ?? 1);
+  show('scene-pigeonnier', has('d-pigeonnier'));
+  show('scene-ruches', has('d-ruches'));
+  // Chaque avion au repos a sa place, et son dessin : la Grive en biplan, le Héron en
+  // trimoteur, le Pic avec ses pneus ballons ; les hydravions au ponton. Un avion en vol
+  // laisse sa place vide.
+  const home = c.planes.filter((p) => p.busyUntil === null);
+  const water = ['sterne', 'goeland'];
+  const fill = (ids: string[], planes: typeof home) => ids.forEach((id, i) => {
+    const slot = $(id);
+    if (!slot) return;
+    const plane = planes[i];
+    if (plane) slot.dataset['modele'] = plane.model; else delete slot.dataset['modele'];
+  });
+  fill(['place-a', 'place-b', 'place-c'], home.filter((p) => !water.includes(p.model)));
+  fill(['place-eau-1', 'place-eau-2'], home.filter((p) => water.includes(p.model)));
 }
 
 let animation: number | null = null;

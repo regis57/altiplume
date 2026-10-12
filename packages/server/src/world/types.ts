@@ -186,7 +186,7 @@ export interface OpportunityCard {
 
 export type Card = ContractCard | EventCard | OpportunityCard;
 
-export type ZoneId = 'runway' | 'hangar' | 'ponton';
+export type ZoneId = 'runway' | 'hangar' | 'ponton' | 'tour';
 
 export interface ZoneLevel {
   readonly level: number;
@@ -199,6 +199,10 @@ export interface ZoneLevel {
   readonly maintenance?: number;
   /** Hydravions amarrés possibles. */
   readonly seaplanes?: number;
+  /** La tour : multiplie la probabilité des retards de brume et de vent de mer. */
+  readonly weather?: number;
+  /** La tour : multiplie le risque d'incident des vols de nuit. */
+  readonly night?: number;
 }
 
 export interface Zone {

@@ -273,6 +273,8 @@ export interface Crew {
 export interface DispatchPlan extends Crew {
   readonly card: ContractCard;
   readonly destination: Destination;
+  /** Ce que la tour de la Croisette fait au temps et à la nuit ; 1 = rien. */
+  readonly tower?: { readonly weather: number; readonly night: number };
   /**
    * Le fret lourd : un second équipage qui vole avec le premier, quand un seul
    * avion ne porte pas tous les sacs. `durationMs` et `cost` du plan sont alors
@@ -362,7 +364,10 @@ export function planDispatch(
   // compagnie ne peut jamais rester clouée au sol, même la caisse vide.
   if (!card.standing && company.francs < cost) return { ok: false, error: 'not_enough_francs' };
   const durationMs = Math.max(lead.crew.durationMs, second?.durationMs ?? 0);
-  return { ok: true, plan: { ...lead.crew, card, destination, durationMs, cost, ...(second ? { wing: second } : {}) } };
+  const towerLevel = (db.prepare("SELECT level FROM company_zones WHERE company_id = ? AND zone = 'tour'").get(company.id) as { level: number } | undefined)?.level ?? 1;
+  const towerDef = WORLD.zones.find((z) => z.id === 'tour')?.levels.find((l) => l.level === towerLevel);
+  const tower = { weather: towerDef?.weather ?? 1, night: towerDef?.night ?? 1 };
+  return { ok: true, plan: { ...lead.crew, card, destination, durationMs, cost, tower, ...(second ? { wing: second } : {}) } };
 }
 
 /**
@@ -373,10 +378,11 @@ export function planDispatch(
  * Nocturne) ; le moral la fait varier de × 0,75 (20) à × 1,25 (0) ; l'humidité des
  * sous-bois de la Forêt de Cuivre la multiplie par 1,5.
  */
-export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template'>, now: number): number {
+export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template' | 'tower'>, now: number): number {
   const hour = new Date(now).getUTCHours();
   const nightFlight = plan.destination.hazard === 'night' && (hour >= 20 || hour < 6);
-  const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') : 1;
+  // La nuit : × 2, ÷ 4 pour un pilote Nocturne, et × 0,7 encore avec le feu de la tour.
+  const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') * (plan.tower?.night ?? 1) : 1;
   const moraleFactor = 1 + (10 - plan.pilot.morale) / 40;
   const canopyFactor = plan.destination.hazard === 'canopy' ? 1.5 : 1;
   const baseReliability = Math.min(1, plan.model.reliability * traitFactor(plan.template, 'reliability') * (1 - plan.plane.wear / 400));
@@ -399,10 +405,12 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     const leadIncident = rng() > 1 - incidentRisk(plan, now);
     let durationMs = plan.durationMs;
     // La saison pèse sur le temps qu'il fait : l'été chasse la brume et le vent de mer, l'automne ramène la brume.
-    if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'fogRisk')) durationMs += FOG_DELAY_MS;
-    if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'seawindRisk')) durationMs += SEAWIND_DELAY_MS;
+    // Et la vigie de la tour, qui a regardé le ciel avant le départ.
+    const lookout = plan.tower?.weather ?? 1;
+    if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'fogRisk') * lookout) durationMs += FOG_DELAY_MS;
+    if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'seawindRisk') * lookout) durationMs += SEAWIND_DELAY_MS;
     // L'ailier a son propre moteur, et donc son propre aléa ; le convoi attend le plus lent.
-    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination }, now) : false;
+    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination, ...(plan.tower ? { tower: plan.tower } : {}) }, now) : false;
     if (leadIncident || wingIncident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
 
     // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
