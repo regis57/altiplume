@@ -94,12 +94,14 @@ function paintMinute(m: Minute, now: number): void {
 }
 
 function tick(): void {
-  if (minutes.length === 0) return;
   const now = Date.now() + clockOffset;
   for (const m of minutes) paintMinute(m, now);
   // Un jalon franchi (atterrissage ou retour) : le serveur a du neuf — nouvelles, francs, cachets.
   const milestone = minutes.some((m) => (now >= m.flight.arrivesAt && !m.flight.settled) || now >= m.flight.busyUntil);
-  const idle = now - lastResync > RESYNC_IDLE_MS;
+  // Le filet vaut aussi quand plus rien ne vole : une page ouverte peut avoir manqué
+  // quelque chose — une réponse perdue en chemin, un départ fait depuis un autre
+  // appareil. Onglet caché, on ne demande rien : il n'y a personne pour regarder.
+  const idle = now - lastResync > RESYNC_IDLE_MS && document.visibilityState === 'visible';
   if ((milestone || idle) && now - lastResync > RESYNC_GUARD_MS && resync) {
     lastResync = now;
     resync();
@@ -114,7 +116,7 @@ function watchVisibility(): void {
     if (document.visibilityState !== 'visible') return;
     tick();
     const now = Date.now() + clockOffset;
-    if (minutes.length > 0 && now - lastResync > RESYNC_GUARD_MS && resync) { lastResync = now; resync(); }
+    if (now - lastResync > RESYNC_GUARD_MS && resync) { lastResync = now; resync(); }
   });
 }
 
@@ -254,6 +256,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   // Les vols avancent sans nous : l'horloge locale bat à la seconde, et ne redemande
   // l'état au serveur qu'à un atterrissage, un retour, ou en revenant sur l'onglet.
   resync = () => { void refresh(api, setMessage, world); };
+  lastResync = Date.now() + clockOffset;
   watchVisibility();
   if (ticker === null) ticker = setInterval(tick, 1_000);
 
@@ -424,6 +427,33 @@ async function refresh(api: Api, setMessage: SetMessage, world: WorldView): Prom
   if (r && r.status === 200) render(api, setMessage, world, r.body as unknown as CompanyView);
 }
 
+/**
+ * Ces refus-là parlent de l'équipage qu'on vient de choisir : l'écran a raison,
+ * il n'y a rien à redemander, et le formulaire reste ouvert pour qu'on change
+ * d'avion ou de pilote.
+ */
+const CREW_ERRORS = new Set([
+  'plane_too_small', 'runway_too_short', 'home_runway_too_short',
+  'needs_seaplane', 'needs_water', 'needs_clearing_plane', 'out_of_range',
+  'convoy_not_needed', 'convoy_same',
+]);
+
+/**
+ * Un refus du serveur : on dit pourquoi, puis — sauf si le refus ne parle que de
+ * l'équipage choisi — on redemande l'état.
+ *
+ * Sans cela, l'écran garde ce qu'il montrait avant, et peut contredire le message
+ * qu'il affiche : « Cet avion est en vol » au-dessus d'un hangar où, à l'écran,
+ * tout le monde attend, sans jauge et sans vol. C'est ce qui est arrivé : une
+ * réponse perdue en chemin, un vol bien parti que la page ignorait, et rien pour
+ * la réveiller. Un écran qui ment est pire qu'un écran qui ne sait pas.
+ */
+function refused(api: Api, setMessage: SetMessage, world: WorldView, r: { status: number; body: Record<string, unknown> } | null): void {
+  const error = r ? String(r.body['error'] ?? 'server_error') : 'network';
+  setMessage('jeu-message', `error.${error}`);
+  if (!CREW_ERRORS.has(error)) void refresh(api, setMessage, world);
+}
+
 function destName(world: WorldView, id: string): string { return world.destinations.find((d) => d.id === id)?.name ?? id; }
 function pilotName(world: WorldView, c: CompanyView, hiredId: string): string {
   const hired = c.pilots.find((p) => p.id === hiredId);
@@ -535,7 +565,7 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
           if (r && r.status === 200) {
             const msg = $('jeu-message'); if (msg) { delete msg.dataset['i18nKeys']; msg.textContent = choice.outcome; msg.classList.add('ok'); }
             render(api, setMessage, world, r.body as unknown as CompanyView);
-          } else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); actions.querySelectorAll('button').forEach((x) => { x.disabled = false; }); }
+          } else { refused(api, setMessage, world, r); actions.querySelectorAll('button').forEach((x) => { x.disabled = false; }); }
         });
         actions.append(b);
       }
@@ -547,7 +577,7 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
         take.disabled = true;
         const r = await api('POST', `/v1/company/cards/${card.id}/play`, {}).catch(() => null);
         if (r && r.status === 200) { setMessage('jeu-message', 'card.taken', 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
-        else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); take.disabled = false; }
+        else { refused(api, setMessage, world, r); take.disabled = false; }
       });
       actions.append(take);
     }
@@ -688,7 +718,7 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
     if (needsWing()) { body['wingPlane'] = wingPlane.value; body['wingPilot'] = wingPilot.value; }
     const r = await api('POST', '/v1/company/flights', body).catch(() => null);
     if (r && r.status === 201) { setMessage('jeu-message', 'card.sent', 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
-    else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); go.disabled = false; }
+    else { refused(api, setMessage, world, r); go.disabled = false; }
   });
   host.append(form);
   update();
@@ -722,7 +752,7 @@ async function build(api: Api, setMessage: SetMessage, world: WorldView, path: s
   button.disabled = true;
   const r = await api('POST', path, {}).catch(() => null);
   if (r && r.status === 200) { setMessage('jeu-message', doneKey, 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
-  else { setMessage('jeu-message', r ? `error.${String(r.body['error'] ?? 'server_error')}` : 'error.network'); button.disabled = false; }
+  else { refused(api, setMessage, world, r); button.disabled = false; }
 }
 
 /** La scène reflète ce qu'on a construit et posé. */

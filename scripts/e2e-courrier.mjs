@@ -150,6 +150,35 @@ try {
   assert(tt.rawRejected === true, 'une adresse brute de service worker est refusée');
   assert(tt.html.includes('<strong>'), `les textes à balises passent par la politique (${tt.html.slice(0, 40)})`);
 
+  // Un écran qui ne ment pas : la page croit la Grive au hangar, un vol est pourtant
+  // parti (réponse perdue en chemin, autre appareil…). Le refus du serveur doit
+  // remettre la page d'aplomb : le vol s'affiche, avec sa jauge.
+  db.exec('UPDATE flights SET departed_at = departed_at - 11 * 60 * 1000');
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  assert(await page.$eval('#vols-vide', (e) => !e.classList.contains('cache')), 'au départ, personne en l\'air');
+  const ligne = page.locator('#main .carte.reguliere');
+  await ligne.locator('button', { hasText: 'Expédier' }).click();
+  await ligne.locator('.expedition');
+  // Un vol part sans que la page le sache.
+  const parti = await page.evaluate(async () => {
+    const plane = document.querySelector('.expedition select[name=plane]').value;
+    const pilot = document.querySelector('.expedition select[name=pilot]').value;
+    const r = await fetch('/v1/company/flights', {
+      method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ card: 'c-ligne-reguliere', plane, pilot }),
+    });
+    return r.status;
+  });
+  assert(parti === 201, `le vol fantôme est bien parti (${parti})`);
+  assert(await page.$eval('#vols-vide', (e) => !e.classList.contains('cache')), 'la page ne le sait pas encore');
+  await ligne.locator('button', { hasText: 'Envoyer' }).click();
+  await page.waitForSelector('#vols .vol');
+  const dit = await page.textContent('#jeu-message');
+  assert(/en vol/.test(dit), `le refus est dit (${dit})`);
+  assert(await page.$eval('#vols-vide', (e) => e.classList.contains('cache')), 'la page s\'est remise d\'aplomb');
+  assert(await page.$('#vols .vol .jauge'), 'la jauge du vol est revenue');
+
   // Et le tout en anglais.
   await page.click('[data-action=toggle-lang]');
   await page.reload();
