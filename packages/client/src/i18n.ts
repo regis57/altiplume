@@ -83,12 +83,16 @@ const FR: Record<string, string> = {
   'news.cards': 'Cartes du jour :',
   'news.arrived': 'est rentré de',
   'news.arrivedF': 'est rentrée de',
+  'news.arrivedPl': 'sont rentrés de',
+  'news.arrivedPlF': 'sont rentrées de',
+  'game.and': 'et',
   'news.onTime': 'délai tenu',
   'news.incident': 'avec un incident en route',
   'news.stamp': "Nouvelle page dans l'album :",
   'flight.enRoute': 'En route',
   'flight.returning': 'Sur le retour',
   'flight.arrival': 'arrivée dans',
+  'flight.convoy': 'Convoi',
   'flight.back': 'retour dans',
   'card.contract': 'Contrat',
   'card.event': 'Imprévu',
@@ -107,6 +111,12 @@ const FR: Record<string, string> = {
   'version.aria': 'Version et stade du projet',
   'footer.version': 'Version et essai',
   'card.busy': 'en vol',
+  'card.heavy': 'Fret lourd · deux avions',
+  'card.convoy': 'Le convoi : un second avion vole avec le premier',
+  'card.wingPlane': "Avion d'escorte",
+  'card.wingPilot': 'Son pilote',
+  'card.convoyNone': 'Trop lourd pour cet avion : il faut un second avion et un second pilote, libres tous les deux.',
+  'card.convoyShort': 'pas assez de place : {a} sacs sur {b}',
   'card.tired': 'trop fatigué',
   'card.tiredF': 'trop fatiguée',
   'card.restedIn': 'reprend dans',
@@ -132,7 +142,9 @@ const FR: Record<string, string> = {
   'error.plane_busy': 'Cet avion est en vol.',
   'error.pilot_busy': 'Ce pilote est en vol.',
   'error.pilot_tired': 'Ce pilote a besoin de repos : une heure au sol efface deux heures de vol.',
-  'error.plane_too_small': "Cet avion ne porte pas autant de sacs.",
+  'error.plane_too_small': "Pas assez de place pour tous les sacs : choisissez un avion plus grand, ou ajoutez un avion d'escorte.",
+  'error.convoy_not_needed': 'Un seul avion suffit pour ce courrier.',
+  'error.convoy_same': 'Un convoi, ce sont deux avions et deux pilotes différents.',
   'error.runway_too_short': 'La piste de ce village est trop courte pour cet avion.',
   'error.home_runway_too_short': "La piste de la Croisette est trop courte pour faire décoller cet avion : restaurez-la d'abord.",
   'error.out_of_range': "Ce village est hors de portée de cet avion.",
@@ -405,12 +417,16 @@ const EN: Record<string, string> = {
   'news.cards': "Today's cards:",
   'news.arrived': 'is back from',
   'news.arrivedF': 'is back from',
+  'news.arrivedPl': 'are back from',
+  'news.arrivedPlF': 'are back from',
+  'game.and': 'and',
   'news.onTime': 'on time',
   'news.incident': 'with an incident on the way',
   'news.stamp': 'New page in the album:',
   'flight.enRoute': 'En route',
   'flight.returning': 'Heading home',
   'flight.arrival': 'landing in',
+  'flight.convoy': 'Convoy',
   'flight.back': 'back in',
   'card.contract': 'Contract',
   'card.event': 'Mishap',
@@ -429,6 +445,12 @@ const EN: Record<string, string> = {
   'version.aria': 'Version and project stage',
   'footer.version': 'Version & beta',
   'card.busy': 'flying',
+  'card.heavy': 'Heavy freight · two planes',
+  'card.convoy': 'The convoy: a second plane flies alongside the first',
+  'card.wingPlane': 'Escort plane',
+  'card.wingPilot': 'Its pilot',
+  'card.convoyNone': 'Too heavy for this plane: you need a second plane and a second pilot, both free.',
+  'card.convoyShort': 'not enough room: {a} bags of {b}',
   'card.tired': 'too tired',
   'card.tiredF': 'too tired',
   'card.restedIn': 'back on duty in',
@@ -454,7 +476,9 @@ const EN: Record<string, string> = {
   'error.plane_busy': 'That plane is flying.',
   'error.pilot_busy': 'That pilot is flying.',
   'error.pilot_tired': 'That pilot needs rest: an hour on the ground wipes two hours of flying.',
-  'error.plane_too_small': 'That plane cannot carry that many bags.',
+  'error.plane_too_small': 'Not enough room for all the bags: pick a bigger plane, or add an escort.',
+  'error.convoy_not_needed': 'One plane is enough for this load.',
+  'error.convoy_same': 'A convoy takes two different planes and two different pilots.',
   'error.runway_too_short': "That village's strip is too short for this plane.",
   'error.home_runway_too_short': 'The Crosslet strip is too short for this plane to take off: restore it first.',
   'error.out_of_range': 'That village is out of range for this plane.',
@@ -748,4 +772,36 @@ function syncLanguageInAddress(): void {
   if (current === 'en') url.searchParams.set('lang', 'en');
   else url.searchParams.delete('lang');
   if (url.searchParams.get('lang') !== had) history.replaceState(history.state, '', url);
+}
+
+/**
+ * Une préposition suivie d'un nom de lieu, avec les contractions du français :
+ * « rentré de Les Tilleuls » devient « rentré des Tilleuls », « arrivée à Le
+ * Hêtre-Roi » devient « arrivée au Hêtre-Roi », « départ pour Les Scieries »
+ * devient « départ pour les Scieries ». L'anglais n'a rien à contracter.
+ */
+export function placeAfter(phrase: string, name: string): string {
+  if (current !== 'fr') return `${phrase} ${name}`;
+  // L'article écrit (« Les Tilleuls »), ou celui qu'on dit sans l'écrire : on va « à l'Île-du-Bout »,
+  // « à l'Anse-des-Lanternes », « au Phare de Brisant ».
+  // Un article est suivi d'une espace (ou s'élide) : « Lanterne-du-Val » n'en a pas.
+  const written = /^(?:(Les|Le|La) |(L'))(.+)$/.exec(name);
+  const spoken = /^(Île|Anse)\b/.test(name) ? ["L'", name] : /^Phare\b/.test(name) ? ['Le', name] : null;
+  const m = written ? [written[1] ?? written[2], written[3]] : spoken;
+  if (!m) return `${phrase} ${name}`;
+  const [article, rest] = m as ['Les' | 'Le' | 'La' | "L'", string];
+  const head = phrase.replace(/\s+(de|à)$/, '');
+  const prep = /\s(de|à)$/.exec(phrase)?.[1];
+  const glued = article === "L'" ? `l'${rest}` : `${article.toLowerCase()} ${rest}`;
+  if (prep === 'de') {
+    if (article === 'Les') return `${head} des ${rest}`;
+    if (article === 'Le') return `${head} du ${rest}`;
+    return `${head} de ${glued}`;
+  }
+  if (prep === 'à') {
+    if (article === 'Les') return `${head} aux ${rest}`;
+    if (article === 'Le') return `${head} au ${rest}`;
+    return `${head} à ${glued}`;
+  }
+  return `${phrase} ${glued}`;
 }

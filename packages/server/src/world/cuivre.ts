@@ -69,7 +69,7 @@ export const CUIVRE_DESTINATIONS: readonly Destination[] = [
       fr: "Une abbaye au fond d'une clairière, et la seule fonderie de cloches de la forêt. On se pose dans le verger des moines ; ils sonnent quand ils vous entendent, pour que vous trouviez la trouée.",
       en: 'An abbey deep in a clearing, and the only bell foundry in the forest. You land in the monks\' orchard; they ring when they hear you coming, so you can find the gap in the trees.',
     },
-    distance: 10, runway: 'clearing', hazard: 'canopy', mail: ['letters', 'fragile', 'seeds'], firstDeliveryStamps: 3,
+    distance: 10, runway: 'clearing', hazard: 'canopy', mail: ['letters', 'fragile', 'seeds', 'copper'], firstDeliveryStamps: 3,
   },
   {
     id: 'vert-de-gris', region: 'cuivre',

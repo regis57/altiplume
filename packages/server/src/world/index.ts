@@ -92,7 +92,7 @@ export function localizeWorld(locale: Locale) {
     })),
     cards: WORLD.cards.map((c) => {
       const base = { kind: c.kind, id: c.id, title: tx(c.title), text: tx(c.text) };
-      if (c.kind === 'contract') return { ...base, destination: c.destination, cargo: c.cargo, bags: c.bags, reward: c.reward, softDeadlineHours: c.softDeadlineHours, bonus: c.bonus, ...(c.standing ? { standing: true } : {}) };
+      if (c.kind === 'contract') return { ...base, destination: c.destination, cargo: c.cargo, bags: c.bags, reward: c.reward, softDeadlineHours: c.softDeadlineHours, bonus: c.bonus, ...(c.standing ? { standing: true } : {}), ...(c.heavy ? { heavy: true } : {}) };
       if (c.kind === 'event') return { ...base, choices: c.choices.map((ch) => ({ id: ch.id, label: tx(ch.label), outcome: tx(ch.outcome), effects: ch.effects })) };
       return { ...base, offer: c.offer };
     }),

@@ -40,7 +40,7 @@ const FLIGHT_WEAR = 5;
 
 export type News =
   | { kind: 'cards.drawn'; count: number }
-  | { kind: 'flight.arrived'; flightId: string; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean }
+  | { kind: 'flight.arrived'; flightId: string; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean; wing?: { pilot: string; plane: string } }
   | { kind: 'stamp'; stamp: string };
 
 export interface PilotRow { id: string; pilot: string; affinity: number; morale: number; fatigue: number; fatigue_at: number; scenes_seen: number }
@@ -48,6 +48,8 @@ export interface PlaneRow { id: string; model: string; wear: number }
 export interface FlightRow {
   id: string; card: string; plane_id: string; pilot_id: string; destination: string; departed_at: number; duration_ms: number;
   deadline_at: number; reward: number; bonus: number; incident: number; settled_at: number | null;
+  /** Fret lourd : l'identifiant du vol de tête du convoi (lui-même pour la tête), sinon `null`. */
+  convoy: string | null;
 }
 
 /** Une clairière est plus courte qu'une piste courte : seul le Pic s'y pose, et lui se pose partout sur la terre. */
@@ -123,8 +125,10 @@ function ledger(db: Database, companyId: string, now: number, kind: string, fran
 // ---- Le jour : tirage des cartes ----
 
 /** Tire les cartes du jour, pondérées par rareté et par la chance des pilotes. */
-export function drawCards(rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume']): string[] {
-  const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing) && regions.includes(cardRegion(c)));
+export function drawCards(rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume'], album: readonly string[] = []): string[] {
+  const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing) && regions.includes(cardRegion(c))
+    // Une carte qui attend une page d'album (la cloche attend que Sonnefeuille ait été livrée) ne vient qu'ensuite.
+    && !(c.kind === 'contract' && c.requires && !album.includes(c.requires)));
   const out: string[] = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
     // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
@@ -159,6 +163,14 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
     for (const f of arrived) {
       const arrivedAt = f.departed_at + f.duration_ms;
       const onTime = arrivedAt <= f.deadline_at;
+      // L'ailier d'un convoi : il a volé, son pilote y gagne en affinité et en moral,
+      // mais c'est la tête qui encaisse, annonce et colle les pages.
+      if (f.convoy !== null && f.convoy !== f.id) {
+        db.prepare('UPDATE flights SET settled_at = ? WHERE id = ?').run(now, f.id);
+        db.prepare('UPDATE company_pilots SET affinity = affinity + 1, morale = MIN(20, MAX(0, morale + ?)) WHERE id = ?')
+          .run((onTime ? 1 : 0) - (f.incident ? 1 : 0), f.pilot_id);
+        continue;
+      }
       const francs = f.reward + (onTime ? f.bonus : 0);
       db.prepare('UPDATE flights SET settled_at = ? WHERE id = ?').run(now, f.id);
       db.prepare('UPDATE companies SET francs = francs + ? WHERE id = ?').run(francs, company.id);
@@ -168,7 +180,13 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       if (onTime) deadlinesMet += 1;
       const pilot = db.prepare('SELECT pilot FROM company_pilots WHERE id = ?').get(f.pilot_id) as { pilot: string } | undefined;
       const plane = db.prepare('SELECT model FROM company_planes WHERE id = ?').get(f.plane_id) as { model: string } | undefined;
-      news.push({ kind: 'flight.arrived', flightId: f.id, destination: f.destination, pilot: pilot?.pilot ?? '', plane: plane?.model ?? '', francs, bonus: onTime, incident: f.incident === 1 });
+      const wingRow = f.convoy === f.id
+        ? db.prepare('SELECT p.pilot AS pilot, pl.model AS plane, f.incident AS incident FROM flights f JOIN company_pilots p ON p.id = f.pilot_id JOIN company_planes pl ON pl.id = f.plane_id WHERE f.convoy = ? AND f.id != ?').get(f.id, f.id) as { pilot: string; plane: string; incident: number } | undefined
+        : undefined;
+      news.push({
+        kind: 'flight.arrived', flightId: f.id, destination: f.destination, pilot: pilot?.pilot ?? '', plane: plane?.model ?? '', francs, bonus: onTime,
+        incident: f.incident === 1 || wingRow?.incident === 1, ...(wingRow ? { wing: { pilot: wingRow.pilot, plane: wingRow.plane } } : {}),
+      });
 
       // L'album.
       const stamps: string[] = ['s-premier-vol', `s-${f.destination}`];
@@ -177,6 +195,9 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       if (dest?.hazard === 'night' && (hour >= 20 || hour < 6)) stamps.push('s-nuit');
       if (dest?.runway === 'water') stamps.push('s-hydravion');
       if (dest?.runway === 'clearing') stamps.push('s-clairiere');
+      if (f.convoy === f.id) stamps.push('s-convoi');
+      const card = findCard(f.card);
+      if (card?.kind === 'contract' && card.stamp) stamps.push(card.stamp);
       if (deadlinesMet >= 10) stamps.push('s-delai');
       for (const s of stamps) {
         if (!awardStamp(db, company.id, s, arrivedAt)) continue;
@@ -202,7 +223,8 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       const luck = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(company.id) as { pilot: string }[])
         .reduce((f, r) => { const p = findPilot(r.pilot); return p ? f * traitFactor(p, 'luck') : f; }, 1);
       const inFlight = (db.prepare('SELECT card FROM flights WHERE company_id = ? AND settled_at IS NULL').all(company.id) as { card: string }[]).map((r) => r.card);
-      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id));
+      const album = (db.prepare('SELECT stamp FROM company_stamps WHERE company_id = ?').all(company.id) as { stamp: string }[]).map((r) => r.stamp);
+      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album);
       let added = 0;
       for (const card of drawn.slice(0, Math.max(0, room))) {
         db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, now);
@@ -219,42 +241,47 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
 export type DispatchError =
   | 'card_unknown' | 'card_not_contract' | 'plane_unknown' | 'pilot_unknown' | 'plane_busy' | 'pilot_busy' | 'pilot_tired'
-  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'needs_clearing_plane' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked';
+  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'needs_clearing_plane' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked'
+  | 'convoy_not_needed' | 'convoy_same';
 
-export interface DispatchPlan {
-  readonly card: ContractCard;
-  readonly destination: Destination;
+/** Un équipage : un avion, un pilote, ce qu'ils coûtent et ce qu'ils mettent pour l'aller. */
+export interface Crew {
   readonly plane: PlaneRow; readonly model: PlaneModel;
   readonly pilot: PilotRow; readonly template: PilotTemplate;
   readonly durationMs: number;
   readonly cost: number;
 }
 
-/** Vérifie une intention d'expédition et calcule ce qu'elle coûtera et durera. */
-export function planDispatch(db: Database, company: Company, cardId: string, planeId: string, pilotId: string, now: number): { ok: true; plan: DispatchPlan } | { ok: false; error: DispatchError } {
-  const card = findCard(cardId);
-  if (!card) return { ok: false, error: 'card_unknown' };
-  if (card.kind !== 'contract') return { ok: false, error: 'card_not_contract' };
-  // La ligne régulière n'est jamais en main : elle est toujours là.
-  const inHand = card.standing || db.prepare('SELECT 1 FROM company_hand WHERE company_id = ? AND card = ?').get(company.id, cardId);
-  if (!inHand) return { ok: false, error: 'card_unknown' };
-  // Un imprévu en main, c'est une vache sur la piste : rien ne décolle tant qu'on n'a pas tranché.
-  if (pendingEvent(db, company)) return { ok: false, error: 'event_pending' };
-  const destination = findDestination(card.destination);
-  if (!destination) return { ok: false, error: 'card_unknown' };
-  if (!unlockedRegions(db, company.id).includes(destination.region)) return { ok: false, error: 'region_locked' };
+export interface DispatchPlan extends Crew {
+  readonly card: ContractCard;
+  readonly destination: Destination;
+  /**
+   * Le fret lourd : un second équipage qui vole avec le premier, quand un seul
+   * avion ne porte pas tous les sacs. `durationMs` et `cost` du plan sont alors
+   * ceux du convoi entier — le plus lent des deux, la somme des deux.
+   */
+  readonly wing?: Crew;
+}
+
+/**
+ * Vérifie un équipage pour une destination : l'avion et le pilote existent, sont
+ * libres, le pilote n'est pas trop fatigué, l'avion se pose là-bas, y va, et
+ * décolle de chez soi. `bags`, s'il est donné, est vérifié à sa place habituelle
+ * (après la fatigue, avant la piste) : l'ordre des refus ne change pas.
+ */
+function checkCrew(
+  db: Database, company: Company, destination: Destination, planeId: string, pilotId: string, busy: readonly { plane_id: string; pilot_id: string }[], now: number, bags?: number,
+): { ok: true; crew: Crew } | { ok: false; error: DispatchError } {
   const plane = db.prepare('SELECT id, model, wear FROM company_planes WHERE id = ? AND company_id = ?').get(planeId, company.id) as PlaneRow | undefined;
   const model = plane ? findPlane(plane.model) : undefined;
   if (!plane || !model) return { ok: false, error: 'plane_unknown' };
   const pilot = db.prepare('SELECT * FROM company_pilots WHERE id = ? AND company_id = ?').get(pilotId, company.id) as PilotRow | undefined;
   const template = pilot ? findPilot(pilot.pilot) : undefined;
   if (!pilot || !template) return { ok: false, error: 'pilot_unknown' };
-
-  const busy = db.prepare('SELECT plane_id, pilot_id FROM flights WHERE company_id = ? AND departed_at + 2 * duration_ms > ?').all(company.id, now) as { plane_id: string; pilot_id: string }[];
   if (busy.some((b) => b.plane_id === plane.id)) return { ok: false, error: 'plane_busy' };
   if (busy.some((b) => b.pilot_id === pilot.id)) return { ok: false, error: 'pilot_busy' };
   if (currentFatigue(pilot, now) >= FATIGUE_LIMIT_MIN) return { ok: false, error: 'pilot_tired' };
-  if (model.capacity < card.bags) return { ok: false, error: 'plane_too_small' };
+  if (bags !== undefined && model.capacity < bags) return { ok: false, error: 'plane_too_small' };
   if (!canLand(model, destination)) {
     if (destination.runway === 'water') return { ok: false, error: 'needs_seaplane' };
     if (model.runway === 'water') return { ok: false, error: 'needs_water' };
@@ -269,16 +296,54 @@ export function planDispatch(db: Database, company: Company, cardId: string, pla
     const home = WORLD.zones.find((z) => z.id === 'runway')!.levels.find((l) => l.level === zone('runway'))?.runway ?? 'short';
     if (RUNWAY_ORDER[model.runway] > RUNWAY_ORDER[home]) return { ok: false, error: 'home_runway_too_short' };
   }
-
   // Un hangar équipé entretient mieux : l'établi divise l'entretien par 1,25, l'atelier par 1,5.
   const maintenance = WORLD.zones.find((z) => z.id === 'hangar')!.levels.find((l) => l.level === zone('hangar'))?.maintenance ?? 1;
   const cost = Math.round(template.wage + (model.upkeep * traitFactor(template, 'fuel')) / maintenance);
+  const durationMs = flightDurationMs(destination, model, traitFactor(template, 'speed'));
+  return { ok: true, crew: { plane, model, pilot, template, durationMs, cost } };
+}
+
+/**
+ * Vérifie une intention d'expédition et calcule ce qu'elle coûtera et durera.
+ *
+ * `wing` : le second équipage d'un convoi. Il n'est accepté que si un seul avion
+ * ne suffit pas (sinon `convoy_not_needed`), et les deux réunis doivent porter
+ * tous les sacs.
+ */
+export function planDispatch(
+  db: Database, company: Company, cardId: string, planeId: string, pilotId: string, now: number, wing?: { plane: string; pilot: string },
+): { ok: true; plan: DispatchPlan } | { ok: false; error: DispatchError } {
+  const card = findCard(cardId);
+  if (!card) return { ok: false, error: 'card_unknown' };
+  if (card.kind !== 'contract') return { ok: false, error: 'card_not_contract' };
+  // La ligne régulière n'est jamais en main : elle est toujours là.
+  const inHand = card.standing || db.prepare('SELECT 1 FROM company_hand WHERE company_id = ? AND card = ?').get(company.id, cardId);
+  if (!inHand) return { ok: false, error: 'card_unknown' };
+  // Un imprévu en main, c'est une vache sur la piste : rien ne décolle tant qu'on n'a pas tranché.
+  if (pendingEvent(db, company)) return { ok: false, error: 'event_pending' };
+  const destination = findDestination(card.destination);
+  if (!destination) return { ok: false, error: 'card_unknown' };
+  if (!unlockedRegions(db, company.id).includes(destination.region)) return { ok: false, error: 'region_locked' };
+
+  const busy = db.prepare('SELECT plane_id, pilot_id FROM flights WHERE company_id = ? AND departed_at + 2 * duration_ms > ?').all(company.id, now) as { plane_id: string; pilot_id: string }[];
+  const lead = checkCrew(db, company, destination, planeId, pilotId, busy, now, wing ? undefined : card.bags);
+  if (!lead.ok) return lead;
+  let second: Crew | undefined;
+  if (wing) {
+    if (lead.crew.model.capacity >= card.bags) return { ok: false, error: 'convoy_not_needed' };
+    if (wing.plane === planeId || wing.pilot === pilotId) return { ok: false, error: 'convoy_same' };
+    const w = checkCrew(db, company, destination, wing.plane, wing.pilot, busy, now);
+    if (!w.ok) return w;
+    if (lead.crew.model.capacity + w.crew.model.capacity < card.bags) return { ok: false, error: 'plane_too_small' };
+    second = w.crew;
+  }
+  const cost = lead.crew.cost + (second?.cost ?? 0);
   // La ligne régulière ne coûte rien au départ : la poste avance le salaire et le
   // carburant, et les retient sur le tarif à l'arrivée. C'est ce qui garantit qu'une
   // compagnie ne peut jamais rester clouée au sol, même la caisse vide.
   if (!card.standing && company.francs < cost) return { ok: false, error: 'not_enough_francs' };
-  const durationMs = flightDurationMs(destination, model, traitFactor(template, 'speed'));
-  return { ok: true, plan: { card, destination, plane, model, pilot, template, durationMs, cost } };
+  const durationMs = Math.max(lead.crew.durationMs, second?.durationMs ?? 0);
+  return { ok: true, plan: { ...lead.crew, card, destination, durationMs, cost, ...(second ? { wing: second } : {}) } };
 }
 
 /**
@@ -299,34 +364,50 @@ export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 
   return Math.min(1, (1 - baseReliability) * nightFactor * moraleFactor * canopyFactor);
 }
 
-/** Expédie : débite le coût, fatigue le pilote, tire l'aléa du vol, enregistre le vol. */
+/**
+ * Expédie : débite le coût, fatigue le pilote, tire l'aléa du vol, enregistre le vol.
+ *
+ * Un convoi s'enregistre en deux lignes de vol partis ensemble : celle de tête
+ * porte la récompense ; celle de l'ailier ne porte rien, mais occupe son avion et
+ * son pilote, et désigne la tête par `convoy`. Les aléas du convoi sont tirés après
+ * ceux d'un vol simple : un vol à un seul avion tire exactement les mêmes nombres
+ * qu'avant le fret lourd.
+ */
 export function dispatch(db: Database, company: Company, playerId: string, plan: DispatchPlan, now: number): FlightRow {
   return transaction(db, () => {
     const row = db.prepare('SELECT flights_count FROM companies WHERE id = ?').get(company.id) as { flights_count: number };
     const rng = makeRng(deriveSeed(playerId, row.flights_count, 'flight'));
-    const incident = rng() > 1 - incidentRisk(plan, now);
+    const leadIncident = rng() > 1 - incidentRisk(plan, now);
     let durationMs = plan.durationMs;
     if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk')) durationMs += FOG_DELAY_MS;
     if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk')) durationMs += SEAWIND_DELAY_MS;
-    if (incident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
-    const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(plan.template, 'wear'));
-    // La fatigue, c'est du temps passé en l'air : l'aller et le retour, au trait du pilote près.
-    const fatigueGain = Math.max(1, Math.round(((2 * durationMs) / 60_000) * traitFactor(plan.template, 'fatigue')));
+    // L'ailier a son propre moteur, et donc son propre aléa ; le convoi attend le plus lent.
+    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination }, now) : false;
+    if (leadIncident || wingIncident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
 
     // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
     const advanced = plan.card.standing === true;
     const debit = advanced ? 0 : plan.cost;
     const reward = advanced ? Math.max(0, plan.card.reward - plan.cost) : plan.card.reward;
     const id = newId();
-    db.prepare(`INSERT INTO flights (id, company_id, card, plane_id, pilot_id, destination, departed_at, duration_ms, deadline_at, reward, bonus, incident)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-      .run(id, company.id, plan.card.id, plan.plane.id, plan.pilot.id, plan.destination.id, now, durationMs,
-        now + plan.card.softDeadlineHours * 3_600_000, reward, plan.card.bonus, incident ? 1 : 0);
+    const deadline = now + plan.card.softDeadlineHours * 3_600_000;
+    const insert = db.prepare(`INSERT INTO flights (id, company_id, card, plane_id, pilot_id, destination, departed_at, duration_ms, deadline_at, reward, bonus, incident, convoy)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    insert.run(id, company.id, plan.card.id, plan.plane.id, plan.pilot.id, plan.destination.id, now, durationMs, deadline, reward, plan.card.bonus, leadIncident ? 1 : 0, plan.wing ? id : null);
+    if (plan.wing) {
+      insert.run(newId(), company.id, plan.card.id, plan.wing.plane.id, plan.wing.pilot.id, plan.destination.id, now, durationMs, deadline, 0, 0, wingIncident ? 1 : 0, id);
+    }
     db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, plan.card.id);
     db.prepare('UPDATE companies SET francs = francs - ?, flights_count = flights_count + 1 WHERE id = ?').run(debit, company.id);
-    db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(wear, plan.plane.id);
-    db.prepare('UPDATE company_pilots SET fatigue = ?, fatigue_at = ? WHERE id = ?')
-      .run(Math.min(FATIGUE_MAX_MIN, currentFatigue(plan.pilot, now) + fatigueGain), busyUntil({ departed_at: now, duration_ms: durationMs }), plan.pilot.id);
+    // Chaque équipage s'use et se fatigue pour lui-même : du temps passé en l'air, aller et retour, au trait du pilote près.
+    const crews: [Crew, boolean][] = [[plan, leadIncident], ...(plan.wing ? [[plan.wing, wingIncident] as [Crew, boolean]] : [])];
+    for (const [crew, incident] of crews) {
+      const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(crew.template, 'wear'));
+      const fatigueGain = Math.max(1, Math.round(((2 * durationMs) / 60_000) * traitFactor(crew.template, 'fatigue')));
+      db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(wear, crew.plane.id);
+      db.prepare('UPDATE company_pilots SET fatigue = ?, fatigue_at = ? WHERE id = ?')
+        .run(Math.min(FATIGUE_MAX_MIN, currentFatigue(crew.pilot, now) + fatigueGain), busyUntil({ departed_at: now, duration_ms: durationMs }), crew.pilot.id);
+    }
     ledger(db, company.id, now, 'flight.departed', -debit, plan.destination.id);
     return db.prepare('SELECT * FROM flights WHERE id = ?').get(id) as unknown as FlightRow;
   });

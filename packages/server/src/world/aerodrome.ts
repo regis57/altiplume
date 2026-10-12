@@ -94,5 +94,9 @@ export const STAMPS: readonly Stamp[] = [
   { id: 's-vert-de-gris', name: { fr: 'Vert-de-Gris', en: 'Verdigris' }, description: { fr: "Première livraison à la mine verte.", en: 'First delivery to the green mine.' } },
   { id: 's-le-hetre-roi', name: { fr: 'Le Hêtre-Roi', en: 'Kingbeech' }, description: { fr: "Première livraison au cœur de la forêt.", en: 'First delivery to the heart of the forest.' } },
   { id: 's-clairiere', name: { fr: 'Dans la clairière', en: 'Into the clearing' }, description: { fr: "Le premier atterrissage de la compagnie entre les arbres.", en: "The company's first landing among the trees." } },
+  // Le fret lourd
+  { id: 's-convoi', name: { fr: 'Le premier convoi', en: 'The first convoy' }, description: { fr: "Deux avions partis ensemble pour un seul courrier, et rentrés ensemble.", en: 'Two planes out together for a single load, and home together.' } },
+  { id: 's-fonderie', name: { fr: 'La coulée', en: 'The pour' }, description: { fr: "Le bronze est arrivé à Sonnefeuille. Frère Anselme a rallumé le four.", en: 'The bronze has reached Ringleaf. Brother Anselm has lit the furnace again.' } },
+  { id: 's-cloche', name: { fr: 'La cloche de Sainte-Lueur', en: 'The Glimmerkirk bell' }, description: { fr: "Elle sonne au-dessus de l'eau quand le courrier arrive. Les enfants ne comptent plus les hublots.", en: "It rings out over the water when the mail comes in. The children don't count portholes any more." } },
   { id: 's-foret', name: { fr: 'Toute la forêt', en: 'The whole wood' }, description: { fr: "Les six clairières ont reçu votre courrier. Sous les hêtres, on connaît maintenant le bruit de votre moteur.", en: 'All six clearings have had your mail. Under the beeches, they know the sound of your engine now.' } },
 ];

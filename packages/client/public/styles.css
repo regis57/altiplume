@@ -785,6 +785,13 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .deco li.posee { border-style: solid; border-color: var(--laiton); }
 .routes li.ouverte { border-style: solid; border-color: var(--laiton); }
 .routes .tagline { font-style: italic; margin: 0 0 0.4rem; }
+/* Le fret lourd : la carte porte une bande à chevrons épaisse, comme une caisse
+   marquée pour le courrier aérien ; le convoi s'ouvre dans le formulaire. */
+.carte.lourd { border-left: 6px solid var(--avion-bleu); }
+.carte.lourd .carte-genre { color: var(--avion-bleu); font-weight: 700; }
+.expedition .convoi { border: 1px dashed var(--brume-fonce); border-radius: var(--rayon); padding: 0.4rem 0.8rem 0.6rem; margin: 0.6rem 0; }
+.expedition .convoi legend { font-size: 0.9rem; color: var(--encre-douce); padding: 0 0.3rem; }
+
 /* Les vignettes des régions : un petit paysage en tête de chaque route. */
 .routes .vignette { display: block; width: 100%; aspect-ratio: 160 / 48; border-radius: var(--rayon); margin: 0 0 0.6rem; }
 .routes li:not(.ouverte) .vignette { filter: saturate(0.35) brightness(0.92); }

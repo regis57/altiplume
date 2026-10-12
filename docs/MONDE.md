@@ -148,13 +148,46 @@ le relevé des clairières du garde, quelqu'un à la lisière) ne se tirent qu'u
 la route ouverte. Deux contrats préparent la suite : la cire pour le moule de
 Sonnefeuille, et une lettre pour le creux du Hêtre-Roi.
 
+## Le fret lourd — v0.3
+
+Certains courriers pèsent plus qu'aucun avion capable de se poser là-bas n'en
+porte : ils partent en **convoi**, à deux avions et deux pilotes. Le joueur choisit
+un premier avion ; s'il ne porte pas tous les sacs, le formulaire ouvre un second
+équipage (avion d'escorte et pilote). Les deux décollent ensemble et volent au pas
+du plus lent ; on paie les deux salaires et les deux entretiens ; chaque avion a son
+propre aléa, et un incident retarde tout le convoi ; chaque pilote se fatigue et gagne
+en affinité pour lui-même. La récompense est versée une fois, à l'arrivée de la tête.
+Le premier convoi colle « Le premier convoi ».
+
+| Contrat | Escale | Sacs | Avions qui s'y posent | Récompense |
+|---|---|---|---|---|
+| Sacs de farine | Moulin-Gris | 3 | Grive, Martinet, Pic (2 au plus) | 140 F + 25 |
+| Le pressoir des Tilleuls | Les Tilleuls | 3 | Grive, Pic (2) | 150 F + 30 |
+| La chaudière du dispensaire | Combe-aux-Rosées | 6 | dont le Héron (5) | 420 F + 60 |
+| Sel pour les quais | Port-Sel | 3 | Grive, Martinet, Pic (2) | 330 F + 40 |
+| Le treuil de la capitainerie | Port-Sel | 3 | Grive, Martinet, Pic (2) | 380 F + 50 |
+| Le bronze de la cloche | Sonnefeuille | 3 | le Pic seul (2) | 520 F + 70 |
+| La cloche de Sainte-Lueur | Sainte-Lueur | 6 | Sterne (3), Goéland (4) | 1 400 F + 160 |
+
+**La cloche** est une chaîne : la cire pour le moule (un contrat ordinaire de
+Sonnefeuille), puis le bronze — qui ne se tire qu'une fois Sonnefeuille livrée, et
+colle « La coulée » —, puis la cloche elle-même, qui ne se tire qu'après la coulée,
+part à deux hydravions vers la chapelle de Sainte-Lueur et colle « La cloche de
+Sainte-Lueur ». C'est l'histoire de Rosalie Martel, racontée par les cartes.
+
+**La farine et le sel** étaient du fret lourd sans le savoir : trois sacs, pour des
+escales où aucun avion n'en porte plus de deux. Ces deux cartes — et le colis de
+Marais-Blanc, ramené à deux sacs — étaient **impossibles à livrer** depuis la v0.1 et
+la v0.2. Un test vérifie maintenant que chaque contrat ordinaire se livre avec un
+seul avion achetable, et chaque fret lourd avec deux.
+
 ## Les avions
 
 | Modèle | Anglais | Type | Portée | Sacs | Vitesse | Fiabilité | Piste | Prix |
 |---|---|---|---|---|---|---|---|---|
-| **Grive G-2** | Thrush G-2 | biplan courrier | 8 | 2 | 12 l/h | 94 % | courte | 1 800 F (déjà dans le hangar) |
+| **Grive G-2** | Thrush G-2 | biplan courrier | 8 | 2 | 12 l/h | 94 % | courte | 1 800 F (la première est dans le hangar ; une seconde d'occasion, 1 500 F, à Moulin-Gris) |
 | **Martinet M-1** | Swift M-1 | monoplan rapide | 10 | 1 | 24 l/h | 86 % | moyenne | 3 200 F |
-| **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F |
+| **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F (5 600 F en occasion, aux Messageries de Pont-de-Brume) |
 
 | **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 5 400 F (4 400 F en occasion, à Port-Sel) |
 | **Goéland G-4** | Gull G-4 | hydravion long-courrier | 22 | 4 | 16 l/h | 91 % | **eau** | 7 800 F (6 600 F en occasion, à Port-Sel) |
@@ -268,8 +301,10 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
   enrhumé, vent de crête, un sac en trop, averse, le bac en grève, la nuit qui tombe
   tôt, une lettre sans adresse. Chacun se résout par un choix — payer, attendre,
   risquer — et chaque choix a ses chiffres.
-- **4 opportunités** : un Martinet d'occasion, un pilote de passage, la fête des
-  Tilleuls, la vieille carte de Bastien.
+- **6 opportunités** : un Martinet d'occasion, une Grive d'occasion, le Héron des
+  Messageries, un pilote de passage, la fête des Tilleuls, la vieille carte de Bastien.
+  (Jusqu'au 12/10, aucune carte ne vendait le Héron ni une seconde Grive : la grande
+  piste ne servait à rien.)
 
 ## L'aérodrome
 
@@ -339,9 +374,8 @@ pris la part raisonnable.
 **Pilotes.** Dix, cinq femmes et cinq hommes. Les deux suivants seront une femme et un
 homme, pour que la parité tienne à chaque palier ; objectif v1.0 : vingt pilotes.
 
-**Au-delà.** Le fret lourd — un courrier qui demande deux avions au lieu d'un, et dont
-la cloche de Sonnefeuille sera le plus beau ; les saisons (v0.3) ; les trois régions
-restantes : les Hauts-Plateaux d'Ocre, le Désert de Verre, le Grand Blanc.
+**Au-delà.** Les saisons (v0.3) ; les trois régions restantes : les Hauts-Plateaux
+d'Ocre, le Désert de Verre, le Grand Blanc.
 
 ## Ce qu'on commence avec
 

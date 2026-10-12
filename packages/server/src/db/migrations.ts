@@ -308,4 +308,13 @@ export const MIGRATIONS: readonly Migration[] = [
       UPDATE company_pilots SET fatigue = 0, fatigue_at = 0;
     `,
   },
+  {
+    version: 12,
+    name: 'fret-lourd',
+    sql: `
+      -- Le fret lourd (12/10) : un courrier trop lourd pour un seul avion part en
+      -- convoi. Deux lignes de vol, parties ensemble ; « convoy » désigne la tête.
+      ALTER TABLE flights ADD COLUMN convoy TEXT;
+    `,
+  },
 ];
