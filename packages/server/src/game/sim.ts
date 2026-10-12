@@ -15,9 +15,10 @@ import { transaction } from '../db/database.ts';
 import { awardStamp, type Company } from '../db/repos/companies.ts';
 import { newId } from '../auth/tokens.ts';
 import { gameDayIndex } from '../sim/day.ts';
+import { seasonOf, type Season } from '../sim/saison.ts';
 import { deriveSeed, makeRng, type Rng } from '../sim/rng.ts';
 import { cardRegion, findCard, findDestination, findPilot, findPlane, findRegion, findTrait, flightDurationMs, regionDestinations, WORLD } from '../world/index.ts';
-import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Runway, TraitId } from '../world/types.ts';
+import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Runway, SeasonDef, TraitId } from '../world/types.ts';
 
 export const HAND_SIZE = 5;
 export const DAILY_DRAW = 3;
@@ -70,6 +71,12 @@ export function unlockedRegions(db: Database, companyId: string): RegionId[] {
   const set = new Set<RegionId>(['brume']);
   for (const r of rows) if (findRegion(r.region)) set.add(r.region as RegionId);
   return [...set];
+}
+
+/** Ce que la saison fait à un effet donné, à l'instant donné ; 1 = rien. */
+export function seasonEffect(now: number, effect: keyof SeasonDef['effects']): number {
+  const season = seasonOf(now).season;
+  return WORLD.seasons.find((x) => x.id === season)?.effects[effect] ?? 1;
 }
 
 /** Multiplicateur combiné des deux traits d'un pilote pour un effet donné. */
@@ -125,15 +132,22 @@ function ledger(db: Database, companyId: string, now: number, kind: string, fran
 // ---- Le jour : tirage des cartes ----
 
 /** Tire les cartes du jour, pondérées par rareté et par la chance des pilotes. */
-export function drawCards(rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume'], album: readonly string[] = []): string[] {
+export function drawCards(
+  rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume'], album: readonly string[] = [], season?: Season,
+): string[] {
   const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing) && regions.includes(cardRegion(c))
     // Une carte qui attend une page d'album (la cloche attend que Sonnefeuille ait été livrée) ne vient qu'ensuite.
-    && !(c.kind === 'contract' && c.requires && !album.includes(c.requires)));
+    && !(c.kind === 'contract' && c.requires && !album.includes(c.requires))
+    // Une carte de saison ne vient qu'en sa saison ; sans saison donnée, elle ne vient pas.
+    && (c.kind === 'opportunity' || c.season === undefined || c.season === season));
+  const seeds = WORLD.seasons.find((x) => x.id === season)?.effects.seedsWeight ?? 1;
   const out: string[] = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
     // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
     const weights = pool.map((c) => {
       let w = 1 / c.weight;
+      // Au printemps, les semences partent deux fois plus souvent.
+      if (c.kind === 'contract' && c.cargo === 'seeds') w *= seeds;
       if (c.kind === 'opportunity') w *= luck;
       if (c.kind === 'event') w /= luck;
       return w;
@@ -196,6 +210,8 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       if (dest?.runway === 'water') stamps.push('s-hydravion');
       if (dest?.runway === 'clearing') stamps.push('s-clairiere');
       if (f.convoy === f.id) stamps.push('s-convoi');
+      // La première livraison de chaque saison ; les quatre font une année.
+      stamps.push(`s-${seasonOf(arrivedAt).season}`);
       const card = findCard(f.card);
       if (card?.kind === 'contract' && card.stamp) stamps.push(card.stamp);
       if (deadlinesMet >= 10) stamps.push('s-delai');
@@ -206,6 +222,8 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
         const extra = s === `s-${f.destination}` ? Math.max(0, (dest?.firstDeliveryStamps ?? 1) - 1) : 0;
         if (extra > 0) db.prepare('UPDATE companies SET stamps = stamps + ? WHERE id = ?').run(extra, company.id);
       }
+      const seasonsDone = db.prepare("SELECT COUNT(*) AS n FROM company_stamps WHERE company_id = ? AND stamp IN ('s-printemps', 's-ete', 's-automne', 's-hiver')").get(company.id) as { n: number };
+      if (Number(seasonsDone.n) === 4 && awardStamp(db, company.id, 's-annee', arrivedAt)) news.push({ kind: 'stamp', stamp: 's-annee' });
       // Toute la région livrée : la page qui ouvre la suivante.
       const region = dest?.region ?? 'brume';
       const all = regionDestinations(region);
@@ -224,7 +242,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
         .reduce((f, r) => { const p = findPilot(r.pilot); return p ? f * traitFactor(p, 'luck') : f; }, 1);
       const inFlight = (db.prepare('SELECT card FROM flights WHERE company_id = ? AND settled_at IS NULL').all(company.id) as { card: string }[]).map((r) => r.card);
       const album = (db.prepare('SELECT stamp FROM company_stamps WHERE company_id = ?').all(company.id) as { stamp: string }[]).map((r) => r.stamp);
-      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album);
+      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album, seasonOf(now).season);
       let added = 0;
       for (const card of drawn.slice(0, Math.max(0, room))) {
         db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, now);
@@ -299,7 +317,8 @@ function checkCrew(
   // Un hangar équipé entretient mieux : l'établi divise l'entretien par 1,25, l'atelier par 1,5.
   const maintenance = WORLD.zones.find((z) => z.id === 'hangar')!.levels.find((l) => l.level === zone('hangar'))?.maintenance ?? 1;
   const cost = Math.round(template.wage + (model.upkeep * traitFactor(template, 'fuel')) / maintenance);
-  const durationMs = flightDurationMs(destination, model, traitFactor(template, 'speed'));
+  // L'hiver, la neige et le froid rallongent les vols.
+  const durationMs = Math.round(flightDurationMs(destination, model, traitFactor(template, 'speed')) * seasonEffect(now, 'duration'));
   return { ok: true, crew: { plane, model, pilot, template, durationMs, cost } };
 }
 
@@ -379,8 +398,9 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     const rng = makeRng(deriveSeed(playerId, row.flights_count, 'flight'));
     const leadIncident = rng() > 1 - incidentRisk(plan, now);
     let durationMs = plan.durationMs;
-    if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk')) durationMs += FOG_DELAY_MS;
-    if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk')) durationMs += SEAWIND_DELAY_MS;
+    // La saison pèse sur le temps qu'il fait : l'été chasse la brume et le vent de mer, l'automne ramène la brume.
+    if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'fogRisk')) durationMs += FOG_DELAY_MS;
+    if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'seawindRisk')) durationMs += SEAWIND_DELAY_MS;
     // L'ailier a son propre moteur, et donc son propre aléa ; le convoi attend le plus lent.
     const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination }, now) : false;
     if (leadIncident || wingIncident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
@@ -388,7 +408,9 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
     const advanced = plan.card.standing === true;
     const debit = advanced ? 0 : plan.cost;
-    const reward = advanced ? Math.max(0, plan.card.reward - plan.cost) : plan.card.reward;
+    // L'hiver, le courrier vaut plus cher : la prime de froid s'ajoute au tarif (pas à la prime de délai).
+    const tariff = Math.round(plan.card.reward * seasonEffect(now, 'reward'));
+    const reward = advanced ? Math.max(0, tariff - plan.cost) : tariff;
     const id = newId();
     const deadline = now + plan.card.softDeadlineHours * 3_600_000;
     const insert = db.prepare(`INSERT INTO flights (id, company_id, card, plane_id, pilot_id, destination, departed_at, duration_ms, deadline_at, reward, bonus, incident, convoy)

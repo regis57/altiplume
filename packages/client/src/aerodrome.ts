@@ -21,7 +21,8 @@ interface WorldView {
   regions: { id: string; name: string; tagline: string; description: string; route?: { requires: string; cost: number } }[];
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
-  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
+  seasons: { id: string; name: string; tagline: string; effects: { duration?: number; reward?: number } }[];
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
@@ -47,6 +48,7 @@ interface CompanyView {
   pilots: { id: string; pilot: string; affinity: number; morale: number; fatigue: number; scenesSeen: number; restedAt: number | null; busyUntil: number | null }[];
   zones: Record<string, number>;
   regions: string[];
+  season: { id: string; endsAt: number };
   decorations: string[];
   album: { id: string; earnedAt: number }[];
   hand: { card: string; drawnAt: number }[];
@@ -219,13 +221,19 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   if (!section) return;
   section.classList.remove('cache');
   const root = $('jeu');
-  if (root) root.dataset['moment'] = momentOfDay(new Date().getHours());
+  if (root) { root.dataset['moment'] = momentOfDay(new Date().getHours()); root.dataset['saison'] = c.season.id; }
   document.documentElement.dataset['titleFr'] = c.name;
   document.documentElement.dataset['titleEn'] = c.name;
   document.title = `${c.name} — Altiplume`;
 
   const name = $('t-compagnie'); if (name) name.textContent = c.name;
   const address = $('adresse'); if (address) address.textContent = world.home.address;
+  // La saison du calendrier : son nom, jusqu'à quand, et ce qu'elle change.
+  const season = world.seasons.find((x) => x.id === c.season.id);
+  const saison = $('saison');
+  if (saison && season) {
+    saison.textContent = `${season.name} · ${t('season.until')} ${formatDate(c.season.endsAt - 86_400_000)} — ${season.tagline}`;
+  }
   const francs = $('francs'); if (francs) francs.textContent = String(c.francs);
   const cachets = $('cachets'); if (cachets) cachets.textContent = String(c.stamps);
   renderScene(c);
@@ -495,7 +503,8 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
     const card = world.cards.find((x) => x.id === id);
     if (!card) continue;
     const li = el('li', `carte ${card.kind}${card.standing ? ' reguliere' : ''}${card.heavy ? ' lourd' : ''}`);
-    li.append(el('p', 'carte-genre', card.standing ? t('card.standing') : card.heavy ? t('card.heavy') : t(`card.${card.kind}`)));
+    const seasonName = card.season ? world.seasons.find((x) => x.id === card.season)?.name.toLowerCase() : undefined;
+    li.append(el('p', 'carte-genre', card.standing ? t('card.standing') : card.heavy ? t('card.heavy') : `${t(`card.${card.kind}`)}${seasonName ? ` · ${seasonName}` : ''}`));
     li.append(el('h3', undefined, card.title));
     li.append(el('p', undefined, card.text));
     const actions = el('div', 'actions');
@@ -504,7 +513,11 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       const bags = `${card.bags} ${t(card.bags === 1 ? 'game.bag' : 'game.bags')}`;
       const bonus = card.bonus ? ` · +${card.bonus} F ${t('card.ifWithin')} ${card.softDeadlineHours} h` : '';
       const advance = card.standing ? ` · ${t('card.advanced')}` : '';
-      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${bags} · ${card.reward} F${bonus}${advance}`));
+      // L'hiver, la prime de froid s'ajoute au tarif : on affiche ce qui sera payé.
+      const rewardFactor = world.seasons.find((x) => x.id === c.season.id)?.effects.reward ?? 1;
+      const tariff = Math.round((card.reward ?? 0) * rewardFactor);
+      const cold = rewardFactor > 1 ? ` (${t('card.coldBonus')})` : '';
+      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${bags} · ${tariff} F${cold}${bonus}${advance}`));
       const send = el('button', 'bouton'); send.type = 'button'; send.textContent = t('card.dispatch');
       if (c.pendingEvent) {
         // Une vache sur la piste : on tranche l'imprévu d'abord.
@@ -626,7 +639,9 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
     if (!m || !tpl) return null;
     // Le même calcul que le serveur : un hangar équipé divise l'entretien.
     const hangar = world.zones.find((z) => z.id === 'hangar')?.levels.find((l) => l.level === (c.zones['hangar'] ?? 1));
-    return { minutes: Math.round((dest.distance / m.speed) * 60), cost: Math.round(tpl.wage + m.upkeep / (hangar?.maintenance ?? 1)), capacity: m.capacity };
+    // L'hiver rallonge les vols : le même facteur que le serveur.
+    const slower = world.seasons.find((x) => x.id === c.season.id)?.effects.duration ?? 1;
+    return { minutes: Math.round((dest.distance / m.speed) * 60 * slower), cost: Math.round(tpl.wage + m.upkeep / (hangar?.maintenance ?? 1)), capacity: m.capacity };
   };
   const update = () => {
     const wing = needsWing();
@@ -639,7 +654,7 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
     const cost = lead.cost + (second?.cost ?? 0);
     // La ligne régulière : rien à payer maintenant, le tarif moins l'avance à l'arrivée.
     const money = card.standing
-      ? `${t('card.postAdvances')} · ${t('card.net')} ≈ +${Math.max(0, (card.reward ?? 0) - cost)} F`
+      ? `${t('card.postAdvances')} · ${t('card.net')} ≈ +${Math.max(0, Math.round((card.reward ?? 0) * (world.seasons.find((x) => x.id === c.season.id)?.effects.reward ?? 1)) - cost)} F`
       : `${t('card.cost')} ≈ ${cost} F`;
     const carried = lead.capacity + (second?.capacity ?? 0);
     const short = carried < bags ? ` · ${t('card.convoyShort').replace('{a}', String(carried)).replace('{b}', String(bags))}` : '';

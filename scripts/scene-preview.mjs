@@ -2,8 +2,8 @@
 /**
  * Aperçus de la scène : une compagnie avec tout posé et tout restauré, à
  * l'aube, le jour, au crépuscule et la nuit — et la version nue du premier
- * jour. Huit images dans le dossier demandé, pour juger les pixels avant de
- * pousser.
+ * jour, puis les quatre saisons. Treize images dans le dossier demandé, pour
+ * juger les pixels avant de pousser.
  *
  *   node scripts/scene-preview.mjs dossier-de-sortie
  */
@@ -78,6 +78,13 @@ try {
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   await shoot('tout-pose');
+  // Les quatre saisons, de jour — et l'hiver de nuit, pour la neige bleue.
+  for (const saison of ['printemps', 'ete', 'automne', 'hiver']) {
+    await page.evaluate((x) => { const j = document.getElementById('jeu'); j.dataset.saison = x; j.dataset.moment = 'jour'; }, saison);
+    await page.locator('.scene').screenshot({ path: join(out, `saison-${saison}.png`), animations: 'disabled' });
+  }
+  await page.evaluate(() => { document.getElementById('jeu').dataset.moment = 'nuit'; });
+  await page.locator('.scene').screenshot({ path: join(out, 'saison-hiver-nuit.png'), animations: 'disabled' });
   process.stdout.write(`aperçus écrits dans ${out}\n`);
 } finally {
   await browser.close();

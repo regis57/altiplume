@@ -8,6 +8,9 @@
  * textes dans la langue du joueur.
  */
 import type { Locale } from '../auth/validation.ts';
+import type { Season } from '../sim/saison.ts';
+
+export type { Season };
 
 /** Un texte dans chaque langue du jeu. */
 export type Text = Readonly<Record<Locale, string>>;
@@ -142,6 +145,8 @@ export interface ContractCard {
   readonly stamp?: string;
   /** Une page d'album qu'il faut déjà avoir pour que la carte se tire. */
   readonly requires?: string;
+  /** Ne se tire qu'en cette saison. */
+  readonly season?: Season;
 }
 
 export interface EventChoice {
@@ -161,6 +166,8 @@ export interface EventCard {
   readonly weight: 1 | 2 | 3;
   /** Ne se tire que si la route de cette région est ouverte. */
   readonly region?: RegionId;
+  /** Ne se tire qu'en cette saison. */
+  readonly season?: Season;
 }
 
 export interface OpportunityCard {
@@ -216,6 +223,19 @@ export interface Stamp {
   readonly description: Text;
 }
 
+/**
+ * Une saison : son nom, ce qu'elle change, en nombres. 1 = neutre.
+ * `duration` et `reward` s'appliquent à tous les vols partis pendant la saison ;
+ * `fogRisk` et `seawindRisk` multiplient la probabilité des retards de brume et de
+ * vent de mer ; `seedsWeight` multiplie le poids des contrats de semences au tirage.
+ */
+export interface SeasonDef {
+  readonly id: Season;
+  readonly name: Text;
+  readonly tagline: Text;
+  readonly effects: Readonly<Partial<Record<'duration' | 'reward' | 'fogRisk' | 'seawindRisk' | 'seedsWeight', number>>>;
+}
+
 export interface World {
   /** La région de départ. */
   readonly region: Region;
@@ -230,6 +250,7 @@ export interface World {
   readonly zones: readonly Zone[];
   readonly decorations: readonly Decoration[];
   readonly stamps: readonly Stamp[];
+  readonly seasons: readonly SeasonDef[];
   /** Ce avec quoi on commence. */
   readonly start: { readonly francs: number; readonly stamps: number; readonly planes: readonly string[]; readonly pilots: readonly string[] };
 }
