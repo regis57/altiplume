@@ -727,7 +727,10 @@ export function translatePage(): void {
   });
   document.querySelectorAll<HTMLElement>('[data-i18n-html]').forEach((el) => {
     const key = el.dataset['i18nHtml'];
-    // Les chaînes avec balises viennent du dictionnaire embarqué, jamais du réseau.
+    // Les chaînes avec balises viennent du dictionnaire embarqué, jamais du réseau,
+    // et passent par la politique Trusted Types « altiplume » (trusted.ts). Examiné
+    // pour Opengrep : la seule écriture HTML du client, voulue.
+    // nosemgrep: insecure-innerhtml, insecure-document-method
     if (key) el.innerHTML = trustedHtml(t(key));
   });
   // Messages composés de codes (« error.x error.y ») : re-rendus dans la langue courante.
