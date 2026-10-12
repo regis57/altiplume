@@ -11,6 +11,7 @@ import { SALINE, SALINE_DESTINATIONS } from './saline.ts';
 import { ARCHIPEL, ARCHIPEL_DESTINATIONS } from './archipel.ts';
 import { CUIVRE, CUIVRE_DESTINATIONS } from './cuivre.ts';
 import { TRAITS } from './traits.ts';
+import { SEASONS } from './saisons.ts';
 import type { Card, Destination, PilotTemplate, PlaneModel, Region, RegionId, Text, Trait, World } from './types.ts';
 
 export const WORLD: World = {
@@ -25,6 +26,7 @@ export const WORLD: World = {
   zones: ZONES,
   decorations: DECORATIONS,
   stamps: STAMPS,
+  seasons: SEASONS,
   start: { francs: 300, stamps: 0, planes: ['grive'], pilots: ['prosper'] },
 };
 
@@ -90,9 +92,10 @@ export function localizeWorld(locale: Locale) {
       id: p.id, name: tx(p.name), gender: p.gender, age: p.age, origin: tx(p.origin), traits: p.traits,
       portrait: tx(p.portrait), greeting: tx(p.greeting), wage: p.wage, storyTitle: tx(p.story.title), scenes: p.story.scenes.length,
     })),
+    seasons: WORLD.seasons.map((x) => ({ id: x.id, name: tx(x.name), tagline: tx(x.tagline), effects: x.effects })),
     cards: WORLD.cards.map((c) => {
       const base = { kind: c.kind, id: c.id, title: tx(c.title), text: tx(c.text) };
-      if (c.kind === 'contract') return { ...base, destination: c.destination, cargo: c.cargo, bags: c.bags, reward: c.reward, softDeadlineHours: c.softDeadlineHours, bonus: c.bonus, ...(c.standing ? { standing: true } : {}), ...(c.heavy ? { heavy: true } : {}) };
+      if (c.kind === 'contract') return { ...base, destination: c.destination, cargo: c.cargo, bags: c.bags, reward: c.reward, softDeadlineHours: c.softDeadlineHours, bonus: c.bonus, ...(c.standing ? { standing: true } : {}), ...(c.heavy ? { heavy: true } : {}), ...(c.season ? { season: c.season } : {}) };
       if (c.kind === 'event') return { ...base, choices: c.choices.map((ch) => ({ id: ch.id, label: tx(ch.label), outcome: tx(ch.outcome), effects: ch.effects })) };
       return { ...base, offer: c.offer };
     }),

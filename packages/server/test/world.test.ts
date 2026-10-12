@@ -75,9 +75,9 @@ describe('le monde — intégrité', () => {
     expect(WORLD.pilots.filter((p) => p.starter || ['ilias', 'yse', 'aurele'].includes(p.id))).toHaveLength(4);
     // Les vingt de la v0.1 (la farine est devenue du fret lourd), sans le fret lourd ajouté ensuite.
     const ajoutes = ['c-pressoir', 'c-chaudiere', 'c-treuil', 'c-bronze', 'c-cloche'];
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && !ajoutes.includes(c.id) && brume(c))).toHaveLength(20);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.standing && !c.season && !ajoutes.includes(c.id) && brume(c))).toHaveLength(20);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.standing)).toHaveLength(1);
-    expect(WORLD.cards.filter((c) => c.kind === 'event' && brume(c))).toHaveLength(10);
+    expect(WORLD.cards.filter((c) => c.kind === 'event' && !c.season && brume(c))).toHaveLength(10);
     // Quatre à la v0.1, plus la Grive et le Héron d'occasion, qu'on ne pouvait pas acheter avant le fret lourd.
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && brume(c))).toHaveLength(6);
     expect(WORLD.decorations).toHaveLength(10);
@@ -89,7 +89,7 @@ describe('le monde — intégrité', () => {
     expect(escales).toHaveLength(6);
     expect(escales.filter((d) => d.runway === 'water')).toHaveLength(3);
     expect(WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id)).toEqual(['sterne', 'goeland']);
-    expect(WORLD.cards.filter((c) => c.kind === 'contract' && c.id !== 'c-treuil' && saline(c))).toHaveLength(15);
+    expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.season && c.id !== 'c-treuil' && saline(c))).toHaveLength(15);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && saline(c))).toHaveLength(2);
     expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(3); // + le Goéland, vendu à Port-Sel
     expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline', 'archipel', 'cuivre']);
