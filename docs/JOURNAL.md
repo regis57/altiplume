@@ -626,3 +626,26 @@ La veille, l'interlude sécurité avait regardé le site **de l'extérieur** : c
 **Une chose n'a pas pu être mesurée ici**, et il faut le dire : la base de failles de Trivy n'est pas joignable depuis la machine où j'écris. Le premier vrai passage de Trivy a donc eu lieu dans la CI de sa propre PR. Il est vert : aucune faille critique corrigeable. Le détail des failles élevées vit dans le résumé du job, pas dans ce journal.
 
 Les quatre PR fusionnées, tout est vert sur `main`, et le Release qui a publié l'aérodrome qui grandit est passé par Trivy avant de pousser l'image. La page [Sécurité](Securite) a maintenant deux moitiés : ce qui se voit du dehors, ce qui se contrôle du dedans. Et une troisième, plus courte chaque soir : ce qui n'a pas encore été fait — l'accessibilité, avec les personnes concernées ; Blacklight ; nmap depuis l'extérieur ; Have I Been Pwned ; OSV-Scanner ; ZAP contre le site public ; une passkey sur un vrai appareil.
+
+## Chapitre 39 — L'escorte fantôme (12 octobre 2026, 23 h 15)
+
+« Je lance mon expédition habituelle, mais la page montre le placeholder de l'avion d'escorte… qui n'est pas débloqué pour moi. »
+
+Avec la capture. La Grive partie sur la ligne régulière, Régis rouvre *Expédier* sur cette même ligne régulière — un sac, vingt-cinq francs, le trajet le plus modeste du jeu — et le formulaire lui propose **« Le convoi : un second avion vole avec le premier »**, un *Avion d'escorte*, *Son pilote*, deux listes vides, et par-dessus : « Trop lourd pour cet avion ». Pour un sac. À quelqu'un qui n'a qu'un seul avion.
+
+**La cause tient en une ligne**, écrite la veille au soir avec le fret lourd :
+
+```ts
+const needsWing = () => (modelOf(planeSelect.value)?.capacity ?? 0) < bags;
+```
+
+Quand le seul avion de la compagnie est en l'air, la liste *Avion* n'a plus une seule option qu'on puisse choisir : sa valeur est vide, la recherche du modèle ne trouve rien, la capacité retombe sur zéro — et zéro est plus petit qu'un sac. **Une flotte absente était lue comme une flotte trop petite.** Ce `?? 0`, qui a l'air d'une précaution, affirmait quelque chose de faux : il n'y a pas d'avion, donc l'avion est minuscule.
+
+Le serveur, lui, n'a jamais rien accepté de tel, et sa règle était juste depuis le début. Les deux cent dix tests passaient. C'est un défaut que seul un joueur pouvait trouver, parce qu'il ne casse rien : il **raconte une fausse histoire**. Il montre une mécanique de fret lourd à quelqu'un qui ne l'a pas encore rencontrée, et il la lui montre au pire moment — celui où il ne peut rien faire partir, et où il cherche pourquoi.
+
+**Le formulaire sait maintenant distinguer trois situations**, et une petite fonction à part s'en charge, pour qu'on puisse l'éprouver sans navigateur : *rien à montrer* (aucun avion choisi, ou un seul suffit) ; *la demande d'escorte* (la charge déborde **et** un second équipage est libre au sol) ; *l'explication seule* (la charge déborde, mais il n'y a personne pour accompagner — alors le message, sans les deux listes vides qui promettent un choix qui n'existe pas).
+
+**Et le bouton dit pourquoi il ne part pas.** Avant, « Envoyer » restait ouvert, le clic filait au serveur et revenait en erreur. Il se ferme désormais, avec la raison : *« Aucun avion au sol : ils sont tous en vol. Le courrier attendra qu'un moteur refroidisse. »* — ou, si ce sont les pilotes qui manquent, qu'ils volent ou qu'ils se reposent. Une attente expliquée n'est plus la même attente ; c'était déjà la leçon du chapitre 31.
+
+Quatre tests tiennent la fonction, et le parcours de bout en bout du courrier rouvre maintenant la ligne régulière pendant que la Grive vole, dans un vrai Chromium : convoi caché, bouton fermé, message attendu. Puis la contre-épreuve, comme pour les faux positifs de ZAP la veille : l'ancien calcul remis en place, le parcours échoue — *échec : convoi caché quand on n'a qu'un avion*. Un garde-fou dont on n'a pas vu les dents n'en a peut-être pas.
+
