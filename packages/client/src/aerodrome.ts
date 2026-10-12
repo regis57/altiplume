@@ -23,7 +23,7 @@ interface WorldView {
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
   cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
   traits: { id: string; name: string; description: string }[];
-  pilots: { id: string; name: string; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
+  pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
   decorations: { id: string; name: string; description: string; cost: number; morale: number }[];
   stamps: { id: string; name: string; description: string }[];
@@ -376,7 +376,10 @@ function renderNews(world: WorldView, c: CompanyView): void {
     const li = el('li', 'nouvelle');
     if (n.kind === 'cards.drawn') li.textContent = `${t('news.cards')} ${n.count}`;
     else if (n.kind === 'flight.arrived') {
-      li.textContent = `${pilotTemplateName(world, n.pilot)} ${t('news.arrived')} ${destName(world, n.destination)} · +${n.francs} F` +
+      // L'accord suit le genre du pilote : « est rentré » ou « est rentrée ».
+      const tpl = world.pilots.find((x) => x.id === n.pilot);
+      const arrived = t(tpl?.gender === 'f' ? 'news.arrivedF' : 'news.arrived');
+      li.textContent = `${pilotTemplateName(world, n.pilot)} ${arrived} ${destName(world, n.destination)} · +${n.francs} F` +
         (n.bonus ? ` · ${t('news.onTime')}` : '') + (n.incident ? ` · ${t('news.incident')}` : '');
       li.classList.add('bonne');
     } else { li.textContent = `${t('news.stamp')} ${stampName(world, n.stamp)}`; li.classList.add('cachet-nouveau'); }

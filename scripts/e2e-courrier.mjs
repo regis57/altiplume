@@ -91,7 +91,7 @@ try {
   await page.waitForSelector('#vols .vol');
   assert((await page.textContent('#francs')) === '286', 'coût débité : 300 − 14');
   const vol = await page.textContent('#vols .vol');
-  assert(vol.includes('Pont-de-Brume') && vol.includes('Marthe') && vol.includes('En route'), `vol affiché (${vol})`);
+  assert(vol.includes('Pont-de-Brume') && vol.includes('Prosper') && vol.includes('En route'), `vol affiché (${vol})`);
   assert(await page.$eval('.scene .avion', (e) => e.classList.contains('cache')), 'la Grive a quitté le parking de la scène');
   assert((await page.textContent('#bord')).includes('Départ pour Pont-de-Brume'), 'livre de bord : départ');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-3-en-vol.png'), fullPage: true });
@@ -101,9 +101,9 @@ try {
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   const news = await page.textContent('#nouvelles');
-  assert(news.includes('Marthe Vaudrin est rentrée de Pont-de-Brume') && news.includes('+30 F') && news.includes('délai tenu'), `nouvelles d'arrivée (${news})`);
+  assert(news.includes('Prosper Chickenman est rentré de Pont-de-Brume') && news.includes('+41 F') && news.includes('délai tenu'), `nouvelles d'arrivée (${news})`);
   assert(news.includes('Premier vol') && news.includes('Pont-de-Brume'), 'deux nouvelles pages dans l\'album');
-  assert((await page.textContent('#francs')) === '316', 'encaissé : 286 + 24 + 6');
+  assert((await page.textContent('#francs')) === '327', 'encaissé : 286 + 33 + 8');
   assert((await page.textContent('#vols .vol')).includes('Sur le retour'), 'avion sur le retour');
   const gagnees = await page.$$eval('#album .page.gagnee', (p) => p.length);
   assert(gagnees === 3, `trois pages gagnées (${gagnees})`);
@@ -117,7 +117,7 @@ try {
   await bougie.locator('button', { hasText: 'Changer la bougie' }).click();
   await page.waitForSelector('#jeu-message.ok');
   assert((await page.textContent('#jeu-message')).includes('ronronne'), 'le dénouement s\'affiche');
-  assert((await page.textContent('#francs')) === '304', '12 F de bougie');
+  assert((await page.textContent('#francs')) === '315', '12 F de bougie');
 
   // Trusted Types : la politique « altiplume » existe (on ne peut pas la recréer), une chaîne brute
   // est refusée dans un puits d'injection, et les textes à balises sont bien rendus par la politique.

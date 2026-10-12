@@ -40,10 +40,15 @@ describe('le monde — intégrité', () => {
     expect(WORLD.home.address.fr).toMatch(/chemin de la Croisette/i);
   });
 
-  it('compte autant de femmes que d\'hommes parmi les pilotes, venus de régions différentes', () => {
+  it('garde des pilotes de régions différentes, et trace l\'écart de parité en attendant qu\'il soit comblé', () => {
     const f = WORLD.pilots.filter((p) => p.gender === 'f').length;
     const m = WORLD.pilots.filter((p) => p.gender === 'm').length;
-    expect(f).toBe(m);
+    // Règle du projet depuis le premier jour : autant de femmes que d'hommes.
+    // Rompue le 12/10 par le renommage de Marthe Vaudrin en Prosper Chickenman
+    // (choix de l'auteur) : 2 femmes pour 4 hommes. Les deux prochains pilotes
+    // seront des femmes, et cette attente redeviendra `f === m`. Tant qu'elle
+    // est écrite ainsi, aucun changement de genre ne peut passer inaperçu.
+    expect({ f, m }).toEqual({ f: 2, m: 4 });
     expect(new Set(WORLD.pilots.map((p) => p.origin.fr)).size).toBe(WORLD.pilots.length);
   });
 
@@ -163,10 +168,10 @@ describe('le monde — intégrité', () => {
 
   it('rend chaque contrat rentable, et les lointains mieux payés', () => {
     const grive = findPlane('grive')!;
-    const marthe = findPilot('marthe')!;
+    const prosper = findPilot('prosper')!;
     for (const c of WORLD.cards) {
       if (c.kind !== 'contract') continue;
-      expect(c.reward).toBeGreaterThan(grive.upkeep + marthe.wage);
+      expect(c.reward).toBeGreaterThan(grive.upkeep + prosper.wage);
     }
     const byDistance = WORLD.destinations.map((d) => {
       const rewards = WORLD.cards.flatMap((c) => (c.kind === 'contract' && c.destination === d.id ? [c.reward] : []));
@@ -180,12 +185,12 @@ describe('le monde — intégrité', () => {
     const en = localizeWorld('en');
     expect(fr.destinations[0]!.name).toBe('Pont-de-Brume');
     expect(en.destinations[0]!.name).toBe('Mistbridge');
-    expect(en.pilots[0]!.name).toBe('Martha Vaudrin');
+    expect(en.pilots[0]!.name).toBe('Prosper Chickenman');
     expect(JSON.stringify(fr)).not.toContain('"weight"');
     expect(JSON.stringify(fr)).not.toContain('Bastien mesurait');
-    const scene = localizeScene(findPilot('marthe')!, 0, 'en')!;
+    const scene = localizeScene(findPilot('prosper')!, 0, 'en')!;
     expect(scene.title).toBe('The cross at the end of the lane');
-    expect(localizeScene(findPilot('marthe')!, 3, 'en')).toBeNull();
+    expect(localizeScene(findPilot('prosper')!, 3, 'en')).toBeNull();
   });
 });
 

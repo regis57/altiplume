@@ -1,5 +1,5 @@
 /**
- * Les quatre premiers pilotes. Deux femmes, deux hommes, quatre régions d'origine.
+ * Les pilotes. Chacun vient d'une région différente du monde inventé.
  *
  * Leurs histoires sont le contenu émotionnel du jeu : trois scènes chacune, qui
  * s'ouvrent au fil des vols faits ensemble (l'affinité). On les écrit court, à
@@ -10,8 +10,8 @@ import type { PilotTemplate } from './types.ts';
 
 export const PILOTS: readonly PilotTemplate[] = [
   {
-    id: 'marthe', gender: 'f', age: 44,
-    name: { fr: 'Marthe Vaudrin', en: 'Martha Vaudrin' },
+    id: 'prosper', gender: 'm', age: 44,
+    name: { fr: 'Prosper Chickenman', en: 'Prosper Chickenman' },
     origin: { fr: 'Vallées de Brume', en: 'Mistvale' },
     traits: ['weathersense', 'homeheart'],
     portrait: { fr: "Cheveux gris coupés court, blouson de cuir trop grand, un regard qui a déjà lu le ciel avant vous.", en: 'Short grey hair, a leather jacket a size too big, and eyes that have read the sky before you have.' },
@@ -24,33 +24,33 @@ export const PILOTS: readonly PilotTemplate[] = [
           affinity: 3,
           title: { fr: 'La croix au bout du chemin', en: 'The cross at the end of the lane' },
           lines: [
-            { who: 'narrator', text: { fr: "Marthe s'arrête à la fourche du chemin de la Croisette, là où la petite croix de pierre penche un peu. Elle pose deux doigts dessus, sans y penser.", en: 'Martha stops at the fork in Crosslet Lane, where the little stone cross leans slightly. She rests two fingers on it, without thinking.' } },
+            { who: 'narrator', text: { fr: "Prosper s'arrête à la fourche du chemin de la Croisette, là où la petite croix de pierre penche un peu. Il pose deux doigts dessus, sans y penser.", en: 'Prosper stops at the fork in Crosslet Lane, where the little stone cross leans slightly. He rests two fingers on it, without thinking.' } },
             { who: 'you', text: { fr: "Vous faites ça à chaque fois ?", en: 'You do that every time?' } },
             { who: 'pilot', text: { fr: "Tout le monde le fait. Le vieux Bastien le faisait, c'est lui qui m'a appris à voler. Son père le faisait avant lui, et je crois que lui non plus ne savait pas pourquoi.", en: 'Everyone does. Old Bastien did; he\'s the one who taught me to fly. His father did before him, and I don\'t think he knew why either.' } },
             { who: 'pilot', text: { fr: "Ce n'est pas de la superstition. C'est pour dire au chemin qu'on revient.", en: 'It isn\'t superstition. It\'s to tell the lane we\'re coming back.' } },
-            { who: 'narrator', text: { fr: "Elle vous regarde. Vous touchez la croix. La brume commence à se lever.", en: 'She looks at you. You touch the cross. The fog begins to lift.' } },
+            { who: 'narrator', text: { fr: "Il vous regarde. Vous touchez la croix. La brume commence à se lever.", en: 'He looks at you. You touch the cross. The fog begins to lift.' } },
           ],
         },
         {
           affinity: 7,
           title: { fr: 'Dix heures moins le quart', en: 'A quarter to ten' },
           lines: [
-            { who: 'narrator', text: { fr: "Moulin-Gris est noyé. Vous ne voyez pas le bout de la piste. Marthe, elle, regarde ses mains.", en: 'Greymill is drowned in fog. You cannot see the end of the strip. Martha is looking at her hands.' } },
+            { who: 'narrator', text: { fr: "Moulin-Gris est noyé. Vous ne voyez pas le bout de la piste. Prosper, lui, regarde ses mains.", en: 'Greymill is drowned in fog. You cannot see the end of the strip. Prosper is looking at his hands.' } },
             { who: 'pilot', text: { fr: "Un quart d'heure. Le temps de boire quelque chose de chaud. Ça lève toujours au quart.", en: 'A quarter of an hour. Long enough for something hot. It always lifts at the quarter.' } },
             { who: 'you', text: { fr: "Comment vous savez ?", en: 'How do you know?' } },
             { who: 'pilot', text: { fr: "Je ne sais pas. Je sens. Ma mère sentait la pluie dans son genou ; moi c'est la brume, dans le dos. Ce n'est pas un don, c'est quarante ans ici.", en: 'I don\'t know. I feel it. My mother felt rain in her knee; with me it\'s fog, in my back. It isn\'t a gift, it\'s forty years here.' } },
-            { who: 'narrator', text: { fr: "À dix heures moins le quart, la piste apparaît. Elle ne dit rien. Elle n'a pas besoin.", en: 'At a quarter to ten, the strip appears. She says nothing. She doesn\'t need to.' } },
+            { who: 'narrator', text: { fr: "À dix heures moins le quart, la piste apparaît. Il ne dit rien. Il n'a pas besoin.", en: 'At a quarter to ten, the strip appears. He says nothing. He doesn\'t need to.' } },
           ],
         },
         {
           affinity: 12,
           title: { fr: "Le hangar de Bastien", en: 'Bastien\'s hangar' },
           lines: [
-            { who: 'narrator', text: { fr: "Le soir, dans le hangar, Marthe vous montre une marque au crayon sur la poutre, à hauteur d'épaule.", en: 'In the evening, in the hangar, Martha shows you a pencil mark on the beam, at shoulder height.' } },
+            { who: 'narrator', text: { fr: "Le soir, dans le hangar, Prosper vous montre une marque au crayon sur la poutre, à hauteur d'épaule.", en: 'In the evening, in the hangar, Prosper shows you a pencil mark on the beam, at shoulder height.' } },
             { who: 'pilot', text: { fr: "Bastien mesurait les pilotes ici, le jour de leur premier vol seul. Celle-là, c'est moi, à dix-sept ans. Il disait qu'on ne grandit plus après, sauf vers le haut.", en: 'Bastien measured pilots here, the day of their first solo. That one\'s me, at seventeen. He said you stop growing after that, except upward.' } },
             { who: 'you', text: { fr: "Et la vôtre, où est-elle ?", en: 'And where is yours?' } },
             { who: 'pilot', text: { fr: "Je viens de vous la montrer. Il n'y en a pas d'autre. Il n'a pas eu le temps de prendre un autre élève. Alors, je me suis dit… si le nouveau propriétaire tient la route, je ferai la marque moi-même.", en: 'I just showed you. There isn\'t another. He never got the time to take another student. So I thought… if the new owner is worth it, I\'ll make the mark myself.' } },
-            { who: 'narrator', text: { fr: "Elle sort un crayon de sa poche. Elle le tenait depuis le premier jour.", en: 'She takes a pencil from her pocket. She has been carrying it since the first day.' } },
+            { who: 'narrator', text: { fr: "Il sort un crayon de sa poche. Il le tenait depuis le premier jour.", en: 'He takes a pencil from his pocket. He has been carrying it since the first day.' } },
           ],
         },
       ],
@@ -222,8 +222,8 @@ export const PILOTS: readonly PilotTemplate[] = [
             { who: 'narrator', text: { fr: "Un matin, vous trouvez Solenn sous la Grive, qui parle au moteur. Pas fort. Comme à un cheval.", en: 'One morning you find Solenn under the Thrush, talking to the engine. Not loudly. The way you talk to a horse.' } },
             { who: 'you', text: { fr: "Il répond ?", en: 'Does it answer?' } },
             { who: 'pilot', text: { fr: "Toujours. Mon père réparait les scieries de la Forêt. Il disait qu'une machine qui casse, c'est une machine qu'on n'a pas écoutée. J'ai écouté toute mon enfance.", en: "Always. My father fixed the sawmills in the Forest. He said a machine that breaks is a machine nobody listened to. I listened all through my childhood." } },
-            { who: 'pilot', text: { fr: "Celui-ci dit qu'il a soif, et qu'il n'aime pas la brume. Comme Marthe.", en: "This one says it's thirsty, and it doesn't like fog. Like Martha." } },
-            { who: 'narrator', text: { fr: "Marthe, derrière vous, ne dit rien. Mais elle sourit, ce qui est rare.", en: 'Martha, behind you, says nothing. But she smiles, which is rare.' } },
+            { who: 'pilot', text: { fr: "Celui-ci dit qu'il a soif, et qu'il n'aime pas la brume. Comme Prosper.", en: "This one says it's thirsty, and it doesn't like fog. Like Prosper." } },
+            { who: 'narrator', text: { fr: "Prosper, derrière vous, ne dit rien. Mais il sourit, ce qui est rare.", en: 'Prosper, behind you, says nothing. But he smiles, which is rare.' } },
           ],
         },
         {

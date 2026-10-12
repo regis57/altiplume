@@ -45,7 +45,7 @@ describe('la compagnie', () => {
     expect(c.planes).toHaveLength(1);
     expect(c.planes[0].model).toBe('grive');
     expect(c.pilots).toHaveLength(1);
-    expect(c.pilots[0]).toMatchObject({ pilot: 'marthe', affinity: 0, morale: 10, fatigue: 0, busyUntil: null });
+    expect(c.pilots[0]).toMatchObject({ pilot: 'prosper', affinity: 0, morale: 10, fatigue: 0, busyUntil: null });
     expect(c.hand).toHaveLength(3);
     expect(c.flights).toEqual([]);
     expect(c.zones).toEqual({ runway: 1, hangar: 1, ponton: 1 });
@@ -75,14 +75,14 @@ describe('la compagnie', () => {
   it('garde les histoires sous clé tant que l\'affinité n\'y est pas, puis colle un cachet', async () => {
     const t = await signedIn();
     await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, t.cookie);
-    const locked = await t.json('GET', '/v1/company/pilots/marthe/story/0', undefined, t.cookie);
+    const locked = await t.json('GET', '/v1/company/pilots/prosper/story/0', undefined, t.cookie);
     expect(locked.statusCode).toBe(403);
     expect(locked.json()).toEqual({ error: 'scene_locked', affinity: 3 });
     expect((await t.json('GET', '/v1/company/pilots/ilias/story/0', undefined, t.cookie)).statusCode).toBe(404); // pas embauché
-    expect((await t.json('GET', '/v1/company/pilots/marthe/story/7', undefined, t.cookie)).statusCode).toBe(404);
+    expect((await t.json('GET', '/v1/company/pilots/prosper/story/7', undefined, t.cookie)).statusCode).toBe(404);
     // Trois vols ensemble (simulés directement en base : les vols arrivent dans la PR suivante).
     t.ctx.db.prepare('UPDATE company_pilots SET affinity = 3').run();
-    const scene = await t.json('GET', '/v1/company/pilots/marthe/story/0', undefined, t.cookie);
+    const scene = await t.json('GET', '/v1/company/pilots/prosper/story/0', undefined, t.cookie);
     expect(scene.statusCode).toBe(200);
     expect(scene.json().title).toBe('La croix au bout du chemin');
     expect(scene.json().lines[0].text).toContain('chemin de la Croisette');
@@ -91,14 +91,14 @@ describe('la compagnie', () => {
     expect(company.album.map((s: { id: string }) => s.id)).toContain('s-histoire');
     expect(company.stamps).toBe(2);
     // Relire ne redonne pas de cachet.
-    await t.json('GET', '/v1/company/pilots/marthe/story/0', undefined, t.cookie);
+    await t.json('GET', '/v1/company/pilots/prosper/story/0', undefined, t.cookie);
     expect((await t.json('GET', '/v1/company', undefined, t.cookie)).json().stamps).toBe(2);
     // En anglais, si le joueur passe en anglais.
     await t.json('PATCH', '/v1/account', { locale: 'en' }, t.cookie);
-    expect((await t.json('GET', '/v1/company/pilots/marthe/story/0', undefined, t.cookie)).json().title).toBe('The cross at the end of the lane');
+    expect((await t.json('GET', '/v1/company/pilots/prosper/story/0', undefined, t.cookie)).json().title).toBe('The cross at the end of the lane');
     // La langue de la page l'emporte sur celle du compte (bug vu le 11/10 : compte en anglais, page en français).
-    expect((await t.json('GET', '/v1/company/pilots/marthe/story/0?locale=fr', undefined, t.cookie)).json().title).toBe('La croix au bout du chemin');
-    expect((await t.json('GET', '/v1/company/pilots/marthe/story/0?locale=xx', undefined, t.cookie)).json().title).toBe('The cross at the end of the lane');
+    expect((await t.json('GET', '/v1/company/pilots/prosper/story/0?locale=fr', undefined, t.cookie)).json().title).toBe('La croix au bout du chemin');
+    expect((await t.json('GET', '/v1/company/pilots/prosper/story/0?locale=xx', undefined, t.cookie)).json().title).toBe('The cross at the end of the lane');
     await t.app.close();
   });
 
@@ -107,7 +107,7 @@ describe('la compagnie', () => {
     await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, t.cookie);
     const data = (await t.json('GET', '/v1/account/export', undefined, t.cookie)).json();
     expect(data.game.company.name).toBe('Brume & Cie');
-    expect(data.game.pilots[0].pilot).toBe('marthe');
+    expect(data.game.pilots[0].pilot).toBe('prosper');
     expect(data.events.map((e: { event: string }) => e.event)).toContain('company.founded');
     expect((await t.json('DELETE', '/v1/account', { confirmNickname: 'Régis' }, t.cookie)).statusCode).toBe(204);
     for (const table of ['companies', 'company_planes', 'company_pilots', 'company_zones', 'company_stamps']) {

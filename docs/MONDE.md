@@ -11,13 +11,13 @@ Tout commence au bout du **chemin de la Croisette**. C'est un chemin qui quitte 
 village, longe les vergers et monte doucement jusqu'à une piste en herbe. À la
 fourche, là où il se sépare de la route de Pont-de-Brume, une petite croix de pierre
 penche un peu. Personne ne sait plus qui l'a posée. Les pilotes la touchent du doigt
-avant de décoller — pas par superstition, dit Marthe, mais « pour dire au chemin
+avant de décoller — pas par superstition, dit Prosper, mais « pour dire au chemin
 qu'on revient ».
 
 L'aérodrome du joueur s'appelle **l'Aérodrome de la Croisette** (*Crosslet Field*),
 adresse : *Chemin de la Croisette, Vallées de Brume* (*Crosslet Lane, Mistvale*).
 On en hérite tel quel : une piste de deux cents pas, un hangar dont la porte ferme
-mal, une Grive dans le hangar, et Marthe, qui était déjà là.
+mal, une Grive dans le hangar, et Prosper, qui était déjà là.
 
 *Croisette* : en Lorraine comme en Provence, une « croisette » est une petite croix
 — de chemin, de carrefour, de pierre. L'anglais *crosslet* désigne exactement cela
@@ -124,20 +124,26 @@ porte plus loin et plus lourd, et préfère la nuit calme au vent de mer.
 
 ## Les pilotes
 
-Six pilotes, trois femmes, trois hommes, six régions d'origine. Chacun a deux
+Six pilotes, six régions d'origine.
+
+> **Parité.** La règle du projet, depuis le premier jour, est « autant de femmes que
+> d'hommes ». Le renommage du 12 octobre (Marthe Vaudrin → Prosper Chickenman, homme)
+> l'a rompue : **deux femmes pour quatre hommes**. Les deux prochains pilotes seront
+> des femmes. Un test enregistre cet écart : il échouera si quelqu'un y touche sans
+> le vouloir. Chacun a deux
 traits (qui changent des chiffres de la simulation, pas seulement une phrase) et une
 histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 
 | Pilote | Âge | Origine | Traits | Histoire |
 |---|---|---|---|---|
-| **Marthe Vaudrin** (*Martha*) | 44 | Vallées de Brume | Météo dans la peau · Cœur de village | *Le premier jour de brume* — la croix du chemin, la brume qui lève au quart, la marque au crayon dans le hangar de Bastien |
+| **Prosper Chickenman** | 44 | Vallées de Brume | Météo dans la peau · Cœur de village | *Le premier jour de brume* — la croix du chemin, la brume qui lève au quart, la marque au crayon dans le hangar de Bastien |
 | **Ilias Ferrant** | 27 | Hauts-Plateaux d'Ocre | Tête brûlée · Économe | *Le col et la lettre* — la moitié de la paie pour l'auberge du col, plein gaz, le Grand Blanc un jour |
 | **Ysé Loranne** | 31 | Archipel des Lanternes | Nocturne · Porte-bonheur | *Les lanternes du Val* — une lanterne sur six, le bateau-poste, la lanterne de cuivre au bout de la piste |
 | **Aurèle Combray** (*Aurel*) | 58 | Côte de Saline | Mains d'or · Longues routes | *Le moteur qui tousse* — du fil de fer, la photo dans la casquette, l'atelier qu'il ne vendra pas |
 | **Solenn Darrieux** | 36 | Forêt de Cuivre | Nocturne · Mains d'or | *La lanterne de la forêt* — ce qu'on voit la nuit, le moteur de son père, la lanterne de cuivre au bout du ponton |
 | **Teodor Vashti** | 41 | Désert de Verre | Longues routes · Porte-bonheur | *Le compte des étoiles* — trois chiffres sur la manche, le foulard du frère, la lettre vers le Grand Blanc |
 
-Marthe est là dès le premier jour. Les trois autres passent au café et se recrutent
+Prosper est là dès le premier jour. Les autres passent au café et se recrutent
 avec une carte « pilote de passage ». **Bastien**, l'ancien propriétaire, est mort
 avant le début du jeu ; il n'apparaît que dans ce que les autres en disent.
 
@@ -160,18 +166,18 @@ Trois par jour, dans une main de cinq. Tirage déterministe (graine par joueur e
 jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 
 - **La ligne régulière** : le sac de Pont-de-Brume, toujours disponible, jamais tirée,
-  18 F sans bonus. La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
+  25 F sans bonus. La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
   11/10 après la première partie de Régis : à 14 h, il n'avait plus rien à expédier).
   **La caisse vide non plus** (règle du 11/10 au soir, après une partie arrêtée à 3 F) :
   la poste avance le salaire et le carburant, rien n'est débité au départ, et le tarif
-  moins l'avance est versé à l'arrivée — jamais moins que zéro. Avec Marthe et la Grive :
-  18 − 14 = 4 F nets par aller-retour. C'est le plancher du jeu, pas sa fortune.
+  moins l'avance est versé à l'arrivée — jamais moins que zéro. Avec Prosper et la Grive :
+  25 − 14 = 11 F nets par aller-retour. C'est le plancher du jeu, pas sa fortune.
 - **20 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
   un délai souple (tenu → bonus ; dépassé → rien). Les lointains paient mieux ; chaque
   contrat couvre au moins le salaire et l'entretien d'un vol.
 - **10 imprévus** — et **un imprévu en main bloque la piste** : rien ne décolle, ligne
   régulière comprise, tant qu'on n'a pas tranché, et on ne peut pas le « laisser
-  passer » (règle du 11/10 : « comment je peux faire décoller Marthe si j'ai une
+  passer » (règle du 11/10 : « comment je peux faire décoller son pilote si on a une
   vache sur la piste ? ») : brume tenace, vache sur la piste, moteur qui tousse, pilote
   enrhumé, vent de crête, un sac en trop, averse, le bac en grève, la nuit qui tombe
   tôt, une lettre sans adresse. Chacun se résout par un choix — payer, attendre,
@@ -226,6 +232,23 @@ Douze pages pour la vallée : Fondation, Premier vol, une par village, Vol de nu
 route de la Côte, une par escale, Sur l'eau, Toute la Côte. Une collection, pas un
 classement.
 
+## Ce qui viendra (prévu, pas encore écrit)
+
+**Avions.** Il en manque deux pour couvrir les sept régions du document de conception :
+un **planeur postal** léger pour les plateaux (décollage court, pas de carburant, à la
+merci du vent) et un **long-courrier terrestre** pour le Grand Blanc (très grande
+portée, grande piste obligatoire, chauffage de cabine). Un **autogire** reste en débat :
+il se pose n'importe où, ce qui rendrait les niveaux de piste inutiles.
+
+**Pilotes.** Deux femmes d'abord, pour rétablir la parité : une des **Hauts-Plateaux
+d'Ocre** (traits *Tête brûlée* et *Longues routes*, l'altitude et l'air rare) et une du
+**Grand Blanc** (*Nocturne* et *Mains d'or*, la nuit polaire et les moteurs qui gèlent).
+Puis un pilote du **Désert de Verre** et un de l'**Archipel** quand ces régions auront
+leurs propres histoires. Objectif v1.0 : vingt pilotes, parité tenue.
+
+**Au-delà.** Les saisons (v0.3), les quatre régions restantes, et le fret lourd — un
+courrier qui demande deux avions au lieu d'un.
+
 ## Ce qu'on commence avec
 
-300 francs, 0 cachet, une Grive, Marthe. Et le chemin.
+300 francs, 0 cachet, une Grive, Prosper. Et le chemin.
