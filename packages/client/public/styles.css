@@ -459,6 +459,7 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .lecture { max-width: var(--mesure); }
 .entete-page { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem 1rem; margin: 1.2rem 0 0.8rem; }
 .entete-page h1 { margin: 0; }
+.saison { margin: 0.15rem 0 0; font-size: 0.9rem; color: var(--encre-douce); max-width: 38rem; }
 .entete-page .bouton { width: auto; }
 .lecture h1 { max-width: none; font-size: clamp(1.8rem, 4vw, 2.4rem); }
 .lecture h2 { font-family: var(--police-titre); font-weight: 600; font-size: 1.4rem; margin-top: 2rem; }
@@ -649,6 +650,47 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 @media (prefers-reduced-motion: reduce) { .scene .nuage-lent { animation: none; } }
 
 /* L'aube */
+/* Les saisons (data-saison, celle du calendrier). Les éléments saisonniers ne se
+   montrent qu'en leur temps ; les couleurs de la terre et des arbres changent, le
+   ciel reste celui de l'heure. Les règles de nuit, plus bas, gardent le dernier mot. */
+.scene .saisonnier { display: none; }
+[data-saison='printemps'] .scene .printemps-seul, [data-saison='ete'] .scene .ete-seul,
+[data-saison='automne'] .scene .automne-seul, [data-saison='hiver'] .scene .hiver-seul { display: inline; }
+.scene .neige { fill: #f2f5f7; } .scene .neige-ombre { fill: #d6dee4; } .scene .flocon { fill: #ffffff; }
+.scene .feuille-a { fill: #c2652c; } .scene .feuille-b { fill: #e09a52; }
+.scene .petale { fill: #f2c4d0; } .scene .petale-clair { fill: #fbe6ec; } .scene .bouton-or { fill: #f3d24a; }
+@keyframes tomber { from { transform: translateY(-12px); } to { transform: translateY(18px); } }
+@keyframes tomber-loin { from { transform: translate(-4px, -20px); } to { transform: translate(6px, 30px); } }
+@keyframes feuille { 0% { transform: translate(0, -6px); } 50% { transform: translate(5px, 4px); } 100% { transform: translate(-2px, 14px); } }
+.scene .flocons-1 { animation: tomber 9s linear infinite; }
+.scene .flocons-2 { animation: tomber-loin 14s linear infinite; }
+.scene .feuilles-tombantes { animation: feuille 11s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .scene .flocons-1, .scene .flocons-2, .scene .feuilles-tombantes { animation: none; } }
+/* Printemps : un vert neuf, presque acide. */
+[data-saison='printemps'] .scene .feuillage { fill: #5f8f4a; } [data-saison='printemps'] .scene .feuillage-clair { fill: #8fbf6a; }
+[data-saison='printemps'] .scene .colline { fill: #86a670; } [data-saison='printemps'] .scene .herbe { fill: #8fb874; }
+/* Été : des verts profonds, un pré qui blondit. */
+[data-saison='ete'] .scene .feuillage { fill: #3f6a35; } [data-saison='ete'] .scene .feuillage-clair { fill: #5a8a45; }
+[data-saison='ete'] .scene .colline { fill: #8a9a5a; } [data-saison='ete'] .scene .colline-loin { fill: #a8b08f; }
+[data-saison='ete'] .scene .sol { fill: #7d8f55; } [data-saison='ete'] .scene .herbe { fill: #a5a862; }
+/* Seul le pré fauché blondit ; une piste roulée reste une piste roulée. */
+[data-saison='ete'] .scene .piste[data-niveau='1'] .piste-sol { fill: #b3b67e; }
+/* Automne : les feuillus roussissent ; les sapins restent sapins. */
+[data-saison='automne'] .scene .feuillage { fill: #b8733a; } [data-saison='automne'] .scene .feuillage-clair { fill: #e09a52; }
+[data-saison='automne'] .scene .buisson { fill: #8f6a3a; } [data-saison='automne'] .scene .buisson-clair { fill: #b88a4a; }
+[data-saison='automne'] .scene .arbre-loin { fill: #9a8a6a; } [data-saison='automne'] .scene .colline-loin { fill: #a8a08a; }
+[data-saison='automne'] .scene .colline { fill: #7f8a58; } [data-saison='automne'] .scene .sol { fill: #6f7e4f; } [data-saison='automne'] .scene .herbe { fill: #9a8a50; }
+/* Hiver : la neige au sol, le givre sur les branches nues. */
+[data-saison='hiver'] .scene .feuillage { fill: #8e9590; } [data-saison='hiver'] .scene .feuillage-clair { fill: #c3cbcf; }
+[data-saison='hiver'] .scene .feuillage-sombre { fill: #3f5a4a; }
+[data-saison='hiver'] .scene .buisson { fill: #b8c2c8; } [data-saison='hiver'] .scene .buisson-clair { fill: #dde4e8; }
+[data-saison='hiver'] .scene .colline-loin { fill: #c9d3db; } [data-saison='hiver'] .scene .arbre-loin { fill: #8a98a3; }
+[data-saison='hiver'] .scene .colline { fill: #dfe5ea; } [data-saison='hiver'] .scene .sol { fill: #e8ecef; } [data-saison='hiver'] .scene .herbe { fill: #cfd8de; }
+/* L'hiver, toute la piste est sous la neige, roulée ou non ; les pierres blanches restent le seul repère. */
+[data-saison='hiver'] .scene .piste .piste-sol { fill: #dde3e6; } [data-saison='hiver'] .scene .piste .piste-bord { fill: #c3ccd1; } [data-saison='hiver'] .scene .pierre { fill: #9aa3a8; }
+[data-saison='hiver'] .scene .chemin { fill: #cdc8be; } [data-saison='hiver'] .scene .chemin-ombre { fill: #b3ada3; }
+[data-saison='hiver'] .scene .eau { fill: #8aa3b3; } [data-saison='hiver'] .scene .reflet { fill: #cfdde6; }
+
 [data-moment='aube'] .scene .ciel-haut { fill: #c9b7c4; }
 [data-moment='aube'] .scene .ciel-milieu { fill: #e8c9b4; }
 [data-moment='aube'] .scene .ciel-bas { fill: #f3dcc4; }
@@ -685,6 +727,7 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 [data-moment='nuit'] .scene .buisson, [data-moment='nuit'] .scene .feuillage, [data-moment='nuit'] .scene .feuillage-sombre { fill: #1f2d23; }
 [data-moment='nuit'] .scene .buisson-clair, [data-moment='nuit'] .scene .feuillage-clair { fill: #2a3a2c; }
 [data-moment='nuit'] .scene .sol { fill: #26342a; }
+[data-moment='nuit'][data-saison='hiver'] .scene .sol, [data-moment='nuit'][data-saison='hiver'] .scene .colline { fill: #3a4656; } [data-moment='nuit'][data-saison='hiver'] .scene .herbe, [data-moment='nuit'][data-saison='hiver'] .scene .piste-sol { fill: #47546a; } [data-moment='nuit'][data-saison='hiver'] .scene .piste .piste-sol { fill: #47546a; } [data-moment='nuit'][data-saison='hiver'] .scene .piste .piste-bord { fill: #3d4a5e; } [data-moment='nuit'][data-saison='hiver'] .scene .neige { fill: #8a9ab0; } [data-moment='nuit'][data-saison='hiver'] .scene .neige-ombre { fill: #6f7f96; }
 [data-moment='nuit'] .scene .herbe { fill: #2f3f31; }
 [data-moment='nuit'] .scene .piste-sol { fill: #3a4a3a; }
 [data-moment='nuit'] .scene .piste-bord { fill: #30402f; }

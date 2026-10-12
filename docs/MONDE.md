@@ -181,6 +181,28 @@ Marais-Blanc, ramené à deux sacs — étaient **impossibles à livrer** depuis
 la v0.2. Un test vérifie maintenant que chaque contrat ordinaire se livre avec un
 seul avion achetable, et chaque fret lourd avec deux.
 
+## Les saisons — v0.3
+
+Les saisons suivent le calendrier, en temps universel : printemps le 20 mars, été
+le 21 juin, automne le 23 septembre, hiver le 21 décembre. Quand il neige chez le
+joueur, il neige sur la Croisette. Chaque saison change **une** règle, et aucune ne
+punit l'absence :
+
+| Saison | Ce qui change | Dans la scène |
+|---|---|---|
+| **Printemps** | les contrats de semences se tirent deux fois plus souvent | des pétales sur les feuillus, un vert neuf |
+| **Été** | brume et vent de mer retardent deux fois moins souvent | des verts profonds, des boutons d'or dans le pré |
+| **Automne** | la brume revient une fois et demie plus souvent | les feuillus roussissent, des feuilles qui tombent |
+| **Hiver** | les vols durent 15 % de plus, et **tous les tarifs paient 20 % de plus** (la prime de froid) | la neige au sol et sur le toit, le givre, des flocons |
+
+Huit contrats de saison (deux chacune : les greffons et les clochettes de mai ; la
+glace des poissonniers et les cartes postales de Sainte-Ambre ; les bondes du cidre
+nouveau et les sacs des châtaignes ; les étrennes et le sirop de la Combe) et quatre
+imprévus (les giboulées, l'orage de chaleur, les feuilles sur la piste, la neige) ne
+se tirent qu'en leur temps. La première livraison de chaque saison colle sa page ;
+les quatre réunies collent « Une année » — c'est le repère de la v0.3 : *la première
+année de jeu*.
+
 ## Les avions
 
 | Modèle | Anglais | Type | Portée | Sacs | Vitesse | Fiabilité | Piste | Prix |
@@ -359,8 +381,9 @@ Douze pages pour la vallée : Fondation, Premier vol, une par village, Vol de nu
 À l'heure (dix délais tenus), Une histoire, Toute la vallée. Neuf pour la Côte : La
 route de la Côte, une par escale, Sur l'eau, Toute la Côte. Huit pour l'Archipel : La
 route des îles, une par île, Tout l'Archipel. Neuf pour la forêt : La route de la
-forêt, une par escale, Dans la clairière, Toute la forêt. Une collection, pas un
-classement.
+forêt, une par escale, Dans la clairière, Toute la forêt. Trois pour le fret lourd :
+Le premier convoi, La coulée, La cloche de Sainte-Lueur. Cinq pour l'année : une par
+saison, et Une année. Une collection, pas un classement.
 
 ## Ce qui viendra (prévu, pas encore écrit)
 
@@ -374,8 +397,8 @@ pris la part raisonnable.
 **Pilotes.** Dix, cinq femmes et cinq hommes. Les deux suivants seront une femme et un
 homme, pour que la parité tienne à chaque palier ; objectif v1.0 : vingt pilotes.
 
-**Au-delà.** Les saisons (v0.3) ; les trois régions restantes : les Hauts-Plateaux
-d'Ocre, le Désert de Verre, le Grand Blanc.
+**Au-delà.** Les trois régions restantes : les Hauts-Plateaux d'Ocre (et le planeur),
+le Désert de Verre, le Grand Blanc (et le long-courrier terrestre qu'Ilias attend).
 
 ## Ce qu'on commence avec
 

@@ -5,10 +5,15 @@
  * tenu, il rapporte un bonus ; dépassé, il ne coûte rien. Les imprévus se
  * résolvent par un choix. Les opportunités, on les saisit ou on les laisse.
  */
-import type { CargoKind, ContractCard, EventCard, OpportunityCard, Text } from './types.ts';
+import type { CargoKind, ContractCard, EventCard, OpportunityCard, Season, Text } from './types.ts';
 
 function contract(id: string, destination: string, cargo: CargoKind, bags: number, reward: number, softDeadlineHours: number, bonus: number, weight: 1 | 2 | 3, title: Text, text: Text): ContractCard {
   return { kind: 'contract', id, destination, cargo, bags, reward, softDeadlineHours, bonus, weight, title, text };
+}
+
+/** Un contrat qui ne se tire qu'en sa saison. */
+function seasonal(season: Season, id: string, destination: string, cargo: CargoKind, bags: number, reward: number, softDeadlineHours: number, bonus: number, weight: 1 | 2 | 3, title: Text, text: Text): ContractCard {
+  return { ...contract(id, destination, cargo, bags, reward, softDeadlineHours, bonus, weight, title, text), season };
 }
 
 /**
@@ -260,6 +265,35 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: 'La cloche de Sainte-Lueur', en: 'The Glimmerkirk bell' },
     { fr: "Elle est coulée. Frère Anselme l'a fait sonner une fois dans le verger, une seule, pour savoir. Six sacs de bronze sous une bâche, et une chapelle sur l'eau qui n'a jamais eu de cloche. Il faut deux hydravions, et les enfants le savent déjà.", en: "It is cast. Brother Anselm rang it once in the orchard, just once, to be sure. Six bags of bronze under a tarpaulin, and a chapel on the water that has never had a bell. It takes two seaplanes, and the children already know." },
     { stamp: 's-cloche', requires: 's-fonderie' }),
+  // ---- Les saisons : deux contrats chacune, qui ne se tirent qu'en leur temps ----
+  // Printemps
+  seasonal('printemps', 'c-greffons', 'les-tilleuls', 'seeds', 1, 47, 24, 12, 2,
+    { fr: 'Les greffons des vergers', en: 'Grafts for the orchards' },
+    { fr: "Les Tilleuls greffent leurs pommiers avant que la sève monte. Un sac de rameaux enveloppés de mousse humide, à poser avant qu'ils sèchent.", en: 'Lindenhollow grafts its apple trees before the sap rises. A bag of scions wrapped in damp moss, to land before they dry out.' }),
+  seasonal('printemps', 'c-clochettes', 'lanterne-du-val', 'fragile', 1, 78, 6, 25, 2,
+    { fr: 'Les clochettes de mai', en: 'The May bells' },
+    { fr: "À Lanterne-du-Val, on offre un brin de clochettes blanches le premier matin de mai, pour porter bonheur. Une caisse cueillie à l'aube, qui fanera à midi.", en: 'In Lanternhollow they give a sprig of little white bells on the first morning of May, for luck. A crate picked at dawn, wilting by noon.' }),
+  // Été
+  seasonal('ete', 'c-glace', 'port-sel', 'urgent', 1, 140, 3, 50, 2,
+    { fr: 'La glace des poissonniers', en: "The fishmongers' ice" },
+    { fr: "La glacière de Port-Sel est à sec en pleine chaleur. Un pain de glace dans la sciure, et toute la pêche du matin qui attend sur le quai.", en: "Saltharbour's ice house has run dry in the heat. A block of ice packed in sawdust, and the whole morning's catch waiting on the quay." }),
+  seasonal('ete', 'c-cartes-postales', 'ile-sainte-ambre', 'letters', 2, 236, 48, 22, 1,
+    { fr: "Les cartes postales de l'été", en: 'Summer postcards' },
+    { fr: "L'été, Sainte-Ambre a des visiteurs, et les visiteurs écrivent. Deux sacs de cartes postales : la chapelle, la plage, la chapelle encore.", en: 'In summer Amber Holm has visitors, and visitors write. Two bags of postcards: the chapel, the beach, the chapel again.' }),
+  // Automne
+  seasonal('automne', 'c-cidre', 'les-tilleuls', 'parcels', 1, 48, 24, 12, 1,
+    { fr: 'Les bondes du cidre nouveau', en: 'Bungs for the new cider' },
+    { fr: "Le cidre nouveau bout dans les tonneaux des Tilleuls, et il manque des bondes. Un sac de bouchons de chêne, avant que tout déborde.", en: "The new cider is working in the Lindenhollow barrels, and they're short of bungs. A bag of oak stoppers, before it all froths over." }),
+  seasonal('automne', 'c-chataignes', 'haut-ferrand', 'parcels', 2, 72, 36, 14, 1,
+    { fr: 'Les sacs des châtaignes', en: 'Sacks for the chestnuts' },
+    { fr: "Sur la crête, les châtaigniers ont donné d'un coup. Haut-Ferrand demande des sacs de jute, et des lettres de commande pour les vendre en bas.", en: 'Up on the ridge the chestnut trees have dropped all at once. Ferncrest wants jute sacks, and order letters to sell them in the valley.' }),
+  // Hiver
+  seasonal('hiver', 'c-etrennes', 'pont-de-brume', 'parcels', 1, 46, 48, 10, 1,
+    { fr: 'Les étrennes', en: "New Year's gifts" },
+    { fr: "Le premier de l'an, à Pont-de-Brume, on s'offre des étrennes : des oranges, des mitaines, un almanach. La poste en déborde.", en: "On New Year's Day in Mistbridge, people give each other small gifts: oranges, mittens, an almanac. The post office is overflowing." }),
+  seasonal('hiver', 'c-couvertures', 'combe-aux-rosees', 'medicine', 1, 121, 12, 33, 2,
+    { fr: 'Le sirop et les couvertures', en: 'Syrup and blankets' },
+    { fr: "La chaudière tient la Combe au chaud, mais l'hiver est long au bout de la vallée. Du sirop contre la toux, et des couvertures pour la salle commune.", en: "The boiler keeps Dewcombe warm, but winter is long at the end of the valley. Cough syrup, and blankets for the common room." }),
 ];
 
 export const EVENTS: readonly EventCard[] = [
@@ -389,6 +423,43 @@ export const EVENTS: readonly EventCard[] = [
     choices: [
       { id: 'stay', label: { fr: 'Rester à la fête', en: 'Stay for the festival' }, outcome: { fr: "Le courrier arrivera demain. Les pilotes dansent sur un ponton et personne ne le regrettera.", en: 'The mail will arrive tomorrow. The pilots dance on a jetty and nobody will regret it.' }, effects: { delayHours: 8, morale: 4 } },
       { id: 'mail', label: { fr: 'Le courrier d\'abord', en: 'Mail first' }, outcome: { fr: "Un verre à chaque ponton, pas plus. Le sac arrive à l'heure, le pilote un peu moins.", en: 'One glass at each jetty, no more. The bag arrives on time; the pilot, a little less so.' }, effects: { delayHours: 1 } },
+    ],
+  },
+  // ---- Les saisons ----
+  {
+    kind: 'event', id: 'e-giboulees', weight: 1, season: 'printemps',
+    title: { fr: 'Les giboulées', en: 'April showers' },
+    text: { fr: "Soleil, grêle, soleil, averse : le ciel change d'avis toutes les dix minutes. La manche à air ne sait plus où se mettre.", en: "Sun, hail, sun, downpour: the sky changes its mind every ten minutes. The windsock doesn't know which way to point." },
+    choices: [
+      { id: 'wait', label: { fr: 'Attendre une éclaircie', en: 'Wait for a break' }, outcome: { fr: "Une heure sous l'auvent du hangar, à compter les grêlons. L'éclaircie vient ; l'arc-en-ciel aussi.", en: 'An hour under the hangar eaves, counting hailstones. The break comes; so does a rainbow.' }, effects: { delayHours: 1, morale: 1 } },
+      { id: 'go', label: { fr: 'Passer entre deux', en: 'Slip between two' }, outcome: { fr: "Le pilote part dans le soleil et arrive dans la grêle. L'entoilage a pris quelques coups.", en: 'The pilot leaves in sunshine and lands in hail. The fabric has taken a few knocks.' }, effects: { wear: 4 } },
+    ],
+  },
+  {
+    kind: 'event', id: 'e-orage-ete', weight: 1, season: 'ete',
+    title: { fr: "L'orage de chaleur", en: 'Heat storm' },
+    text: { fr: "Après trois jours de chaleur, un orage monte derrière la crête : un mur gris, des éclairs sans bruit encore.", en: 'After three hot days a storm is building behind the ridge: a grey wall, lightning still without sound.' },
+    choices: [
+      { id: 'wait', label: { fr: "Le laisser passer", en: 'Let it pass' }, outcome: { fr: "Deux heures de pluie chaude sur la tôle. Après, l'air sent l'herbe coupée et tout le monde respire.", en: 'Two hours of warm rain on the tin roof. Afterwards the air smells of cut grass and everyone breathes again.' }, effects: { delayHours: 2, morale: 1 } },
+      { id: 'go', label: { fr: 'Partir devant', en: 'Outrun it' }, outcome: { fr: "Le pilote file avant le front. La turbulence le rattrape au retour, et il rentre secoué.", en: 'The pilot races ahead of the front. The turbulence catches up on the way home, and they come back shaken.' }, effects: { wear: 6, morale: -1 } },
+    ],
+  },
+  {
+    kind: 'event', id: 'e-feuilles', weight: 1, season: 'automne',
+    title: { fr: 'Les feuilles sur la piste', en: 'Leaves on the strip' },
+    text: { fr: "Une nuit de vent a couvert la piste de feuilles mouillées. Ça glisse comme du savon.", en: 'A windy night has covered the strip in wet leaves. It is as slippery as soap.' },
+    choices: [
+      { id: 'rake', label: { fr: 'Ratisser (8 F)', en: 'Rake it (8 F)' }, outcome: { fr: "Deux gamins du village ratissent pour huit francs et un tour de hangar. La piste est nette.", en: 'Two village children rake for eight francs and a look round the hangar. The strip is clear.' }, effects: { francs: -8 } },
+      { id: 'go', label: { fr: 'Décoller quand même', en: 'Take off anyway' }, outcome: { fr: "L'avion part en crabe sur dix mètres avant de mordre. Le train a souffert.", en: 'The plane skids sideways for ten yards before it bites. The undercarriage has suffered.' }, effects: { wear: 5 } },
+    ],
+  },
+  {
+    kind: 'event', id: 'e-neige', weight: 1, season: 'hiver',
+    title: { fr: 'La neige sur la piste', en: 'Snow on the strip' },
+    text: { fr: "Il a neigé toute la nuit. La piste n'est plus qu'une page blanche, et les pierres de balisage ont disparu.", en: 'It snowed all night. The strip is a blank page, and the marker stones have vanished.' },
+    choices: [
+      { id: 'shovel', label: { fr: 'Faire déblayer (15 F)', en: 'Have it cleared (15 F)' }, outcome: { fr: "Le cantonnier vient avec son cheval et sa lame. Une bande nette, et un bol de soupe au café pour lui.", en: 'The roadman comes with his horse and blade. One clean strip, and a bowl of soup at the café for him.' }, effects: { francs: -15 } },
+      { id: 'wait', label: { fr: 'Attendre le redoux', en: 'Wait for the thaw' }, outcome: { fr: "Trois heures au coin du poêle. Le soleil fait le travail, et les pilotes jouent aux cartes.", en: 'Three hours by the stove. The sun does the work, and the pilots play cards.' }, effects: { delayHours: 3, morale: 1 } },
     ],
   },
   // ---- Forêt de Cuivre ----
