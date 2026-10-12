@@ -14,7 +14,7 @@ Vous serez crédité dans l'avis de sécurité, sauf si vous préférez l'anonym
 
 ## Portée
 
-Dans la portée : ce dépôt, et l'instance de jeu lorsqu'elle sera en ligne.
+Dans la portée : ce dépôt, et l'instance de jeu, [altiplume.com](https://altiplume.com).
 Hors portée : le déni de service par volume, les rapports issus uniquement d'un
 scanner automatique sans démonstration d'impact, et l'ingénierie sociale.
 
@@ -28,7 +28,20 @@ scanner automatique sans démonstration d'impact, et l'ingénierie sociale.
   pas d'analytique tierce.
 - **Serveur autoritatif :** aucune valeur de jeu n'est acceptée depuis le client.
 - **Chaîne d'approvisionnement :** dépendances épinglées, actions GitHub épinglées
-  par empreinte SHA, licences vérifiées, audit à chaque pull request.
+  par empreinte SHA, licences vérifiées, audit à chaque pull request. Les paquets
+  npm sont surveillés par Socket (comportement : scripts d'installation, accès
+  réseau, code obscurci, noms imités), pas seulement par leurs failles connues.
+- **Contrôles à chaque pull request :** CodeQL et Opengrep relisent le code ; OWASP
+  ZAP visite l'application démarrée en production (passif) ; Trivy scanne l'image,
+  qui n'est **pas publiée** s'il y trouve une faille critique corrigeable, et la
+  rescanne chaque lundi. Les outils eux-mêmes sont pris dans leurs releases
+  officielles, version et empreinte SHA-256 fixées, sans action GitHub tierce.
+- **Image minimale :** non-root, système de fichiers en lecture seule, sans npm ni
+  autre gestionnaire de paquets ; provenance attestée et vérifiable
+  (`gh attestation verify`).
+- **Vérifié de l'extérieur :** le protocole, les mesures et ce qu'il reste à faire
+  sont dans [docs/SECURITE.md](docs/SECURITE.md)
+  ([wiki](https://github.com/regis57/altiplume/wiki/Securite)).
 - **Secrets :** aucun secret dans le dépôt. La protection anti-poussée de GitHub est
   active et bloque tout commit en contenant.
 

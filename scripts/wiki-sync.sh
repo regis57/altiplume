@@ -41,7 +41,7 @@ gratuit, sans mot de passe. Le jeu : [altiplume.com](https://altiplume.com). Le 
 - **[Conception](Conception)** — le document de conception.
 - **[Démarrage](Demarrage)** — comment le projet a été mis en route.
 - **[Déploiement](Deploiement)** — le NAS, le tunnel, les tâches planifiées.
-- **[Sécurité](Securite)** — le protocole de vérification externe, les notes, ce qu'il reste à faire.
+- **[Sécurité](Securite)** — vérifiée de l'extérieur (les notes A+) et de l'intérieur (Trivy, ZAP, Opengrep, Socket), ce qu'il reste à faire.
 - **[Registre des traitements](Registre-des-traitements)** — RGPD.
 
 _Ces pages sont des copies publiées automatiquement depuis le dossier `docs/` du
