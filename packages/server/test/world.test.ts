@@ -40,15 +40,13 @@ describe('le monde — intégrité', () => {
     expect(WORLD.home.address.fr).toMatch(/chemin de la Croisette/i);
   });
 
-  it('garde des pilotes de régions différentes, et trace l\'écart de parité en attendant qu\'il soit comblé', () => {
+  it('compte autant de femmes que d\'hommes parmi les pilotes, venus de lieux différents', () => {
     const f = WORLD.pilots.filter((p) => p.gender === 'f').length;
     const m = WORLD.pilots.filter((p) => p.gender === 'm').length;
-    // Règle du projet depuis le premier jour : autant de femmes que d'hommes.
-    // Rompue le 12/10 par le renommage de Marthe Vaudrin en Prosper Chickenman
-    // (choix de l'auteur) : 2 femmes pour 4 hommes. Les deux prochains pilotes
-    // seront des femmes, et cette attente redeviendra `f === m`. Tant qu'elle
-    // est écrite ainsi, aucun changement de genre ne peut passer inaperçu.
-    expect({ f, m }).toEqual({ f: 2, m: 4 });
+    // Règle du projet depuis le premier jour. Rompue le 12/10 par le renommage de
+    // Marthe Vaudrin en Prosper Chickenman, rétablie le jour même par Garance
+    // Thuillier et Hedda Vilmorin.
+    expect(f).toBe(m);
     expect(new Set(WORLD.pilots.map((p) => p.origin.fr)).size).toBe(WORLD.pilots.length);
   });
 
@@ -116,7 +114,7 @@ describe('le monde — intégrité', () => {
     expect(iles.filter((d) => d.distance <= sterne.range * 1.2).map((d) => d.id)).toEqual(['ile-aux-fanaux', 'grand-recif', 'sainte-lueur']);
     expect(iles.some((d) => d.distance > sterne.range * 1.2)).toBe(true);
     // Six pilotes, parité gardée, une Nocturne pour les îles.
-    expect(WORLD.pilots).toHaveLength(6);
+    expect(WORLD.pilots).toHaveLength(8);
     expect(WORLD.pilots.filter((p) => p.traits.includes('nightowl')).length).toBeGreaterThanOrEqual(2);
   });
 
