@@ -103,6 +103,7 @@ gratuits, tous dans GitHub Actions ou une application GitHub, aucun secret.
 | Message d'erreur de débogage (`/cgu`) | Faible | Faux positif : « still under construction » est une phrase des CGU anglaises (le jeu est en essai). |
 | Attribut HTML contrôlable (`/aide?lang=en`) | Info | Vérifié : seul `en` est accepté ; `?lang="zz` donne `lang="fr"`, rien n'est recopié. |
 | Commentaire « suspect » dans le JavaScript | Info | Le mot « User » dans le code minifié. |
+| « ZAP errors logged » (2) | Indication | Reproduit en local le 14/10, ce ne sont pas des défauts du site : « pas de vérification des mises à jour depuis plus de 3 mois » (voulu : ZAP tourne en `-silent`, version épinglée) et « impossible de créer un profil Firefox » (l'intégration navigateur de ZAP, qu'on n'utilise pas). Depuis le 14/10, le journal de ZAP part avec les rapports et ses erreurs s'affichent dans le résumé du job. |
 
 Contre-épreuve : sans les deux déclarations de faux positifs, le plan échoue
 bien. Le garde-fou mord.
