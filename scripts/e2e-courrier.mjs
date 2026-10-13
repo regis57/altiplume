@@ -180,8 +180,8 @@ try {
   assert(await page.$('#vols .vol .jauge'), 'la jauge du vol est revenue');
 
   // Et le tout en anglais.
-  await page.click('[data-action=toggle-lang]');
-  await page.reload();
+  // L'aérodrome se recharge de lui-même dans la nouvelle langue.
+  await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#bord')).includes('Arrived at Mistbridge'), 'livre de bord en anglais');
   db.close();

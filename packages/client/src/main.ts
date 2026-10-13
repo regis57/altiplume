@@ -559,6 +559,10 @@ function main(): void {
   document.querySelector('[data-action=toggle-lang]')?.addEventListener('click', () => {
     setLocale(getLocale() === 'fr' ? 'en' : 'fr');
     translatePage();
+    // Les pages qui affichent du contenu venu du serveur (le monde, la compagnie) le
+    // redemandent dans la nouvelle langue : traduire les seuls libellés fixes laissait
+    // un mélange de français et d'anglais.
+    window.dispatchEvent(new CustomEvent('altiplume:langue'));
   });
   updateThemeButton();
   document.querySelector('[data-action=toggle-theme]')?.addEventListener('click', () => {
