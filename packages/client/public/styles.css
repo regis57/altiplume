@@ -812,6 +812,11 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere;
 }
 .album .page .aide { font-size: inherit; margin-top: auto; }
+/* La valeur de la page, en coin : +1, ou +2 / +3 en gras pour une escale lointaine. */
+.album .page { position: relative; }
+.album .page .valeur { position: absolute; top: 0.3rem; right: 0.4rem; font-size: 0.72rem; color: var(--encre-douce); }
+.album .page .valeur.forte { font-weight: 700; color: var(--cachet-encre); }
+.album .page strong { padding-right: 1.3rem; }
 .album .page.gagnee { border: 1.5px solid var(--cachet); color: var(--encre); background: color-mix(in srgb, var(--cachet) 8%, transparent); transform: rotate(-1.5deg); }
 .album .page.gagnee:nth-child(3n) { transform: rotate(1deg); }
 .album .page.gagnee strong { color: var(--cachet-encre); font-family: var(--police-titre); font-size: 0.82rem; }
