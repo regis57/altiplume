@@ -186,6 +186,12 @@ ce que les tests ne voient pas : ce que le joueur *comprend*.
    affiche maintenant ses deux conditions, chacune avec son état, et **nomme les escales
    qui restent à livrer**. Au passage, un test qui manquait : ce que vaut une page en
    cachets (un, deux pour Haut-Ferrand, trois pour Combe-aux-Rosées).
+
+   Et le « dix » ? C'était le nombre de **pages** de l'album : dix pages qui valaient
+   treize cachets, sans que l'écran le dise. Chaque page porte désormais sa valeur en
+   coin (+1, +2, +3), et l'album fait le compte : « 10 pages sur 46 · 13 cachets
+   gagnés ». Le prix d'une route se lit comme un prix : « Prix : 10 cachets — vous en
+   avez 13 en caisse ». Un test vérifie que la somme des pages fait toujours le compte.
 5. **« Est-ce que je gagnerai plus, plus tard ? »** Mesuré, pas promis : par contrat,
    bien plus (75 francs nets dans la vallée, 190 dans la forêt, 366 dans l'Archipel) ;
    par heure de vol, à peu près pareil, parce que les vols lointains sont longs. Ce qui
