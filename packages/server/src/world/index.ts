@@ -14,6 +14,9 @@ import { TRAITS } from './traits.ts';
 import { SEASONS } from './saisons.ts';
 import type { Card, Destination, PilotTemplate, PlaneModel, Region, RegionId, Text, Trait, World } from './types.ts';
 
+/** La page « toute la région » de chaque région : celle qui ouvre la route suivante. */
+export const REGION_PAGE: Readonly<Record<RegionId, string>> = { brume: 's-vallee', saline: 's-cote', archipel: 's-archipel', cuivre: 's-foret' };
+
 export const WORLD: World = {
   region: BRUME,
   regions: [BRUME, SALINE, ARCHIPEL, CUIVRE],
@@ -77,7 +80,7 @@ export function localizeWorld(locale: Locale) {
   return {
     region: { id: WORLD.region.id, name: tx(WORLD.region.name), tagline: tx(WORLD.region.tagline), description: tx(WORLD.region.description), palette: WORLD.region.palette },
     regions: WORLD.regions.map((r) => ({
-      id: r.id, name: tx(r.name), tagline: tx(r.tagline), description: tx(r.description), palette: r.palette, ...(r.route ? { route: r.route } : {}),
+      id: r.id, name: tx(r.name), tagline: tx(r.tagline), description: tx(r.description), palette: r.palette, page: REGION_PAGE[r.id], ...(r.route ? { route: r.route } : {}),
     })),
     home: { name: tx(WORLD.home.name), address: tx(WORLD.home.address), description: tx(WORLD.home.description) },
     destinations: WORLD.destinations.map((d) => ({

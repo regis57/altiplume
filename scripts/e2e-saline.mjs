@@ -72,8 +72,29 @@ try {
   assert((await saline.textContent()).includes('Toute la vallée'), 'la page manquante est nommée');
   assert(await page.$eval('#scene-ponton', (e) => e.classList.contains('cache')), 'pas de ponton au départ');
 
-  // Toute la vallée livrée, dix cachets en caisse : la route s'ouvre.
+  // Le cas du 14 octobre : dix cachets, cinq escales sur six, et une route grisée sans
+  // qu'on sache pourquoi. Les deux conditions sont dites, chacune avec son état, et
+  // l'escale qui manque est nommée.
   const db = new DatabaseSync(dbPath);
+  for (const d of ['pont-de-brume', 'les-tilleuls', 'moulin-gris', 'haut-ferrand', 'combe-aux-rosees']) {
+    db.prepare("INSERT OR IGNORE INTO company_stamps (company_id, stamp, earned_at) SELECT id, ?, founded_at FROM companies").run(`s-${d}`);
+  }
+  db.exec('UPDATE companies SET stamps = 10');
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  const conditions = saline.locator('.condition');
+  assert(await conditions.count() === 2, 'deux conditions pour ouvrir la route');
+  const page1 = conditions.nth(0), cachets1 = conditions.nth(1);
+  assert(await page1.evaluate((e) => e.classList.contains('manque')), 'la page manque');
+  const textePage = (await page1.textContent()).replace(/\s+/g, ' ');
+  assert(textePage.includes('Toute la vallée') && textePage.includes('il reste à livrer : Lanterne-du-Val') && !textePage.includes('Pont-de-Brume'),
+    `la page manquante et la seule escale qui reste sont nommées (${textePage})`);
+  assert(textePage.includes('manque :'), 'l\'état est lu par les lecteurs d\'écran');
+  assert(await cachets1.evaluate((e) => e.classList.contains('faite')), 'les cachets suffisent');
+  assert((await cachets1.textContent()).includes('10 cachets — vous en avez 10'), 'le compte des cachets est dit');
+  assert(await saline.locator('button').isDisabled(), 'le bouton reste inactif tant que la page manque');
+
+  // Toute la vallée livrée, dix cachets en caisse : la route s'ouvre.
   db.exec("INSERT OR IGNORE INTO company_stamps (company_id, stamp, earned_at) SELECT id, 's-vallee', founded_at FROM companies");
   db.exec('UPDATE companies SET stamps = 10, francs = 20000');
   db.exec("DELETE FROM company_hand WHERE card LIKE 'e-%'");

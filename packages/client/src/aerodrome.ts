@@ -19,7 +19,7 @@ type SetMessage = (id: string, keys: string | string[], kind?: 'ok' | 'error') =
 
 interface WorldView {
   home: { name: string; address: string; description: string };
-  regions: { id: string; name: string; tagline: string; description: string; route?: { requires: string; cost: number } }[];
+  regions: { id: string; name: string; tagline: string; description: string; page: string; route?: { requires: string; cost: number } }[];
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
   seasons: { id: string; name: string; tagline: string; effects: { duration?: number; reward?: number } }[];
@@ -366,15 +366,32 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         li.append(el('p', 'aide', t('game.routeOpen')));
       } else {
         const hasPage = c.album.some((a) => a.id === r.route!.requires);
+        const enough = c.stamps >= r.route.cost;
         const b = el('button', 'bouton'); b.type = 'button';
         b.textContent = `${t('game.openRoute')} · ${r.route.cost} ${t('game.stamps').toLowerCase()}`;
-        b.disabled = !hasPage || c.stamps < r.route.cost;
-        if (!hasPage) {
-          b.title = t('error.route_requires');
-          li.append(el('p', 'aide', `${t('game.routeNeeds')} « ${stampName(world, r.route.requires)} »`));
-        } else if (c.stamps < r.route.cost) {
-          b.title = t('error.not_enough_stamps');
-        }
+        b.disabled = !hasPage || !enough;
+        // Les deux conditions, dites en clair, chacune avec son état : ce qui est
+        // fait, ce qui manque, et pour la page, les escales qui restent à livrer.
+        li.append(el('p', 'conditions-titre', t('game.routeToOpen')));
+        const conditions = el('ul', 'conditions');
+        const condition = (ok: boolean, text: string) => {
+          const item = el('li', ok ? 'condition faite' : 'condition manque');
+          const marque = el('span', 'marque', ok ? '✓' : '✗'); marque.setAttribute('aria-hidden', 'true');
+          item.append(marque, el('span', 'lecteur-seul', t(ok ? 'game.condDone' : 'game.condMissing')), el('span', undefined, text));
+          conditions.append(item);
+        };
+        const pageName = `${t('game.quoteOpen')}${stampName(world, r.route.requires)}${t('game.quoteClose')}`;
+        const fromRegion = world.regions.find((x) => x.page === r.route!.requires);
+        const toDeliver = fromRegion && !hasPage
+          ? world.destinations.filter((d) => d.region === fromRegion.id && !c.album.some((a) => a.id === `s-${d.id}`)).map((d) => d.name)
+          : [];
+        condition(hasPage, toDeliver.length > 0
+          ? `${t('game.routePage').replace('{page}', pageName)} — ${t('game.routeStillToDeliver').replace('{list}', toDeliver.join(', '))}`
+          : t('game.routePage').replace('{page}', pageName));
+        condition(enough, t('game.routeStamps').replace('{cost}', String(r.route.cost)).replace('{n}', String(c.stamps)));
+        li.append(conditions);
+        if (!hasPage) b.title = t('error.route_requires');
+        else if (!enough) b.title = t('error.not_enough_stamps');
         b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/regions/${r.id}/open`, b, 'game.routeOpened'));
         const actions = el('div', 'actions'); actions.append(b); li.append(actions);
       }
