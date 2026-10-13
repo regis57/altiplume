@@ -799,13 +799,26 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .trait { display: inline-block; padding: 0.15rem 0.55rem; border: 1px solid var(--laiton); border-radius: 999px; color: var(--laiton); font-size: 0.9rem; }
 .portrait { font-style: italic; color: var(--encre-douce); }
 
-.album { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.6rem; }
+/* L'album : des timbres, pas des fiches. Petits, tous de la même taille, en grille
+   serrée sur toute la largeur — quarante-six pages tiennent dans un écran de PC.
+   Le nom et la légende tiennent chacun sur deux lignes ; la légende entière reste
+   lue par les lecteurs d'écran, et s'affiche au survol. */
+.album { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr)); gap: 0.45rem; }
 .album .page {
-  display: grid; gap: 0.25rem; padding: 0.7rem; min-height: 5rem; border: 1.5px dashed var(--brume-fonce); border-radius: var(--rayon);
-  color: var(--encre-douce); font-size: 0.9rem;
+  display: flex; flex-direction: column; gap: 0.15rem; padding: 0.45rem 0.5rem; width: 100%; max-width: none; height: 4.6rem; overflow: hidden;
+  border: 1.5px dashed var(--brume-fonce); border-radius: var(--rayon); color: var(--encre-douce); font-size: 0.78rem; line-height: 1.25;
 }
+.album .page strong, .album .page .aide {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere;
+}
+.album .page .aide { font-size: inherit; margin-top: auto; }
 .album .page.gagnee { border: 1.5px solid var(--cachet); color: var(--encre); background: color-mix(in srgb, var(--cachet) 8%, transparent); transform: rotate(-1.5deg); }
-.album .page.gagnee strong { color: var(--cachet-encre); font-family: var(--police-titre); }
+.album .page.gagnee:nth-child(3n) { transform: rotate(1deg); }
+.album .page.gagnee strong { color: var(--cachet-encre); font-family: var(--police-titre); font-size: 0.82rem; }
+/* Le compte des pages : une petite pastille couleur cachet, qui se lit aussi bien à la suite du titre qu'à la ligne. */
+.album-compte { display: inline-block; vertical-align: middle; margin-left: 0.3rem; padding: 0.1rem 0.55rem; border: 1px solid var(--cachet); border-radius: 999px; font-family: var(--police-texte); font-size: 0.85rem; font-weight: 400; color: var(--cachet-encre); white-space: nowrap; }
+.album-compte:empty { display: none; }
+@media (min-width: 40rem) { .album { grid-template-columns: repeat(auto-fill, minmax(7.2rem, 1fr)); } }
 
 /* Le carnet d'histoires. */
 .histoire { max-width: min(100% - 2rem, 34rem); border: 0; border-radius: var(--rayon); padding: 1.4rem; background: var(--papier); color: var(--encre); }
@@ -858,6 +871,13 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 
 .scene .piste[data-niveau='2'] { fill: #b4c48a; }
 .scene .piste[data-niveau='3'] { fill: #c2cf96; }
+/* Les décorations : douze petites fiches, en grille plutôt qu'en file indienne. */
+.fiches.deco { grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 0.6rem; }
+@media (min-width: 40rem) { .fiches.deco { grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); } }
+.fiches.deco li { padding: 0.7rem; }
+.fiches.deco h3 { font-size: 1rem; }
+.fiches.deco p { font-size: 0.88rem; }
+.fiches.deco .bouton { width: 100%; }
 .deco li.posee { border-style: solid; border-color: var(--laiton); }
 .routes li.ouverte { border-style: solid; border-color: var(--laiton); }
 .routes .tagline { font-style: italic; margin: 0 0 0.4rem; }

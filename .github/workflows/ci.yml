@@ -124,3 +124,25 @@ jobs:
         env:
           CHROMIUM_PATH: /usr/bin/google-chrome
         run: node scripts/e2e-tiers.mjs
+
+  # La mise en page de l'aérodrome : sur PC l'album tient dans un écran, ses pages
+  # ont toutes la même taille ; sur téléphone rien ne déborde sur le côté
+  # (scripts/e2e-mise-en-page.mjs).
+  mise-en-page:
+    name: mise en page
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Mesurer la page dans un vrai navigateur
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: node scripts/e2e-mise-en-page.mjs
