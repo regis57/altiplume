@@ -34,7 +34,9 @@ coûts (un nom de domaine, environ dix euros) sont dans
 - **Vers la v0.3** (12 octobre) — la Forêt de Cuivre et une route qui bifurque, le
   Pic et ses clairières, les convois de fret lourd, les saisons du calendrier,
   l'aérodrome qui se voit grandir (hangar, tour, chaque avion à sa place) ; dix
-  pilotes, cinq femmes et cinq hommes.
+  pilotes, cinq femmes et cinq hommes. Le 14 octobre, en rejouant : un album en
+  timbres qui tient dans un écran, des routes fermées qui disent ce qui manque, et
+  une escale jamais livrée qui « attend sa lettre ».
 - **Sécurité, vérifiée de l'extérieur** le 11 octobre : Observatory A+,
   securityheaders A+, SSL Labs A+, SPF/DKIM/DMARC ; **et de l'intérieur** depuis le
   12 octobre, à chaque PR : Trivy sur l'image, OWASP ZAP sur l'application, Opengrep

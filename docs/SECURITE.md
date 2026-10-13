@@ -42,7 +42,7 @@ et le contrôle hebdomadaire sonne quand un point redescend.
 | Dépendances | `npm audit`, licences (CI) ; [Socket](https://socket.dev/) | Vulnérabilités connues, paquets suspects, licences | 0 vulnérabilité | 0 (CI, à chaque PR) | 12/10 : application GitHub Socket installée sur ce seul dépôt, `socket.yml` | 0 (CI du 12/10) ; Socket : rapport de projet ✅ sur `main` (12/10, 21 h 04) | ✅ vérifié (CI, Socket) ; OSV-Scanner écarté (redondant, voir plus bas) |
 | Image Docker | [Trivy](https://trivy.dev/) 0.69.3 ; `gh attestation verify` | Vulnérabilités de l'image, secrets, provenance | 0 critique ; attestation valide | Attestation signée à chaque publication (CI) | 12/10 : Trivy avant chaque publication (`release.yml`) et chaque lundi sur l'image publiée ; npm, npx, corepack et yarn retirés de l'image | **0 critique corrigeable** : verdict vert sur la PR #58 et à la publication du 12/10 (21 h 05) ; élevées listées dans le résumé du job *Release* | ✅ vérifié (CI) |
 | Code | CodeQL (GitHub) ; [Opengrep](https://github.com/opengrep/opengrep) (reprise libre de Semgrep) | Injections, HTML non échappé, cryptographie faible, secrets, Dockerfile, workflows | Aucune alerte ouverte ; 0 ERROR | CodeQL : 3 analyses vertes par PR, 0 alerte ouverte | 12/10 : Opengrep v1.30.1 en CI (`opengrep.yml`) à chaque PR ; trois familles de règles hors sujet écartées avec leur raison ; la seule écriture HTML du client annotée | CodeQL : 0 alerte ; Opengrep : **0 ERROR**, 28 avertissements lus, aucun réel (12/10) | ✅ vérifié (CI) |
-| Accessibilité | Lighthouse, [WAVE](https://wave.webaim.org/), [axe DevTools](https://www.deque.com/axe/devtools/) | Contrastes, sémantique, étiquettes, focus | ≥ 95 ; zéro erreur WAVE | — | — | — | ❌ non effectué |
+| Accessibilité | Lighthouse, [WAVE](https://wave.webaim.org/), [axe DevTools](https://www.deque.com/axe/devtools/) | Contrastes, sémantique, étiquettes, focus | ≥ 95 ; zéro erreur WAVE | — | 14/10 : conditions d'une route dites en mots (✓/✗, et « fait »/« manque » pour les lecteurs d'écran) ; légendes de l'album gardées entières dans la page ; mise en page testée à chaque PR, sur PC et téléphone (`scripts/e2e-mise-en-page.mjs`) | — | ❌ non effectué (mesure) |
 | PWA et performance | Lighthouse, [WebPageTest](https://www.webpagetest.org/) | Manifeste, service worker, icônes, chargement | Installable ; ≥ 90 | Installée et notifiant sur iPhone, Android, PC (constaté le 11/10) ; score non mesuré | — | — | ❌ non effectué (score) |
 | Vie privée | [Blacklight](https://themarkup.org/blacklight), [webbkoll](https://webbkoll.dataskydd.net/) | Traqueurs, cookies tiers, requêtes sortantes | Aucun traqueur, un seul cookie | Par construction (`connect-src 'self'`, aucune ressource tierce) ; Observatory : « cookies not found » | 13/10 : test de parcours `scripts/e2e-tiers.mjs`, à chaque PR : échoue sur la moindre requête vers un autre domaine, violation de la CSP ou cookie étranger | **Blacklight, 13/10/2026 à 18 h 39 (Paris)**, mobile, serveur californien : 0 traqueur publicitaire, 0 cookie tiers, pas de pistage par empreinte (canvas), pas d'enregistreur de session, pas de capture de frappe, pas de pixel Facebook, TikTok ni X, pas de remarketing Google. Parcours local : 194 requêtes, toutes vers l'aérodrome, 1 cookie, le nôtre | ✅ vérifié (Blacklight) ; webbkoll ❌ non effectué |
 | Confidentialité du compte | [Have I Been Pwned](https://haveibeenpwned.com/DomainSearch) (domaine) | Fuite associée au domaine | Néant | — | Mode opératoire ci-dessous | — | ❌ non effectué |
@@ -69,6 +69,15 @@ l'accessibilité, HIBP, Shodan.
 sur l'adresse de la maison, 80 et 443**, alors que la conception dit « aucun port
 ouvert ». Corrigés le soir même, puis revérifiés (voir plus bas).
 
+**Bilan du 14 octobre (le jeu, rejoué)** : trois retouches de jeu et de présentation
+(l'album, le tirage, les routes), sans rien ouvrir de neuf vers l'extérieur : le test
+« aucune requête tierce » reste vert, 194 requêtes, toutes vers l'aérodrome. La nouvelle
+règle de tirage (« l'escale attend sa lettre ») vit côté serveur, dans le tirage
+déterministe : le navigateur ne peut ni la voir venir ni la forcer. L'accessibilité
+progresse, sans être encore mesurée : l'état de chaque condition d'une route est dit en
+mots aux lecteurs d'écran, pas seulement par la couleur, et les légendes de l'album
+restent entières dans la page. Un test de mise en page rejoint les contrôles de chaque PR.
+
 ### Les contrôles automatiques (12 octobre 2026)
 
 Le tableau du haut regarde le site **de l'extérieur**. Ceux-ci regardent **de
@@ -83,6 +92,8 @@ gratuits, tous dans GitHub Actions ou une application GitHub, aucun secret.
 | **Socket** | Application GitHub, réglée par `socket.yml` | Chaque PR qui touche une dépendance ; rapport à chaque fusion | Contrôle « Socket Security » sur la PR (paquet malveillant, script d'installation, accès réseau inattendu, nom imité…) | Rapport de projet vert sur `main` (12/10) |
 | CodeQL | Configuration par défaut de GitHub | Chaque PR | Une alerte | 0 alerte ouverte |
 | `npm audit`, licences | `ci.yml` | Chaque PR | Une faille élevée ; une licence hors liste | 0 ; licences conformes |
+| Aucune requête tierce | `ci.yml` (job *aucune requête tierce*), `scripts/e2e-tiers.mjs` | Chaque PR | Une requête vers un autre domaine, une violation de la CSP, un cookie étranger | 194 requêtes, toutes vers l'aérodrome ; un cookie, le nôtre (13/10) |
+| Mise en page | `ci.yml` (job *mise en page*), `scripts/e2e-mise-en-page.mjs` | Chaque PR | Sur PC, l'album déborde d'un écran ou une page sort de sa case ; sur téléphone, la page défile sur le côté | Album en 656 px pour 900 ; 8 timbres par rangée sur PC, 3 sur téléphone (14/10) |
 
 **Ce que ZAP a relevé, et pourquoi ce n'est pas un défaut :**
 

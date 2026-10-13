@@ -42,7 +42,7 @@ l'heure, soit cinq minutes la lieue.
 
 Chaque première livraison vaut un **cachet** (1 pour les proches, 2 pour Haut-Ferrand
 et Lanterne-du-Val, 3 pour la Combe). Les six villages livrés collent la page « Toute
-la vallée », qui permet d'ouvrir la route de la Côte de Saline.
+la vallée », qui ouvre **deux routes** : la Côte de Saline et la Forêt de Cuivre.
 
 ## La Côte de Saline (*Saltshore*) — v0.2
 
@@ -391,6 +391,10 @@ au pied du pommier.
 - **Cartes** : trois par jour de jeu (minuit UTC), dans la place qui reste d'une main
   de cinq. Ce qu'on n'a pas la place de prendre, quelqu'un d'autre l'a porté : ce
   n'est pas une perte. Une carte défaussée ne revient pas le jour même.
+- **L'escale attend sa lettre** (14 octobre 2026) : parmi les contrats du tirage, ceux
+  d'une escale qui n'a encore jamais reçu de courrier pèsent **trois fois plus**. Les
+  contrats gardent ensemble le même poids, donc ni plus ni moins d'imprévus. Sans
+  cette règle, la dernière escale d'une région ne dépendait que de la chance.
 
 ## L'album de cachets
 
@@ -401,6 +405,12 @@ route des îles, une par île, Tout l'Archipel. Neuf pour la forêt : La route d
 forêt, une par escale, Dans la clairière, Toute la forêt. Trois pour le fret lourd :
 Le premier convoi, La coulée, La cloche de Sainte-Lueur. Cinq pour l'année : une par
 saison, et Une année. Une collection, pas un classement.
+
+**Ce que vaut une page.** Chaque page vaut **un cachet** ; une première livraison
+lointaine en vaut deux ou trois (chaque région le précise plus haut). Les cachets ne se
+dépensent qu'à ouvrir une route, et une route demande deux choses : son prix en
+cachets, et la page « toute la région » de la précédente. Une route fermée dit les
+deux, chacune avec son état, et nomme les escales qui restent à livrer.
 
 ## Ce qui viendra (prévu, pas encore écrit)
 
