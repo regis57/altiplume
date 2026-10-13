@@ -61,7 +61,6 @@ try {
   await ctx.exposeBinding('signalerViolation', (_source, detail) => { violations.push(detail); });
   await ctx.addInitScript(() => {
     document.addEventListener('securitypolicyviolation', (e) => {
-      // @ts-ignore — fourni par exposeBinding
       window.signalerViolation(`${e.violatedDirective} ${e.blockedURI}`);
     });
   });
