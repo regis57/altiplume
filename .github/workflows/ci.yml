@@ -101,3 +101,26 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run licenses
+
+  # « Zéro traqueur » : même question que Blacklight, posée à chaque PR. Un vrai
+  # Chrome parcourt les pages, s'inscrit, ouvre l'aérodrome, et le test échoue si
+  # une seule requête part ailleurs que chez nous (scripts/e2e-tiers.mjs).
+  tiers:
+    name: aucune requête tierce
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Le Chrome déjà installé sur le runner : aucun navigateur à télécharger.
+      - name: Parcourir le jeu et compter qui est contacté
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: node scripts/e2e-tiers.mjs
