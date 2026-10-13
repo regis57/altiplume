@@ -36,7 +36,7 @@ et le contrôle hebdomadaire sonne quand un point redescend.
 | Certificats | DNS CAA | Quelles autorités peuvent émettre pour le domaine | Celles de Cloudflare seulement | Aucun CAA | Enregistrements CAA | Présents (contrôle externe vert) | ✅ vérifié |
 | HTTP → HTTPS | contrôle externe (`scripts/securite-check.mjs`) | Premier saut en clair | 301 vers https | 200 sans redirection | Cloudflare + serveur | 301 vers `https://altiplume.com/` ; aucun cookie avant connexion | ✅ vérifié |
 | Courrier entrant | DNS (MX), test depuis une boîte externe | Que `@altiplume.com` reçoive, et par Cloudflare seulement | Aucun serveur de courrier attendu | Pas de MX : le domaine ne recevait rien | Cloudflare Email Routing (gratuit) : `bonjour@altiplume.com` redirigé vers la boîte de l'éditeur ; le contrôle hebdomadaire n'accepte que les MX `*.mx.cloudflare.net` et alerte sur tout autre | Trois MX Cloudflare ; message de test envoyé depuis une adresse externe et bien reçu (11/10) | ✅ vérifié |
-| Surface réseau | DNS ; [Shodan](https://www.shodan.io/) ou `nmap` sur l'adresse domestique | Ports ouverts chez l'auteur | Aucun service exposé | `altiplume.com` → Cloudflare seulement, pas de MX ; adresse domestique non publiée | — | DNS vérifié ; `nmap`/Shodan depuis l'extérieur (mode opératoire corrigé le 13/10, ci-dessous) | **13/10, GRC ShieldsUP depuis la maison, IPv4.** Premier balayage (19 h 16) : **2 ports ouverts, 80 et 443**, sur 1 056 testés ; corrigés, puis nouveau balayage (21 h 18) : **0 ouvert, 0 fermé, 1 056 invisibles, `TruStealth: PASSED`**, aucune réponse au ping. Test UPnP : aucune réponse aux sondes. Voir « Un constat du 13 octobre » plus bas | ✅ ports 0 à 1055, IPv4, après correction ; ❌ ports hors plage (5000, 5001, 32400), IPv6, Shodan : non effectués |
+| Surface réseau | DNS ; [Shodan](https://www.shodan.io/) ou `nmap` sur l'adresse domestique | Ports ouverts chez l'auteur | Aucun service exposé | `altiplume.com` → Cloudflare seulement, pas de MX ; adresse domestique non publiée | — | DNS vérifié ; `nmap`/Shodan depuis l'extérieur (mode opératoire corrigé le 13/10, ci-dessous) | **13/10, GRC ShieldsUP depuis la maison, IPv4.** Premier balayage (19 h 16) : **2 ports ouverts, 80 et 443**, sur 1 056 testés ; corrigés, puis nouveau balayage (21 h 18) : **0 ouvert, 0 fermé, 1 056 invisibles, `TruStealth: PASSED`**, aucune réponse au ping. Test UPnP : aucune réponse aux sondes. Voir « Un constat du 13 octobre » plus bas | ✅ ports 0 à 1055 **et** 5000, 5001, 32400 (accès au NAS, service de médias), IPv4, après correction ; pas d'adresse IPv6 sur la box ; ❌ Shodan : non effectué |
 | Application web | [OWASP ZAP](https://www.zaproxy.org/) 2.17.0, passif | Injections évidentes, cookies, en-têtes, fuites, contenus réfléchis | Zéro alerte haute | — | 12/10 : ZAP en CI (`zap.yml`) sur l'image démarrée en production, à chaque PR, à chaque fusion et chaque lundi ; échec sur toute alerte moyenne ou haute non examinée | **0 haute, 0 moyenne réelle** sur 58 adresses (12/10, en local puis CI verte sur la PR #59 et sur `main`) ; 2 faux positifs justifiés, 2 informations | ✅ vérifié (CI) ; contre le site public : mis en place le 13/10 (job `public` de `zap.yml`, chaque lundi), premier passage après la fusion |
 | Authentification | [webauthn.io](https://webauthn.io/), lecteur de passkeys du navigateur | Passkey liée à altiplume.com, découvrable, refuse un autre domaine | Clé liée au domaine | Tests de bout en bout (authenticateur virtuel) : `rpId`, seconde clé USB, refus d'un autre domaine — à chaque PR | — | Idem (CI) ; 13/10 : l'auteur confirme que la connexion par passkey fonctionne depuis le premier jour sur de vrais appareils, **Windows et iPhone** (constat manuel, sans outil) | ✅ vérifié (CI, appareils réels) |
 | Dépendances | `npm audit`, licences (CI) ; [Socket](https://socket.dev/) | Vulnérabilités connues, paquets suspects, licences | 0 vulnérabilité | 0 (CI, à chaque PR) | 12/10 : application GitHub Socket installée sur ce seul dépôt, `socket.yml` | 0 (CI du 12/10) ; Socket : rapport de projet ✅ sur `main` (12/10, 21 h 04) | ✅ vérifié (CI, Socket) ; OSV-Scanner écarté (redondant, voir plus bas) |
@@ -63,7 +63,7 @@ nmap depuis l'extérieur, HIBP.
 et le même contrôle tourne désormais à chaque PR ; la passkey est confirmée sur
 Windows et iPhone depuis le premier jour ; ZAP visite aussi le site public chaque
 lundi ; OSV-Scanner est **écarté** (voir plus bas). Restent « non effectué » :
-l'accessibilité, les ports au-delà de 1055 et l'IPv6, HIBP.
+l'accessibilité, HIBP, Shodan.
 
 **Le fait marquant du 13 octobre** : le balayage de ports a trouvé **deux ports ouverts
 sur l'adresse de la maison, 80 et 443**, alors que la conception dit « aucun port
@@ -213,14 +213,16 @@ Ce qui s'est passé, sans l'adresse (qui n'entre jamais dans le dépôt) :
    tunnel rend inutiles aussi bien la redirection que le certificat à renouveler par
    le port 80).
 4. **La revérification.** Nouveau balayage, deux heures après : zéro port ouvert sur
-   les 1 056 premiers, aucune réponse au ping, `TruStealth: PASSED`. Le jeu n'en
-   dépend pas : il sort par le tunnel.
+   les 1 056 premiers, aucune réponse au ping, `TruStealth: PASSED`. Sonde sur
+   les ports 5000, 5001 et 32400 (accès au NAS, service de médias à distance) : trois
+   invisibles. La box n'a pas d'adresse IPv6, donc rien à tester de ce côté. Le jeu
+   n'en dépend pas : il sort par le tunnel.
 
 **La leçon.** « Aucun port ouvert » était écrit dans la conception depuis le premier
-jour ; c'était une intention, pas une mesure, et la mesure l'a démentie. Il reste à
-mesurer ce qui est hors de la plage testée (ports 5000, 5001 et celui d'un éventuel
-service de médias) et l'IPv6, puis à refaire le balayage après tout changement de la
-box ou du NAS.
+jour ; c'était une intention, pas une mesure, et la mesure l'a démentie. Désormais
+elle est datée. **À refaire** : après tout changement de la box ou du NAS, et une fois
+par trimestre ; le service de médias à distance reste fermé tant qu'il n'est pas
+décidé de l'ouvrir.
 
 ## Ce qui a été écarté, et pourquoi
 
