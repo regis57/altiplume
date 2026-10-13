@@ -69,7 +69,9 @@ continu. Le détail technique est sur la page [Sécurité](Securite) ; le récit
    « 403 » du serveur web du NAS. Mais un service joignable de n'importe où est
    un service reconnaissable, et la porte n'avait rien à faire là. La redirection a été
    retirée de la box et du NAS, et le balayage refait : **zéro port ouvert, 1 056
-   invisibles, aucune réponse au ping, `TruStealth: PASSED`**.
+   invisibles, aucune réponse au ping, `TruStealth: PASSED`**. Une sonde sur trois ports
+   hors de la plage (accès au NAS, service de médias à distance) : trois invisibles. La
+   box n'a pas d'adresse IPv6, donc rien à tester de ce côté.
    Le moment le plus utile de la journée est celui où un outil a contredit la
    conception : **une garantie qu'on ne mesure pas n'est qu'une intention**, et cette
    fois, on l'a mesurée.
@@ -124,9 +126,8 @@ empreinte vérifiée à chaque exécution.
 
 - **L'accessibilité** : promise depuis la conception, à mesurer avec les personnes
   concernées plutôt qu'avec un score seul.
-- **Le balayage au-delà de la plage testée** : les 1 056 premiers ports sont
-  vérifiés ; restent ceux qui sont plus haut (accès au NAS, service de médias) et
-  l'adresse IPv6 si la box en a une. À refaire après tout changement de la box ou du NAS.
+- **Le balayage de ports, à refaire** : il est fait et propre ; il se refait après tout
+  changement de la box ou du NAS, et une fois par trimestre. Shodan reste à regarder.
 - **Have I Been Pwned**, pour le domaine : faible enjeu (le jeu n'a aucun mot de passe
   à fuiter), mais le domaine se vérifie en deux minutes.
 - **DMARC en `reject`** : on attend des rapports sans rejet légitime.
