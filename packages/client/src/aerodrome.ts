@@ -406,18 +406,25 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
     }
   }
 
-  // Album
+  // Album : des timbres serrés. Le nom et la légende sont coupés à deux lignes à
+  // l'écran ; le texte entier reste dans la page (lecteurs d'écran) et au survol.
   const album = $('album');
   if (album) {
     album.replaceChildren();
+    let gagnees = 0;
     for (const s of world.stamps) {
       const earned = c.album.find((x) => x.id === s.id);
+      if (earned) gagnees += 1;
       const li = el('li', earned ? 'page gagnee' : 'page');
       li.append(el('strong', undefined, s.name));
       li.append(el('span', 'aide', earned ? formatDate(earned.earnedAt, 'short') : s.description));
+      li.title = earned ? `${s.name} — ${formatDate(earned.earnedAt, 'long')}` : `${s.name} — ${s.description}`;
       if (earned) li.setAttribute('aria-label', `${s.name}, ${formatDate(earned.earnedAt, 'long')}`);
       album.append(li);
     }
+    const compte = $('album-compte');
+    // « 1 page », « 0 page » : en français, le singulier va jusqu'à un.
+    if (compte) compte.textContent = t(gagnees <= 1 ? 'game.albumCountOne' : 'game.albumCount').replace('{n}', String(gagnees)).replace('{total}', String(world.stamps.length));
   }
   translatePage();
 }

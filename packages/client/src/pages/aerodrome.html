@@ -130,6 +130,10 @@ title-en: My aerodrome
       <p class="aide" data-i18n-html="firstFlight.more">Tout le jeu en cinq minutes de lecture : <a href="/aide">comment on joue</a>.</p>
     </aside>
 
+    <!-- Deux colonnes sur grand écran : à gauche ce qui vole (le courrier, les
+         équipages, le livre de bord), à droite ce qui se construit (l'aérodrome, les
+         routes). Les décorations et l'album, des collections, prennent toute la
+         largeur en dessous, en grille : l'album tient dans un écran. -->
     <div class="colonnes">
     <div class="colonne">
     <section class="bloc" aria-labelledby="t-vols">
@@ -155,7 +159,12 @@ title-en: My aerodrome
       <ul class="fiches" id="avions"></ul>
     </section>
 
+    <section class="bloc" aria-labelledby="t-bord">
+      <h2 id="t-bord" data-i18n="game.logbook">Le livre de bord</h2>
+      <ul class="bord" id="bord"></ul>
+    </section>
     </div>
+
     <div class="colonne">
     <section class="bloc" aria-labelledby="t-zones">
       <h2 id="t-zones" data-i18n="game.field">L'aérodrome</h2>
@@ -167,25 +176,21 @@ title-en: My aerodrome
       <p class="aide" data-i18n="game.routesText">Chaque région a ses escales, son courrier et ses imprévus. Une route s'ouvre contre des cachets, quand toute la précédente a reçu votre courrier.</p>
       <ul class="fiches routes" id="routes"></ul>
     </section>
+    </div>
+    </div>
 
-    <section class="bloc" aria-labelledby="t-deco">
+    <section class="bloc bloc-large" aria-labelledby="t-deco">
       <h2 id="t-deco" data-i18n="game.decor">Les décorations</h2>
       <p class="aide" data-i18n="game.decorText">Sans effet sur le courrier, sauf un peu de moral pour tout le monde. C'est le Stardew en nous.</p>
       <ul class="fiches deco" id="decorations"></ul>
     </section>
 
-    <section class="bloc" aria-labelledby="t-bord">
-      <h2 id="t-bord" data-i18n="game.logbook">Le livre de bord</h2>
-      <ul class="bord" id="bord"></ul>
-    </section>
 
-    <section class="bloc" aria-labelledby="t-album">
-      <h2 id="t-album" data-i18n="game.album">L'album de cachets</h2>
-      <p data-i18n="game.albumText">Chaque première colle une page. Une collection, pas un classement.</p>
+    <section class="bloc bloc-album" aria-labelledby="t-album">
+      <h2 id="t-album"><span data-i18n="game.album">L'album de cachets</span> <span class="album-compte" id="album-compte"></span></h2>
+      <p class="aide" data-i18n="game.albumText">Chaque première colle une page, et chaque page rapporte un cachet ; une première livraison lointaine en rapporte deux ou trois. Les cachets ouvrent les routes. Une collection, pas un classement.</p>
       <ul class="album" id="album"></ul>
-      </div>
-    </div>
-  </section>
+    </section>
   </section>
 
   <dialog class="histoire" id="histoire" aria-labelledby="histoire-titre">

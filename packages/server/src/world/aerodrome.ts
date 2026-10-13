@@ -78,7 +78,7 @@ export const STAMPS: readonly Stamp[] = [
   { id: 's-nuit', name: { fr: 'Vol de nuit', en: 'Night flight' }, description: { fr: "Un atterrissage aux lanternes, après le coucher du soleil.", en: 'A landing by lantern light, after sunset.' } },
   { id: 's-delai', name: { fr: 'À l\'heure', en: 'On time' }, description: { fr: "Dix délais souples tenus. On commence à compter sur vous.", en: 'Ten soft deadlines met. People are starting to count on you.' } },
   { id: 's-histoire', name: { fr: 'Une histoire', en: 'A story' }, description: { fr: "Un pilote vous a raconté sa première histoire.", en: 'A pilot told you their first story.' } },
-  { id: 's-vallee', name: { fr: 'Toute la vallée', en: 'The whole valley' }, description: { fr: "Les six villages des Vallées de Brume ont reçu votre courrier. La route de la Côte attend.", en: 'All six villages of Mistvale have had your mail. The road to the Shore awaits.' } },
+  { id: 's-vallee', name: { fr: 'Toute la vallée', en: 'The whole valley' }, description: { fr: "Les six villages des Vallées de Brume ont reçu votre courrier. Deux routes attendent : la Côte de Saline et la Forêt de Cuivre.", en: 'All six villages of Mistvale have had your mail. Two roads now await you: Saltshore and Copperwood.' } },
   // La Côte de Saline
   { id: 's-route-saline', name: { fr: 'La route de la Côte', en: 'The Shore road' }, description: { fr: "Une carte marine, un bail sur un bout de quai : la Côte de Saline est ouverte.", en: 'A sea chart, a lease on a bit of quay: Saltshore is open.' } },
   { id: 's-port-sel', name: { fr: 'Port-Sel', en: 'Saltharbour' }, description: { fr: "Première livraison au port.", en: 'First delivery to the harbour.' } },
