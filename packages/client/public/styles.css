@@ -881,6 +881,14 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .deco li.posee { border-style: solid; border-color: var(--laiton); }
 .routes li.ouverte { border-style: solid; border-color: var(--laiton); }
 .routes .tagline { font-style: italic; margin: 0 0 0.4rem; }
+/* Ce qu'il faut pour ouvrir une route : deux conditions, chacune avec son état. */
+.routes .conditions-titre { margin: 0.6rem 0 0.2rem; font-weight: 700; }
+.routes .conditions { list-style: none; padding: 0; margin: 0 0 0.7rem; display: grid; gap: 0.25rem; }
+.routes .condition { display: grid; grid-template-columns: 1.3rem 1fr; align-items: baseline; border: 0; padding: 0; }
+.routes .condition .marque { font-weight: 700; }
+.routes .condition.faite { color: var(--ok); }
+.routes .condition.manque { color: var(--cachet-encre); }
+.routes .condition.manque .marque { color: var(--cachet-encre); }
 /* Le fret lourd : la carte porte une bande à chevrons épaisse, comme une caisse
    marquée pour le courrier aérien ; le convoi s'ouvre dans le formulaire. */
 .carte.lourd { border-left: 6px solid var(--avion-bleu); }
@@ -948,3 +956,6 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
   .jeu .colonne { min-width: 0; }
   .jeu .fiche-premier-vol, .jeu .fiche-passkey, .jeu .fiche-installer { max-width: 44rem; }
 }
+
+/* Lu par les lecteurs d'écran, invisible à l'œil. */
+.lecteur-seul { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

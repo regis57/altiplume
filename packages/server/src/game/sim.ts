@@ -17,7 +17,7 @@ import { newId } from '../auth/tokens.ts';
 import { gameDayIndex } from '../sim/day.ts';
 import { seasonOf, type Season } from '../sim/saison.ts';
 import { deriveSeed, makeRng, type Rng } from '../sim/rng.ts';
-import { cardRegion, findCard, findDestination, findPilot, findPlane, findRegion, findTrait, flightDurationMs, regionDestinations, WORLD } from '../world/index.ts';
+import { cardRegion, findCard, findDestination, findPilot, findPlane, findRegion, findTrait, flightDurationMs, REGION_PAGE, regionDestinations, WORLD } from '../world/index.ts';
 import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Runway, SeasonDef, TraitId } from '../world/types.ts';
 
 export const HAND_SIZE = 5;
@@ -115,8 +115,8 @@ export function companyFleet(db: Database, companyId: string): Fleet {
   return { planes, pilots: pilots.length, reach };
 }
 
-/** Le cachet « toute la région » de chaque région. */
-const REGION_STAMP: Record<RegionId, string> = { brume: 's-vallee', saline: 's-cote', archipel: 's-archipel', cuivre: 's-foret' };
+/** Le cachet « toute la région » de chaque région (défini avec le monde). */
+const REGION_STAMP = REGION_PAGE;
 
 /** Les régions dont la route est ouverte ; celle de départ l'est toujours. */
 export function unlockedRegions(db: Database, companyId: string): RegionId[] {
