@@ -61,7 +61,19 @@ continu. Le détail technique est sur la page [Sécurité](Securite) ; le récit
    toute seule est le piège classique) — **l'équipement n'a répondu à aucune des
    sondes**. Une mesure fausse qui dit « tout va bien » est pire qu'une mesure
    absente ; elle est dite et corrigée.
-9. **OSV-Scanner, écarté, et pourquoi.** Il lit `package-lock.json` contre une base qui
+9. **Le balayage de ports a trouvé quelque chose.** Sur les 1 056 premiers ports,
+   **deux répondaient : le 80 et le 443**, ouverts sur l'adresse de la maison vers le
+   serveur web du NAS. La conception dit « aucun port ouvert » depuis le premier jour ;
+   la mesure a dit autrement. Ce n'était ni le jeu (il sort par le tunnel et n'a besoin
+   d'aucun port), ni une page qui donnait accès à quoi que ce soit : une page d'erreur
+   « 403 » du serveur web du NAS. Mais un service joignable de n'importe où est
+   un service reconnaissable, et la porte n'avait rien à faire là. La redirection a été
+   retirée de la box et du NAS, et le balayage refait : **zéro port ouvert, 1 056
+   invisibles, aucune réponse au ping, `TruStealth: PASSED`**.
+   Le moment le plus utile de la journée est celui où un outil a contredit la
+   conception : **une garantie qu'on ne mesure pas n'est qu'une intention**, et cette
+   fois, on l'a mesurée.
+10. **OSV-Scanner, écarté, et pourquoi.** Il lit `package-lock.json` contre une base qui
    rassemble pour npm les mêmes avis que `npm audit`, déjà lancé à chaque PR ; Trivy
    relit les dépendances de l'image elle-même, chaque semaine ; Socket regarde ce que
    font les paquets, ce que nulle base d'avis ne voit. Un quatrième lecteur des mêmes
@@ -76,7 +88,7 @@ code et l'hébergement sont faits ainsi :
 
 | Garantie | Comment |
 |---|---|
-| **Rien n'entre chez l'auteur** | Aucun port ouvert : le NAS *sort* vers Cloudflare par un tunnel. |
+| **Rien n'entre chez l'auteur** | Aucun port ouvert : le NAS *sort* vers Cloudflare par un tunnel. Vérifié par balayage depuis l'extérieur le 13/10, après avoir fermé deux ports restés ouverts. |
 | **Rien à voler dans les mots de passe** | Il n'y en a pas : connexion par lien à usage unique ou passkey. Les jetons sont stockés en empreinte. |
 | **Une session à soi** | Cookie `HttpOnly`, `Secure`, `SameSite=Lax` ; les écritures n'acceptent que du JSON (anti-CSRF) ; sortie en un clic. |
 | **Une XSS n'aurait nulle part où aller** | CSP `default-src 'none'`, aucun script en ligne, Trusted Types exigés ; isolation du document par COOP, COEP et CORP. |
@@ -112,8 +124,9 @@ empreinte vérifiée à chaque exécution.
 
 - **L'accessibilité** : promise depuis la conception, à mesurer avec les personnes
   concernées plutôt qu'avec un score seul.
-- **Le balayage de ports depuis l'extérieur** : le test UPnP est fait ; le balayage
-  des ports reste à lire et à consigner, ainsi que l'adresse IPv6 si la box en a une.
+- **Le balayage au-delà de la plage testée** : les 1 056 premiers ports sont
+  vérifiés ; restent ceux qui sont plus haut (accès au NAS, service de médias) et
+  l'adresse IPv6 si la box en a une. À refaire après tout changement de la box ou du NAS.
 - **Have I Been Pwned**, pour le domaine : faible enjeu (le jeu n'a aucun mot de passe
   à fuiter), mais le domaine se vérifie en deux minutes.
 - **DMARC en `reject`** : on attend des rapports sans rejet légitime.
@@ -134,6 +147,10 @@ empreinte vérifiée à chaque exécution.
   test ; le ZAP du site public devient une tâche du lundi.
 - **L'adresse de la maison n'entre nulle part** : ni dans le dépôt, ni dans une PR, ni
   dans un secret, ni dans une capture publiée.
+- **Une garantie se mesure.** « Aucun port ouvert » était écrit ; deux ports étaient
+  ouverts. On ne l'écrit plus sans date de mesure.
+- **Un constat se publie quand il est corrigé,** pas avant : la page dit ce qui a été
+  trouvé et fermé, jamais l'adresse.
 - **Un écran qui se contredit se répare** avant d'ajouter quoi que ce soit.
 
 ## Où en est le projet, ce soir
