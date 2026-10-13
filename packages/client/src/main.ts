@@ -489,11 +489,6 @@ async function pageCompte(): Promise<void> {
   }
   void renderPasskeys();
 
-  document.querySelector('[data-action=logout]')?.addEventListener('click', async () => {
-    await api('POST', '/v1/auth/logout', {});
-    location.replace('/');
-  });
-
   const del = $('delete') as HTMLFormElement | null;
   del?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -569,6 +564,14 @@ function main(): void {
   document.querySelector('[data-action=toggle-theme]')?.addEventListener('click', () => {
     applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
   });
+  // Sortir : le bouton de l'en-tête, sur toutes les pages, et celui de « Mon compte ».
+  // Les deux font la même chose ; on les câble tous, pas seulement le premier.
+  document.querySelectorAll('[data-action=logout]').forEach((bouton) => {
+    bouton.addEventListener('click', async () => {
+      await api('POST', '/v1/auth/logout', {}).catch(() => null);
+      location.replace('/?sortie=1');
+    });
+  });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeButton);
 
   const page = document.documentElement.dataset['page'];
@@ -583,6 +586,11 @@ function main(): void {
     default: break;
   }
   if (page !== 'compte' && page !== 'aerodrome') void updateNav();
+
+  if (new URLSearchParams(location.search).get('sortie') === '1') {
+    setMessage('signup-message', 'account.signedOut', 'ok');
+    history.replaceState(null, '', '/');
+  }
 
   if (new URLSearchParams(location.search).get('supprime') === '1') {
     setMessage('signup-message', 'account.deleted', 'ok');

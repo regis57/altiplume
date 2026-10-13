@@ -119,9 +119,14 @@ try {
   assert(/\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/.test(await page.textContent('#fiche-since')), 'date re-traduite');
   await page.click('[data-action=toggle-lang]');
 
-  // Déconnexion puis connexion par passkey, sans email.
-  await page.click('[data-action=logout]');
-  await page.waitForURL(`${ORIGIN}/`);
+  // Déconnexion depuis l'en-tête — le bouton « Sortir », présent sur toutes les
+  // pages du jeu — puis connexion par passkey, sans email.
+  await page.click('header [data-action=logout]');
+  await page.waitForSelector('#signup-message.ok');
+  const adieu = await page.textContent('#signup-message');
+  assert(/aérodrome|aerodrome/i.test(adieu), `le mot d'au revoir s'affiche (${adieu})`);
+  assert(new URL(page.url()).search === '', 'le signal de sortie a quitté la barre d\'adresse');
+  assert((await page.evaluate(() => fetch('/v1/account', { credentials: 'same-origin' }).then((r) => r.status))) === 401, 'la session est bien fermée');
   await page.goto(`${ORIGIN}/connexion`);
   await page.waitForSelector('[data-action=passkey-login]:not(.cache)');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-passkey-2-connexion-mobile.png'), fullPage: true });
@@ -204,8 +209,9 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('#passkeys-list li').length === 1);
   await page.click('#passkeys-list .danger');
   await page.waitForSelector('#passkeys-empty:not(.cache)');
-  await page.click('[data-action=logout]');
-  await page.waitForURL(`${ORIGIN}/`);
+  // Et celui de « Mon compte », qui fait la même chose.
+  await page.click('#contenu [data-action=logout]');
+  await page.waitForSelector('#signup-message.ok');
   await page.goto(`${ORIGIN}/connexion`);
   await page.click('[data-action=passkey-login]');
   await page.waitForSelector('#login-message:not(:empty)');
