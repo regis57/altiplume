@@ -119,6 +119,8 @@ voulue, annotée. Les 28 restantes ont été lues : gabarits d'e-mails (chaque
 valeur échappée), gabarits de construction, images Docker non épinglées par
 empreinte (suivi par Dependabot ; épinglage prévu).
 
+**Les machines de la CI, figées elles aussi.** Depuis le 14 octobre, chaque job tourne sur `ubuntu-24.04`, plus sur `ubuntu-latest` : GitHub fait passer `latest` à Ubuntu 26 à partir du 19 octobre, et plusieurs contrôles s'appuient sur ce que l'image fournit (Chrome pour les parcours, Java pour ZAP). Le passage à Ubuntu 26 se fera exprès, dans une PR, quand il aura été essayé.
+
 **La chaîne d'approvisionnement des contrôleurs eux-mêmes.** En mars 2026, l'action
 GitHub de Trivy a été compromise (étiquettes réécrites) et le binaire 0.69.4
 piégé. D'où la règle suivie ici, pour les quatre : aucune action tierce ; le
