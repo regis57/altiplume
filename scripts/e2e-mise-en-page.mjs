@@ -112,6 +112,20 @@ try {
   assert(tel.colonnes.length >= 3, `trois timbres par rangée au moins, sur téléphone (${tel.colonnes.length})`);
   if (shots) await page.screenshot({ path: `${shots}/telephone.png`, fullPage: true });
 
+  // Changer de langue en cours de partie : tout l'aérodrome suit, pas seulement les
+  // libellés fixes (le 14/10, en français, le monde restait en anglais).
+  const bascule = async () => {
+    await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);
+    await page.waitForSelector('#aerodrome:not(.cache)');
+    return (await page.textContent('#aerodrome')).replace(/\s+/g, ' ');
+  };
+  const anglais = await bascule();
+  for (const fr of ['La ligne régulière', 'Restaurer', 'Pont-de-Brume', 'Vallées de Brume']) assert(!anglais.includes(fr), `en anglais, plus de « ${fr} »`);
+  for (const en of ['The regular run', 'Restore', 'Mistbridge']) assert(anglais.includes(en), `en anglais, « ${en} »`);
+  const francais = await bascule();
+  for (const en of ['The regular run', 'Restore ·', 'Mistbridge', 'Mistvale']) assert(!francais.includes(en), `de retour en français, plus de « ${en} »`);
+  for (const fr of ['La ligne régulière', 'Restaurer', 'Pont-de-Brume']) assert(francais.includes(fr), `de retour en français, « ${fr} »`);
+
   process.stdout.write(`e2e mise en page : album en ${pc.blocAlbum} px sur PC (${pc.colonnes.length} timbres par rangée), ${tel.colonnes.length} par rangée sur téléphone.\n`);
 } finally {
   await browser.close();

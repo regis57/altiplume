@@ -147,8 +147,8 @@ try {
   if (shots) await page.screenshot({ path: join(shots, 'e2e-saline-3-amerrissage.png'), fullPage: true });
 
   // Et en anglais.
-  await page.click('[data-action=toggle-lang]');
-  await page.reload();
+  // L'aérodrome se recharge de lui-même dans la nouvelle langue.
+  await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#routes')).includes('Saltshore') && (await page.textContent('#routes')).includes('Route open'), 'routes en anglais');
   db.close();

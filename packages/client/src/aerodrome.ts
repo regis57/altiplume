@@ -146,6 +146,10 @@ export async function pageAerodrome(api: Api, setMessage: SetMessage): Promise<v
   document.querySelectorAll('[data-when=anonymous]').forEach((e) => e.classList.add('cache'));
   document.querySelectorAll('[data-when=player]').forEach((e) => e.classList.remove('cache'));
 
+  // Changer de langue recharge l'aérodrome : le monde, la compagnie et tout ce qui est
+  // calculé à l'affichage reviennent dans la nouvelle langue, d'un seul tenant.
+  window.addEventListener('altiplume:langue', () => location.reload(), { once: true });
+
   const worldRes = await api('GET', `/v1/world?locale=${getLocale()}`);
   if (worldRes.status !== 200) { setMessage('jeu-message', 'error.server_error'); return; }
   const world = worldRes.body as unknown as WorldView;
