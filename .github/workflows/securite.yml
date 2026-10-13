@@ -25,7 +25,7 @@ permissions:
 jobs:
   externe:
     name: contrôle externe
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -44,7 +44,7 @@ jobs:
 
   image:
     name: image publiée (Trivy)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       # Mêmes version et empreinte que .github/workflows/release.yml.
@@ -79,7 +79,7 @@ jobs:
   # visite de trois minutes au plus, deux requêtes à la fois, sans rien envoyer.
   zap-public:
     name: zap (altiplume.com)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       # Mêmes version et empreinte que .github/workflows/zap.yml.
