@@ -104,6 +104,8 @@ Le moteur de variété du jeu, et l'héritage des démos de Tarot et de 8 améri
 
 Le tirage est **déterministe côté serveur** (graine par joueur et par jour) : reproductible, auditable, impossible à manipuler depuis le navigateur.
 
+**L'escale attend sa lettre** (14 octobre 2026) : parmi les contrats, ceux d'une escale qui n'a encore jamais reçu de courrier pèsent trois fois plus, sans changer la part des imprévus et des occasions. Sans cette règle, la dernière escale d'une région ne dépendait que de la chance : pour Lanterne-du-Val, 24 % par jour, et un joueur sur dix attendait plus de neuf jours. Avec elle : 48 % par jour, neuf joueurs sur dix en quatre jours.
+
 ### 4.5 L'économie
 Deux monnaies, deux rôles distincts :
 - **Francs** : la monnaie courante. Revenus des contrats ; dépenses en carburant, salaires, entretien, construction.

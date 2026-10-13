@@ -23,6 +23,13 @@ import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Ru
 export const HAND_SIZE = 5;
 export const DAILY_DRAW = 3;
 /**
+ * L'escale attend sa lettre : parmi les contrats du tirage, ceux d'une escale qui n'a
+ * jamais reçu de courrier pèsent trois fois plus. Sans elle, la dernière escale d'une
+ * région ne dépend que de la chance : 24 % par jour pour Lanterne-du-Val, et un joueur
+ * sur dix attendait plus de neuf jours (mesuré le 13/10/2026).
+ */
+export const WAITING_WEIGHT = 3;
+/**
  * La fatigue se compte en minutes de vol, aller et retour compris : un saut à
  * Pont-de-Brume pèse dix minutes, une traversée de l'Archipel deux heures et
  * demie. Un pilote se repose quand il a huit heures de vol dans les bras, et
@@ -189,6 +196,7 @@ export function drawCards(
     // Et jamais un contrat que les avions du hangar ne peuvent pas porter.
     && !(c.kind === 'contract' && fleet !== undefined && !canCarry(c, fleet)));
   const seeds = WORLD.seasons.find((x) => x.id === season)?.effects.seedsWeight ?? 1;
+  const waiting = (c: (typeof pool)[number]) => c.kind === 'contract' && !album.includes(`s-${c.destination}`);
   const out: string[] = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
     // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
@@ -200,6 +208,16 @@ export function drawCards(
       if (c.kind === 'event') w /= luck;
       return w;
     });
+    // L'escale attend sa lettre : parmi les contrats, ceux d'une escale qui n'a encore
+    // rien reçu pèsent trois fois plus. Les contrats gardent ensemble le même poids,
+    // donc ni plus ni moins d'imprévus et d'occasions qu'avant. Quand toutes les escales
+    // attendent (le premier jour) ou qu'aucune n'attend plus, rien ne change.
+    const contracts = pool.filter((c) => c.kind === 'contract');
+    if (contracts.some(waiting) && !contracts.every(waiting)) {
+      const before = pool.reduce((sum, c, k) => sum + (c.kind === 'contract' ? (weights[k] as number) : 0), 0);
+      const after = pool.reduce((sum, c, k) => sum + (c.kind === 'contract' ? (weights[k] as number) * (waiting(c) ? WAITING_WEIGHT : 1) : 0), 0);
+      pool.forEach((c, k) => { if (c.kind === 'contract') weights[k] = (weights[k] as number) * (waiting(c) ? WAITING_WEIGHT : 1) * (before / after); });
+    }
     const total = weights.reduce((a, b) => a + b, 0);
     let r = rng() * total;
     let index = 0;
