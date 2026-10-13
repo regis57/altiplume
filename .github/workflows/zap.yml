@@ -98,6 +98,17 @@ jobs:
             else
               echo "Pas de rapport : ZAP n'est pas allé au bout (voir le journal du job)."
             fi
+            # Les erreurs que ZAP a notées dans son journal (l'« insight » « ZAP errors
+            # logged ») : lues ici, et le journal entier part avec les rapports.
+            if [ -f "$RUNNER_TEMP/zap-home/zap.log" ]; then
+              cp "$RUNNER_TEMP/zap-home/zap.log" "$RUNNER_TEMP/rapports/zap.log"
+              echo
+              echo "### Erreurs du journal de ZAP"
+              echo
+              echo '```'
+              grep -E " (ERROR|FATAL) " "$RUNNER_TEMP/zap-home/zap.log" | cut -c1-300 | head -n 20 || echo "aucune"
+              echo '```'
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
           docker logs altiplume 2>&1 | tail -n 20 || true
 
