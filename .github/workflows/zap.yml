@@ -8,6 +8,11 @@ name: ZAP
 # Échoue sur la moindre alerte « moyenne » ou « haute » qui n'a pas été
 # examinée à la main et déclarée faux positif, avec sa raison, dans le plan.
 #
+# Deux jobs : « passif » visite l'image construite ici (à chaque PR) ; « public »
+# visite altiplume.com tel que le visiteur le reçoit, après Cloudflare (chaque
+# lundi et à la demande seulement, jamais sur une PR). La cible du second est
+# écrite en dur : ce contrôle ne sert qu'à regarder chez soi.
+#
 # Aucune action tierce : ZAP est pris dans sa release GitHub officielle,
 # version et empreinte SHA-256 fixées ici (celles publiées par le projet dans
 # ZapVersions.xml), et tourne sur le Java déjà présent sur le runner.
@@ -103,6 +108,59 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: zap-rapports
+          path: ${{ runner.temp }}/rapports
+          retention-days: 30
+          if-no-files-found: warn
+
+  # Ce que le visiteur reçoit vraiment : en-têtes, redirections et cookies tels
+  # que Cloudflare les laisse passer. Même plan, même verdict que ci-dessus ; une
+  # visite de trois minutes au plus, deux requêtes à la fois, sans rien envoyer.
+  public:
+    name: zap (altiplume.com)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Installer ZAP (release officielle, empreinte vérifiée)
+        run: |
+          curl -fsSLo "$RUNNER_TEMP/zap.tgz" \
+            "https://github.com/zaproxy/zaproxy/releases/download/v${ZAP_VERSION}/ZAP_${ZAP_VERSION}_Linux.tar.gz"
+          echo "${ZAP_SHA256}  $RUNNER_TEMP/zap.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/zap.tgz" -C "$RUNNER_TEMP"
+          java -version
+
+      - name: Visiter et lire (passif)
+        env:
+          ZAP_CIBLE: https://altiplume.com
+          ZAP_RAPPORTS: ${{ runner.temp }}/rapports
+        run: |
+          mkdir -p "$ZAP_RAPPORTS" "$RUNNER_TEMP/zap-home"
+          "$RUNNER_TEMP/ZAP_${ZAP_VERSION}/zap.sh" -cmd -silent \
+            -dir "$RUNNER_TEMP/zap-home" \
+            -autorun "$GITHUB_WORKSPACE/.github/zap/plan.yaml"
+
+      - name: Résumé
+        if: always()
+        run: |
+          {
+            echo "## OWASP ZAP — passif, altiplume.com"
+            echo
+            if [ -f "$RUNNER_TEMP/rapports/zap-rapport.md" ]; then
+              cat "$RUNNER_TEMP/rapports/zap-rapport.md"
+            else
+              echo "Pas de rapport : ZAP n'est pas allé au bout (voir le journal du job)."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Garder les rapports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: zap-rapports-public
           path: ${{ runner.temp }}/rapports
           retention-days: 30
           if-no-files-found: warn
