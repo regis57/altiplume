@@ -180,7 +180,7 @@ a:hover { color: var(--laiton-clair); }
 .plume .px-l { fill: var(--laiton); }
 .plume .px-r { fill: var(--cachet); }
 
-.entete nav { display: flex; gap: 0.25rem; }
+.entete nav { display: flex; flex-wrap: wrap; gap: 0.25rem; }
 .entete nav a,
 .entete nav button {
   font: inherit;
