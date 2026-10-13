@@ -303,17 +303,38 @@ describe('noms de compagnie', () => {
 });
 
 describe('GET /v1/world', () => {
-  it('est public, mis en cache, et suit la langue demandée', async () => {
+  it('est public, revalidé à chaque fois, et suit la langue demandée', async () => {
     const t = await testApp();
     const fr = await t.app.inject({ method: 'GET', url: '/v1/world' });
     expect(fr.statusCode).toBe(200);
-    expect(fr.headers['cache-control']).toBe('public, max-age=3600');
+    // Jamais servi du cache sans demander : c'est ce qui a fait lire une carte périmée le 13/10.
+    expect(fr.headers['cache-control']).toBe('no-cache');
     expect(fr.json().home.name).toBe('Aérodrome de la Croisette');
     const en = await t.app.inject({ method: 'GET', url: '/v1/world?locale=en' });
     expect(en.json().home.name).toBe('Crosslet Field');
     expect(en.json().pilots.map((p: { name: string }) => p.name)).toContain('Aurel Combray');
     expect((await t.app.inject({ method: 'GET', url: '/v1/world?locale=de' })).json().home.name).toBe('Aérodrome de la Croisette');
     expect((await t.app.inject({ method: 'GET', url: '/v1/world?x=1' })).statusCode).toBe(400);
+    await t.app.close();
+  });
+
+  it("répond « rien de neuf » quand le navigateur a déjà la bonne version, et rend la main sinon", async () => {
+    const t = await testApp();
+    const fr = await t.app.inject({ method: 'GET', url: '/v1/world' });
+    const tag = fr.headers['etag'] as string;
+    expect(tag).toMatch(/^"[\w-]{22}"$/);
+    const encore = await t.app.inject({ method: 'GET', url: '/v1/world', headers: { 'if-none-match': tag } });
+    expect(encore.statusCode).toBe(304);
+    expect(encore.body).toBe('');
+    expect(encore.headers['etag']).toBe(tag);
+    // Une empreinte d'hier ne vaut rien : le catalogue repart en entier.
+    const perime = await t.app.inject({ method: 'GET', url: '/v1/world', headers: { 'if-none-match': '"celle-d-avant"' } });
+    expect(perime.statusCode).toBe(200);
+    expect(perime.json().cards.find((c: { id: string }) => c.id === 'c-farine')).toMatchObject({ heavy: true, bags: 3 });
+    // Chaque langue a la sienne : l'une ne doit pas valider l'autre.
+    const en = await t.app.inject({ method: 'GET', url: '/v1/world?locale=en' });
+    expect(en.headers['etag']).not.toBe(tag);
+    expect((await t.app.inject({ method: 'GET', url: '/v1/world?locale=en', headers: { 'if-none-match': tag } })).statusCode).toBe(200);
     await t.app.close();
   });
 });
