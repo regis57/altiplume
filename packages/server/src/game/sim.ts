@@ -41,6 +41,7 @@ const FLIGHT_WEAR = 5;
 
 export type News =
   | { kind: 'cards.drawn'; count: number }
+  | { kind: 'cards.released'; count: number }
   | { kind: 'flight.arrived'; flightId: string; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean; wing?: { pilot: string; plane: string } }
   | { kind: 'stamp'; stamp: string };
 
@@ -60,6 +61,51 @@ const RUNWAY_ORDER: Record<Runway, number> = { clearing: 0, short: 1, medium: 2,
 export function canLand(plane: PlaneModel, destination: Destination): boolean {
   if (plane.runway === 'water' || destination.runway === 'water') return plane.runway === destination.runway;
   return RUNWAY_ORDER[plane.runway] <= RUNWAY_ORDER[destination.runway];
+}
+
+/**
+ * Ce qu'une flotte peut porter jusqu'à une escale : le plus gros avion capable
+ * d'y aller et de s'y poser, puis les deux plus gros ensemble — le convoi.
+ */
+export function carryCapacity(models: readonly PlaneModel[], destination: Destination, reach = 1): { alone: number; convoy: number } {
+  const able = models.filter((m) => canLand(m, destination) && destination.distance <= m.range * reach)
+    .map((m) => m.capacity).sort((a, b) => b - a);
+  return { alone: able[0] ?? 0, convoy: (able[0] ?? 0) + (able[1] ?? 0) };
+}
+
+/** Ce que la compagnie possède : ses avions, ses pilotes, et l'allonge du meilleur. */
+export interface Fleet {
+  readonly planes: readonly PlaneModel[];
+  readonly pilots: number;
+  /** Le facteur « Longues routes » du pilote le plus endurant ; 1 si personne ne l'a. */
+  readonly reach: number;
+}
+
+/**
+ * Un contrat que la compagnie peut vraiment faire avec ce qu'elle a au hangar.
+ *
+ * On ne regarde ni les vols en cours ni la fatigue : c'est passager, et le jeu
+ * ne doit pas punir d'avoir un avion en l'air au moment du tirage. On regarde ce
+ * qui ne changera pas d'ici demain : les avions possédés, les pilotes engagés.
+ * Un sac de trop, et la carte n'est pas distribuée — la proposer serait mentir.
+ */
+export function canCarry(card: ContractCard, fleet: Fleet): boolean {
+  const destination = findDestination(card.destination);
+  if (!destination) return false;
+  const { alone, convoy } = carryCapacity(fleet.planes, destination, fleet.reach);
+  if (alone >= card.bags) return true;
+  // Le fret lourd : deux avions, et deux pilotes pour les mener.
+  return fleet.planes.length >= 2 && fleet.pilots >= 2 && convoy >= card.bags;
+}
+
+/** La flotte d'une compagnie, telle qu'elle est en base. */
+export function companyFleet(db: Database, companyId: string): Fleet {
+  const planes = (db.prepare('SELECT model FROM company_planes WHERE company_id = ?').all(companyId) as { model: string }[])
+    .flatMap((r) => { const m = findPlane(r.model); return m ? [m] : []; });
+  const pilots = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(companyId) as { pilot: string }[])
+    .flatMap((r) => { const p = findPilot(r.pilot); return p ? [p] : []; });
+  const reach = pilots.reduce((best, p) => Math.max(best, traitFactor(p, 'range')), 1);
+  return { planes, pilots: pilots.length, reach };
 }
 
 /** Le cachet « toute la région » de chaque région. */
@@ -133,13 +179,15 @@ function ledger(db: Database, companyId: string, now: number, kind: string, fran
 
 /** Tire les cartes du jour, pondérées par rareté et par la chance des pilotes. */
 export function drawCards(
-  rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume'], album: readonly string[] = [], season?: Season,
+  rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume'], album: readonly string[] = [], season?: Season, fleet?: Fleet,
 ): string[] {
   const pool = WORLD.cards.filter((c) => !exclude.includes(c.id) && !(c.kind === 'contract' && c.standing) && regions.includes(cardRegion(c))
     // Une carte qui attend une page d'album (la cloche attend que Sonnefeuille ait été livrée) ne vient qu'ensuite.
     && !(c.kind === 'contract' && c.requires && !album.includes(c.requires))
     // Une carte de saison ne vient qu'en sa saison ; sans saison donnée, elle ne vient pas.
-    && (c.kind === 'opportunity' || c.season === undefined || c.season === season));
+    && (c.kind === 'opportunity' || c.season === undefined || c.season === season)
+    // Et jamais un contrat que les avions du hangar ne peuvent pas porter.
+    && !(c.kind === 'contract' && fleet !== undefined && !canCarry(c, fleet)));
   const seeds = WORLD.seasons.find((x) => x.id === season)?.effects.seedsWeight ?? 1;
   const out: string[] = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
@@ -236,13 +284,22 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
     // 2. Le tirage du jour, une fois par jour de jeu, dans la place qui reste.
     const today = gameDayIndex(now);
     if (row.last_draw_day < today) {
+      const fleet = companyFleet(db, company.id);
+      // Ce qui dort en main et qu'aucun avion du hangar ne peut porter repart par
+      // la route : une carte ne reste pas en travers de la main pour toujours.
+      const stuck = listHand(db, company.id).filter((h) => {
+        const c = findCard(h.card);
+        return c !== undefined && c.kind === 'contract' && !canCarry(c, fleet);
+      });
+      for (const h of stuck) db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, h.card);
+      if (stuck.length > 0) news.push({ kind: 'cards.released', count: stuck.length });
       const hand = listHand(db, company.id);
       const room = HAND_SIZE - hand.length;
       const luck = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(company.id) as { pilot: string }[])
         .reduce((f, r) => { const p = findPilot(r.pilot); return p ? f * traitFactor(p, 'luck') : f; }, 1);
       const inFlight = (db.prepare('SELECT card FROM flights WHERE company_id = ? AND settled_at IS NULL').all(company.id) as { card: string }[]).map((r) => r.card);
       const album = (db.prepare('SELECT stamp FROM company_stamps WHERE company_id = ?').all(company.id) as { stamp: string }[]).map((r) => r.stamp);
-      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album, seasonOf(now).season);
+      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album, seasonOf(now).season, fleet);
       let added = 0;
       for (const card of drawn.slice(0, Math.max(0, room))) {
         db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, now);

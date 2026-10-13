@@ -40,6 +40,7 @@ interface Flight {
 }
 type News =
   | { kind: 'cards.drawn'; count: number }
+  | { kind: 'cards.released'; count: number }
   | { kind: 'flight.arrived'; destination: string; pilot: string; plane: string; francs: number; bonus: boolean; incident: boolean; wing?: { pilot: string; plane: string } }
   | { kind: 'stamp'; stamp: string };
 
@@ -474,6 +475,7 @@ function renderNews(world: WorldView, c: CompanyView): void {
   for (const n of c.news) {
     const li = el('li', 'nouvelle');
     if (n.kind === 'cards.drawn') li.textContent = `${t('news.cards')} ${n.count}`;
+    else if (n.kind === 'cards.released') li.textContent = `${t('news.released')} ${n.count}`;
     else if (n.kind === 'flight.arrived') {
       // L'accord suit le genre : « est rentré », « est rentrée » ; pour un convoi, « sont rentrés »,
       // ou « sont rentrées » si ce sont deux pilotes femmes.
