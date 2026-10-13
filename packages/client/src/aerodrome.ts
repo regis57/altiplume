@@ -28,7 +28,7 @@ interface WorldView {
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
   decorations: { id: string; name: string; description: string; cost: number; morale: number }[];
-  stamps: { id: string; name: string; description: string }[];
+  stamps: { id: string; name: string; description: string; value: number }[];
 }
 
 interface Flight {
@@ -428,11 +428,15 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   const album = $('album');
   if (album) {
     album.replaceChildren();
-    let gagnees = 0;
+    let gagnees = 0, cachetsGagnes = 0;
     for (const s of world.stamps) {
       const earned = c.album.find((x) => x.id === s.id);
-      if (earned) gagnees += 1;
+      if (earned) { gagnees += 1; cachetsGagnes += s.value; }
       const li = el('li', earned ? 'page gagnee' : 'page');
+      // Ce que vaut la page, en coin : la somme des pages collées est le compte des cachets gagnés.
+      const valeur = el('span', s.value > 1 ? 'valeur forte' : 'valeur', `+${s.value}`);
+      valeur.setAttribute('aria-label', t(s.value > 1 ? 'game.stampValueMany' : 'game.stampValueOne').replace('{n}', String(s.value)));
+      li.append(valeur);
       li.append(el('strong', undefined, s.name));
       li.append(el('span', 'aide', earned ? formatDate(earned.earnedAt, 'short') : s.description));
       li.title = earned ? `${s.name} — ${formatDate(earned.earnedAt, 'long')}` : `${s.name} — ${s.description}`;
@@ -441,7 +445,10 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
     }
     const compte = $('album-compte');
     // « 1 page », « 0 page » : en français, le singulier va jusqu'à un.
-    if (compte) compte.textContent = t(gagnees <= 1 ? 'game.albumCountOne' : 'game.albumCount').replace('{n}', String(gagnees)).replace('{total}', String(world.stamps.length));
+    if (compte) {
+      compte.textContent = `${t(gagnees <= 1 ? 'game.albumCountOne' : 'game.albumCount').replace('{n}', String(gagnees)).replace('{total}', String(world.stamps.length))}`
+        + ` · ${t(cachetsGagnes <= 1 ? 'game.albumStampsEarnedOne' : 'game.albumStampsEarned').replace('{n}', String(cachetsGagnes))}`;
+    }
   }
   translatePage();
 }

@@ -91,7 +91,7 @@ try {
     `la page manquante et la seule escale qui reste sont nommées (${textePage})`);
   assert(textePage.includes('manque :'), 'l\'état est lu par les lecteurs d\'écran');
   assert(await cachets1.evaluate((e) => e.classList.contains('faite')), 'les cachets suffisent');
-  assert((await cachets1.textContent()).includes('10 cachets — vous en avez 10'), 'le compte des cachets est dit');
+  assert((await cachets1.textContent()).includes('Prix : 10 cachets — vous en avez 10 en caisse'), 'le compte des cachets est dit');
   assert(await saline.locator('button').isDisabled(), 'le bouton reste inactif tant que la page manque');
 
   // Toute la vallée livrée, dix cachets en caisse : la route s'ouvre.

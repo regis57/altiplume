@@ -96,7 +96,10 @@ try {
   assert(hauteurs.size === 1, `toutes les pages ont la même hauteur (${[...hauteurs].join(', ')})`);
   const caseMin = Math.min(...pc.colonnes);
   assert(pc.pages.every((p) => p.w >= 0.95 * caseMin), `chaque page remplit sa case (${Math.min(...pc.pages.map((p) => p.w))} px pour ${caseMin})`);
-  assert(/^1 page sur \d+$/.test(pc.compte), `le compte des pages est affiché, au singulier pour la page de fondation (${pc.compte})`);
+  assert(/^1 page sur \d+ · 1 cachet gagné$/.test(pc.compte), `le compte des pages et des cachets gagnés est affiché, au singulier pour la fondation (${pc.compte})`);
+  // Chaque page dit ce qu'elle vaut : Combe-aux-Rosées, au bout de la vallée, trois cachets.
+  const combe = await page.locator('#album li', { hasText: 'Combe-aux-Rosées' }).locator('.valeur').textContent();
+  assert(combe === '+3', `la page de Combe-aux-Rosées vaut trois cachets (${combe})`);
   assert(pc.largeurDoc <= pc.vue.w, 'rien ne déborde sur le côté, sur PC');
   if (shots) await page.screenshot({ path: `${shots}/pc.png`, fullPage: true });
 

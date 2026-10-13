@@ -17,6 +17,12 @@ import type { Card, Destination, PilotTemplate, PlaneModel, Region, RegionId, Te
 /** La page « toute la région » de chaque région : celle qui ouvre la route suivante. */
 export const REGION_PAGE: Readonly<Record<RegionId, string>> = { brume: 's-vallee', saline: 's-cote', archipel: 's-archipel', cuivre: 's-foret' };
 
+/** Ce que rapporte une page d'album, en cachets (même règle que l'arrivée d'un vol). */
+export function stampValue(id: string): number {
+  const d = WORLD.destinations.find((x) => `s-${x.id}` === id);
+  return Math.max(1, d?.firstDeliveryStamps ?? 1);
+}
+
 export const WORLD: World = {
   region: BRUME,
   regions: [BRUME, SALINE, ARCHIPEL, CUIVRE],
@@ -107,7 +113,8 @@ export function localizeWorld(locale: Locale) {
       levels: z.levels.map((l) => ({ level: l.level, name: tx(l.name), description: tx(l.description), cost: l.cost, runway: l.runway, planes: l.planes, maintenance: l.maintenance, seaplanes: l.seaplanes, weather: l.weather, night: l.night })),
     })),
     decorations: WORLD.decorations.map((d) => ({ id: d.id, name: tx(d.name), description: tx(d.description), cost: d.cost, morale: d.morale })),
-    stamps: WORLD.stamps.map((s) => ({ id: s.id, name: tx(s.name), description: tx(s.description) })),
+    // Ce que vaut chaque page, en cachets : un, ou plus pour une première livraison lointaine.
+    stamps: WORLD.stamps.map((s) => ({ id: s.id, name: tx(s.name), description: tx(s.description), value: stampValue(s.id) })),
     start: WORLD.start,
   };
 }

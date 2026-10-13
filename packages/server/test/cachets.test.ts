@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sessionCookie, testApp } from './helpers.ts';
+import { stampValue } from '../src/world/index.ts';
 
 /**
  * Ce que vaut une page d'album, en cachets. Chaque page en vaut un ; une première
@@ -58,5 +59,12 @@ describe('les cachets', () => {
     // Livrer encore au même endroit ne colle rien, et ne rapporte aucun cachet.
     const s4 = await t.deliver('c-medicaments');
     expect(s4.stamps).toBe(s3.stamps);
+
+    // Ce que l'album affiche (la valeur de chaque page) fait exactement le compte en caisse.
+    const somme = s4.album.reduce((n: number, a: { id: string }) => n + stampValue(a.id), 0);
+    expect(somme).toBe(s4.stamps);
+    expect(stampValue('s-combe-aux-rosees')).toBe(3);
+    expect(stampValue('s-haut-ferrand')).toBe(2);
+    expect(stampValue('s-premier-vol')).toBe(1);
   });
 });
