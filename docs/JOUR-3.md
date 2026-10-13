@@ -115,8 +115,9 @@ dès qu'un changement le ferait cesser de l'être :
 | **ZAP, sur altiplume.com** | Chaque lundi, et à la demande | Même verdict, sur ce que le visiteur reçoit vraiment |
 | **Trivy** | Avant toute publication d'image ; chaque lundi sur `latest` | Une faille critique corrigeable, ou un secret : l'image n'est pas publiée |
 | **Aucune requête tierce** | Chaque PR | Une requête hors de chez nous, une violation de CSP, un cookie étranger |
+| **Mise en page** | Chaque PR | Sur PC, l'album déborde d'un écran ou une page sort de sa case ; sur téléphone, la page défile sur le côté |
 | **Contrôle externe** | Chaque lundi | Observatory, SSL Labs, DNS, en-têtes, redirection, version servie : un point sous l'attendu |
-| **Tests de bout en bout** | À la demande | Cinq parcours dans un vrai navigateur : passkeys, courrier, saline, convoi, tiers |
+| **Tests de bout en bout** | À la demande | Six parcours dans un vrai navigateur : passkeys, courrier, saline, convoi, tiers, mise en page |
 
 Et une règle sur les contrôleurs eux-mêmes : aucune action tierce ; le binaire
 officiel de la release, d'une version qui a quelques semaines de recul, avec son
@@ -153,14 +154,52 @@ empreinte vérifiée à chaque exécution.
 - **Un constat se publie quand il est corrigé,** pas avant : la page dit ce qui a été
   trouvé et fermé, jamais l'adresse.
 - **Un écran qui se contredit se répare** avant d'ajouter quoi que ce soit.
+- **Le hasard ne bloque pas un joueur.** Une escale qui n'a jamais reçu de courrier
+  attend sa lettre, et ses cartes viennent plus souvent.
+- **Un bouton grisé dit pourquoi.** Chaque condition, son état, et ce qui reste à faire.
+
+## Le soir : le jeu, rejoué
+
+Tard le soir, la sécurité faite, une heure de jeu sur le vrai compte a fait remonter
+ce que les tests ne voient pas : ce que le joueur *comprend*.
+
+1. **Le bouton « Sortir » n'apparaissait pas.** Il était dans le code depuis le matin,
+   mais pas sur le NAS : `/v1/version` répondait encore la révision d'avant. L'étiquette
+   de version du deuxième jour a tranché en trente secondes, sans chercher dans le code ;
+   un rafraîchissement du NAS, et le bouton était là.
+2. **L'album demandait quatre écrans de défilement.** Quarante-six pages en trois
+   colonnes étroites, chaque rangée étirée à la hauteur de la plus longue légende, dans
+   une colonne de droite quatre fois plus haute que celle de gauche. Désormais : des
+   timbres de même taille sur toute la largeur, le compte des pages en pastille, et la
+   règle des cachets écrite au-dessus. Les décorations passent en grille, le livre de
+   bord rejoint ce qui vole. Sur PC, la page passe de **10 625 à 5 677 pixels** de haut
+   et l'album de **3 619 à 656** : il tient dans un écran. Un test de mise en page le
+   garde, à chaque PR, sur PC et sur téléphone.
+3. **Cinq escales sur six, et la sixième ne venait pas.** Aucun verrou dans le code :
+   Lanterne-du-Val ne dépendait que du tirage, 24 % de chances par jour, et un joueur sur
+   dix attendait plus de neuf jours. Nouvelle règle : **l'escale attend sa lettre**.
+   Parmi les contrats, ceux d'une escale jamais livrée pèsent trois fois plus, sans
+   changer la part des imprévus. 48 % par jour, neuf joueurs sur dix servis en quatre
+   jours.
+4. **« J'ai dix cachets, et la route reste grisée. »** Il fallait aussi la page « Toute
+   la vallée », et la carte de la route ne le disait qu'en gris. Chaque route fermée
+   affiche maintenant ses deux conditions, chacune avec son état, et **nomme les escales
+   qui restent à livrer**. Au passage, un test qui manquait : ce que vaut une page en
+   cachets (un, deux pour Haut-Ferrand, trois pour Combe-aux-Rosées).
+5. **« Est-ce que je gagnerai plus, plus tard ? »** Mesuré, pas promis : par contrat,
+   bien plus (75 francs nets dans la vallée, 190 dans la forêt, 366 dans l'Archipel) ;
+   par heure de vol, à peu près pareil, parce que les vols lointains sont longs. Ce qui
+   fait grandir une séance, c'est la flotte : environ 125 francs l'heure aujourd'hui,
+   210 avec un Pic, 460 avec quatre avions et quatre pilotes. Le détail est dans la
+   [Conception](Conception), section 4.5.
 
 ## Où en est le projet, ce soir
 
 Le jeu et ses garanties : 4 régions et 24 escales, 6 avions, 10 pilotes (cinq femmes,
-cinq hommes), 106 cartes, 4 saisons, un aérodrome qui se voit grandir ; **224 tests**,
-cinq parcours de bout en bout dans un vrai navigateur. Observatory, securityheaders,
+cinq hommes), 106 cartes, 4 saisons, un aérodrome qui se voit grandir ; **230 tests**,
+six parcours de bout en bout dans un vrai navigateur. Observatory, securityheaders,
 SSL Labs : **A+**. Blacklight : **zéro partout**. Passkey : **Windows et iPhone**.
-Chaque PR passe sous CodeQL, Opengrep, ZAP, Trivy, Socket, `npm audit`, licences et
-le test « aucune requête tierce » ; chaque lundi, le site réel et l'image en service
-sont revus. Toujours le même budget : un nom de domaine, environ dix euros par an.
+Chaque PR passe sous CodeQL, Opengrep, ZAP, Trivy, Socket, `npm audit`, licences, le
+test « aucune requête tierce » et le test de mise en page ; chaque lundi, le site réel
+et l'image en service sont revus. Toujours le même budget : un nom de domaine, environ dix euros par an.
 Jouable sur [altiplume.com](https://altiplume.com).

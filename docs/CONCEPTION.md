@@ -109,9 +109,20 @@ Le tirage est **déterministe côté serveur** (graine par joueur et par jour) :
 ### 4.5 L'économie
 Deux monnaies, deux rôles distincts :
 - **Francs** : la monnaie courante. Revenus des contrats ; dépenses en carburant, salaires, entretien, construction.
-- **Cachets** : la monnaie de prestige. Gagnés à la première ouverture d'une ligne, à la fin d'une histoire de pilote, aux événements de saison. Ils débloquent les régions. On ne peut pas les acheter.
+- **Cachets** : la monnaie de prestige. Chaque page de l'album en rapporte un (premier vol, première livraison à une escale, une histoire entendue, une saison, toute une région…) ; une première livraison lointaine en rapporte deux ou trois. Ils ouvrent les routes des régions, et ne servent qu'à ça. On ne peut pas les acheter.
 
 La rentabilité se joue sur le choix des lignes, l'adéquation avion/ligne, le repos des pilotes et l'entretien préventif. Pas de « timers d'énergie » à racheter.
+
+**Ce que rapporte une séance** (mesuré le 13 octobre 2026, simulation du vrai tirage). Le nombre de cartes est fixe, trois par jour ; ce qui change d'une région à l'autre, c'est ce que vaut chaque carte. Par contrat, les régions lointaines paient beaucoup plus ; par heure de vol, à peu près pareil, parce que leurs vols sont longs :
+
+| Région | Net moyen par contrat | Aller-retour | Par heure de vol |
+|---|---|---|---|
+| Vallées de Brume | 75 F | 29 min | 155 F |
+| Forêt de Cuivre | 190 F | 90 min | 127 F |
+| Côte de Saline | 191 F | 89 min | 128 F |
+| Archipel | 366 F | 126 min | 174 F |
+
+Ce qui fait grandir une séance d'une heure, c'est la **flotte**, parce qu'un vol lointain se lance en partant et rapporte pendant l'absence : environ **125 F** avec la Grive seule, **210 F** avec un Pic et un hangar à deux places, **235 F** avec un deuxième pilote, **330 F** avec la Côte et la Sterne, **460 F** avec l'Archipel, le Goéland et quatre pilotes (avant imprévus, hors prime d'hiver). Ouvrir une route sans l'avion qui va avec ne rapporte presque rien : la Grive seule n'atteint que deux escales de la Forêt.
 
 ### 4.6 Les saisons
 Une saison = deux semaines réelles, une année = huit semaines. Chaque saison modifie la météo par région et apporte un événement (la Fête des Lanternes, la Grande Brume, la Moisson de Saline) avec ses cartes et ses décorations.
@@ -126,7 +137,7 @@ Pas de série à ne pas rompre, pas d'énergie à racheter, rien qui punisse l'a
 | **Les trois cartes du jour** | Une raison d'ouvrir le jeu une fois par jour, parce que la journée est différente — jamais une obligation : la main de cinq garde les cartes non jouées. | Tirage déterministe par jour |
 | **L'aérodrome qui change** | Une piste roulée, une porte neuve, une enseigne, un banc : du progrès qu'on *voit* à l'écran, qui ne régresse jamais. | Zones et décorations |
 | **Les histoires** | Un pilote qui finit par vous raconter d'où il vient. On vole *pour* entendre la suite. C'est le contenu qu'on écrit avec le plus de soin. | Affinité par vol ; scènes à 3, 7, 12 vols |
-| **L'album de cachets** | Chaque « première » colle une page dans un album de timbres : premier vol, chaque village, un vol de nuit, dix délais tenus, une histoire entendue, toute la vallée. Une collection à compléter, pas un classement. Les cachets débloquent aussi les régions. | `STAMPS` dans le monde ; page album à venir |
+| **L'album de cachets** | Chaque « première » colle une page dans un album de timbres : premier vol, chaque village, un vol de nuit, dix délais tenus, une histoire entendue, toute la vallée. Une collection à compléter, pas un classement. Les cachets débloquent aussi les régions. | `STAMPS` dans le monde ; dans l'aérodrome, une grille de timbres sur toute la largeur, avec le compte des pages |
 | **Le compteur mondial** | « Ce mois-ci, les aviateurs du monde ont acheminé 12 408 plis. » On fait partie de quelque chose, sans se comparer à personne. | Agrégat anonyme (section 5) |
 
 En v2 s'ajoutent le défi hebdomadaire volontaire (section 5) et les saisons, dont chaque événement apporte ses cartes et ses cachets rares.
@@ -168,6 +179,7 @@ Le joueur fonde une compagnie ; trois noms lui sont proposés, il peut en tirer 
 - **Sprites** : décor 16 × 16, pilotes 24 × 32, avions 32 × 16 (vue de trois quarts, trois frames d'hélice).
 - **Typographie** : une police pixel sous licence OFL pour les titres ; pour le texte courant, une police **lisible** (sans-serif OFL, taille ≥ 16 px CSS), parce que les polices pixel pures échouent aux critères de lisibilité. Un réglage « Tout en pixel » pour les puristes.
 - **Animation** : douce, lente, jamais clignotante. Fumée des moteurs, drapeaux au vent, pilotes qui marchent. Tout respecte `prefers-reduced-motion`.
+- **La page de l'aérodrome sur grand écran** (14 octobre 2026) : deux colonnes équilibrées, à gauche ce qui vole (les vols, le courrier du jour, les pilotes, le hangar, le livre de bord), à droite ce qui se construit (les zones, les routes) ; en dessous, sur toute la largeur, les collections : les décorations en grille, puis l'album en timbres de même taille, nom et légende sur deux lignes. Sur un PC en 1440 × 900, l'album entier tient dans un écran. Un test de bout en bout le vérifie à chaque PR, sur PC et sur téléphone.
 
 ---
 
@@ -188,7 +200,8 @@ Objectif ferme, pas une case à cocher. Le choix de l'interface en DOM rend l'es
 - Navigation complète au clavier, focus visible, ordre logique.
 - Lecteur d'écran : chaque panneau est une région ARIA nommée ; les arrivées de vols annoncées dans une zone `aria-live` polie ; la scène canvas a une description textuelle équivalente.
 - Cibles tactiles ≥ 44 × 44 px CSS.
-- Aucune information portée par la couleur seule (icône + texte toujours).
+- Aucune information portée par la couleur seule (icône + texte toujours). Exemple : les conditions d'une route fermée portent ✓ ou ✗, la couleur, et « fait » / « manque » pour les lecteurs d'écran.
+- Un texte coupé à l'écran (les légendes de l'album, sur deux lignes) reste **entier dans la page** : lu par les lecteurs d'écran, affiché au survol.
 - `prefers-reduced-motion` respecté ; pas de clignotement ; animations stoppables.
 - Pas de limite de temps punitive : le temps réel des vols ne retire jamais rien.
 - Taille de texte ajustable jusqu'à 200 % sans perte.
