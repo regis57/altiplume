@@ -410,7 +410,9 @@ saison, et Une année. Une collection, pas un classement.
 lointaine en vaut deux ou trois (chaque région le précise plus haut). Les cachets ne se
 dépensent qu'à ouvrir une route, et une route demande deux choses : son prix en
 cachets, et la page « toute la région » de la précédente. Une route fermée dit les
-deux, chacune avec son état, et nomme les escales qui restent à livrer.
+deux, chacune avec son état, et nomme les escales qui restent à livrer. Dans l'album,
+chaque page porte sa valeur en coin (+1, +2, +3), et l'album affiche la somme : « 10
+pages sur 46 · 13 cachets gagnés ».
 
 ## Ce qui viendra (prévu, pas encore écrit)
 
