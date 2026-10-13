@@ -649,3 +649,63 @@ Le serveur, lui, n'a jamais rien accepté de tel, et sa règle était juste depu
 
 Quatre tests tiennent la fonction, et le parcours de bout en bout du courrier rouvre maintenant la ligne régulière pendant que la Grive vole, dans un vrai Chromium : convoi caché, bouton fermé, message attendu. Puis la contre-épreuve, comme pour les faux positifs de ZAP la veille : l'ancien calcul remis en place, le parcours échoue — *échec : convoi caché quand on n'a qu'un avion*. Un garde-fou dont on n'a pas vu les dents n'en a peut-être pas.
 
+
+## Chapitre 40 — La cohérence (13 octobre 2026, 0 h 30 – 10 h)
+
+« Je suis loin de pouvoir faire une mission à trois sacs… ma carte va rester bloquée, éternellement ? Pas de cohérence. Rétablis la cohérence du jeu, merci. »
+
+Huit captures, et trois défauts qui se tenaient par la main. Une carte de trois sacs pour la Combe, tirée chez quelqu'un qui n'a qu'une Grive à deux sacs : **le jeu proposait un contrat que la flotte ne pouvait pas porter**, et la carte restait en main, prenant la place d'une autre, jour après jour. Un vol affiché « en route » avec un message contraire et sans barre de progression : l'écran, refusé par le serveur, ne se remettait pas d'aplomb. Et le catalogue du monde, servi du cache pendant une heure, montrait un aérodrome qui n'existait plus.
+
+Trois PR. Le tirage connaît désormais la flotte : un contrat qu'aucun avion du hangar ne peut porter n'est plus tiré, et celui qui dort en main sans avion pour lui repart par la route au tirage suivant — *« quelqu'un d'autre l'a porté »*, comme le reste. L'écran, quand le serveur refuse, redemande l'état au lieu de garder sa version ; et il le fait aussi quand rien ne vole. Le catalogue, enfin, n'est plus jamais servi sans demander : `no-cache` et une empreinte par langue.
+
+Puis, au réveil : « Pourquoi on n'a pas de bouton pour sortir dans la session du jeu ? » Il n'y en avait qu'un, au fond de *Mon compte*. Un téléphone se prête, un PC se partage : **« Sortir » rejoint l'en-tête**, sur toutes les pages du jeu.
+
+## Chapitre 41 — Ce que prouve une mesure (13 octobre 2026, 18 h 35)
+
+« Qu'est-ce qui peut se faire dans cette liste à partir de GitHub seul, ou avec un minimum d'action extérieure ? Chacun sert à prouver quoi ? »
+
+La bonne question n'était pas *quels outils*, mais *que prouve chacun*. Reprise ligne à ligne, la liste des mesures « non effectuées » s'est triée d'elle-même.
+
+**OSV-Scanner est écarté**, et la raison est écrite : il lit les mêmes avis que `npm audit`, Trivy relit déjà l'image, Socket regarde ce que font les paquets. Un quatrième lecteur des mêmes avis ne trouverait rien de plus et ferait échouer la CI deux fois pour la même cause. Savoir ne pas ajouter un outil fait partie de la sécurité.
+
+**Blacklight**, l'inspecteur de The Markup, a visité le site : zéro traqueur, zéro cookie tiers, aucun pistage par empreinte, aucun enregistreur de session, aucune capture de frappe, aucun pixel. L'argument « pas de publicité » vérifié par un tiers. Et parce qu'une photo ne vaut pas un film, **le même contrôle tourne désormais à chaque PR** : un vrai navigateur parcourt le jeu, s'inscrit, fonde sa compagnie, et échoue sur la moindre requête vers un autre domaine. Contre-épreuve : un pixel injecté, le test tombe.
+
+**ZAP visite aussi le site en ligne**, tel que le visiteur le reçoit après Cloudflare. **La passkey** fonctionnait depuis le premier jour sur Windows et iPhone : consigné.
+
+Et une erreur, dite le jour même. La première consigne pour le balayage de ports disait : un téléphone en 4G. Or l'outil teste *l'adresse d'où l'on vient* — en 4G, celle de l'opérateur. Il aurait conclu « rien d'ouvert » sur la mauvaise cible. **Une mesure fausse qui dit « tout va bien » est pire qu'une mesure absente.** La consigne est corrigée : le test se lance depuis la maison.
+
+## Chapitre 42 — Deux ports (13 octobre 2026, 19 h 15)
+
+Le test UPnP d'abord : aucune réponse aux sondes. Puis le balayage, depuis la maison, vu de l'extérieur : sur 1 056 ports, 1 054 invisibles. **Et deux ouverts : le 80 et le 443.**
+
+La conception dit « aucun port ouvert » depuis le premier jour. Le tunnel Cloudflare n'en a besoin d'aucun ; le jeu sort, rien n'entre. Mais quelque chose répondait. Une visite de l'adresse dans un navigateur : une page « 403 » du serveur web du NAS. Ni page de connexion, ni contenu, rien qui ressemble à une intrusion — seulement une porte entrouverte, reconnaissable de n'importe où, et qui n'avait rien à faire là : une vieille redirection, sans doute posée pour un certificat que le tunnel a rendu inutile.
+
+Retirée côté NAS, vérifiée côté box. Deux heures plus tard, le même balayage : **zéro ouvert, 1 056 invisibles, aucune réponse au ping, `TruStealth: PASSED`**. Puis les ports que la grille ne couvre pas — l'accès au NAS, un service de médias : invisibles aussi. Et pas d'IPv6 sur la box.
+
+L'adresse de la maison n'est écrite nulle part : ni dans le dépôt, ni dans une PR, ni dans une capture. Le constat n'a été publié qu'une fois la porte fermée. Et le manifeste porte maintenant une phrase qu'il n'avait pas : *« Aucun port ouvert » était une intention, pas une mesure, et la mesure l'a démentie.* Le balayage se refait après tout changement de la box ou du NAS, et une fois par trimestre.
+
+## Chapitre 43 — Le joueur (13 octobre 2026, 23 h 25 – 14 octobre, 0 h 50)
+
+La sécurité faite, Régis a joué. Une heure, sur le vrai compte, à la vraie vitesse. Et le jeu a appris ce que ses tests ne pouvaient pas lui dire : **ce que le joueur comprend.**
+
+« Je n'ai pas de bouton de déconnexion, hormis dans Mon compte. » Le bouton était dans le code depuis le matin. Mais `/v1/version` répondait la révision d'avant : le NAS servait l'image de la veille. **L'étiquette de version du deuxième jour a tranché en trente secondes**, sans ouvrir une ligne de code. Un rafraîchissement, et « Sortir » était là.
+
+Puis une capture dézoomée, exprès, pour montrer la descente : l'album de cachets demandait **quatre écrans de défilement** — quarante-six pages en trois colonnes étroites, chaque rangée étirée à la hauteur de la plus longue légende, dans une colonne quatre fois plus haute que sa voisine. L'album est devenu une grille de timbres de même taille sur toute la largeur ; la page a perdu la moitié de sa hauteur, l'album tient dans un écran, et un test de mise en page le garde à chaque PR.
+
+« Je suis sûr qu'il y a un piège, et au-delà des cartes, je suis bloqué. » Cinq escales des Vallées sur six ; la sixième, Lanterne-du-Val, ne venait pas. Aucun verrou dans le code : seulement le tirage, 24 % de chances par jour, et un joueur sur dix attendant plus de neuf jours sans rien pouvoir y faire. **L'escale attend sa lettre** : parmi les contrats, ceux d'une escale jamais livrée pèsent trois fois plus. Ni plus ni moins d'imprévus ; neuf joueurs sur dix servis en quatre jours.
+
+« J'ai dix cachets, et la route reste grisée. » La route demandait aussi la page « Toute la vallée », et ne le disait qu'en gris. Chaque route fermée affiche maintenant ses deux conditions, chacune avec son état, et nomme les escales qui restent à livrer. Et le « dix » ? C'était le nombre de pages : dix pages qui valaient treize cachets, sans que l'écran le dise. **Chaque page porte désormais sa valeur en coin**, l'album fait le compte, et un test vérifie que la somme des pages égale toujours la caisse — la règle n'avait, jusque-là, aucun test.
+
+« Est-ce que je gagnerai plus en débloquant la suite ? » Mesuré, pas promis : par contrat, bien plus ; par heure de vol, à peu près pareil. Ce qui fait grandir une séance, c'est la flotte — environ 125 francs l'heure avec la Grive seule, 210 avec un Pic, 460 avec quatre avions. C'est écrit dans la Conception, avec le tableau.
+
+## Chapitre 44 — Les coulisses (14 octobre 2026, 0 h 50 – 1 h 30)
+
+« Pourquoi ZAP est "skippé" sur les étapes de check des PR ? » Parce que la visite du site public vivait dans le même fichier que celle de l'image, et qu'elle ne doit jamais tourner pendant une PR. Voulu, mais inquiétant : elle a rejoint le contrôle du lundi, et la ligne « ignoré » a disparu.
+
+Un passage manuel de ZAP rendait zéro alerte, mais un mot : *« ZAP errors logged — 2 »*. Lesquelles ? Le journal restait sur le runner. Le même ZAP, la même empreinte, le même plan, relancés en local, ont répondu : ses propres mises à jour, coupées exprès, et un profil Firefox dont il ne se sert pas. Rien sur le site. Mais on ne refera pas l'enquête : le journal part désormais avec les rapports, et ses erreurs s'affichent dans le résumé.
+
+Dans la marge du même job, une note de GitHub : *ubuntu-latest passera à Ubuntu 26 le 19 octobre*. Les parcours s'appuient sur le Chrome de la machine, ZAP sur son Java. Les quinze jobs sont figés sur `ubuntu-24.04` ; on changera exprès, dans une PR.
+
+Et la dernière capture de la nuit, depuis l'iPhone : « Quand je suis en français, depuis une langue d'origine anglaise, j'ai des mélanges. » Les titres en français ; « The regular run → Mistbridge », « Restore · 1500 F », « Weather Sense » en anglais. Le bouton de langue ne retraduisait que les libellés fixes ; le monde restait dans la langue du chargement. **Et les tests ne le voyaient pas, parce que ceux qui changeaient de langue rechargeaient eux-mêmes la page juste après** — ils contournaient le défaut sans le dire. L'aérodrome se recharge maintenant seul, dans la nouvelle langue ; un parcours bascule dans les deux sens et vérifie qu'il ne reste pas un mot de l'autre. Contre-épreuve : sur l'ancien code, il échoue.
+
+Vingt et une PR dans la journée, de la #68 à la #88. Le troisième jour se ferme sur une leçon qui vaut pour les trois : un test qui contourne un défaut est pire qu'un test absent, et une garantie qu'on ne mesure pas n'est qu'une intention.

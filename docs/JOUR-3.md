@@ -8,8 +8,9 @@ chaque semaine ?** Et surtout : *que prouve* chaque mesure, et que ne prouve-t-e
 
 Cette page est la conclusion des aspects de sécurité vus ce jour-là, dans l'ordre où
 ils sont venus, puis la liste de ce qui tient par conception et de ce qui tourne en
-continu. Le détail technique est sur la page [Sécurité](Securite) ; le récit, dans le
-[Journal](Journal) ; la veille, dans [Jour 2](Jour-2).
+continu ; et, pour finir, la nuit où le jeu a été rejoué sur le vrai compte, et ce
+qu'il a appris de son joueur. Le détail technique est sur la page [Sécurité](Securite) ;
+le récit, chapitres 40 à 44 du [Journal](Journal) ; la veille, dans [Jour 2](Jour-2).
 
 ## Dans l'ordre
 
@@ -198,6 +199,32 @@ ce que les tests ne voient pas : ce que le joueur *comprend*.
    fait grandir une séance, c'est la flotte : environ 125 francs l'heure aujourd'hui,
    210 avec un Pic, 460 avec quatre avions et quatre pilotes. Le détail est dans la
    [Conception](Conception), section 4.5.
+6. **ZAP « ignoré » sur chaque PR.** La visite du site public vivait dans le même
+   fichier que celle de l'image, et s'affichait « skipped » sur toutes les PR : voulu,
+   mais inquiétant. Elle rejoint le contrôle de sécurité du lundi. Et quand un passage
+   manuel a signalé « ZAP errors logged — 2 » sans dire lesquelles, le même ZAP, relancé
+   en local, a répondu : ses propres mises à jour (coupées exprès) et un profil Firefox
+   dont il ne se sert pas. Rien sur le site ; mais désormais son journal part avec les
+   rapports, et ses erreurs s'affichent dans le résumé.
+7. **Ubuntu 26 arrive le 19 octobre.** GitHub l'a annoncé dans une note en marge d'un
+   job. Les parcours s'appuient sur le Chrome de la machine, ZAP sur son Java : les
+   quinze jobs sont figés sur `ubuntu-24.04`, et le passage se fera exprès, dans une PR.
+8. **En français, l'aérodrome parlait anglais.** Sur l'iPhone, passé de l'anglais au
+   français : les titres traduits, tout le reste non — « The regular run →
+   Mistbridge », « Restore · 1500 F », « Weather Sense ». Le bouton de langue ne
+   retraduisait que les libellés fixes ; le monde restait dans la langue du chargement.
+   Et les tests ne le voyaient pas, parce que ceux qui changeaient de langue
+   rechargeaient la page eux-mêmes, juste après. Désormais l'aérodrome se recharge
+   seul, dans la nouvelle langue, et un parcours vérifie qu'il ne reste pas un mot de
+   l'autre — dans les deux sens.
+
+## La journée en une phrase
+
+Vingt et une PR fusionnées, de la #68 à la #88, toutes vertes, toutes publiées sous le
+nom de l'auteur : le matin trois défauts de cohérence et un bouton « Sortir » ; l'après-midi
+et le soir la sécurité mesurée plutôt qu'affirmée — Blacklight, ZAP sur le site public,
+deux ports ouverts trouvés et fermés ; la nuit, le jeu rejoué, et cinq choses que le
+joueur ne comprenait pas, rendues explicites.
 
 ## Où en est le projet, ce soir
 
@@ -206,6 +233,9 @@ cinq hommes), 106 cartes, 4 saisons, un aérodrome qui se voit grandir ; **230 t
 six parcours de bout en bout dans un vrai navigateur. Observatory, securityheaders,
 SSL Labs : **A+**. Blacklight : **zéro partout**. Passkey : **Windows et iPhone**.
 Chaque PR passe sous CodeQL, Opengrep, ZAP, Trivy, Socket, `npm audit`, licences, le
-test « aucune requête tierce » et le test de mise en page ; chaque lundi, le site réel
-et l'image en service sont revus. Toujours le même budget : un nom de domaine, environ dix euros par an.
+test « aucune requête tierce » et le test de mise en page, sur des machines figées
+(`ubuntu-24.04`) ; chaque lundi, le site réel (ZAP, en-têtes, notes, DNS) et l'image en
+service (Trivy) sont revus. Rien d'ouvert chez l'auteur, mesuré : zéro port sur 1 059
+testés, ni ping, ni UPnP. Toujours le même budget : un nom de domaine, environ dix euros
+par an.
 Jouable sur [altiplume.com](https://altiplume.com).
