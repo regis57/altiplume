@@ -32,7 +32,9 @@ scanner automatique sans démonstration d'impact, et l'ingénierie sociale.
   npm sont surveillés par Socket (comportement : scripts d'installation, accès
   réseau, code obscurci, noms imités), pas seulement par leurs failles connues.
 - **Contrôles à chaque pull request :** CodeQL et Opengrep relisent le code ; OWASP
-  ZAP visite l'application démarrée en production (passif) ; Trivy scanne l'image,
+  ZAP visite l'application démarrée en production (passif), et chaque lundi le
+  site public lui-même ; un test de bout en bout échoue sur toute requête vers un
+  autre domaine ; Trivy scanne l'image,
   qui n'est **pas publiée** s'il y trouve une faille critique corrigeable, et la
   rescanne chaque lundi. Les outils eux-mêmes sont pris dans leurs releases
   officielles, version et empreinte SHA-256 fixées, sans action GitHub tierce.
