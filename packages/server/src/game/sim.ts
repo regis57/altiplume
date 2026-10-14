@@ -15,6 +15,7 @@ import { transaction } from '../db/database.ts';
 import { awardStamp, type Company } from '../db/repos/companies.ts';
 import { newId } from '../auth/tokens.ts';
 import { gameDayIndex } from '../sim/day.ts';
+import { DEFAULT_TIMEZONE, isNight } from '../sim/heure.ts';
 import { seasonOf, type Season } from '../sim/saison.ts';
 import { deriveSeed, makeRng, type Rng } from '../sim/rng.ts';
 import { cardRegion, findCard, findDestination, findPilot, findPlane, findRegion, findTrait, flightDurationMs, REGION_PAGE, regionDestinations, WORLD } from '../world/index.ts';
@@ -271,8 +272,8 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       // L'album.
       const stamps: string[] = ['s-premier-vol', `s-${f.destination}`];
       const dest = findDestination(f.destination);
-      const hour = new Date(arrivedAt).getUTCHours();
-      if (dest?.hazard === 'night' && (hour >= 20 || hour < 6)) stamps.push('s-nuit');
+      // La nuit du joueur, à son heure (14/10) : de 21 h à 6 h là où il est.
+      if (dest?.hazard === 'night' && isNight(arrivedAt, companyTimezone(db, company.id))) stamps.push('s-nuit');
       if (dest?.runway === 'water') stamps.push('s-hydravion');
       if (dest?.runway === 'clearing') stamps.push('s-clairiere');
       if (f.convoy === f.id) stamps.push('s-convoi');
@@ -350,6 +351,8 @@ export interface DispatchPlan extends Crew {
   readonly destination: Destination;
   /** Ce que la tour de la Croisette fait au temps et à la nuit ; 1 = rien. */
   readonly tower?: { readonly weather: number; readonly night: number };
+  /** Le fuseau du joueur : la nuit aux lanternes se compte à son heure. */
+  readonly timezone?: string;
   /**
    * Le fret lourd : un second équipage qui vole avec le premier, quand un seul
    * avion ne porte pas tous les sacs. `durationMs` et `cost` du plan sont alors
@@ -445,7 +448,7 @@ export function planDispatch(
   const towerLevel = (db.prepare("SELECT level FROM company_zones WHERE company_id = ? AND zone = 'tour'").get(company.id) as { level: number } | undefined)?.level ?? 1;
   const towerDef = WORLD.zones.find((z) => z.id === 'tour')?.levels.find((l) => l.level === towerLevel);
   const tower = { weather: towerDef?.weather ?? 1, night: towerDef?.night ?? 1 };
-  return { ok: true, plan: { ...lead.crew, card, destination, durationMs, cost, tower, ...(second ? { wing: second } : {}) } };
+  return { ok: true, plan: { ...lead.crew, card, destination, durationMs, cost, tower, timezone: companyTimezone(db, company.id), ...(second ? { wing: second } : {}) } };
 }
 
 /**
@@ -456,9 +459,8 @@ export function planDispatch(
  * Nocturne) ; le moral la fait varier de × 0,75 (20) à × 1,25 (0) ; l'humidité des
  * sous-bois de la Forêt de Cuivre la multiplie par 1,5.
  */
-export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template' | 'tower'>, now: number): number {
-  const hour = new Date(now).getUTCHours();
-  const nightFlight = plan.destination.hazard === 'night' && (hour >= 20 || hour < 6);
+export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template' | 'tower'> & { timezone?: string }, now: number): number {
+  const nightFlight = plan.destination.hazard === 'night' && isNight(now, plan.timezone ?? DEFAULT_TIMEZONE);
   // La nuit : × 2, ÷ 4 pour un pilote Nocturne, et × 0,7 encore avec le feu de la tour.
   const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') * (plan.tower?.night ?? 1) : 1;
   const moraleFactor = 1 + (10 - plan.pilot.morale) / 40;
@@ -488,7 +490,7 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'fogRisk') * lookout) durationMs += FOG_DELAY_MS;
     if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'seawindRisk') * lookout) durationMs += SEAWIND_DELAY_MS;
     // L'ailier a son propre moteur, et donc son propre aléa ; le convoi attend le plus lent.
-    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination, ...(plan.tower ? { tower: plan.tower } : {}) }, now) : false;
+    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination, ...(plan.timezone ? { timezone: plan.timezone } : {}), ...(plan.tower ? { tower: plan.tower } : {}) }, now) : false;
     if (leadIncident || wingIncident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
 
     // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
@@ -598,6 +600,12 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
 }
 
 /** Un imprévu non tranché bloque la piste. */
+/** Le fuseau du joueur de la compagnie, pour la nuit du jeu. */
+export function companyTimezone(db: Database, companyId: string): string {
+  const row = db.prepare('SELECT p.timezone AS tz FROM companies c JOIN players p ON p.id = c.player_id WHERE c.id = ?').get(companyId) as { tz: string } | undefined;
+  return row?.tz ?? DEFAULT_TIMEZONE;
+}
+
 /** L'heure à laquelle la piste rouvre, après un imprévu où l'on a choisi d'attendre. */
 export function runwayClosedUntil(db: Database, companyId: string): number | null {
   const row = db.prepare('SELECT runway_closed_until AS t FROM companies WHERE id = ?').get(companyId) as { t: number } | undefined;

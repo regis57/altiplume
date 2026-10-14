@@ -77,7 +77,8 @@ des lanternes — l'Archipel viendra). Le premier amerrissage colle « Sur l'eau
 **Le vent de mer** (Port-Sel, l'Anse, Sainte-Ambre) ajoute un quart d'heure deux fois
 sur cinq (une sur cinq avec « Météo dans la peau »). La brume de Marais-Blanc suit la
 règle de Moulin-Gris. Le phare suit celle des lanternes : une arrivée après le
-coucher du soleil vaut « Vol de nuit ».
+coucher du soleil vaut « Vol de nuit ». La nuit du jeu est celle du joueur : de 21 h à
+6 h, à son heure (depuis le 14/10 ; avant, 20 h à 6 h UTC pour tout le monde).
 
 Deux imprévus propres à la Côte (un grain annoncé par le télégraphe, les basses eaux au ponton) et
 deux opportunités (une Sterne des douanes réformée à Port-Sel, la carte marine du

@@ -209,7 +209,7 @@ describe('le courrier — expédier', () => {
   });
 
   it('colle « Toute la vallée » après les six villages, et « Vol de nuit » aux lanternes après le coucher du soleil', async () => {
-    const t = await testApp(Date.UTC(2026, 9, 11, 21, 0, 0)); // 21 h UTC : nuit
+    const t = await testApp(Date.UTC(2026, 9, 11, 17, 0, 0)); // 19 h à Paris ; Lanterne-du-Val livrée vers 3 h, de nuit chez le joueur
     await t.json('POST', '/v1/auth/register', signup);
     const cookie = sessionCookie(await t.json('POST', '/v1/auth/verify', { token: t.lastToken() }));
     await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, cookie);

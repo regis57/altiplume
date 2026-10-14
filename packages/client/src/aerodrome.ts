@@ -144,6 +144,12 @@ export function momentOfDay(hour: number): 'aube' | 'jour' | 'crepuscule' | 'nui
 export async function pageAerodrome(api: Api, setMessage: SetMessage): Promise<void> {
   const me = await api('GET', '/v1/account');
   if (me.status !== 200) { location.replace('/connexion'); return; }
+  // La nuit du jeu suit l'heure du joueur : on dit au serveur le fuseau du navigateur,
+  // une fois, et à nouveau seulement s'il change (un voyage, un autre appareil).
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz && (me.body as { timezone?: string }).timezone !== tz) await api('PATCH', '/v1/account', { timezone: tz }).catch(() => null);
+  } catch { /* sans fuseau connu, Paris par défaut */ }
   document.querySelectorAll('[data-when=anonymous]').forEach((e) => e.classList.add('cache'));
   document.querySelectorAll('[data-when=player]').forEach((e) => e.classList.remove('cache'));
 
