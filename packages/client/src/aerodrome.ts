@@ -21,9 +21,9 @@ interface WorldView {
   home: { name: string; address: string; description: string };
   regions: { id: string; name: string; tagline: string; description: string; page: string; route?: { requires: string; cost: number } }[];
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
-  planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number }[];
+  planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number; runway: string }[];
   seasons: { id: string; name: string; tagline: string; effects: { duration?: number; reward?: number } }[];
-  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number } }[];
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number; model?: string; morale?: number; stamps?: number } }[];
   traits: { id: string; name: string; description: string }[];
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
@@ -607,14 +607,28 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
         actions.append(b);
       }
     } else {
-      const take = el('button', 'bouton'); take.type = 'button'; take.textContent = t('card.take');
-      const price = card.offer?.price ?? card.offer?.cost;
-      if (price) take.textContent += ` · ${price} F`;
+      // Une opportunité n'est pas un vol : le bouton dit ce qu'on fait (acheter,
+      // embaucher, y aller, prendre la carte), la carte dit ce qu'on y gagne, et le
+      // message, après, dit ce qui s'est passé.
+      const offer = card.offer ?? { type: 'map' };
+      const fill = (s: string) => s
+        .replace('{price}', String(offer.price ?? '')).replace('{cost}', String(offer.cost ?? ''))
+        .replace('{morale}', String(offer.morale ?? '')).replace('{stamps}', String(offer.stamps ?? 1))
+        .replace('{plane}', world.planes.find((p) => p.id === offer.model)?.name ?? '');
+      // Un hydravion s'amarre au ponton ; les autres dorment au hangar.
+      const kind = offer.type === 'plane' && world.planes.find((p) => p.id === offer.model)?.runway === 'water' ? 'seaplane' : offer.type;
+      li.append(el('p', 'aide', `${fill(t(`offer.${kind}.gives`))} ${t('offer.notFlight')}`));
+      const take = el('button', 'bouton'); take.type = 'button'; take.textContent = fill(t(`offer.${offer.type}.button`));
       take.addEventListener('click', async () => {
         take.disabled = true;
         const r = await api('POST', `/v1/company/cards/${card.id}/play`, {}).catch(() => null);
-        if (r && r.status === 200) { setMessage('jeu-message', 'card.taken', 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
-        else { refused(api, setMessage, world, r); take.disabled = false; }
+        if (r && r.status === 200) {
+          const ref = (r.body as { ref?: string | null }).ref ?? '';
+          const who = world.pilots.find((p) => p.id === ref)?.name ?? world.planes.find((p) => p.id === ref)?.name ?? '';
+          const msg = $('jeu-message');
+          if (msg) { delete msg.dataset['i18nKeys']; msg.textContent = fill(t(`offer.${kind}.taken`)).replace('{who}', who); msg.classList.add('ok'); }
+          render(api, setMessage, world, r.body as unknown as CompanyView);
+        } else { refused(api, setMessage, world, r); take.disabled = false; }
       });
       actions.append(take);
     }

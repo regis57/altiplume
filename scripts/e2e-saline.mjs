@@ -118,8 +118,10 @@ try {
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   const offre = page.locator('#main .carte', { hasText: 'Une Sterne à Port-Sel' });
-  await offre.locator('button', { hasText: 'Saisir' }).click();
+  assert((await offre.textContent()).includes('Pour le ponton : Sterne S-1'), "l'offre dit où va l'hydravion");
+  await offre.locator('button', { hasText: 'Acheter · 4400 F' }).click();
   await page.waitForSelector('#jeu-message.ok');
+  assert((await page.textContent('#jeu-message')) === 'Sterne S-1 est amarré au ponton.', `le message dit ce qui s'est passé (${await page.textContent('#jeu-message')})`);
   await page.waitForSelector('#place-eau-1[data-modele=sterne]');
   assert((await page.textContent('#avions')).includes('Sterne S-1'), 'la Sterne est au hangar (sur l\'eau)');
   if (shots) await page.screenshot({ path: join(shots, 'e2e-saline-2-sterne-au-ponton.png'), fullPage: true });
