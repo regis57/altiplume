@@ -330,6 +330,9 @@ describe('un imprévu bloque la piste', () => {
     expect((await t.json('POST', '/v1/company/cards/e-vache/play', { choice }, t.cookie)).statusCode).toBe(200);
     const s1 = await t.state();
     expect(s1.pendingEvent).toBeNull();
+    // « Attendre le fermier » : une heure. La piste rouvre après, pas avant (14/10).
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie)).json().error).toBe('runway_closed');
+    t.advance(3_600_000);
     expect((await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie)).statusCode).toBe(201);
     await t.app.close();
   });

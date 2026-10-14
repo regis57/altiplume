@@ -325,4 +325,15 @@ export const MIGRATIONS: readonly Migration[] = [
       INSERT OR IGNORE INTO company_zones (company_id, zone, level) SELECT id, 'tour', 1 FROM companies;
     `,
   },
+  {
+    version: 14,
+    name: 'imprevus-au-sol',
+    sql: `
+      -- Les imprévus se passent tous à l'aérodrome (14/10) : « attendre » ferme la piste
+      -- le temps annoncé. Et « La nuit tombe tôt », qui parlait d'un vol en l'air, est
+      -- remplacée par « La citerne en retard » : on la retire des mains où elle dort.
+      ALTER TABLE companies ADD COLUMN runway_closed_until INTEGER NOT NULL DEFAULT 0;
+      DELETE FROM company_hand WHERE card = 'e-nuit';
+    `,
+  },
 ];

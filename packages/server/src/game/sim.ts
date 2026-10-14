@@ -334,7 +334,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
 
 export type DispatchError =
   | 'card_unknown' | 'card_not_contract' | 'plane_unknown' | 'pilot_unknown' | 'plane_busy' | 'pilot_busy' | 'pilot_tired'
-  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'needs_clearing_plane' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'region_locked'
+  | 'plane_too_small' | 'runway_too_short' | 'home_runway_too_short' | 'needs_seaplane' | 'needs_water' | 'needs_clearing_plane' | 'out_of_range' | 'not_enough_francs' | 'event_pending' | 'runway_closed' | 'region_locked'
   | 'convoy_not_needed' | 'convoy_same';
 
 /** Un équipage : un avion, un pilote, ce qu'ils coûtent et ce qu'ils mettent pour l'aller. */
@@ -417,6 +417,9 @@ export function planDispatch(
   if (!inHand) return { ok: false, error: 'card_unknown' };
   // Un imprévu en main, c'est une vache sur la piste : rien ne décolle tant qu'on n'a pas tranché.
   if (pendingEvent(db, company)) return { ok: false, error: 'event_pending' };
+  // Et quand on a choisi d'attendre, la piste reste fermée le temps annoncé.
+  const closed = runwayClosedUntil(db, company.id);
+  if (closed !== null && closed > now) return { ok: false, error: 'runway_closed' };
   const destination = findDestination(card.destination);
   if (!destination) return { ok: false, error: 'card_unknown' };
   if (!unlockedRegions(db, company.id).includes(destination.region)) return { ok: false, error: 'region_locked' };
@@ -539,11 +542,14 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
       if (e.francs) { db.prepare('UPDATE companies SET francs = francs + ? WHERE id = ?').run(e.francs, company.id); effects['francs'] = e.francs; }
       if (e.morale) { db.prepare('UPDATE company_pilots SET morale = MIN(20, MAX(0, morale + ?)) WHERE company_id = ?').run(e.morale, company.id); effects['morale'] = e.morale; }
       if (e.wear) { db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = (SELECT id FROM company_planes WHERE company_id = ? ORDER BY wear LIMIT 1)').run(e.wear, company.id); effects['wear'] = e.wear; }
-      if (e.delayHours) {
-        // Le retard s'applique au vol en cours le plus proche de l'arrivée, s'il y en a un.
-        db.prepare('UPDATE flights SET duration_ms = duration_ms + ? WHERE id = (SELECT id FROM flights WHERE company_id = ? AND settled_at IS NULL AND departed_at + duration_ms > ? ORDER BY departed_at + duration_ms LIMIT 1)')
-          .run(e.delayHours * 3_600_000, company.id, now);
-        effects['delayHours'] = e.delayHours;
+      if (e.waitHours) {
+        // Attendre, c'est attendre : la piste reste fermée le nombre d'heures annoncé
+        // (règle du 14/10 ; avant, le « retard » visait un vol en l'air, et s'il n'y en
+        // avait aucun, on pouvait repartir tout de suite après « dormir sur place »).
+        // Les vols déjà en l'air, eux, ne sont pas concernés.
+        const until = Math.max(now, runwayClosedUntil(db, company.id) ?? 0) + e.waitHours * 3_600_000;
+        db.prepare('UPDATE companies SET runway_closed_until = ? WHERE id = ?').run(until, company.id);
+        effects['waitHours'] = e.waitHours;
       }
       if (e.stamps) { db.prepare('UPDATE companies SET stamps = stamps + ? WHERE id = ?').run(e.stamps, company.id); effects['stamps'] = e.stamps; }
       ref = choice.id;
@@ -592,6 +598,12 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
 }
 
 /** Un imprévu non tranché bloque la piste. */
+/** L'heure à laquelle la piste rouvre, après un imprévu où l'on a choisi d'attendre. */
+export function runwayClosedUntil(db: Database, companyId: string): number | null {
+  const row = db.prepare('SELECT runway_closed_until AS t FROM companies WHERE id = ?').get(companyId) as { t: number } | undefined;
+  return row && row.t > 0 ? row.t : null;
+}
+
 export function pendingEvent(db: Database, company: Company): string | null {
   const rows = db.prepare('SELECT card FROM company_hand WHERE company_id = ?').all(company.id) as { card: string }[];
   const found = rows.find((r) => findCard(r.card)?.kind === 'event');

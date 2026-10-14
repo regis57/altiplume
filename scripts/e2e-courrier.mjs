@@ -197,6 +197,18 @@ try {
   await passage.locator('button', { hasText: 'Embaucher' }).click();
   await page.waitForFunction(() => /rejoint la compagnie\.$/.test(document.querySelector('#jeu-message')?.textContent ?? ''));
 
+  // Un imprévu au sol : « attendre » ferme vraiment la piste, et la carte dit jusqu'à quand
+  // (le 14/10, « Dormir sur place », puis un vol expédié dans la foulée).
+  db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, ?, 0 FROM companies').run('e-brume');
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  await page.locator('#main .carte', { hasText: 'Brume tenace' }).locator('button', { hasText: 'Attendre que ça lève (2 h)' }).click();
+  await page.waitForSelector('#jeu-message.ok');
+  const ligneFermee = page.locator('#main .carte', { hasText: 'La ligne régulière' });
+  assert((await ligneFermee.textContent()).includes("La piste est fermée jusqu'à"), 'la carte dit que la piste est fermée, et jusqu\'à quand');
+  assert(await ligneFermee.locator('button', { hasText: 'Expédier' }).isDisabled(), 'on ne peut pas expédier pendant l\'attente');
+  db.exec('UPDATE companies SET runway_closed_until = 0');
+
   // Et le tout en anglais.
   // L'aérodrome se recharge de lui-même dans la nouvelle langue.
   await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);

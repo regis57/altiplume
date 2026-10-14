@@ -79,7 +79,7 @@ sur cinq (une sur cinq avec « Météo dans la peau »). La brume de Marais-Blan
 règle de Moulin-Gris. Le phare suit celle des lanternes : une arrivée après le
 coucher du soleil vaut « Vol de nuit ».
 
-Deux imprévus propres à la Côte (un grain au large, la marée qui a tout changé) et
+Deux imprévus propres à la Côte (un grain annoncé par le télégraphe, les basses eaux au ponton) et
 deux opportunités (une Sterne des douanes réformée à Port-Sel, la carte marine du
 gardien) ne se tirent qu'une fois la route ouverte.
 
@@ -102,7 +102,7 @@ l'album.
 
 La Sterne n'atteint les trois premières qu'avec un pilote de Longues routes (14 × 1,2) ;
 le **Goéland** atteint tout. Chaque première livraison vaut 3 cachets ; les six îles
-collent « Tout l'Archipel ». Deux imprévus (la lanterne éteinte, la nuit des lanternes),
+collent « Tout l'Archipel ». Deux imprévus (la lanterne du ponton fendue, l'invitation des îles),
 une opportunité (quelqu'un sur le ponton), et le Goéland, vendu à Port-Sel une fois la
 Côte ouverte.
 
@@ -142,7 +142,7 @@ Vert-de-Gris) multiplie le risque d'incident par **1,5** : les moteurs y toussen
 Un pilote aux Mains d'or compense en partie. Le Hêtre-Roi suit la règle des lanternes :
 une arrivée après le coucher du soleil vaut « Vol de nuit ».
 
-Douze contrats, deux imprévus (un hêtre en travers de la clairière, l'humidité qui
+Douze contrats, deux imprévus (un hêtre tombé du chargement de bois au bout de la piste, l'humidité qui
 fait tousser le moteur) et trois opportunités (le Pic du receveur de Villechaudron,
 le relevé des clairières du garde, quelqu'un à la lisière) ne se tirent qu'une fois
 la route ouverte. Deux contrats préparent la suite : la cire pour le moule de
@@ -320,9 +320,14 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
   régulière comprise, tant qu'on n'a pas tranché, et on ne peut pas le « laisser
   passer » (règle du 11/10 : « comment je peux faire décoller son pilote si on a une
   vache sur la piste ? ») : brume tenace, vache sur la piste, moteur qui tousse, pilote
-  enrhumé, vent de crête, un sac en trop, averse, le bac en grève, la nuit qui tombe
-  tôt, une lettre sans adresse. Chacun se résout par un choix — payer, attendre,
+  enrhumé, vent de travers, un sac en trop, averse, le bac en grève, la citerne en
+  retard, une lettre sans adresse. Chacun se résout par un choix — payer, attendre,
   risquer — et chaque choix a ses chiffres.
+  **Tous les imprévus se passent à l'aérodrome, avant un départ** (règle du 14/10) :
+  aucun ne parle d'un vol déjà en l'air ni d'une heure du jour, et **« attendre » ferme
+  vraiment la piste** le nombre d'heures écrit sur le bouton ; la carte dit jusqu'à
+  quelle heure. Avant, l'attente visait un vol en l'air, et s'il n'y en avait aucun, on
+  repartait aussitôt — « Dormir sur place », puis un vol dans la minute.
 - **6 opportunités** : un Martinet d'occasion, une Grive d'occasion, le Héron des
   Messageries, un pilote de passage, la fête des Tilleuls, la vieille carte de Bastien.
   (Jusqu'au 12/10, aucune carte ne vendait le Héron ni une seconde Grive : la grande

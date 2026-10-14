@@ -297,22 +297,26 @@ export const CONTRACTS: readonly ContractCard[] = [
 ];
 
 export const EVENTS: readonly EventCard[] = [
+  // Tous les imprévus se passent ici, à l'aérodrome de la Croisette, avant un départ :
+  // ils bloquent la piste tant qu'on ne les a pas tranchés, et « attendre » la ferme
+  // vraiment, le nombre d'heures annoncé. Aucun ne parle d'un vol déjà en l'air, ni
+  // d'une heure du jour : ils restent vrais le matin comme le soir (règle du 14/10).
   {
     kind: 'event', id: 'e-brume', weight: 1,
     title: { fr: 'Brume tenace', en: 'Stubborn fog' },
-    text: { fr: "La brume ne se lève pas. On ne voit pas le bout de la piste.", en: 'The fog isn\'t lifting. You can\'t see the end of the strip.' },
+    text: { fr: "La brume ne se lève pas. Du seuil du hangar, on ne voit pas le bout de la piste.", en: "The fog won't lift. From the hangar door you can't see the end of the strip." },
     choices: [
-      { id: 'wait', label: { fr: 'Attendre que ça lève', en: 'Wait for it to lift' }, outcome: { fr: "Deux heures de perdues, un café de gagné.", en: 'Two hours lost, a coffee gained.' }, effects: { delayHours: 2 } },
-      { id: 'go', label: { fr: 'Décoller quand même', en: 'Take off anyway' }, outcome: { fr: "Le pilote y va à l'instinct. Ça passe, mais l'avion a frôlé les tilleuls.", en: 'The pilot goes on instinct. It works, but the plane brushed the lindens.' }, effects: { wear: 8, morale: -2 } },
+      { id: 'wait', label: { fr: 'Attendre que ça lève (2 h)', en: 'Wait for it to lift (2 h)' }, outcome: { fr: "Deux heures de perdues, un café de gagné. La piste rouvre quand on revoit les tilleuls.", en: 'Two hours lost, one coffee gained. The strip reopens once the lime trees come back into view.' }, effects: { waitHours: 2 } },
+      { id: 'go', label: { fr: 'Décoller quand même', en: 'Take off anyway' }, outcome: { fr: "Le pilote partira à l'instinct. Il frôlera les tilleuls, et l'avion le sentira.", en: 'The pilot will go by instinct, brush the lime trees, and the plane will feel it.' }, effects: { wear: 8, morale: -2 } },
     ],
   },
   {
     kind: 'event', id: 'e-vache', weight: 1,
     title: { fr: 'Une vache sur la piste', en: 'A cow on the strip' },
-    text: { fr: "Aux Tilleuls, une vache a décidé que la piste était un pré. Elle n'a pas tort.", en: 'At Lindenhollow a cow has decided the strip is a meadow. She has a point.' },
+    text: { fr: "La vache du voisin a trouvé la barrière ouverte et décidé que la piste était un pré. Elle n'a pas tort.", en: "The neighbour's cow found the gate open and decided the strip was a meadow. She isn't wrong." },
     choices: [
-      { id: 'wait', label: { fr: 'Attendre le fermier', en: 'Wait for the farmer' }, outcome: { fr: "Le fermier arrive en sifflant. Une heure, et une tarte aux pommes en dédommagement.", en: 'The farmer strolls up whistling. An hour, and an apple tart by way of apology.' }, effects: { delayHours: 1, morale: 2 } },
-      { id: 'push', label: { fr: 'La pousser soi-même', en: 'Push her yourself' }, outcome: { fr: "La vache ne bouge pas. Le pilote, lui, a les bottes pleines de boue.", en: 'The cow doesn\'t move. The pilot\'s boots, however, are full of mud.' }, effects: { delayHours: 1, morale: -1 } },
+      { id: 'wait', label: { fr: 'Attendre le fermier (1 h)', en: 'Wait for the farmer (1 h)' }, outcome: { fr: "Le fermier arrive en sifflant, une heure plus tard, avec une tarte aux pommes pour se faire pardonner.", en: 'The farmer turns up whistling an hour later, with an apple tart by way of apology.' }, effects: { waitHours: 1, morale: 2 } },
+      { id: 'push', label: { fr: 'La pousser soi-même (1 h)', en: 'Shove her off yourself (1 h)' }, outcome: { fr: "Une heure de palabres avec la vache. Elle finit par partir ; le pilote, lui, a les bottes pleines de boue.", en: 'An hour of negotiation with the cow. She leaves in the end; the pilot is left with boots full of mud.' }, effects: { waitHours: 1, morale: -1 } },
     ],
   },
   {
@@ -321,7 +325,7 @@ export const EVENTS: readonly EventCard[] = [
     text: { fr: "Au point fixe, le moteur rate un temps sur quatre.", en: 'At run-up, the engine misses one beat in four.' },
     choices: [
       { id: 'fix', label: { fr: 'Changer la bougie (12 F)', en: 'Replace the plug (12 F)' }, outcome: { fr: "Une bougie neuve, et le moteur ronronne.", en: 'A new plug, and the engine purrs.' }, effects: { francs: -12 } },
-      { id: 'risk', label: { fr: 'Partir comme ça', en: 'Go as it is' }, outcome: { fr: "Ça tient. Mais l'avion revient fatigué.", en: 'It holds. But the plane comes back tired.' }, effects: { wear: 12 } },
+      { id: 'risk', label: { fr: 'Partir comme ça', en: 'Go as it is' }, outcome: { fr: "Ça tiendra. Mais l'avion reviendra fatigué.", en: "It'll hold. But the plane will come back tired." }, effects: { wear: 12 } },
     ],
   },
   {
@@ -329,17 +333,17 @@ export const EVENTS: readonly EventCard[] = [
     title: { fr: 'Pilote enrhumé', en: 'Pilot with a cold' },
     text: { fr: "Le pilote a le nez rouge et la voix de Moulin-Gris un jour de brume.", en: 'The pilot has a red nose and a voice like Greymill on a foggy day.' },
     choices: [
-      { id: 'rest', label: { fr: 'Le laisser au lit', en: 'Send them to bed' }, outcome: { fr: "Une journée de repos. Le moral remonte, le courrier attend.", en: 'A day of rest. Spirits lift, the mail waits.' }, effects: { delayHours: 24, morale: 3 } },
+      { id: 'rest', label: { fr: 'Le laisser au lit (3 h)', en: 'Send them to bed (3 h)' }, outcome: { fr: "Trois heures sous l'édredon, une tisane au thym. Personne ne décolle d'ici là ; le moral remonte.", en: 'Three hours under the eiderdown and a thyme tea. Nobody takes off until then; spirits lift.' }, effects: { waitHours: 3, morale: 3 } },
       { id: 'fly', label: { fr: 'Voler avec un grog', en: 'Fly on a hot toddy' }, outcome: { fr: "La piste est libre : le pilote volera quand vous l'enverrez, grog en poche. Il s'en souviendra.", en: "The strip is clear: the pilot will fly when you send them, toddy in hand. They'll remember it." }, effects: { morale: -3 } },
     ],
   },
   {
     kind: 'event', id: 'e-vent', weight: 1,
-    title: { fr: 'Vent de crête', en: 'Ridge wind' },
-    text: { fr: "Haut-Ferrand annonce un vent de travers à faire plier la manche à air.", en: 'Ferncrest reports a crosswind bending the windsock double.' },
+    title: { fr: 'Vent de travers', en: 'Crosswind' },
+    text: { fr: "Le vent descend de la crête de Haut-Ferrand et prend la piste en travers. La manche à air est à l'horizontale.", en: 'The wind comes down off the Ferncrest ridge and cuts across the strip. The windsock is standing straight out.' },
     choices: [
-      { id: 'wait', label: { fr: 'Attendre le soir', en: 'Wait for evening' }, outcome: { fr: "Le vent tombe avec le soleil. Trois heures de retard, un atterrissage de velours.", en: 'The wind drops with the sun. Three hours late, a velvet landing.' }, effects: { delayHours: 3 } },
-      { id: 'go', label: { fr: 'Se poser quand même', en: 'Land anyway' }, outcome: { fr: "Un rebond, deux, et une roue à redresser.", en: 'One bounce, two, and a wheel to straighten.' }, effects: { wear: 10 } },
+      { id: 'wait', label: { fr: 'Attendre qu\'il tombe (3 h)', en: 'Wait for it to drop (3 h)' }, outcome: { fr: "Trois heures à regarder la manche à air. Puis elle retombe, et le décollage est de velours.", en: 'Three hours watching the windsock. Then it sags, and the take-off is silk.' }, effects: { waitHours: 3 } },
+      { id: 'go', label: { fr: 'Décoller quand même', en: 'Take off anyway' }, outcome: { fr: "Un écart, deux, et une roue à redresser au retour.", en: 'A swerve, then another, and a wheel to straighten when it gets back.' }, effects: { wear: 10 } },
     ],
   },
   {
@@ -347,138 +351,134 @@ export const EVENTS: readonly EventCard[] = [
     title: { fr: 'Un sac en trop', en: 'One bag too many' },
     text: { fr: "Au moment de charger, le receveur vous tend un sac de plus. « Si vous avez la place. »", en: 'As you load up, the postmaster hands you one more bag. "If you have the room."' },
     choices: [
-      { id: 'take', label: { fr: 'Le prendre', en: 'Take it' }, outcome: { fr: "Un peu plus lourd, un peu plus lent, et quinze francs de plus à l'arrivée.", en: 'A little heavier, a little slower, and fifteen francs more on arrival.' }, effects: { francs: 15, delayHours: 1 } },
+      { id: 'take', label: { fr: 'Le prendre', en: 'Take it' }, outcome: { fr: "Le receveur paie d'avance : quinze francs, et un merci.", en: 'The postmaster pays up front: fifteen francs, and a thank-you.' }, effects: { francs: 15 } },
       { id: 'leave', label: { fr: 'Le laisser pour demain', en: 'Leave it for tomorrow' }, outcome: { fr: "Il attendra. Le receveur hausse les épaules, sans rancune.", en: 'It will wait. The postmaster shrugs, no hard feelings.' }, effects: {} },
     ],
   },
   {
     kind: 'event', id: 'e-pluie', weight: 1,
     title: { fr: 'Averse', en: 'Downpour' },
-    text: { fr: "Une averse surprend l'avion en route. Le courrier est sous la bâche, le pilote non.", en: 'A shower catches the plane en route. The mail is under the tarp; the pilot isn\'t.' },
+    text: { fr: "Une averse s'abat sur la piste au moment de partir. Le courrier est sous la bâche, le pilote non.", en: "A downpour hits the strip just as you're about to leave. The mail is under the tarpaulin; the pilot isn't." },
     choices: [
-      { id: 'shelter', label: { fr: "S'abriter aux Tilleuls", en: 'Shelter at Lindenhollow' }, outcome: { fr: "Une heure sous le hangar à foin, avec du cidre. Personne ne se plaint.", en: 'An hour under the hay barn, with cider. Nobody complains.' }, effects: { delayHours: 1, morale: 1 } },
-      { id: 'go', label: { fr: 'Continuer trempé', en: 'Press on soaked' }, outcome: { fr: "Le courrier arrive à l'heure. Le pilote éternue pendant deux jours.", en: 'The mail arrives on time. The pilot sneezes for two days.' }, effects: { morale: -2 } },
+      { id: 'shelter', label: { fr: 'Attendre sous l\'auvent (1 h)', en: 'Wait under the awning (1 h)' }, outcome: { fr: "Une heure sous l'auvent du hangar, avec du cidre des Tilleuls. Personne ne se plaint.", en: 'An hour under the hangar awning with Lindenhollow cider. Nobody complains.' }, effects: { waitHours: 1, morale: 1 } },
+      { id: 'go', label: { fr: 'Partir trempé', en: 'Go wet through' }, outcome: { fr: "Le courrier partira à l'heure. Le pilote éternuera pendant deux jours.", en: 'The mail will leave on time. The pilot will sneeze for two days.' }, effects: { morale: -2 } },
     ],
   },
   {
     kind: 'event', id: 'e-bac', weight: 1,
     title: { fr: 'Le bac est en grève', en: 'The ferry is on strike' },
-    text: { fr: "Le passeur de Pont-de-Brume ne passe plus. Toute la vallée voudrait voler aujourd'hui.", en: 'The Mistbridge ferryman isn\'t crossing. The whole valley wants to fly today.' },
+    text: { fr: "Le passeur de Pont-de-Brume ne passe plus. Toute la vallée voudrait voler aujourd'hui, et le pharmacien est déjà au bout du chemin.", en: "The Mistbridge ferryman has stopped running. The whole valley wants to fly today, and the pharmacist is already at the end of the lane." },
     choices: [
-      { id: 'raise', label: { fr: 'Prendre un passager (20 F)', en: 'Take a passenger (20 F)' }, outcome: { fr: "Le pharmacien monte avec sa sacoche. Il paie en liquide et en sirop.", en: 'The pharmacist climbs in with his satchel. He pays in cash and cough syrup.' }, effects: { francs: 20, delayHours: 1 } },
-      { id: 'mail', label: { fr: 'Rester au courrier', en: 'Stick to the mail' }, outcome: { fr: "Le courrier d'abord. C'est écrit sur l'enseigne.", en: 'Mail first. It says so on the sign.' }, effects: { morale: 1 } },
+      { id: 'raise', label: { fr: 'Le prendre en passager (+20 F, 1 h)', en: 'Take him as a passenger (+20 F, 1 h)' }, outcome: { fr: "Le temps qu'il monte avec sa sacoche et qu'on fasse de la place : une heure. Il paie en liquide et en sirop.", en: 'By the time he climbs in with his satchel and room is made: an hour. He pays in cash and cough syrup.' }, effects: { francs: 20, waitHours: 1 } },
+      { id: 'mail', label: { fr: 'Rester au courrier', en: 'Stick to the mail' }, outcome: { fr: "Le courrier d'abord. C'est écrit sur l'enseigne.", en: "The mail comes first. It says so on the sign." }, effects: { morale: 1 } },
     ],
   },
   {
-    kind: 'event', id: 'e-nuit', weight: 1,
-    title: { fr: 'La nuit tombe tôt', en: 'Night falls early' },
-    text: { fr: "Le vol a pris du retard et le soleil n'attend pas. Lanterne-du-Val allumera ses lanternes ; les autres pistes, non.", en: 'The flight ran late and the sun won\'t wait. Lanternhollow will light its lanterns; the other strips won\'t.' },
+    kind: 'event', id: 'e-citerne', weight: 1,
+    title: { fr: 'La citerne en retard', en: 'The fuel cart is late' },
+    text: { fr: "La charrette du carburant aurait dû passer depuis longtemps. Le réservoir de l'aérodrome sonne creux.", en: "The fuel cart should have been here long ago. The aerodrome tank sounds hollow." },
     choices: [
-      { id: 'sleep', label: { fr: 'Dormir sur place', en: 'Sleep over' }, outcome: { fr: "Une nuit à l'auberge. Le courrier repart à l'aube.", en: 'A night at the inn. The mail leaves at dawn.' }, effects: { francs: -8, delayHours: 10 } },
-      { id: 'go', label: { fr: 'Rentrer de nuit', en: 'Fly home in the dark' }, outcome: { fr: "Le pilote compte les lumières des fermes. Il rentre. Il ne recommencera pas de bon cœur.", en: 'The pilot counts farmhouse lights. They get home. They won\'t do it again gladly.' }, effects: { wear: 6, morale: -2 } },
+      { id: 'wait', label: { fr: 'L\'attendre (2 h)', en: 'Wait for it (2 h)' }, outcome: { fr: "Deux heures. Le charretier s'excuse : une roue, un fossé, un cheval têtu.", en: 'Two hours. The carter apologises: a wheel, a ditch, a stubborn horse.' }, effects: { waitHours: 2 } },
+      { id: 'buy', label: { fr: 'Acheter au garage du village (10 F)', en: 'Buy from the village garage (10 F)' }, outcome: { fr: "Plus cher, mais tout de suite. Le garagiste remplit les bidons en parlant de sa sœur à Moulin-Gris.", en: 'Dearer, but straight away. The garage man fills the cans while talking about his sister in Greymill.' }, effects: { francs: -10 } },
     ],
   },
   {
     kind: 'event', id: 'e-lettre-perdue', weight: 2,
     title: { fr: 'Une lettre sans adresse', en: 'A letter with no address' },
-    text: { fr: "Dans le sac, une enveloppe sans nom ni village. Juste « à celle qui attend ».", en: 'In the bag, an envelope with no name and no village. Just "to the one who waits".' },
+    text: { fr: "Au tri, une enveloppe sans nom ni village. Juste « à celle qui attend ».", en: 'In the sorting, an envelope with no name and no village. Just "to the one who is waiting".' },
     choices: [
-      { id: 'ask', label: { fr: 'Demander au village', en: 'Ask around the village' }, outcome: { fr: "Une vieille dame la prend sans un mot et vous serre la main longtemps. Un cachet pour l'album.", en: 'An old lady takes it without a word and shakes your hand for a long time. A stamp for the album.' }, effects: { delayHours: 1, stamps: 1 } },
-      { id: 'return', label: { fr: 'La rapporter au bureau', en: 'Return it to the office' }, outcome: { fr: "La poste la gardera. Quelqu'un la réclamera peut-être.", en: 'The post office keeps it. Someone may claim it.' }, effects: {} },
+      { id: 'ask', label: { fr: 'Demander au village (1 h)', en: 'Ask in the village (1 h)' }, outcome: { fr: "Une heure de porte en porte. Une vieille dame la prend sans un mot et vous serre la main longtemps. Un cachet pour l'album.", en: 'An hour from door to door. An old woman takes it without a word and holds your hand a long time. A stamp for the album.' }, effects: { waitHours: 1, stamps: 1 } },
+      { id: 'return', label: { fr: 'La rapporter au bureau', en: 'Take it back to the office' }, outcome: { fr: "La poste la gardera. Quelqu'un la réclamera peut-être.", en: 'The post office will keep it. Someone may claim it.' }, effects: {} },
     ],
   },
-  // ---- Côte de Saline ----
   {
     kind: 'event', id: 'e-grain', weight: 1, region: 'saline',
-    title: { fr: 'Un grain sur la Côte', en: 'A squall on the Shore' },
-    text: { fr: "Le ciel noircit au large en un quart d'heure. La capitainerie de Port-Sel hisse le pavillon : on ne décolle pas, ou on fait vite.", en: 'The sky goes black offshore in a quarter of an hour. The Saltharbour harbourmaster runs up the flag: nobody takes off, or they do it quickly.' },
+    title: { fr: 'Un grain annoncé', en: 'A squall on the way' },
+    text: { fr: "Le télégraphe de Port-Sel annonce un grain sur la Côte, et le baromètre du hangar dégringole. On ne part pas vers la mer, ou on part vite.", en: 'The Saltharbour telegraph warns of a squall along the Shore, and the hangar barometer is falling fast. Either you stay off the sea, or you go now.' },
     choices: [
-      { id: 'wait', label: { fr: 'Attendre que ça passe', en: 'Wait it out' }, outcome: { fr: "Deux heures au café de la capitainerie, à regarder la pluie marcher sur l'eau. Le courrier arrivera mouillé de rien.", en: 'Two hours in the harbourmaster\'s café, watching the rain walk across the water. The mail arrives none the wetter.' }, effects: { delayHours: 2, morale: 1 } },
-      { id: 'dash', label: { fr: 'Partir avant le grain', en: 'Beat the squall' }, outcome: { fr: "Le pilote décolle dans la première rafale. Il passe. Les flotteurs ont pris une vague et le moteur a bu du sel.", en: 'The pilot takes off into the first gust. They make it. The floats took a wave and the engine drank salt.' }, effects: { wear: 8, morale: -1 } },
+      { id: 'wait', label: { fr: 'Le laisser passer (2 h)', en: 'Let it blow over (2 h)' }, outcome: { fr: "Deux heures à regarder la pluie marcher sur la rivière. Le courrier partira sec.", en: 'Two hours watching the rain walk along the river. The mail will leave dry.' }, effects: { waitHours: 2, morale: 1 } },
+      { id: 'dash', label: { fr: 'Partir avant le grain', en: 'Beat the squall' }, outcome: { fr: "Le pilote décollera dans la première rafale. Les flotteurs prendront une vague, et le moteur du sel.", en: 'The pilot will take off into the first gust. The floats will take a wave, and the engine some salt.' }, effects: { wear: 8, morale: -1 } },
     ],
   },
   {
     kind: 'event', id: 'e-maree', weight: 2, region: 'saline',
-    title: { fr: 'La marée a tout changé', en: 'The tide changed everything' },
-    text: { fr: "À marée basse, l'anse n'est plus qu'un miroir de vase. La barque du passeur est à sec et le sac attend sur la cale.", en: 'At low tide the cove is nothing but a mirror of mud. The boatman\'s boat is high and dry and the bag waits on the slipway.' },
+    title: { fr: 'Basses eaux', en: 'Low water' },
+    text: { fr: "La rivière a baissé. Au bout du ponton, la coque touche la vase.", en: 'The river has dropped. At the end of the pontoon, the hull is touching mud.' },
     choices: [
-      { id: 'tide', label: { fr: 'Attendre la marée', en: 'Wait for the tide' }, outcome: { fr: "Trois heures. Le passeur raconte les naufrages du siècle dernier ; le pilote repart avec le sac et deux histoires.", en: 'Three hours. The boatman tells of last century\'s wrecks; the pilot leaves with the bag and two stories.' }, effects: { delayHours: 3, morale: 1 } },
-      { id: 'walk', label: { fr: 'Aller chercher le sac à pied (10 F)', en: 'Fetch the bag on foot (10 F)' }, outcome: { fr: "Jusqu'aux genoux dans la vase, bottes louées au village. Le sac arrive à l'heure ; les bottes ne reviennent pas.", en: 'Knee-deep in mud in boots hired from the village. The bag arrives on time; the boots do not come back.' }, effects: { francs: -10 } },
+      { id: 'tide', label: { fr: 'Attendre que l\'eau remonte (3 h)', en: 'Wait for the water to rise (3 h)' }, outcome: { fr: "Trois heures. Le passeur raconte les naufrages du siècle dernier, et l'eau revient.", en: "Three hours. The ferryman tells of last century's wrecks, and the water comes back." }, effects: { waitHours: 3, morale: 1 } },
+      { id: 'walk', label: { fr: 'Faire tirer la coque (10 F)', en: 'Have the hull hauled out (10 F)' }, outcome: { fr: "Deux gars du village, des cordes, des bottes louées. L'hydravion flotte ; les bottes ne reviennent pas.", en: 'Two lads from the village, ropes, hired boots. The seaplane floats; the boots never come back.' }, effects: { francs: -10 } },
     ],
   },
-  // ---- Archipel des Lanternes ----
   {
     kind: 'event', id: 'e-lanterne-eteinte', weight: 1, region: 'archipel',
-    title: { fr: 'La lanterne est éteinte', en: 'The lantern is out' },
-    text: { fr: "Nuit noire, et le ponton visé n'a pas allumé sa lanterne. Le pilote tourne au-dessus de l'île, sans savoir où est l'eau et où est le rocher.", en: 'Pitch dark, and the jetty you were aiming for has not lit its lantern. The pilot circles the island, not knowing where the water ends and the rock begins.' },
+    title: { fr: 'La lanterne du ponton', en: 'The pontoon lantern' },
+    text: { fr: "Le verre de la lanterne du ponton s'est fendu. Sans elle, personne ne rentrera des îles après la tombée du jour.", en: "The pontoon lantern's glass has cracked. Without it, nobody will find their way back from the Isles after dark." },
     choices: [
-      { id: 'wait', label: { fr: "Attendre l'aube", en: 'Wait for dawn' }, outcome: { fr: "Trois heures à tourner, puis le jour. Le gardien du ponton, penaud, offre le café et une lanterne de rechange.", en: 'Three hours of circling, then daylight. The sheepish jetty keeper offers coffee and a spare lantern.' }, effects: { delayHours: 3, morale: 1 } },
-      { id: 'moon', label: { fr: 'Se poser à la lune', en: 'Land by the moon' }, outcome: { fr: "La coque racle quelque chose. Le pilote se pose, pâle. On réparera au ponton.", en: 'The hull scrapes something. The pilot lands, pale. Repairs can wait till the pontoon.' }, effects: { wear: 10, morale: -2 } },
+      { id: 'moon', label: { fr: 'Faire changer le verre (12 F)', en: 'Have the glass replaced (12 F)' }, outcome: { fr: "Le chaudronnier de Pont-de-Brume a un verre de rechange, et une opinion sur tout.", en: 'The Mistbridge tinsmith has a spare glass, and an opinion on everything.' }, effects: { francs: -12 } },
+      { id: 'wait', label: { fr: 'Le réparer soi-même (3 h)', en: 'Fix it yourselves (3 h)' }, outcome: { fr: "Trois heures, du mastic et de la patience. La lanterne tient ; les pilotes en sont fiers.", en: 'Three hours, putty and patience. The lantern holds; the pilots are proud of it.' }, effects: { waitHours: 3, morale: 1 } },
     ],
   },
   {
     kind: 'event', id: 'e-fete-lanternes', weight: 2, region: 'archipel',
-    title: { fr: 'La nuit des lanternes', en: 'Lantern night' },
-    text: { fr: "Toute la chaîne d'îles a allumé ses lanternes en même temps : c'est la fête de l'archipel. On vous attend sur chaque ponton, et personne ne comprendrait qu'on reparte vite.", en: 'The whole chain of islands has lit its lanterns at once: it is the Isles\' festival. You are expected on every jetty, and no one would understand a quick departure.' },
+    title: { fr: 'L\'invitation des îles', en: 'An invitation from the Isles' },
+    text: { fr: "Un mot est arrivé avec le courrier : les îles fêtent leurs lanternes, et les pilotes sont invités sur chaque ponton.", en: 'A note came with the mail: the Isles are holding their lantern festival, and the pilots are invited to every jetty.' },
     choices: [
-      { id: 'stay', label: { fr: 'Rester à la fête', en: 'Stay for the festival' }, outcome: { fr: "Le courrier arrivera demain. Les pilotes dansent sur un ponton et personne ne le regrettera.", en: 'The mail will arrive tomorrow. The pilots dance on a jetty and nobody will regret it.' }, effects: { delayHours: 8, morale: 4 } },
-      { id: 'mail', label: { fr: 'Le courrier d\'abord', en: 'Mail first' }, outcome: { fr: "Un verre à chaque ponton, pas plus. Le sac arrive à l'heure, le pilote un peu moins.", en: 'One glass at each jetty, no more. The bag arrives on time; the pilot, a little less so.' }, effects: { delayHours: 1 } },
+      { id: 'stay', label: { fr: 'Fermer pour la fête (8 h)', en: 'Close for the festival (8 h)' }, outcome: { fr: "On ferme la piste et on y va. Huit heures de musique sur l'eau ; personne ne le regrettera.", en: "The strip closes and everyone goes. Eight hours of music on the water; nobody will regret it." }, effects: { waitHours: 8, morale: 4 } },
+      { id: 'mail', label: { fr: 'Le courrier d\'abord', en: 'The mail comes first' }, outcome: { fr: "On envoie un mot et des vœux. Les pilotes soupirent, un peu.", en: 'A note and good wishes go back instead. The pilots sigh, a little.' }, effects: { morale: -1 } },
     ],
   },
-  // ---- Les saisons ----
   {
     kind: 'event', id: 'e-giboulees', weight: 1, season: 'printemps',
     title: { fr: 'Les giboulées', en: 'April showers' },
-    text: { fr: "Soleil, grêle, soleil, averse : le ciel change d'avis toutes les dix minutes. La manche à air ne sait plus où se mettre.", en: "Sun, hail, sun, downpour: the sky changes its mind every ten minutes. The windsock doesn't know which way to point." },
+    text: { fr: "Soleil, grêle, soleil, averse : le ciel change d'avis toutes les dix minutes. La manche à air ne sait plus où se mettre.", en: "Sun, hail, sun, rain: the sky changes its mind every ten minutes. The windsock doesn't know which way to point." },
     choices: [
-      { id: 'wait', label: { fr: 'Attendre une éclaircie', en: 'Wait for a break' }, outcome: { fr: "Une heure sous l'auvent du hangar, à compter les grêlons. L'éclaircie vient ; l'arc-en-ciel aussi.", en: 'An hour under the hangar eaves, counting hailstones. The break comes; so does a rainbow.' }, effects: { delayHours: 1, morale: 1 } },
-      { id: 'go', label: { fr: 'Passer entre deux', en: 'Slip between two' }, outcome: { fr: "Le pilote part dans le soleil et arrive dans la grêle. L'entoilage a pris quelques coups.", en: 'The pilot leaves in sunshine and lands in hail. The fabric has taken a few knocks.' }, effects: { wear: 4 } },
+      { id: 'wait', label: { fr: 'Attendre une éclaircie (1 h)', en: 'Wait for a clear spell (1 h)' }, outcome: { fr: "Une heure sous l'auvent du hangar, à compter les grêlons. L'éclaircie vient ; l'arc-en-ciel aussi.", en: 'An hour under the hangar awning counting hailstones. The clear spell comes; so does the rainbow.' }, effects: { waitHours: 1, morale: 1 } },
+      { id: 'go', label: { fr: 'Passer entre deux', en: 'Slip through a gap' }, outcome: { fr: "Le pilote partira dans le soleil et trouvera la grêle plus loin. L'entoilage prendra quelques coups.", en: 'The pilot will leave in sunshine and meet hail on the way. The fabric will take a few knocks.' }, effects: { wear: 4 } },
     ],
   },
   {
     kind: 'event', id: 'e-orage-ete', weight: 1, season: 'ete',
     title: { fr: "L'orage de chaleur", en: 'Heat storm' },
-    text: { fr: "Après trois jours de chaleur, un orage monte derrière la crête : un mur gris, des éclairs sans bruit encore.", en: 'After three hot days a storm is building behind the ridge: a grey wall, lightning still without sound.' },
+    text: { fr: "Après trois jours de chaleur, un orage monte derrière la crête : un mur gris, des éclairs sans bruit encore.", en: 'After three days of heat, a storm is building behind the ridge: a grey wall, lightning still silent.' },
     choices: [
-      { id: 'wait', label: { fr: "Le laisser passer", en: 'Let it pass' }, outcome: { fr: "Deux heures de pluie chaude sur la tôle. Après, l'air sent l'herbe coupée et tout le monde respire.", en: 'Two hours of warm rain on the tin roof. Afterwards the air smells of cut grass and everyone breathes again.' }, effects: { delayHours: 2, morale: 1 } },
-      { id: 'go', label: { fr: 'Partir devant', en: 'Outrun it' }, outcome: { fr: "Le pilote file avant le front. La turbulence le rattrape au retour, et il rentre secoué.", en: 'The pilot races ahead of the front. The turbulence catches up on the way home, and they come back shaken.' }, effects: { wear: 6, morale: -1 } },
+      { id: 'wait', label: { fr: 'Le laisser passer (2 h)', en: 'Let it pass (2 h)' }, outcome: { fr: "Deux heures de pluie chaude sur la tôle. Après, l'air sent l'herbe coupée et tout le monde respire.", en: 'Two hours of warm rain on the tin roof. Afterwards the air smells of cut grass and everyone breathes again.' }, effects: { waitHours: 2, morale: 1 } },
+      { id: 'go', label: { fr: 'Partir devant', en: 'Go ahead of it' }, outcome: { fr: "Le pilote filera avant le front ; la turbulence le rattrapera au retour, et il rentrera secoué.", en: 'The pilot will race ahead of the front; the turbulence will catch up on the way back, and they will come home shaken.' }, effects: { wear: 6, morale: -1 } },
     ],
   },
   {
     kind: 'event', id: 'e-feuilles', weight: 1, season: 'automne',
     title: { fr: 'Les feuilles sur la piste', en: 'Leaves on the strip' },
-    text: { fr: "Une nuit de vent a couvert la piste de feuilles mouillées. Ça glisse comme du savon.", en: 'A windy night has covered the strip in wet leaves. It is as slippery as soap.' },
+    text: { fr: "Le vent a couvert la piste de feuilles mouillées. Ça glisse comme du savon.", en: 'The wind has covered the strip in wet leaves. It is as slippery as soap.' },
     choices: [
       { id: 'rake', label: { fr: 'Ratisser (8 F)', en: 'Rake it (8 F)' }, outcome: { fr: "Deux gamins du village ratissent pour huit francs et un tour de hangar. La piste est nette.", en: 'Two village children rake for eight francs and a look round the hangar. The strip is clear.' }, effects: { francs: -8 } },
-      { id: 'go', label: { fr: 'Décoller quand même', en: 'Take off anyway' }, outcome: { fr: "L'avion part en crabe sur dix mètres avant de mordre. Le train a souffert.", en: 'The plane skids sideways for ten yards before it bites. The undercarriage has suffered.' }, effects: { wear: 5 } },
+      { id: 'go', label: { fr: 'Décoller quand même', en: 'Take off anyway' }, outcome: { fr: "L'avion partira en crabe sur dix mètres avant de mordre. Le train souffrira.", en: 'The plane will crab ten metres before it bites. The undercarriage will suffer.' }, effects: { wear: 5 } },
     ],
   },
   {
     kind: 'event', id: 'e-neige', weight: 1, season: 'hiver',
     title: { fr: 'La neige sur la piste', en: 'Snow on the strip' },
-    text: { fr: "Il a neigé toute la nuit. La piste n'est plus qu'une page blanche, et les pierres de balisage ont disparu.", en: 'It snowed all night. The strip is a blank page, and the marker stones have vanished.' },
+    text: { fr: "La neige a tout recouvert. La piste n'est plus qu'une page blanche, et les pierres de balisage ont disparu.", en: 'Snow has covered everything. The strip is a blank page, and the marker stones have vanished.' },
     choices: [
       { id: 'shovel', label: { fr: 'Faire déblayer (15 F)', en: 'Have it cleared (15 F)' }, outcome: { fr: "Le cantonnier vient avec son cheval et sa lame. Une bande nette, et un bol de soupe au café pour lui.", en: 'The roadman comes with his horse and blade. One clean strip, and a bowl of soup at the café for him.' }, effects: { francs: -15 } },
-      { id: 'wait', label: { fr: 'Attendre le redoux', en: 'Wait for the thaw' }, outcome: { fr: "Trois heures au coin du poêle. Le soleil fait le travail, et les pilotes jouent aux cartes.", en: 'Three hours by the stove. The sun does the work, and the pilots play cards.' }, effects: { delayHours: 3, morale: 1 } },
+      { id: 'wait', label: { fr: 'Attendre le redoux (3 h)', en: 'Wait for the thaw (3 h)' }, outcome: { fr: "Trois heures au coin du poêle. Le soleil fait le travail, et les pilotes jouent aux cartes.", en: 'Three hours by the stove. The sun does the work, and the pilots play cards.' }, effects: { waitHours: 3, morale: 1 } },
     ],
   },
-  // ---- Forêt de Cuivre ----
   {
     kind: 'event', id: 'e-hetre-couche', weight: 1, region: 'cuivre',
     title: { fr: 'Un hêtre en travers', en: 'A beech across the strip' },
-    text: { fr: "Le vent de la nuit a couché un hêtre en travers de la clairière. Le tronc est plus gros qu'un tonneau, et les feuilles rousses couvrent tout.", en: 'The night wind has laid a beech right across the clearing. The trunk is thicker than a barrel, and copper leaves cover everything.' },
+    text: { fr: "Un hêtre de la Forêt de Cuivre, tombé du chargement de bois, barre le bout de la piste. Le tronc est plus gros qu'un tonneau.", en: "A Copperwood beech, fallen off the timber load, blocks the end of the strip. The trunk is thicker than a barrel." },
     choices: [
-      { id: 'saw', label: { fr: 'Payer les scieurs (18 F)', en: 'Pay the sawyers (18 F)' }, outcome: { fr: "Ils montent des Scieries avec le passe-partout. Une heure plus tard, la clairière est libre et le bois déjà vendu.", en: 'They come up from Millhurst with the crosscut saw. An hour later the clearing is clear and the timber already sold.' }, effects: { francs: -18 } },
-      { id: 'wait', label: { fr: 'Attendre le débardeur', en: 'Wait for the log-hauler' }, outcome: { fr: "Le cheval du débardeur arrive à son pas. Trois heures, et une leçon sur la façon de tirer un tronc sans le fâcher.", en: "The log-hauler's horse arrives at its own pace. Three hours, and a lesson in dragging a trunk without upsetting it." }, effects: { delayHours: 3, morale: 1 } },
+      { id: 'saw', label: { fr: 'Payer les scieurs (18 F)', en: 'Pay the sawyers (18 F)' }, outcome: { fr: "Ils descendent des Scieries avec le passe-partout. Une heure plus tard, la piste est libre et le bois déjà vendu.", en: 'They come down from Millhurst with the crosscut saw. An hour later the strip is clear and the timber already sold.' }, effects: { francs: -18 } },
+      { id: 'wait', label: { fr: 'Attendre le débardeur (3 h)', en: 'Wait for the logger (3 h)' }, outcome: { fr: "Le cheval du débardeur arrive à son pas. Trois heures, et une leçon sur la façon de tirer un tronc sans le fâcher.", en: "The logger's horse arrives at its own pace. Three hours, and a lesson in how to pull a trunk without upsetting it." }, effects: { waitHours: 3, morale: 1 } },
     ],
   },
   {
     kind: 'event', id: 'e-sous-bois', weight: 2, region: 'cuivre',
-    title: { fr: "L'humidité des sous-bois", en: 'Damp under the trees' },
-    text: { fr: "Trois jours de brouillard sous les hêtres. Le moteur a passé la nuit dans une clairière, et il tousse comme un charbonnier.", en: "Three days of mist under the beeches. The engine spent the night in a clearing, and it's coughing like a charcoal-burner." },
+    title: { fr: "L'humidité des sous-bois", en: 'Damp from the woods' },
+    text: { fr: "L'avion est rentré de la forêt couvert de rosée, et la porte du hangar ferme mal. Le moteur tousse comme un charbonnier.", en: "The plane came back from the woods dripping with dew, and the hangar door doesn't shut. Now the engine is coughing like a charcoal-burner." },
     choices: [
-      { id: 'dry', label: { fr: 'Le sécher à la forge (12 F)', en: 'Dry it at the forge (12 F)' }, outcome: { fr: "Les chaudronniers de Villechaudron prêtent un coin de forge. Le moteur repart, tiède et content.", en: 'The Kettleby smiths lend a corner of their forge. The engine starts again, warm and content.' }, effects: { francs: -12 } },
-      { id: 'go', label: { fr: 'Partir quand même', en: 'Go anyway' }, outcome: { fr: "Il crache, il hésite, il prend. L'avion rentre, mais il faudra regarder les bougies de près.", en: 'It spits, it hesitates, it catches. The plane gets home, but the plugs will need a close look.' }, effects: { wear: 8 } },
+      { id: 'dry', label: { fr: 'Le sécher au poêle (12 F)', en: 'Dry it by the stove (12 F)' }, outcome: { fr: "Une heure près du poêle, douze francs de bois. Le moteur repart, tiède et content.", en: 'Twelve francs of firewood by the stove. The engine starts again, warm and content.' }, effects: { francs: -12 } },
+      { id: 'go', label: { fr: 'Partir quand même', en: 'Go anyway' }, outcome: { fr: "Il crachera, il hésitera, il prendra. Il faudra regarder les bougies de près.", en: 'It will spit, hesitate, catch. The plugs will need a close look.' }, effects: { wear: 8 } },
     ],
   },
 ];

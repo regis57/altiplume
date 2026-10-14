@@ -153,8 +153,11 @@ export interface EventChoice {
   readonly id: string;
   readonly label: Text;
   readonly outcome: Text;
-  /** Effets : francs (peut être négatif), heures de retard, usure de l'avion, moral. */
-  readonly effects: Readonly<Partial<Record<'francs' | 'delayHours' | 'wear' | 'morale' | 'stamps', number>>>;
+  /**
+   * Effets : francs (peut être négatif), heures d'attente (la piste reste fermée autant),
+   * usure de l'avion, moral, cachets.
+   */
+  readonly effects: Readonly<Partial<Record<'francs' | 'waitHours' | 'wear' | 'morale' | 'stamps', number>>>;
 }
 
 export interface EventCard {
