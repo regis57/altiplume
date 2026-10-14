@@ -336,4 +336,13 @@ export const MIGRATIONS: readonly Migration[] = [
       DELETE FROM company_hand WHERE card = 'e-nuit';
     `,
   },
+  {
+    version: 15,
+    name: 'fuseau-du-joueur',
+    sql: `
+      -- La nuit du jeu suit l'heure du joueur (14/10) : son fuseau horaire, dit par son
+      -- navigateur. Par défaut, celui de Paris.
+      ALTER TABLE players ADD COLUMN timezone TEXT NOT NULL DEFAULT 'Europe/Paris';
+    `,
+  },
 ];

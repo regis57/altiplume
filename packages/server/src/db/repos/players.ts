@@ -7,6 +7,7 @@ export interface Player {
   readonly email: string;
   readonly nickname: string;
   readonly locale: string;
+  readonly timezone: string;
   readonly ageConfirmed: boolean;
   readonly termsVersion: string;
   readonly termsAcceptedAt: number;
@@ -15,13 +16,13 @@ export interface Player {
 }
 
 interface Row {
-  id: string; email: string; nickname: string; locale: string; age_confirmed: number;
+  id: string; email: string; nickname: string; locale: string; timezone: string; age_confirmed: number;
   terms_version: string; terms_accepted_at: number; created_at: number; last_seen_at: number;
 }
 
 function toPlayer(r: Row): Player {
   return {
-    id: r.id, email: r.email, nickname: r.nickname, locale: r.locale,
+    id: r.id, email: r.email, nickname: r.nickname, locale: r.locale, timezone: r.timezone ?? 'Europe/Paris',
     ageConfirmed: r.age_confirmed === 1, termsVersion: r.terms_version,
     termsAcceptedAt: r.terms_accepted_at, createdAt: r.created_at, lastSeenAt: r.last_seen_at,
   };
@@ -70,6 +71,10 @@ export function touchPlayer(db: Database, id: string, now: number): void {
 
 export function renamePlayer(db: Database, id: string, nickname: string): void {
   db.prepare('UPDATE players SET nickname = ?, nickname_key = ? WHERE id = ?').run(nickname, foldNickname(nickname), id);
+}
+
+export function setPlayerTimezone(db: Database, id: string, timezone: string): void {
+  db.prepare('UPDATE players SET timezone = ? WHERE id = ?').run(timezone, id);
 }
 
 export function setPlayerLocale(db: Database, id: string, locale: string): void {

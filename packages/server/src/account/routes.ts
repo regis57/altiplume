@@ -2,7 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import type { AppContext } from '../context.ts';
 import { transaction } from '../db/database.ts';
 import { audit } from '../db/repos/audit.ts';
-import { deletePlayer, nicknameTaken, renamePlayer, setPlayerLocale } from '../db/repos/players.ts';
+import { deletePlayer, nicknameTaken, renamePlayer, setPlayerLocale, setPlayerTimezone } from '../db/repos/players.ts';
+import { isTimezone } from '../sim/heure.ts';
 import { endSession, requirePlayer } from '../auth/session.ts';
 import { findCompanyByPlayer, loadCompanyState } from '../db/repos/companies.ts';
 import { cleanNickname, isLocale, validateNickname } from '../auth/validation.ts';
@@ -11,7 +12,7 @@ const patchSchema = {
   body: {
     type: 'object',
     additionalProperties: false,
-    properties: { nickname: { type: 'string', maxLength: 64 }, locale: { type: 'string', maxLength: 5 } },
+    properties: { nickname: { type: 'string', maxLength: 64 }, locale: { type: 'string', maxLength: 5 }, timezone: { type: 'string', maxLength: 64 } },
   },
 } as const;
 
@@ -32,14 +33,19 @@ const deleteSchema = {
 export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): void {
   app.get('/v1/account', { preHandler: requirePlayer }, async (request) => {
     const p = request.player!;
-    return { id: p.id, email: p.email, nickname: p.nickname, locale: p.locale, createdAt: p.createdAt, termsVersion: p.termsVersion };
+    return { id: p.id, email: p.email, nickname: p.nickname, locale: p.locale, timezone: p.timezone, createdAt: p.createdAt, termsVersion: p.termsVersion };
   });
 
   app.patch('/v1/account', { schema: patchSchema, preHandler: requirePlayer }, async (request, reply) => {
     const p = request.player!;
-    const body = request.body as { nickname?: string; locale?: string };
+    const body = request.body as { nickname?: string; locale?: string; timezone?: string };
     const now = ctx.now();
 
+    if (body.timezone !== undefined) {
+      // Le fuseau du navigateur, pour que la nuit du jeu soit celle du joueur.
+      if (!isTimezone(body.timezone)) return reply.code(400).send({ error: 'invalid', fields: ['timezone_unsupported'] });
+      setPlayerTimezone(ctx.db, p.id, body.timezone);
+    }
     if (body.locale !== undefined) {
       if (!isLocale(body.locale)) return reply.code(400).send({ error: 'invalid', fields: ['locale_unsupported'] });
       setPlayerLocale(ctx.db, p.id, body.locale);
