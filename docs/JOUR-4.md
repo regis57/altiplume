@@ -80,15 +80,24 @@ chapitres 45 à 48, est dans le [Journal](Journal) ; les règles du monde sont d
     l'envoi et revenant à chaque écriture. Un contrôle GitHub la retire à l'ouverture de
     chaque PR, et d'un clic (*Actions → Run workflow*) nettoie les anciennes, d'abord en
     simulation. Dix tests, contre-épreuve faite, essayé sur les 92 vraies descriptions.
+12. **La sauvegarde hors du NAS, restaurée pour de vrai.** Jusqu'ici, la copie quotidienne de
+    la base vivait sur le NAS lui-même : elle ne protégeait pas de la perte du NAS. Une tâche
+    Hyper Backup la copie maintenant chaque jour à 03 h 05 sur un disque USB, **chiffrée**, et
+    une restauration d'essai a réussi le soir même. Elle a aussi montré un écart, écrit tel
+    quel dans le [manifeste](Securite) : la rotation choisie (Smart Recycle) gardait des
+    versions bien plus de 30 jours, alors que la page de confidentialité en annonce 30. Le
+    joueur l'a corrigée dans l'heure (« à partir des versions les plus anciennes », 3
+    versions) ; la mesure définitive viendra à la première rotation de nuit.
 
 ## La journée en une phrase
 
-Quatorze PR fusionnées, de la #90 à la #103, toutes vertes, toutes publiées sous le nom de
+Quinze PR fusionnées, de la #90 à la #104, toutes vertes, toutes publiées sous le nom de
 l'auteur : le jeu a cessé de dire une chose et d'en faire une autre — sur les boutons,
 sur les imprévus, sur l'heure de la nuit, sur les traits des pilotes, sur les contrats
 et sur l'embauche — ses chiffres ont été relus avec ses textes (la chance, le premier
 mois), il dit au joueur où il va, et il a pris les couleurs des quatre saisons jusque
-dans sa musique, et il ne laisse plus d'autre signature que celle de son auteur.
+dans sa musique, il ne laisse plus d'autre signature que celle de son auteur, et sa base
+a désormais une copie chiffrée hors du NAS, restaurée une fois.
 
 ## Ce qu'on en retient
 
@@ -101,20 +110,24 @@ Le même crible, passé sur les chiffres, a donné le pendant : **une mesure que
 regarde ne vaut pas mieux qu'une promesse que personne ne confronte au code.** Les
 simulations du deuxième mois existaient depuis longtemps ; c'est en les lisant à côté du
 texte du joueur (« trois semaines à rejouer la même vallée ») qu'elles ont dit ce qu'elles
-disaient. La dernière affaire de la soirée le redit : une règle vérifiée seulement du côté de ce qu'on écrit
-reste une intention ; elle se vérifie à l'arrivée.
+disaient. Les deux dernières affaires de la soirée le redisent : une règle vérifiée seulement du
+côté de ce qu'on écrit reste une intention, et une copie jamais restaurée n'est qu'une
+hypothèse. Une règle se vérifie à l'arrivée ; une sauvegarde, en la restaurant ; et une
+durée de conservation, en la relisant contre ce qu'on a promis.
 
 ## Où en est le projet, ce soir
 
 4 régions et 24 escales, 6 avions, 10 pilotes (cinq femmes, cinq hommes), 106 cartes,
 4 saisons et 4 musiques ; **257 tests**, six parcours de bout en bout dans un vrai
 navigateur ; quinze migrations de base de données. Les garanties du jour 3 tiennent toujours : A+ sur les
-trois notes, zéro traqueur, rien d'ouvert chez l'auteur.
+trois notes, zéro traqueur, rien d'ouvert chez l'auteur. Une copie chiffrée de la base est
+sur un disque USB, restaurée une fois (le 14 octobre).
 
 À faire ensuite : lancer une fois le contrôle « Description des PR » (*Actions → Run
 workflow*, d'abord sans cocher la case, puis en la cochant) pour nettoyer les 92 anciennes.
-Puis, sans urgence : la sauvegarde quotidienne du NAS vers un disque USB
-(chiffrée, avec un test de restauration), le passage à Ubuntu 26 après le 19 octobre dans
+Puis : constater, après la nuit de 03 h 05, que la copie USB ne garde plus que 3 versions,
+et relire la page de confidentialité à ce moment-là. Sans urgence :
+la restauration d'essai chaque trimestre, le passage à Ubuntu 26 après le 19 octobre dans
 une PR dédiée, et l'accessibilité, à mesurer avec les personnes concernées. Le crible des
 cartes, des saisons, de l'économie et de la chance est fini.
 

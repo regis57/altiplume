@@ -220,11 +220,38 @@ dernières. Le jeu ne s'arrête pas.
 
 ### Hors du NAS
 
-Un disque qui meurt emporte le volume *et* le dossier de sauvegardes. Dans **Hyper
-Backup**, ajouter le dossier `docker/altiplume/sauvegardes` à une tâche vers un
-support externe (disque USB, autre NAS, ou un stockage distant). La tâche Hyper Backup
-se planifie *après* 03:00, par exemple 04:00. Les sauvegardes font quelques centaines
-de kilo-octets : n'importe quel support convient.
+Un disque qui meurt emporte le volume *et* le dossier de sauvegardes. Depuis le 14 octobre
+2026, une tâche **Hyper Backup**, nommée `altiplume`, en fait chaque jour une copie
+**chiffrée** sur un disque USB branché au NAS. Elle se lance à **03:05** : après la copie
+du jeu (03:00), qui ne prend que quelques secondes. Les copies font quelques centaines de
+kilo-octets : n'importe quel disque convient.
+
+Pour la refaire (nouveau disque, nouveau NAS) :
+
+1. Brancher le disque ; **Panneau de configuration → Périphérique externe** : il doit
+   apparaître. Le formater (**ext4**) s'il est neuf ; le formatage efface tout.
+2. **Hyper Backup → + → Tâche de sauvegarde de données →** destination dossier local /
+   USB (le dossier partagé du disque, répertoire `altiplume`).
+3. Dossiers : déplier `docker` → `altiplume` et ne cocher **que** `sauvegardes`. Ne jamais
+   cocher `altiplume` ni `docker` en entier : le `.env` (jeton du tunnel, clé d'envoi des
+   courriels, clés VAPID) ne doit pas quitter le NAS. Applications : aucune.
+4. **Chiffrement côté client** coché, avec un mot de passe long, rangé dans le gestionnaire
+   de mots de passe **avant** de continuer : sans lui, la copie est illisible, et il n'existe
+   aucune récupération.
+5. Planification : tous les jours à 03:05.
+6. **Rotation : « depuis les versions les plus anciennes », 3 versions.** Pas « Smart
+   Recycle » : chaque version contient déjà les trente copies de la base ; Smart Recycle
+   en garderait des versions pendant des mois, alors que la page de confidentialité annonce
+   30 jours. Cette règle se relit contre la page de confidentialité à chaque changement.
+7. Premier lancement, puis vérifier la taille (quelques kilo-octets, pas des gigaoctets :
+   sinon trop de dossiers cochés) et la liste des versions (icône horloge).
+
+À la création de la tâche, la rotation avait été laissée en Smart Recycle ; elle a été
+corrigée le soir même (point 6), voir [Sécurité](Securite).
+
+Les secrets ne sont pas dans cette copie, volontairement. Avec un NAS neuf : le jeton du
+tunnel se récupère chez Cloudflare, la clé d'envoi des courriels se régénère chez Brevo,
+les clés VAPID se refont avec `scripts/nas-vapid.sh`.
 
 ### Restaurer
 
@@ -238,7 +265,16 @@ de kilo-octets : n'importe quel support convient.
 3. **Projet → Démarrer**, puis `https://altiplume.com/healthz`.
 
 À tester une fois par trimestre, sur une copie, pour être sûr que ça marche le jour
-où on en aura besoin. Noter la date du test ici : —
+où on en aura besoin. Noter la date du test ici :
+
+| Date | Ce qui a été essayé | Résultat |
+|---|---|---|
+| 14 octobre 2026 | Restauration d'essai depuis la tâche Hyper Backup `altiplume` (disque USB) | Réussi |
+| 14 octobre 2026 | Lecture de la fenêtre de la tâche : dossiers copiés, rotation | Seul `sauvegardes` est coché ; rotation « versions les plus anciennes », 3 versions |
+
+Une restauration réelle ramène aussi les comptes effacés depuis la copie : le jeu ne garde
+volontairement aucune liste de comptes effacés, donc on ne sait pas lesquels reviendraient.
+Avant de rouvrir le jeu après une restauration réelle, décider comment traiter ce point.
 
 ## En cas de problème
 

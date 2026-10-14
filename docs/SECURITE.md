@@ -78,6 +78,12 @@ progresse, sans être encore mesurée : l'état de chaque condition d'une route 
 mots aux lecteurs d'écran, pas seulement par la couleur, et les légendes de l'album
 restent entières dans la page. Un test de mise en page rejoint les contrôles de chaque PR.
 
+**Le fait marquant du soir (14 octobre)** : la sauvegarde hors du NAS existe, et sa
+restauration a été essayée pour de bon (voir « Un constat du 14 octobre » plus bas). Elle
+a aussi montré un écart avec ce qui est promis aux joueurs : la rotation choisie gardait
+trop longtemps. Corrigé le soir même ; la mesure définitive viendra à la première
+rotation de nuit.
+
 ### Les contrôles automatiques (12 octobre 2026)
 
 Le tableau du haut regarde le site **de l'extérieur**. Ceux-ci regardent **de
@@ -237,6 +243,44 @@ jour ; c'était une intention, pas une mesure, et la mesure l'a démentie. Déso
 elle est datée. **À refaire** : après tout changement de la box ou du NAS, et une fois
 par trimestre ; le service de médias à distance reste fermé tant qu'il n'est pas
 décidé de l'ouvrir.
+
+## Un constat du 14 octobre : la sauvegarde hors du NAS
+
+1. **Le constat.** Jusqu'à ce soir, la copie quotidienne de la base (30 copies, contrôlée à
+   chaque nuit) vivait sur le NAS lui-même. Elle protège d'une erreur ou d'une base
+   abîmée, pas de la perte du NAS ou de son disque. La copie hors du NAS était une
+   intention, écrite dans la conception depuis le début ; ce n'était pas un fait.
+2. **Ce qui a été mis en place.** Une tâche Hyper Backup, nommée `altiplume`, copie chaque
+   jour à 03 h 05 (cinq minutes après la copie du jeu) sur un disque USB branché au NAS.
+   La copie est **chiffrée côté client** : le mot de passe est dans le gestionnaire de
+   mots de passe de l'auteur et il n'existe aucun moyen de le récupérer. Au premier jour,
+   la copie ne pèse que quelques kilo-octets. Seul le dossier des sauvegardes de la base
+   est copié : dans la fenêtre de la tâche, `sauvegardes` est coché, `docker` et
+   `altiplume` sont en sélection partielle, `journal` est décoché. Le fichier `.env`
+   (jeton du tunnel, clés) ne quitte donc pas le NAS.
+3. **Ce qui a été mesuré.** Une restauration d'essai depuis la tâche, le 14 octobre : l'écran
+   de fin indique « Réussi ». Une sauvegarde jamais restaurée n'est qu'une hypothèse ;
+   celle-ci a été restaurée une fois.
+4. **L'écart constaté.** La rotation de la tâche est en « Smart Recycle » (versions
+   horaires, puis journalières, puis hebdomadaires, gardées longtemps). Or la page de
+   confidentialité et le registre des traitements annoncent que les sauvegardes sont
+   gardées 30 jours, et qu'un compte effacé en disparaît au plus tard 30 jours après.
+   Chaque version de la copie contient déjà les trente copies de la base : en
+   Smart Recycle, un compte effacé peut donc survivre des mois, voire des années, sur le
+   disque USB. Entre la création de la tâche et la correction (quelques heures, sur une
+   tâche vieille d'un jour), cette promesse n'était donc pas tenue pour la copie USB.
+5. **La correction, faite le 14 octobre au soir.** Rotation « à partir des versions les
+   plus anciennes », **3 versions** au plus, lue sur la fenêtre des paramètres de la tâche.
+   Une donnée ne dépasse alors guère 30 jours plus 2 sur le disque, plus le ménage interne
+   de Hyper Backup, qui n'est pas instantané. Elle s'applique à la prochaine sauvegarde
+   (cette nuit, 03 h 05), qui supprime les versions en trop. **Reste à constater** : la
+   liste des versions de la tâche (icône horloge) n'en compte plus que 3 au plus. Ce
+   constat sera daté ici, et la page de confidentialité relue à ce moment-là.
+
+**La leçon.** Une copie qui n'a jamais été restaurée et une durée de conservation qu'on
+ne relit pas après l'avoir réglée sont deux intentions de plus. Désormais : la restauration
+d'essai est refaite **chaque trimestre** (date notée dans [Déploiement](Deploiement)), et
+toute modification de la rotation se relit contre la page de confidentialité.
 
 ## Ce qui a été écarté, et pourquoi
 
