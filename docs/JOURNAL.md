@@ -719,3 +719,17 @@ Puis une capture plus gênante : l'imprévu disait « le pilote dort sur place �
 Restait la carte la plus étrange : « Une carte qui me donne la nuit, alors que ma journée réelle commence, c'est bizarre. » Le jeu vivait à l'heure du serveur : sa « nuit » pouvait tomber en plein après-midi d'un joueur. Or le jeu avance au rythme du monde réel — c'est sa règle première — et un monde qui prétend suivre vos journées n'a pas le droit de se tromper de nuit. **La nuit du jeu est désormais celle du joueur** : de 21 h à 6 h, à son heure à lui, que le navigateur confie au serveur sans rien demander. Les vols de nuit, le risque nocturne, les pilotes « Nocturne » : tout suit l'heure de celui qui joue.
 
 Trois PR, une même leçon : une carte est une promesse. Quand le texte dit « le vol se fait », un vol doit se faire ; quand il dit « vous dormez sur place », rien ne doit décoller ; quand il dit « la nuit », il doit faire nuit chez vous. Le reste du jeu — contrats, opportunités, saisons, pilotes — passera au même crible.
+
+## Chapitre 46 — Le cap et le crible (14 octobre 2026, 13 h – 15 h 30)
+
+« On doit travailler sur quoi à la suite ? » Une feuille de route, par type : l'exploitation, la documentation, la cohérence du jeu, l'expérience du joueur. Le joueur a dit oui aux quatre, sans la sauvegarde.
+
+**Le cap.** Le 13, un joueur avait dix cachets, une route grisée et la conviction qu'il y avait un piège. Il n'y en avait pas ; il y avait trois endroits à recouper — les routes, l'album, la caisse. Une fiche au sommet de l'aérodrome dit désormais, en une fois : la prochaine route, ses deux conditions chacune avec sa coche, les escales qui restent à livrer, les cachets qui manquent. À mesure qu'on livre, les escales sortent de sa liste ; et elle parle anglais quand on parle anglais.
+
+**Le crible.** Soixante-treize contrats, vingt imprévus, treize opportunités, dix pilotes et leurs trente scènes, huit traits, quatre saisons — relus pour leur *vérité* plutôt que leur style, puis comparés au code. Onze constats, rendus avant toute correction, parce qu'une moitié relevait de la mécanique et l'autre du ton, et que le ton est au joueur.
+
+Ce qu'on a trouvé tient en une phrase : **le code faisait ce qu'il devait, et c'est le texte qui promettait autre chose.** Un trait dont le texte parlait au féminin de Prosper, de Gaspard et de Teodor. « Cœur de village » qui promettait du moral et donnait de la chance. « Nocturne » qui disait « de nuit comme de jour » et rendait la nuit deux fois plus sûre. Trois contrats qui exigeaient quelque chose « avant midi » à des joueurs qui les tiraient le soir. Des semences « de printemps » en janvier. Et deux cartes d'embauche avec un décor — « quelqu'un sur le ponton avec une lanterne » — qui pouvaient faire arriver un pilote des plateaux, parce que le pilote qui arrive est toujours le suivant de la liste, et que c'est précisément ce qui garde les histoires dans l'ordre.
+
+Trois décisions au joueur, trois PR : les traits, les contrats, l'embauche. Chacune a son test, lancé d'abord sur l'ancien texte — il échoue —, puis sur le nouveau. Un trait ne peut plus parler au féminin ; un contrat ne peut plus citer midi ; une carte d'embauche ne peut plus nommer un village.
+
+La journée se ferme sur une page de plus au wiki : le jour 4, *les cartes disent vrai*. Reste le crible des saisons et celui de l'économie ; la sauvegarde viendra quand le joueur le dira.
