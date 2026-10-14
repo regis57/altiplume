@@ -104,7 +104,7 @@ l'album.
 La Sterne n'atteint les trois premières qu'avec un pilote de Longues routes (14 × 1,2) ;
 le **Goéland** atteint tout. Chaque première livraison vaut 3 cachets ; les six îles
 collent « Tout l'Archipel ». Deux imprévus (la lanterne du ponton fendue, l'invitation des îles),
-une opportunité (quelqu'un sur le ponton), et le Goéland, vendu à Port-Sel une fois la
+une opportunité (un pilote qui se présente au hangar), et le Goéland, vendu à Port-Sel une fois la
 Côte ouverte.
 
 ## La Forêt de Cuivre (*Copperwood*) — v0.3
@@ -145,7 +145,7 @@ une arrivée après le coucher du soleil vaut « Vol de nuit ».
 
 Douze contrats, deux imprévus (un hêtre tombé du chargement de bois au bout de la piste, l'humidité qui
 fait tousser le moteur) et trois opportunités (le Pic du receveur de Villechaudron,
-le relevé des clairières du garde, quelqu'un à la lisière) ne se tirent qu'une fois
+le relevé des clairières du garde, une lettre de candidature) ne se tirent qu'une fois
 la route ouverte. Deux contrats préparent la suite : la cire pour le moule de
 Sonnefeuille, et une lettre pour le creux du Hêtre-Roi.
 
@@ -233,7 +233,9 @@ Dix pilotes, cinq femmes et cinq hommes, dix lieux d'origine.
 > un homme et une femme. Un test la vérifie à chaque PR.
 
 L'ordre du tableau est aussi l'ordre de recrutement : la carte « pilote de passage »
-propose toujours le premier qui n'est pas encore embauché. Chacun a deux
+propose toujours le premier qui n'est pas encore embauché ; les trois cartes de ce
+genre ne disent donc ni d'où il vient ni où il se présente, pour que le texte ne
+démente jamais le pilote qui arrive. Chacun a deux
 traits (qui changent des chiffres de la simulation, pas seulement une phrase) et une
 histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 
