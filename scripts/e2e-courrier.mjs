@@ -79,6 +79,7 @@ try {
   assert(capDepart.includes('Prochaine route : Côte de Saline'), `le cap nomme la Côte (${capDepart})`);
   assert(capDepart.includes('Toute la vallée') && capDepart.includes('Pont-de-Brume'), `le cap liste les escales à livrer (${capDepart})`);
   assert(/Gagner encore \d+ cachets \(\d+ en caisse sur 10\)/.test(capDepart), `le cap compte les cachets (${capDepart})`);
+  assert(capDepart.includes("Grive d'occasion"), 'le cap signale le deuxième avion à qui n\'en a qu\'un');
 
   // On s'assure d'avoir un contrat précis en main : le journal pour Pont-de-Brume.
   const db = new DatabaseSync(dbPath);

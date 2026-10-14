@@ -212,9 +212,9 @@ année de jeu*.
 | **Martinet M-1** | Swift M-1 | monoplan rapide | 10 | 1 | 24 l/h | 86 % | moyenne | 3 200 F |
 | **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F (5 600 F en occasion, aux Messageries de Pont-de-Brume) |
 
-| **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 5 400 F (4 400 F en occasion, à Port-Sel) |
+| **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 4 725 F (3 850 F en occasion, à Port-Sel) |
 | **Goéland G-4** | Gull G-4 | hydravion long-courrier | 22 | 4 | 16 l/h | 91 % | **eau** | 7 800 F (6 600 F en occasion, à Port-Sel) |
-| **Pic P-1** | Woodpecker W-1 | monoplan à aile haute | 12 | 2 | 13 l/h | 93 % | **clairière** | 4 200 F (3 600 F en occasion, à Villechaudron) |
+| **Pic P-1** | Woodpecker W-1 | monoplan à aile haute | 12 | 2 | 13 l/h | 93 % | **clairière** | 3 675 F (3 150 F en occasion, à Villechaudron) |
 
 Six oiseaux, six caractères : la Grive pardonne tout, le Martinet file et
 casse, le Héron porte et exige une grande piste, la Sterne se pose sur l'eau — et

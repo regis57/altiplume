@@ -293,6 +293,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         : t('goal.earnStamps').replace('{n}', String(route.cost - c.stamps)).replace('{have}', String(c.stamps)).replace('{cost}', String(route.cost))));
       cap.append(steps);
       if (hasPage && enough) cap.append(el('p', 'aide', t('goal.ready').replace('{button}', quote(t('game.openRoute')))));
+      // Le palier du premier mois : tant qu'on n'a qu'un avion, le cap le dit.
+      if (c.planes.length === 1) cap.append(el('p', 'aide', t('goal.secondPlane')));
     } else {
       // Toutes les routes sont ouvertes : l'album devient le cap.
       const missing = world.stamps.length - c.album.length;

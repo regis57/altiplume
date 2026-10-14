@@ -132,7 +132,7 @@ describe('la Côte de Saline — l\'hydravion', () => {
     const album = after.album.map((a: { id: string }) => a.id);
     expect(album).toContain('s-hydravion');
     expect(album).toContain('s-anse-aux-goemons');
-    expect(after.francs).toBeGreaterThan(20000 - 1500 - 4400); // le contrat a payé
+    expect(after.francs).toBeGreaterThan(20000 - 1500 - 3850); // le contrat a payé
     await t.app.close();
   });
 

@@ -100,7 +100,7 @@ describe('la Forêt de Cuivre — les clairières', () => {
     expect(r.statusCode).toBe(200);
     const s = r.json();
     expect(s.planes.map((p: { model: string }) => p.model)).toEqual(['grive', 'pic']);
-    expect(s.francs).toBe(20000 - 700 - 3600);
+    expect(s.francs).toBe(20000 - 700 - 3150);
     const pic = s.planes[1].id; const prosper = s.pilots[0].id;
     // Sonnefeuille : 10 lieues à 13 lieues/h, trois quarts d'heure ; le Pic décolle de la Croisette sans piste roulée.
     r = await t.fly('c-simples', pic, prosper);

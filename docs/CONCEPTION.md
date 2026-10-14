@@ -124,8 +124,10 @@ La rentabilité se joue sur le choix des lignes, l'adéquation avion/ligne, le r
 
 Ce qui fait grandir une séance d'une heure, c'est la **flotte**, parce qu'un vol lointain se lance en partant et rapporte pendant l'absence : environ **125 F** avec la Grive seule, **210 F** avec un Pic et un hangar à deux places, **235 F** avec un deuxième pilote, **330 F** avec la Côte et la Sterne, **460 F** avec l'Archipel, le Goéland et quatre pilotes (avant imprévus, hors prime d'hiver). Ouvrir une route sans l'avion qui va avec ne rapporte presque rien : la Grive seule n'atteint que deux escales de la Forêt.
 
+**Le premier mois** (crible du 14 octobre 2026). À une heure par jour, la vallée est livrée en cinq jours (neuf pour neuf joueurs sur dix) et la route suivante s'ouvre dans la foulée ; mais la Grive n'y atteint qu'une escale, et le deuxième avion arrivait vers le jour 36. Trois à quatre semaines à rejouer la même vallée, c'était trop. Deux décisions : la **Grive d'occasion** (1 500 F, plus 700 F de hangar) passe deux fois plus souvent dans les cartes — deux Grives doublent les séances vers le jour 16 — et le cap la signale tant qu'on n'a qu'un avion ; le **Pic et la Sterne baissent d'un huitième** (3 675 F et 4 725 F ; 3 150 F et 3 850 F en occasion), ce qui ramène le Pic vers le jour 28 avec une Grive, plus tôt avec deux.
+
 ### 4.6 Les saisons
-Une saison = deux semaines réelles, une année = huit semaines. Chaque saison modifie la météo par région et apporte un événement (la Fête des Lanternes, la Grande Brume, la Moisson de Saline) avec ses cartes et ses décorations.
+Les saisons suivent le vrai calendrier (printemps le 20 mars, été le 21 juin, automne le 23 septembre, hiver le 21 décembre) : quand il neige chez le joueur, il neige sur la Croisette. Chaque saison change une ou deux règles, jamais plus, et aucune ne punit l'absence : les semences au printemps, moins de brume et de vent de mer l'été, plus de brume l'automne, des vols plus longs mais mieux payés l'hiver. Deux contrats et un imprévu par saison ne se tirent qu'en leur temps ; la scène change de couleurs. Le détail est dans le [Monde](MONDE.md). (L'ébauche d'origine — deux semaines par saison, des fêtes à événements — a été abandonnée le 12 octobre au profit du calendrier réel.)
 
 ### 4.7 Pourquoi on revient — les récompenses
 
