@@ -16,7 +16,7 @@ import { deriveSeed } from '../sim/rng.ts';
 import { findCard, findPilot, localizeScene } from '../world/index.ts';
 import { cleanCompanyName, suggestNames } from '../world/names.ts';
 import {
-  busyUntil, currentFatigue, discardCard, dispatch, fatiguePoints, listFlights, listHand, listLedger, openRegion, pendingEvent, placeDecoration, planDispatch, playCard, restedAt, settle, unlockedRegions, upgradeZone, type News,
+  busyUntil, currentFatigue, discardCard, dispatch, fatiguePoints, listFlights, listHand, listLedger, openRegion, pendingEvent, placeDecoration, planDispatch, playCard, restedAt, runwayClosedUntil, settle, unlockedRegions, upgradeZone, type News,
 } from './sim.ts';
 import type { Database } from '../db/database.ts';
 
@@ -103,6 +103,7 @@ function view(db: Database, state: CompanyState, now: number, news: News[] = [])
     album: state.stamps.map((s) => ({ id: s.stamp, earnedAt: s.earnedAt })),
     hand: listHand(db, state.company.id),
     pendingEvent: pendingEvent(db, state.company),
+    runwayClosedUntil: ((t) => (t !== null && t > now ? t : null))(runwayClosedUntil(db, state.company.id)),
     flights,
     logbook: listLedger(db, state.company.id),
     news,

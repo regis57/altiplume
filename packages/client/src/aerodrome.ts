@@ -55,6 +55,7 @@ interface CompanyView {
   album: { id: string; earnedAt: number }[];
   hand: { card: string; drawnAt: number }[];
   pendingEvent: string | null;
+  runwayClosedUntil: number | null;
   flights: Flight[];
   logbook: { at: number; kind: string; francs: number; ref: string | null }[];
   news: News[];
@@ -590,6 +591,13 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
         send.disabled = true;
         send.title = t('card.runwayBlocked');
         li.append(el('p', 'aide bloque', t('card.runwayBlocked')));
+      } else if (c.runwayClosedUntil && c.runwayClosedUntil > c.now) {
+        // On a choisi d'attendre : la piste rouvre à l'heure dite, pas avant.
+        const at = new Date(c.runwayClosedUntil).toLocaleTimeString(getLocale() === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+        const text = t('card.runwayClosed').replace('{time}', at);
+        send.disabled = true;
+        send.title = text;
+        li.append(el('p', 'aide bloque', text));
       }
       send.addEventListener('click', () => dispatchForm(api, setMessage, world, c, card.id, li));
       actions.append(send);
