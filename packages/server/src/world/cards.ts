@@ -491,7 +491,9 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     offer: { type: 'plane', model: 'martinet', price: 2600 },
   },
   {
-    kind: 'opportunity', id: 'o-grive', weight: 2,
+    // Poids 1 depuis le 14/10 : c'est le palier du premier mois (deux Grives doublent
+    // les séances vers le jour 16, là où le Pic seul attendait le jour 30).
+    kind: 'opportunity', id: 'o-grive', weight: 1,
     title: { fr: 'Une Grive à Moulin-Gris', en: 'A Thrush at Greymill' },
     text: { fr: "Le meunier de Moulin-Gris envoyait sa farine par avion ; il l'envoie maintenant par camion. Sa Grive dort dans la grange, entoilée de frais, avec une odeur de farine qui ne partira jamais.", en: 'The Greymill miller used to send his flour by air; now he sends it by lorry. His Thrush sleeps in the barn, freshly doped, with a smell of flour that will never come out.' },
     offer: { type: 'plane', model: 'grive', price: 1500 },
@@ -525,7 +527,7 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     kind: 'opportunity', id: 'o-sterne', weight: 2, region: 'saline',
     title: { fr: 'Une Sterne à Port-Sel', en: 'A Tern at Saltharbour' },
     text: { fr: "Un hydravion des douanes est réformé à Port-Sel : flotteurs refaits, moteur neuf, et un capitaine qui préfère le vendre à quelqu'un qui portera du courrier plutôt qu'à la ferraille.", en: 'A customs seaplane is being retired at Saltharbour: floats redone, new engine, and a captain who would rather sell it to someone who will carry mail than to the scrapyard.' },
-    offer: { type: 'plane', model: 'sterne', price: 4400 },
+    offer: { type: 'plane', model: 'sterne', price: 3850 },
   },
   {
     kind: 'opportunity', id: 'o-carte-marine', weight: 3, region: 'saline',
@@ -551,7 +553,7 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     kind: 'opportunity', id: 'o-pic', weight: 2, region: 'cuivre',
     title: { fr: 'Le Pic du receveur', en: "The postmaster's Woodpecker" },
     text: { fr: "Le receveur de Villechaudron a voulu faire porter le courrier de la forêt par un Pic. Il n'a jamais appris à le piloter. L'avion attend sous une bâche, aile haute et pneus ballons, comme un oiseau qui ne sait pas qu'il vole.", en: "The Kettleby postmaster once meant to have the forest mail carried by a Woodpecker. He never learned to fly it. It waits under a tarpaulin, high wing and balloon tyres, like a bird that doesn't know it can fly." },
-    offer: { type: 'plane', model: 'pic', price: 3600 },
+    offer: { type: 'plane', model: 'pic', price: 3150 },
   },
   {
     kind: 'opportunity', id: 'o-releve', weight: 3, region: 'cuivre',

@@ -119,7 +119,7 @@ try {
   await page.waitForSelector('#aerodrome:not(.cache)');
   const offre = page.locator('#main .carte', { hasText: 'Une Sterne à Port-Sel' });
   assert((await offre.textContent()).includes('Pour le ponton : Sterne S-1'), "l'offre dit où va l'hydravion");
-  await offre.locator('button', { hasText: 'Acheter · 4400 F' }).click();
+  await offre.locator('button', { hasText: 'Acheter · 3850 F' }).click();
   await page.waitForSelector('#jeu-message.ok');
   assert((await page.textContent('#jeu-message')) === 'Sterne S-1 est amarré au ponton.', `le message dit ce qui s'est passé (${await page.textContent('#jeu-message')})`);
   await page.waitForSelector('#place-eau-1[data-modele=sterne]');

@@ -42,7 +42,7 @@ export const PLANES: readonly PlaneModel[] = [
       fr: "L'hydravion de la Côte : deux flotteurs, un moteur qui n'aime pas le sel, et la seule façon d'atteindre les îles. Il se pose sur l'eau, et seulement sur l'eau — il lui faut un ponton.",
       en: "The Shore's seaplane: two floats, an engine that dislikes salt, and the only way to reach the islands. It lands on water, and only on water — it needs a pontoon.",
     },
-    range: 14, capacity: 3, speed: 14, reliability: 0.9, runway: 'water', price: 5400, upkeep: 14, starter: false,
+    range: 14, capacity: 3, speed: 14, reliability: 0.9, runway: 'water', price: 4725, upkeep: 14, starter: false,
   },
   {
     id: 'goeland', archetype: 'seaplane',
@@ -60,6 +60,6 @@ export const PLANES: readonly PlaneModel[] = [
       fr: "L'avion des clairières : une aile haute, des volets qui descendent comme des paupières, des pneus ballons. Il décolle en cinquante pas et se pose là où un autre ferait demi-tour. Il n'est pas rapide ; il n'a pas besoin de l'être.",
       en: "The clearing plane: a high wing, flaps that drop like eyelids, balloon tyres. It takes off in fifty paces and lands where another plane would turn back. It isn't fast; it doesn't need to be.",
     },
-    range: 12, capacity: 2, speed: 13, reliability: 0.93, runway: 'clearing', price: 4200, upkeep: 9, starter: false,
+    range: 12, capacity: 2, speed: 13, reliability: 0.93, runway: 'clearing', price: 3675, upkeep: 9, starter: false,
   },
 ];
