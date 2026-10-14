@@ -11,7 +11,7 @@ fait », un vol doit se faire ; quand il dit « vous dormez sur place », rien n
 décoller ; quand il dit « la nuit », il doit faire nuit chez celui qui joue.
 
 Cette page est le résumé de la journée, dans l'ordre où elle s'est déroulée. Le récit,
-chapitres 45 à 47, est dans le [Journal](Journal) ; les règles du monde sont dans
+chapitres 45 à 48, est dans le [Journal](Journal) ; les règles du monde sont dans
 [Monde](Monde) ; la veille, dans [Jour 3](Jour-3).
 
 ## Dans l'ordre
@@ -75,15 +75,20 @@ chapitres 45 à 47, est dans le [Journal](Journal) ; les règles du monde sont d
     aucun fichier audio, coupée par défaut) : la valse du printemps, la ritournelle de
     l'été, la berceuse des feuilles à l'automne, le chant de la neige à l'hiver. C'est le
     calendrier réel qui choisit le thème, le même que celui des saisons du jeu.
+11. **La ligne qu'on n'avait pas écrite.** Les commits sont tous sous le nom de l'auteur,
+    mais 92 descriptions de PR sur 102 se terminaient par une signature d'outil, ajoutée à
+    l'envoi et revenant à chaque écriture. Un contrôle GitHub la retire à l'ouverture de
+    chaque PR, et d'un clic (*Actions → Run workflow*) nettoie les anciennes, d'abord en
+    simulation. Dix tests, contre-épreuve faite, essayé sur les 92 vraies descriptions.
 
 ## La journée en une phrase
 
-Douze PR fusionnées, de la #90 à la #101, toutes vertes, toutes publiées sous le nom de
+Quatorze PR fusionnées, de la #90 à la #103, toutes vertes, toutes publiées sous le nom de
 l'auteur : le jeu a cessé de dire une chose et d'en faire une autre — sur les boutons,
 sur les imprévus, sur l'heure de la nuit, sur les traits des pilotes, sur les contrats
 et sur l'embauche — ses chiffres ont été relus avec ses textes (la chance, le premier
 mois), il dit au joueur où il va, et il a pris les couleurs des quatre saisons jusque
-dans sa musique.
+dans sa musique, et il ne laisse plus d'autre signature que celle de son auteur.
 
 ## Ce qu'on en retient
 
@@ -96,16 +101,19 @@ Le même crible, passé sur les chiffres, a donné le pendant : **une mesure que
 regarde ne vaut pas mieux qu'une promesse que personne ne confronte au code.** Les
 simulations du deuxième mois existaient depuis longtemps ; c'est en les lisant à côté du
 texte du joueur (« trois semaines à rejouer la même vallée ») qu'elles ont dit ce qu'elles
-disaient.
+disaient. La dernière affaire de la soirée le redit : une règle vérifiée seulement du côté de ce qu'on écrit
+reste une intention ; elle se vérifie à l'arrivée.
 
 ## Où en est le projet, ce soir
 
 4 régions et 24 escales, 6 avions, 10 pilotes (cinq femmes, cinq hommes), 106 cartes,
-4 saisons et 4 musiques ; **247 tests**, six parcours de bout en bout dans un vrai
+4 saisons et 4 musiques ; **257 tests**, six parcours de bout en bout dans un vrai
 navigateur ; quinze migrations de base de données. Les garanties du jour 3 tiennent toujours : A+ sur les
 trois notes, zéro traqueur, rien d'ouvert chez l'auteur.
 
-À faire ensuite, sans urgence : la sauvegarde quotidienne du NAS vers un disque USB
+À faire ensuite : lancer une fois le contrôle « Description des PR » (*Actions → Run
+workflow*, d'abord sans cocher la case, puis en la cochant) pour nettoyer les 92 anciennes.
+Puis, sans urgence : la sauvegarde quotidienne du NAS vers un disque USB
 (chiffrée, avec un test de restauration), le passage à Ubuntu 26 après le 19 octobre dans
 une PR dédiée, et l'accessibilité, à mesurer avec les personnes concernées. Le crible des
 cartes, des saisons, de l'économie et de la chance est fini.
