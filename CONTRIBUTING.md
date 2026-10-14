@@ -22,6 +22,7 @@ volontairement étroit.
 - **Un sujet par pull request.** Une PR qui corrige un bug *et* renomme trois fichiers
   est une PR qu'on ne peut pas relire.
 - **Jamais de secret** dans un commit, même temporaire, même dans un fichier d'exemple.
+- **Description de la PR** : écrite par l'auteur, rien d'autre. Le contrôle « Description des PR » (`.github/workflows/description-pr.yml`) retire toute signature d'outil collée en bas du texte.
 
 ## Ce que la CI vérifie
 
