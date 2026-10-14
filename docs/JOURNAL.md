@@ -733,3 +733,24 @@ Ce qu'on a trouvé tient en une phrase : **le code faisait ce qu'il devait, et c
 Trois décisions au joueur, trois PR : les traits, les contrats, l'embauche. Chacune a son test, lancé d'abord sur l'ancien texte — il échoue —, puis sur le nouveau. Un trait ne peut plus parler au féminin ; un contrat ne peut plus citer midi ; une carte d'embauche ne peut plus nommer un village.
 
 La journée se ferme sur une page de plus au wiki : le jour 4, *les cartes disent vrai*. Reste le crible des saisons et celui de l'économie ; la sauvegarde viendra quand le joueur le dira.
+
+## Chapitre 47 — Le crible fini, et quatre saisons (14 octobre 2026, 15 h 30 – 19 h 40)
+
+Il restait trois pièces au crible, et le joueur les avait nommées : les saisons, l'équilibrage économique, la chance. Les deux premières demandaient de regarder des mesures en face ; la troisième, de trancher. Les trois ont été traitées d'un seul souffle.
+
+**Les saisons** d'abord, parce que c'est la plus courte : les quatre accroches, la table du Monde et le code ont été relus ensemble, et ils concordent. Une seule phrase mentait, dans le Monde — « chaque saison change *une* règle » —, alors que l'été et l'hiver en changent deux, ce que la table elle-même montrait. Corrigée en passant.
+
+**La chance.** L'audit l'avait relevé : elle se multipliait sur tous les pilotes embauchés, même ceux qui se reposent au hangar. Avec deux Porte-bonheur et trois Cœur de village, la compagnie gagnait ×1,53 d'occasions et divisait ses imprévus par autant — une fin de partie bien plus douce que rien ne l'annonçait, alors que chaque trait dit « ce pilote ». Le joueur a tranché : **la chance de la compagnie est celle de son pilote le plus chanceux**, au plus ×1,15. Un porte-bonheur suffit ; dix ne font pas une compagnie dix fois plus chanceuse. Un test le garde : sans pilote, 1 ; avec Prosper seul, 1,05 ; avec cinq pilotes chanceux, 1,15 et non 1,53.
+
+**L'économie.** Les simulations existaient depuis longtemps, à une heure de jeu par jour. Elles disaient la même chose, qu'on ne lisait pas : la vallée est livrée en cinq jours, la route suivante s'ouvre dans la foulée, mais la Grive seule n'y atteint qu'une escale, et le deuxième avion n'arrivait que vers le **jour 36**. Trois à quatre semaines à rejouer la même vallée. Le joueur a choisi de raccourcir ce premier mois sans rien offrir : **la Grive d'occasion passe deux fois plus souvent** parmi les cartes, et **le Pic et la Sterne baissent d'un huitième** — « donne un prix entier bien sûr », avait-il précisé. Les quatre prix tombent juste, puisque chacun se divise par huit : le Pic passe de 4 200 à 3 675 francs (3 600 → 3 150 en occasion), la Sterne de 5 400 à 4 725 (4 400 → 3 850). Un Pic vers le jour 28 avec une seule Grive, plus tôt avec deux ; et la fiche du cap signale la Grive d'occasion à qui n'a encore qu'un avion. En passant, la section « saisons » de la Conception décrivait encore l'ébauche abandonnée le 12 octobre — deux semaines par saison, des fêtes à événements — : elle dit maintenant ce que fait le jeu, le vrai calendrier.
+
+**Les musiques.** La dernière demande est venue en passant, et c'est la plus douce : *« Introduis une nouvelle musique de saison, seulement disponible suivant la saison en cours (total 4 musiques). Même esprit 8 bits, mais de saison. »* Le module de musique est devenu un moteur et quatre partitions, toujours sur le même principe — deux carrés et un triangle, comme la puce des vieilles consoles, aucun fichier audio, coupée par défaut et lancée sur un geste :
+
+- **Printemps** : la valse d'origine, inchangée (3/4, ré majeur).
+- **Été** : une ritournelle de plein jour, plus vive (4/4, sol majeur).
+- **Automne** : une berceuse des feuilles, plus lente (3/4, la mineur).
+- **Hiver** : le chant de la neige, notes longues (4/4, mi mineur).
+
+C'est le calendrier réel qui choisit — le même que celui des saisons du jeu : ce soir, il joue l'automne. Les notes se nomment comme sur une partition (« Fs5 »), et quatre tests vérifient qu'il y a bien quatre partitions, seize mesures pleines chacune, quatre signatures différentes, et que la valse boucle toujours en trente secondes. Les quatre thèmes ont aussi été rendus en fichier son, hors navigateur, avec les mêmes timbres, pour être vérifiés sans le jeu. « Sympa, les musiques, merci », a-t-il dit.
+
+Douze PR dans la journée, de la #90 à la #101 ; 247 tests ; le crible est fini. Il aura montré la même chose trois fois : un jeu ne dit vrai que si son texte, son code et ses chiffres sont lus ensemble. Une mesure que personne ne regarde ne vaut pas mieux qu'une promesse que personne ne confronte au code. Restent, quand le joueur le voudra : la sauvegarde du NAS, le passage à Ubuntu 26 après le 19 octobre, et l'accessibilité, à mesurer avec les personnes concernées.
