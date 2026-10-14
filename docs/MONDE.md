@@ -202,7 +202,9 @@ nouveau et les sacs des châtaignes ; les étrennes et le sirop de la Combe) et 
 imprévus (les giboulées, l'orage de chaleur, les feuilles sur la piste, la neige) ne
 se tirent qu'en leur temps. La première livraison de chaque saison colle sa page ;
 les quatre réunies collent « Une année » — c'est le repère de la v0.3 : *la première
-année de jeu*.
+année de jeu*. Et chaque saison a sa musique (14/10) : la valse de printemps, la
+ritournelle d'été, la berceuse d'automne, le chant d'hiver — même puce 8 bits, même
+bouton, seule la saison du jour choisit le thème.
 
 ## Les avions
 

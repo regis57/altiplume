@@ -8,7 +8,7 @@
 import { formatDate, getLocale, placeAfter, t, translatePage } from './i18n.ts';
 import { convoyState } from './convoi.ts';
 import { formatRemaining } from './time.ts';
-import { musicIsOn, resumeMusicOnGesture, toggleMusic } from './music.ts';
+import { musicIsOn, resumeMusicOnGesture, setMusicSeason, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
 import { setupPasskeyInvitation } from './passkeys.ts';
 
@@ -261,6 +261,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   const cachets = $('cachets'); if (cachets) cachets.textContent = String(c.stamps);
   renderScene(c);
   animateScene(c);
+  // La musique du jour est celle de la saison : on le dit avant de proposer le bouton.
+  setMusicSeason(c.season.id);
   musicButton();
   setupInstall();
   // Le premier vol : trois gestes, tant qu'aucun sac n'est revenu.
