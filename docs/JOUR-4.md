@@ -93,17 +93,28 @@ chapitres 45 à 48, est dans le [Journal](Journal) ; les règles du monde sont d
     sauvegardes au plus tard 6 jours après (3 sur le NAS, 3 sur le disque), et non plus
     30 : le script, la page de confidentialité (français et anglais), le registre et le
     manifeste le disent. Contrepartie assumée : on ne revient qu'à trois jours en arrière.
-    Le script collé dans la tâche du NAS est à recoller.
+    Le script collé dans la tâche du NAS, recollé le soir même.
+14. **La supervision, et l'alarme qu'on n'a pas gardée.** Le joueur a ouvert un compte
+    gratuit chez UptimeRobot : deux moniteurs toutes les 5 minutes (la page d'accueil et
+    `/v1/version`), une page de statut qui ne montre que cela. Pour savoir qu'une sauvegarde
+    n'a pas eu lieu, le script sait maintenant appeler un service de surveillance à sa
+    toute fin ; mais le moniteur prévu chez UptimeRobot s'est révélé payant (c'était une
+    supposition, pas une vérification), et le joueur a fait remarquer que DSM le prévient déjà
+    quand une tâche échoue, et son onduleur quand le courant manque. Il a raison : le seul cas
+    restant, une tâche désactivée par erreur, serait vu au plus tard par le test de
+    restauration trimestriel. Le code est resté, inactif, et la décision est écrite dans le
+    [manifeste](Securite).
 
 ## La journée en une phrase
 
-Seize PR fusionnées, de la #90 à la #105, toutes vertes, toutes publiées sous le nom de
+Dix-huit PR fusionnées, de la #90 à la #107, toutes vertes, toutes publiées sous le nom de
 l'auteur : le jeu a cessé de dire une chose et d'en faire une autre — sur les boutons,
 sur les imprévus, sur l'heure de la nuit, sur les traits des pilotes, sur les contrats
 et sur l'embauche — ses chiffres ont été relus avec ses textes (la chance, le premier
 mois), il dit au joueur où il va, et il a pris les couleurs des quatre saisons jusque
 dans sa musique, il ne laisse plus d'autre signature que celle de son auteur, et sa base
-a désormais une copie chiffrée hors du NAS, restaurée une fois.
+a désormais une copie chiffrée hors du NAS, restaurée une fois, et une supervision de
+l'extérieur.
 
 ## Ce qu'on en retient
 
@@ -127,14 +138,13 @@ durée de conservation, en la relisant contre ce qu'on a promis.
 4 saisons et 4 musiques ; **257 tests**, six parcours de bout en bout dans un vrai
 navigateur ; quinze migrations de base de données. Les garanties du jour 3 tiennent toujours : A+ sur les
 trois notes, zéro traqueur, rien d'ouvert chez l'auteur. Une copie chiffrée de la base est
-sur un disque USB, restaurée une fois (le 14 octobre).
+sur un disque USB, restaurée une fois (le 14 octobre). Deux moniteurs UptimeRobot surveillent
+le site de l'extérieur.
 
-À faire ensuite : lancer une fois le contrôle « Description des PR » (*Actions → Run
-workflow*, d'abord sans cocher la case, puis en la cochant) pour nettoyer les 92 anciennes.
-Puis : recoller le script `nas-backup.sh` (trois copies) dans la tâche du NAS, et constater,
-après la nuit de 03 h 05, que la copie USB ne garde plus que 3 versions. Sans urgence :
-la restauration d'essai chaque trimestre, le passage à Ubuntu 26 après le 19 octobre dans
-une PR dédiée, et l'accessibilité, à mesurer avec les personnes concernées. Le crible des
-cartes, des saisons, de l'économie et de la chance est fini.
+À faire ensuite : constater, après la nuit de 03 h 05, que la copie USB ne garde plus que
+3 versions ; recevoir une première alerte réelle d'UptimeRobot et un courriel de test de
+DSM. Sans urgence : la restauration d'essai chaque trimestre, le passage à Ubuntu 26 après
+le 19 octobre dans une PR dédiée, et l'accessibilité, à mesurer avec les personnes
+concernées. Le crible des cartes, des saisons, de l'économie et de la chance est fini.
 
 Jouable sur [altiplume.com](https://altiplume.com).

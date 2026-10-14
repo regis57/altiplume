@@ -283,12 +283,26 @@ décidé de l'ouvrir.
    `scripts/nas-backup.sh`, la page de confidentialité (en français et en anglais), le
    registre des traitements et le manifeste disent la même chose. Contrepartie assumée :
    on ne peut revenir qu'à trois jours en arrière. Le script collé dans la tâche
-   planifiée du NAS est à recoller après ce changement.
+   planifiée du NAS a été recollé le soir même.
 
 **La leçon.** Une copie qui n'a jamais été restaurée et une durée de conservation qu'on
 ne relit pas après l'avoir réglée sont deux intentions de plus. Désormais : la restauration
 d'essai est refaite **chaque trimestre** (date notée dans [Déploiement](Deploiement)), et
 toute modification de la rotation se relit contre la page de confidentialité.
+
+## La supervision (15 octobre 2026)
+
+Jusqu'ici, la supervision était « plus tard ». Elle existe, en petit. **UptimeRobot** (offre
+gratuite) interroge toutes les 5 minutes, de l'extérieur, deux adresses publiques : la page
+d'accueil et `/v1/version` (qui prouve que le jeu lui-même tourne, pas seulement le tunnel).
+Une page de statut publique les montre ; elle n'affiche que ces deux noms et leur état :
+aucune adresse de l'auteur, aucun courriel, aucune donnée de joueur. Le service ne reçoit
+rien d'autre que ce qu'un visiteur peut lire.
+
+Autour, l'auteur est déjà prévenu par ses propres moyens : DSM si une tâche échoue,
+l'onduleur en cas de coupure de courant. **Reste à constater** : une alerte réelle d'UptimeRobot
+(les moniteurs sont verts, aucune panne n'est encore arrivée), et un courriel de test de
+DSM, pour que ces alertes ne soient pas des intentions de plus.
 
 ## Ce qui a été écarté, et pourquoi
 
@@ -301,6 +315,15 @@ base d'avis ne voit. Un quatrième lecteur des mêmes avis ne trouverait pas plu
 demanderait un binaire de plus à épingler et à tenir à jour, et ferait échouer la CI
 deux fois pour la même cause. À reconsidérer le jour où le projet embarquerait autre
 chose que du npm.
+
+**Une alarme de sauvegarde** (signal à la fin du script, service Healthchecks.io).
+Écartée le 15 octobre : le script sait la faire (voir [Déploiement](Deploiement)), mais
+l'auteur ne l'active pas. Une tâche qui échoue est déjà signalée par DSM, une coupure par
+l'onduleur, un site muet par UptimeRobot. Le seul cas non couvert est une tâche désactivée
+par erreur alors que le site tourne ; le test de restauration trimestriel le verrait en
+trois mois au pire, pour une copie de trois jours. Un compte de plus chez un tiers, pour ce
+seul cas, ne valait pas son entretien. À reconsidérer si la sauvegarde cessait un jour
+d'être simplement une copie de la base.
 
 ## Ce que le code garantit, indépendamment des outils
 

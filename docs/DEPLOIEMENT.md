@@ -229,21 +229,27 @@ du NAS ne change pas tout seul** : après chaque modification du fichier, recoll
 contenu dans la tâche « Altiplume - sauvegarde » (Planificateur de tâches → Modifier →
 Paramètres de tâche).
 
-### L'alarme : savoir qu'une sauvegarde n'a pas eu lieu
+### L'alarme de sauvegarde : prévue dans le script, **non activée**
 
-Une sauvegarde qui s'arrête en silence ne se découvre qu'au pire moment. À la toute fin
-de `nas-backup.sh`, une fois la copie faite et son intégrité vérifiée, le script appelle
-une adresse de surveillance (un « check » Healthchecks.io, période de 1 jour plus une marge
-d'une ou deux heures ; le moniteur Heartbeat d'UptimeRobot est payant). Si le signal
-manque, le service envoie un courriel à l'auteur : script en erreur, tâche désactivée, NAS
-éteint. N'importe quel service qui accepte un appel `https://` convient : le script ne dépend pas du fournisseur.
+À la toute fin de `nas-backup.sh`, une fois la copie faite et son intégrité vérifiée, le
+script peut appeler une adresse de surveillance (un « check » chez un service comme
+Healthchecks.io ; le moniteur Heartbeat d'UptimeRobot est payant). Si le signal manquait un
+jour, le service enverrait un courriel. L'adresse est un secret : elle serait lue dans un
+fichier du NAS, `/volume1/docker/altiplume/alarme-sauvegarde.url`, jamais dans le dépôt.
 
-L'adresse est un secret (qui la connaît peut fausser l'alarme) : elle n'est **jamais dans
-le dépôt**. Elle est dans un fichier du NAS, `/volume1/docker/altiplume/alarme-sauvegarde.url`
-(une seule ligne, `https://…`, droits `600`). Sans ce fichier, le script n'envoie rien et
-le dit dans sa sortie ; un échec de l'appel ne fait jamais échouer la sauvegarde. Comme
-pour `GARDER`, le script collé dans la tâche planifiée est une copie : le recoller après
-chaque modification du fichier.
+**Décision de l'auteur, le 15 octobre 2026 : on ne l'active pas.** Sans ce fichier, le script
+n'envoie rien et le dit dans sa sortie ; le code reste là, inactif, et ne gêne pas la
+sauvegarde. Les trois cas qu'il aurait couverts sont déjà vus autrement :
+
+- la tâche qui échoue : DSM prévient l'auteur ;
+- une coupure de courant : l'onduleur prévient l'auteur ;
+- le site ou le NAS qui ne répond plus : UptimeRobot, de l'extérieur (voir [Sécurité](Securite)).
+
+Reste un trou, minuscule : la tâche désactivée ou supprimée par erreur alors que le site
+tourne. Le test de restauration trimestriel le révélerait au plus tard en trois mois, pour
+une copie de trois jours. Pour l'activer un jour : créer le check, mettre son adresse en une
+ligne dans le fichier (droits `600`), recoller le script dans la tâche, la lancer à la main
+(la sortie finit par « alarme : signal envoyé »).
 
 ### Hors du NAS
 
