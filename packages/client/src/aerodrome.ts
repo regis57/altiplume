@@ -133,6 +133,14 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   return e;
 }
 
+/** Une ligne de condition : la marque (✓/✗), son sens pour le lecteur d'écran, le texte. */
+function conditionItem(ok: boolean, text: string): HTMLLIElement {
+  const item = el('li', ok ? 'condition faite' : 'condition manque');
+  const marque = el('span', 'marque', ok ? '✓' : '✗'); marque.setAttribute('aria-hidden', 'true');
+  item.append(marque, el('span', 'lecteur-seul', t(ok ? 'game.condDone' : 'game.condMissing')), el('span', undefined, text));
+  return item;
+}
+
 /** Le moment de la journée, pour la couleur du ciel : celui de la personne, pas du serveur. */
 export function momentOfDay(hour: number): 'aube' | 'jour' | 'crepuscule' | 'nuit' {
   if (hour >= 6 && hour < 8) return 'aube';
@@ -257,6 +265,40 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   setupInstall();
   // Le premier vol : trois gestes, tant qu'aucun sac n'est revenu.
   $('fiche-premier-vol')?.classList.toggle('cache', c.logbook.some((l) => l.kind === 'flight.arrived'));
+
+  // Le cap : le prochain déblocage, et ce qui manque pour y arriver — dit en une
+  // fiche, pour ne pas avoir à le recouper entre les routes et l'album. La même
+  // règle que les routes : la première région fermée, ses deux conditions.
+  const cap = $('cap');
+  if (cap) {
+    cap.replaceChildren();
+    const quote = (s: string) => `${t('game.quoteOpen')}${s}${t('game.quoteClose')}`;
+    const next = world.regions.find((r) => r.route && !c.regions.includes(r.id));
+    if (next?.route) {
+      const route = next.route;
+      cap.append(el('p', 'cap-titre', t('goal.nextRoute').replace('{region}', next.name)));
+      const steps = el('ul', 'conditions');
+      const hasPage = c.album.some((a) => a.id === route.requires);
+      const enough = c.stamps >= route.cost;
+      const pageName = quote(stampName(world, route.requires));
+      const fromRegion = world.regions.find((x) => x.page === route.requires);
+      const toDeliver = fromRegion && !hasPage
+        ? world.destinations.filter((d) => d.region === fromRegion.id && !c.album.some((a) => a.id === `s-${d.id}`)).map((d) => d.name)
+        : [];
+      steps.append(conditionItem(hasPage, hasPage || toDeliver.length === 0
+        ? t('goal.pageDone').replace('{page}', pageName)
+        : t('goal.deliver').replace('{list}', toDeliver.join(', ')).replace('{page}', pageName)));
+      steps.append(conditionItem(enough, enough
+        ? t('goal.stampsDone').replace('{cost}', String(route.cost))
+        : t('goal.earnStamps').replace('{n}', String(route.cost - c.stamps)).replace('{have}', String(c.stamps)).replace('{cost}', String(route.cost))));
+      cap.append(steps);
+      if (hasPage && enough) cap.append(el('p', 'aide', t('goal.ready').replace('{button}', quote(t('game.openRoute')))));
+    } else {
+      // Toutes les routes sont ouvertes : l'album devient le cap.
+      const missing = world.stamps.length - c.album.length;
+      cap.append(el('p', 'cap-titre', missing > 0 ? t('goal.album').replace('{n}', String(missing)) : t('goal.done')));
+    }
+  }
   void setupPasskeyInvitation(api, setMessage);
   void setupNotifications(api, setMessage);
   clockOffset = c.now - Date.now();
@@ -385,12 +427,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         // fait, ce qui manque, et pour la page, les escales qui restent à livrer.
         li.append(el('p', 'conditions-titre', t('game.routeToOpen')));
         const conditions = el('ul', 'conditions');
-        const condition = (ok: boolean, text: string) => {
-          const item = el('li', ok ? 'condition faite' : 'condition manque');
-          const marque = el('span', 'marque', ok ? '✓' : '✗'); marque.setAttribute('aria-hidden', 'true');
-          item.append(marque, el('span', 'lecteur-seul', t(ok ? 'game.condDone' : 'game.condMissing')), el('span', undefined, text));
-          conditions.append(item);
-        };
+        const condition = (ok: boolean, text: string) => { conditions.append(conditionItem(ok, text)); };
         const pageName = `${t('game.quoteOpen')}${stampName(world, r.route.requires)}${t('game.quoteClose')}`;
         const fromRegion = world.regions.find((x) => x.page === r.route!.requires);
         const toDeliver = fromRegion && !hasPage

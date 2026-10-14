@@ -74,6 +74,12 @@ try {
   assert(drawn === 3, `trois cartes du jour (${drawn})`);
   assert((await page.textContent('#nouvelles')).includes('Cartes du jour'), 'les nouvelles annoncent le tirage');
 
+  // Le cap : dès la fondation, la fiche nomme la prochaine route et ce qui manque.
+  const capDepart = (await page.textContent('#cap')).replace(/\s+/g, ' ');
+  assert(capDepart.includes('Prochaine route : Côte de Saline'), `le cap nomme la Côte (${capDepart})`);
+  assert(capDepart.includes('Toute la vallée') && capDepart.includes('Pont-de-Brume'), `le cap liste les escales à livrer (${capDepart})`);
+  assert(/Gagner encore \d+ cachets \(\d+ en caisse sur 10\)/.test(capDepart), `le cap compte les cachets (${capDepart})`);
+
   // On s'assure d'avoir un contrat précis en main : le journal pour Pont-de-Brume.
   const db = new DatabaseSync(dbPath);
   db.exec("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'c-journal', founded_at FROM companies");
@@ -124,6 +130,9 @@ try {
   const gagnees = await page.$$eval('#album .page.gagnee', (p) => p.length);
   // Fondation, Premier vol, Pont-de-Brume, et la première livraison de la saison en cours.
   assert(gagnees === 4, `quatre pages gagnées (${gagnees})`);
+  // Le cap suit : Pont-de-Brume livré sort de la liste, Les Tilleuls y restent.
+  const capApres = (await page.textContent('#cap')).replace(/\s+/g, ' ');
+  assert(!capApres.includes('Pont-de-Brume') && capApres.includes('Les Tilleuls'), `le cap suit les livraisons (${capApres})`);
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-4-arrivee.png'), fullPage: true });
 
   // Un imprévu se tranche.
@@ -214,6 +223,7 @@ try {
   await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#bord')).includes('Arrived at Mistbridge'), 'livre de bord en anglais');
+  assert((await page.textContent('#cap')).includes('Next route: Saltshore'), 'le cap parle anglais aussi');
   db.close();
   process.stdout.write('e2e courrier : tout est passé.\n');
 } finally {

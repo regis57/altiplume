@@ -888,11 +888,16 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
 .routes .tagline { font-style: italic; margin: 0 0 0.4rem; }
 /* Ce qu'il faut pour ouvrir une route : deux conditions, chacune avec son état. */
 .routes .conditions-titre { margin: 0.6rem 0 0.2rem; font-weight: 700; }
-.routes .conditions { list-style: none; padding: 0; margin: 0 0 0.7rem; display: grid; gap: 0.25rem; }
-.routes .condition { display: grid; grid-template-columns: 1.3rem 1fr; align-items: baseline; border: 0; padding: 0; }
-.routes .condition .marque { font-weight: 700; }
-.routes .condition.faite { color: var(--ok); }
-.routes .condition.manque { color: var(--cachet-encre); }
+.routes .conditions, .fiche-cap .conditions { list-style: none; padding: 0; margin: 0 0 0.7rem; display: grid; gap: 0.25rem; }
+.routes .condition, .fiche-cap .condition { display: grid; grid-template-columns: 1.3rem 1fr; align-items: baseline; border: 0; padding: 0; }
+.routes .condition .marque, .fiche-cap .condition .marque { font-weight: 700; }
+.routes .condition.faite, .fiche-cap .condition.faite { color: var(--ok); }
+.routes .condition.manque, .fiche-cap .condition.manque { color: var(--cachet-encre); }
+
+/* ---- La fiche « Le cap » : le prochain déblocage, et ce qui manque ---- */
+.fiche-cap { border: 2px solid var(--laiton); }
+.fiche-cap .cap-titre { margin: 0.4rem 0; font-weight: 700; color: var(--encre); }
+.fiche-cap .conditions { margin-bottom: 0.2rem; }
 .routes .condition.manque .marque { color: var(--cachet-encre); }
 /* Le fret lourd : la carte porte une bande à chevrons épaisse, comme une caisse
    marquée pour le courrier aérien ; le convoi s'ouvre dans le formulaire. */
@@ -959,7 +964,7 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
   .jeu .scene { max-height: 24rem; margin-left: auto; margin-right: auto; }
   .jeu .colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.2rem; align-items: start; }
   .jeu .colonne { min-width: 0; }
-  .jeu .fiche-premier-vol, .jeu .fiche-passkey, .jeu .fiche-installer { max-width: 44rem; }
+  .jeu .fiche-premier-vol, .jeu .fiche-passkey, .jeu .fiche-installer, .jeu .fiche-cap { max-width: 44rem; }
 }
 
 /* Lu par les lecteurs d'écran, invisible à l'œil. */
