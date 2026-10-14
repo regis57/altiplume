@@ -293,10 +293,10 @@ reste vrai quand on en ajoute.
 
 | Trait | Anglais | Effet |
 |---|---|---|
-| Nocturne | Night Owl | Risque de nuit ÷ 4 |
+| Nocturne | Night Owl | Risque de nuit ÷ 4 — plus à l'aise la nuit que le jour |
 | Économe | Thrifty | Carburant −15 % |
 | Tête brûlée | Daredevil | Vitesse +12 %, fiabilité −8 %, usure +20 % |
-| Météo dans la peau | Weather Sense | Retard de brume ÷ 2 |
+| Météo dans la peau | Weather Sense | Retard de brume et de vent de mer ÷ 2 |
 | Mains d'or | Golden Hands | Usure −25 %, fiabilité +4 % |
 | Longues routes | Long Haul | Portée +20 %, fatigue −15 % |
 | Cœur de village | Home Heart | Fatigue +25 % loin de chez soi, chance +5 % |

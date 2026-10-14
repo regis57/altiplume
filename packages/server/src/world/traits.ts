@@ -1,6 +1,7 @@
 /**
  * Les traits des pilotes. Deux par pilote ; chacun change un chiffre de la
- * simulation, jamais seulement une phrase. Les noms sont invariables en genre.
+ * simulation, jamais seulement une phrase. Noms et descriptions sont invariables en
+ * genre : un trait se porte aussi bien par une femme que par un homme (règle du 14/10).
  */
 import type { Trait } from './types.ts';
 
@@ -8,7 +9,7 @@ export const TRAITS: readonly Trait[] = [
   {
     id: 'nightowl',
     name: { fr: 'Nocturne', en: 'Night Owl' },
-    description: { fr: "Vole de nuit comme de jour. Les pistes aux lanternes ne lui font pas peur.", en: 'Flies by night as well as by day. Lantern-lit strips hold no fear.' },
+    description: { fr: "Plus à l'aise la nuit que le jour. Les pistes aux lanternes ne lui font pas peur.", en: 'More at ease by night than by day. Lantern-lit strips hold no fear.' },
     effects: { nightRisk: 0.25 },
   },
   {
@@ -26,7 +27,7 @@ export const TRAITS: readonly Trait[] = [
   {
     id: 'weathersense',
     name: { fr: 'Météo dans la peau', en: 'Weather Sense' },
-    description: { fr: "Sent la brume venir avant qu'elle soit là. Le brouillard la retarde deux fois moins.", en: 'Feels the fog before it arrives. Fog delays her half as much.' },
+    description: { fr: "Sent venir la brume et le grain avant qu'ils soient là. Brouillard et vent de mer retardent ce pilote deux fois moins.", en: 'Feels fog and squalls coming before they arrive. Fog and sea wind cost this pilot half the delay.' },
     effects: { fogRisk: 0.5 },
   },
   {
@@ -44,13 +45,13 @@ export const TRAITS: readonly Trait[] = [
   {
     id: 'homeheart',
     name: { fr: 'Cœur de village', en: 'Home Heart' },
-    description: { fr: "Préfère les vols courts et rentrer dîner. Fatigue vite loin de chez soi, mais remonte le moral de tout le monde.", en: 'Prefers short hops and being home for dinner. Tires quickly far from home, but lifts everyone\'s spirits.' },
+    description: { fr: "Préfère les vols courts et rentrer dîner. Fatigue vite loin de chez soi, mais attire les bonnes cartes : un peu plus de chance pour la compagnie.", en: 'Prefers short hops and being home for dinner. Tires quickly far from home, but draws the good cards: a little more luck for the company.' },
     effects: { fatigue: 1.25, luck: 1.05 },
   },
   {
     id: 'luckycharm',
     name: { fr: 'Porte-bonheur', en: 'Lucky Charm' },
-    description: { fr: "Les bonnes cartes la suivent. Un peu plus d'opportunités, un peu moins d'imprévus.", en: 'Good cards follow her around. A few more opportunities, a few fewer mishaps.' },
+    description: { fr: "Les bonnes cartes suivent ce pilote. Un peu plus d'occasions, un peu moins d'imprévus.", en: 'Good cards follow this pilot around. A few more opportunities, a few fewer mishaps.' },
     effects: { luck: 1.15 },
   },
 ];
