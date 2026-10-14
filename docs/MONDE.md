@@ -186,8 +186,8 @@ seul avion achetable, et chaque fret lourd avec deux.
 
 Les saisons suivent le calendrier, en temps universel : printemps le 20 mars, été
 le 21 juin, automne le 23 septembre, hiver le 21 décembre. Quand il neige chez le
-joueur, il neige sur la Croisette. Chaque saison change **une** règle, et aucune ne
-punit l'absence :
+joueur, il neige sur la Croisette. Chaque saison change une ou deux règles, et aucune
+ne punit l'absence :
 
 | Saison | Ce qui change | Dans la scène |
 |---|---|---|
@@ -303,6 +303,10 @@ reste vrai quand on en ajoute.
 | Longues routes | Long Haul | Portée +20 %, fatigue −15 % |
 | Cœur de village | Home Heart | Fatigue +25 % loin de chez soi, chance +5 % |
 | Porte-bonheur | Lucky Charm | Chance +15 % (plus d'opportunités, moins d'imprévus) |
+
+La chance de la compagnie est celle de son pilote **le plus chanceux** (× 1,15 au plus),
+pas le produit de tous : un porte-bonheur suffit, et le jeu garde ses imprévus jusqu'au
+bout (règle du 14/10).
 
 ## Les cartes
 

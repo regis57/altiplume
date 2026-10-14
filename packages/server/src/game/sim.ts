@@ -133,6 +133,18 @@ export function seasonEffect(now: number, effect: keyof SeasonDef['effects']): n
   return WORLD.seasons.find((x) => x.id === season)?.effects[effect] ?? 1;
 }
 
+/**
+ * La chance de la compagnie : celle de son pilote le plus chanceux, pas le produit de
+ * tous. « Les bonnes cartes suivent ce pilote » : un porte-bonheur suffit, dix ne
+ * font pas une compagnie dix fois plus chanceuse (règle du 14/10 ; avant, dix pilotes
+ * donnaient × 1,5 d'occasions et ÷ 1,5 d'imprévus, et la fin de partie s'adoucissait
+ * sans que rien ne le dise).
+ */
+export function companyLuck(db: Database, companyId: string): number {
+  return (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(companyId) as { pilot: string }[])
+    .reduce((best, r) => { const p = findPilot(r.pilot); return p ? Math.max(best, traitFactor(p, 'luck')) : best; }, 1);
+}
+
 /** Multiplicateur combiné des deux traits d'un pilote pour un effet donné. */
 export function traitFactor(pilot: PilotTemplate, effect: keyof NonNullable<ReturnType<typeof findTrait>>['effects']): number {
   return pilot.traits.reduce((f, id: TraitId) => f * (findTrait(id)?.effects[effect] ?? 1), 1);
@@ -314,8 +326,7 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       if (stuck.length > 0) news.push({ kind: 'cards.released', count: stuck.length });
       const hand = listHand(db, company.id);
       const room = HAND_SIZE - hand.length;
-      const luck = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(company.id) as { pilot: string }[])
-        .reduce((f, r) => { const p = findPilot(r.pilot); return p ? f * traitFactor(p, 'luck') : f; }, 1);
+      const luck = companyLuck(db, company.id);
       const inFlight = (db.prepare('SELECT card FROM flights WHERE company_id = ? AND settled_at IS NULL').all(company.id) as { card: string }[]).map((r) => r.card);
       const album = (db.prepare('SELECT stamp FROM company_stamps WHERE company_id = ?').all(company.id) as { stamp: string }[]).map((r) => r.stamp);
       const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album, seasonOf(now).season, fleet);
