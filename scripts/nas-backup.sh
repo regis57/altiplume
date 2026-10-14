@@ -47,5 +47,21 @@ $DOCKER run --rm -v "$DEST:/s:ro" ghcr.io/regis57/altiplume:latest sh -c '
 # Rotation.
 ls -1t "$DEST"/altiplume-*.db | tail -n +$((GARDER + 1)) | while read -r vieux; do rm -f "$vieux"; echo "   supprimée : $vieux"; done
 ls -lh "$DEST" | tail -n 3
+
+# Alarme : on ne prévient le service de surveillance qu'ici, quand tout a réussi
+# (copie faite, intégrité vérifiée). Si le script s'arrête avant, ou ne tourne pas du
+# tout, le signal manque et le service envoie un courriel. L'adresse est un secret : elle
+# vit dans un fichier du NAS, hors du dépôt, et n'est jamais affichée. Sans fichier, rien
+# n'est envoyé ; un échec de l'appel ne fait jamais échouer la sauvegarde.
+ALARME=/volume1/docker/altiplume/alarme-sauvegarde.url
+if [ -r "$ALARME" ]; then
+  url=$(head -n 1 "$ALARME" | tr -d '\r\n ')
+  case "$url" in
+    https://*) curl -fsS -m 20 --retry 2 -o /dev/null "$url" && echo "alarme : signal envoyé" || echo "alarme : signal non envoyé (la sauvegarde, elle, est faite)" ;;
+    *) echo "alarme : fichier présent mais adresse invalide, ignorée" ;;
+  esac
+else
+  echo "alarme : pas de fichier $ALARME, aucun signal envoyé"
+fi
 echo "== OK — exit 0"
 exit 0

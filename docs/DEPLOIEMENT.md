@@ -229,6 +229,22 @@ du NAS ne change pas tout seul** : après chaque modification du fichier, recoll
 contenu dans la tâche « Altiplume - sauvegarde » (Planificateur de tâches → Modifier →
 Paramètres de tâche).
 
+### L'alarme : savoir qu'une sauvegarde n'a pas eu lieu
+
+Une sauvegarde qui s'arrête en silence ne se découvre qu'au pire moment. À la toute fin
+de `nas-backup.sh`, une fois la copie faite et son intégrité vérifiée, le script appelle
+une adresse de surveillance (un « check » Healthchecks.io, période de 1 jour plus une marge
+d'une ou deux heures ; le moniteur Heartbeat d'UptimeRobot est payant). Si le signal
+manque, le service envoie un courriel à l'auteur : script en erreur, tâche désactivée, NAS
+éteint. N'importe quel service qui accepte un appel `https://` convient : le script ne dépend pas du fournisseur.
+
+L'adresse est un secret (qui la connaît peut fausser l'alarme) : elle n'est **jamais dans
+le dépôt**. Elle est dans un fichier du NAS, `/volume1/docker/altiplume/alarme-sauvegarde.url`
+(une seule ligne, `https://…`, droits `600`). Sans ce fichier, le script n'envoie rien et
+le dit dans sa sortie ; un échec de l'appel ne fait jamais échouer la sauvegarde. Comme
+pour `GARDER`, le script collé dans la tâche planifiée est une copie : le recoller après
+chaque modification du fichier.
+
 ### Hors du NAS
 
 Un disque qui meurt emporte le volume *et* le dossier de sauvegardes. Depuis le 14 octobre
