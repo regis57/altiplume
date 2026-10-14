@@ -88,10 +88,16 @@ chapitres 45 à 48, est dans le [Journal](Journal) ; les règles du monde sont d
     versions bien plus de 30 jours, alors que la page de confidentialité en annonce 30. Le
     joueur l'a corrigée dans l'heure (« à partir des versions les plus anciennes », 3
     versions) ; la mesure définitive viendra à la première rotation de nuit.
+13. **Trois jours, partout.** Le joueur a ramené la durée de conservation de 30 à 3 : trois
+    copies sur le NAS, trois versions sur le disque USB. Un compte effacé disparaît donc des
+    sauvegardes au plus tard 6 jours après (3 sur le NAS, 3 sur le disque), et non plus
+    30 : le script, la page de confidentialité (français et anglais), le registre et le
+    manifeste le disent. Contrepartie assumée : on ne revient qu'à trois jours en arrière.
+    Le script collé dans la tâche du NAS est à recoller.
 
 ## La journée en une phrase
 
-Quinze PR fusionnées, de la #90 à la #104, toutes vertes, toutes publiées sous le nom de
+Seize PR fusionnées, de la #90 à la #105, toutes vertes, toutes publiées sous le nom de
 l'auteur : le jeu a cessé de dire une chose et d'en faire une autre — sur les boutons,
 sur les imprévus, sur l'heure de la nuit, sur les traits des pilotes, sur les contrats
 et sur l'embauche — ses chiffres ont été relus avec ses textes (la chance, le premier
@@ -125,8 +131,8 @@ sur un disque USB, restaurée une fois (le 14 octobre).
 
 À faire ensuite : lancer une fois le contrôle « Description des PR » (*Actions → Run
 workflow*, d'abord sans cocher la case, puis en la cochant) pour nettoyer les 92 anciennes.
-Puis : constater, après la nuit de 03 h 05, que la copie USB ne garde plus que 3 versions,
-et relire la page de confidentialité à ce moment-là. Sans urgence :
+Puis : recoller le script `nas-backup.sh` (trois copies) dans la tâche du NAS, et constater,
+après la nuit de 03 h 05, que la copie USB ne garde plus que 3 versions. Sans urgence :
 la restauration d'essai chaque trimestre, le passage à Ubuntu 26 après le 19 octobre dans
 une PR dédiée, et l'accessibilité, à mesurer avec les personnes concernées. Le crible des
 cartes, des saisons, de l'économie et de la chance est fini.

@@ -271,11 +271,19 @@ décidé de l'ouvrir.
    tâche vieille d'un jour), cette promesse n'était donc pas tenue pour la copie USB.
 5. **La correction, faite le 14 octobre au soir.** Rotation « à partir des versions les
    plus anciennes », **3 versions** au plus, lue sur la fenêtre des paramètres de la tâche.
-   Une donnée ne dépasse alors guère 30 jours plus 2 sur le disque, plus le ménage interne
-   de Hyper Backup, qui n'est pas instantané. Elle s'applique à la prochaine sauvegarde
+   Une donnée ne dépasse alors guère la durée de conservation du NAS plus 2 jours sur le
+   disque, plus le ménage interne de Hyper Backup, qui n'est pas instantané. Elle s'applique à la prochaine sauvegarde
    (cette nuit, 03 h 05), qui supprime les versions en trop. **Reste à constater** : la
    liste des versions de la tâche (icône horloge) n'en compte plus que 3 au plus. Ce
    constat sera daté ici, et la page de confidentialité relue à ce moment-là.
+
+6. **La décision de l'auteur, le même soir : la durée est de 3.** Trois copies sur le NAS
+   (au lieu de trente), trois versions sur le disque USB : un compte effacé disparaît des
+   sauvegardes au plus tard **6 jours** après (3 sur le NAS, puis 3 sur le disque).
+   `scripts/nas-backup.sh`, la page de confidentialité (en français et en anglais), le
+   registre des traitements et le manifeste disent la même chose. Contrepartie assumée :
+   on ne peut revenir qu'à trois jours en arrière. Le script collé dans la tâche
+   planifiée du NAS est à recoller après ce changement.
 
 **La leçon.** Une copie qui n'a jamais été restaurée et une durée de conservation qu'on
 ne relit pas après l'avoir réglée sont deux intentions de plus. Désormais : la restauration
