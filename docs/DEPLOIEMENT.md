@@ -215,8 +215,19 @@ doit contenir `altiplume-AAAAMMJJ-HHMM.db`, et la sortie se terminer par `== OK 
 
 Ce que fait le script : il demande à SQLite, *dans* le conteneur, une copie cohérente
 de la base (la base est en mode WAL ; copier le fichier à chaud serait incohérent), la
-sort du conteneur, vérifie son intégrité avec la même image Node, et garde les trente
-dernières. Le jeu ne s'arrête pas.
+sort du conteneur, vérifie son intégrité avec la même image Node, et garde les trois
+dernières (`GARDER=3`, décidé le 14 octobre : voir ci-dessous). Le jeu ne s'arrête pas.
+
+### Combien de temps on garde (décidé le 14 octobre 2026)
+
+**Trois copies sur le NAS, trois versions sur le disque USB.** Un compte effacé disparaît
+donc des sauvegardes au plus tard 6 jours après (3 sur le NAS, puis 3 sur le disque) ; la
+page de confidentialité et le registre le disent. Conséquence à connaître : on ne peut
+revenir qu'à trois jours en arrière. Un mal découvert plus tard n'a plus de copie saine.
+`GARDER=3` est dans `scripts/nas-backup.sh` ; **le script collé dans la tâche planifiée
+du NAS ne change pas tout seul** : après chaque modification du fichier, recoller son
+contenu dans la tâche « Altiplume - sauvegarde » (Planificateur de tâches → Modifier →
+Paramètres de tâche).
 
 ### Hors du NAS
 
@@ -240,9 +251,9 @@ Pour la refaire (nouveau disque, nouveau NAS) :
    aucune récupération.
 5. Planification : tous les jours à 03:05.
 6. **Rotation : « depuis les versions les plus anciennes », 3 versions.** Pas « Smart
-   Recycle » : chaque version contient déjà les trente copies de la base ; Smart Recycle
+   Recycle » : chaque version contient déjà les trois copies de la base ; Smart Recycle
    en garderait des versions pendant des mois, alors que la page de confidentialité annonce
-   30 jours. Cette règle se relit contre la page de confidentialité à chaque changement.
+   6 jours au plus. Cette règle se relit contre la page de confidentialité à chaque changement.
 7. Premier lancement, puis vérifier la taille (quelques kilo-octets, pas des gigaoctets :
    sinon trop de dossiers cochés) et la liste des versions (icône horloge).
 

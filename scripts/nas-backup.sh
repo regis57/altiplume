@@ -4,12 +4,12 @@
 # La base est en mode WAL : copier le fichier à chaud donnerait une sauvegarde
 # incohérente. On demande donc à SQLite lui-même, DANS le conteneur, de produire
 # une copie cohérente (API de sauvegarde en ligne), puis on la sort du conteneur.
-# Les trente dernières sont gardées. Le jeu ne s'arrête pas.
+# Les trois dernières sont gardées. Le jeu ne s'arrête pas.
 set -eu
 
 DOCKER=/usr/local/bin/docker
 DEST=/volume1/docker/altiplume/sauvegardes
-GARDER=30
+GARDER=3
 
 mkdir -p "$DEST"
 horodatage=$(date '+%Y%m%d-%H%M')
