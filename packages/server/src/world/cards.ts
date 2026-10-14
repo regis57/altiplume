@@ -51,10 +51,10 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "Des commandes passées au marché de samedi : du drap, une horloge, un chapeau. Les gens viendront les chercher au bureau.", en: 'Orders placed at Saturday market: cloth, a clock, a hat. People will come to the office to collect them.' }),
   contract('c-urgent-pont', 'pont-de-brume', 'urgent', 1, 58, 2, 25, 2,
     { fr: 'Pli du notaire', en: 'The notary\'s letter' },
-    { fr: "Le notaire de Pont-de-Brume a besoin d'une signature avant midi. Un seul pli, mais il y tient.", en: 'The Mistbridge notary needs a signature before noon. One letter, but he is adamant.' }),
+    { fr: "Le notaire de Pont-de-Brume a besoin d'une signature dans les deux heures. Un seul pli, mais il y tient.", en: 'The Mistbridge notary needs a signature within two hours. One letter, but he is adamant.' }),
   // Les Tilleuls — vergers et miel
   contract('c-semences', 'les-tilleuls', 'seeds', 2, 53, 24, 11, 1,
-    { fr: 'Semences de printemps', en: 'Spring seeds' },
+    { fr: 'Sachets de semences', en: 'Seed packets' },
     { fr: "La coopérative des Tilleuls attend ses sachets de semences. Si on les livre avant le prochain jour de pluie, elles seront en terre à temps.", en: 'The Lindenhollow cooperative is waiting for its seed packets. Delivered before the next rain, they\'ll be in the ground in time.' }),
   contract('c-miel', 'les-tilleuls', 'parcels', 1, 47, 12, 8, 1,
     { fr: 'Pots de miel', en: 'Honey jars' },
@@ -218,7 +218,7 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "Deux sacs de cuivre en feuilles, sortis de Vert-de-Gris, pour les chaudronniers. La route des charrettes est défoncée depuis l'automne ; le ciel, lui, ne l'est pas.", en: 'Two sacks of copper sheet out of Verdigris, for the smiths. The cart road has been ruined since autumn; the sky has not.' }),
   contract('c-receveur', 'villechaudron', 'urgent', 1, 156, 4, 42, 2,
     { fr: 'Le pli du receveur', en: "The postmaster's packet" },
-    { fr: "Un pli recommandé pour le receveur de Villechaudron : le cadastre de la forêt, signé à Pont-de-Brume, qu'il attend pour midi.", en: 'A registered packet for the Kettleby postmaster: the forest survey, signed at Mistbridge, which he expects by noon.' }),
+    { fr: "Un pli recommandé pour le receveur de Villechaudron : le cadastre de la forêt, signé à Pont-de-Brume, qu'il attend dans les quatre heures.", en: 'A registered packet for the Kettleby postmaster: the forest survey, signed at Mistbridge, which he expects within four hours.' }),
   // Les Scieries
   contract('c-courroie', 'les-scieries', 'parts', 2, 152, 8, 33, 2,
     { fr: 'La courroie de la grande roue', en: "The big wheel's belt" },
@@ -272,7 +272,7 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "Les Tilleuls greffent leurs pommiers avant que la sève monte. Un sac de rameaux enveloppés de mousse humide, à poser avant qu'ils sèchent.", en: 'Lindenhollow grafts its apple trees before the sap rises. A bag of scions wrapped in damp moss, to land before they dry out.' }),
   seasonal('printemps', 'c-clochettes', 'lanterne-du-val', 'fragile', 1, 78, 6, 25, 2,
     { fr: 'Les clochettes de mai', en: 'The May bells' },
-    { fr: "À Lanterne-du-Val, on offre un brin de clochettes blanches le premier matin de mai, pour porter bonheur. Une caisse cueillie à l'aube, qui fanera à midi.", en: 'In Lanternhollow they give a sprig of little white bells on the first morning of May, for luck. A crate picked at dawn, wilting by noon.' }),
+    { fr: "À Lanterne-du-Val, on offre un brin de clochettes blanches le premier matin de mai, pour porter bonheur. Une caisse fraîchement cueillie, qui fanera en quelques heures.", en: 'In Lanternhollow they give a sprig of little white bells on the first morning of May, for luck. A freshly picked crate, wilting within hours.' }),
   // Été
   seasonal('ete', 'c-glace', 'port-sel', 'urgent', 1, 140, 3, 50, 2,
     { fr: 'La glace des poissonniers', en: "The fishmongers' ice" },
