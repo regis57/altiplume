@@ -246,7 +246,7 @@ export const PILOTS: readonly PilotTemplate[] = [
     origin: { fr: 'Forêt de Cuivre', en: 'Copperwood' },
     traits: ['nightowl', 'goldenhands'],
     portrait: { fr: "Une tresse rousse serrée, des mains tachées de graisse, et une petite lanterne de cuivre accrochée à la ceinture qu'elle ne retire jamais.", en: 'A tight red braid, grease-stained hands, and a small copper lantern hooked to her belt that she never takes off.' },
-    greeting: { fr: "On m'a dit que vous alliez ouvrir les îles. Les îles, c'est la nuit. Et la nuit, c'est moi.", en: "I heard you were opening the Isles. The Isles mean night. And night is my business." },
+    greeting: { fr: "On m'a dit que votre compagnie ne craignait pas le soir. La nuit, c'est mon affaire.", en: "I heard your company isn't afraid of the dusk. Night is my business." },
     wage: 10, starter: false,
     story: {
       title: { fr: 'La lanterne de la forêt', en: 'The Forest Lantern' },

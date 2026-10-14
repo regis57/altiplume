@@ -533,17 +533,17 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     text: { fr: "Un des gardiens de Brisant vous confie sa vieille carte de la Côte : les passes, les hauts-fonds, et un trait au crayon vers des îles qui n'y figurent pas encore. Un cachet pour l'album.", en: 'One of the Breaker keepers hands you his old chart of the Shore: the channels, the shoals, and a pencil line towards islands that are not on it yet. A stamp for the album.' },
     offer: { type: 'map', stamps: 1 },
   },
-  // ---- Archipel des Lanternes ----
   {
     kind: 'opportunity', id: 'o-goeland', weight: 2, region: 'saline',
     title: { fr: 'Un Goéland à Port-Sel', en: 'A Gull at Saltharbour' },
     text: { fr: "La compagnie des bateaux-poste revend son hydravion long-courrier : une coque, deux moteurs, et de quoi tenir jusqu'à la dernière île. Elle veut quelqu'un qui le fera voler, pas quelqu'un qui le revendra.", en: 'The mail-boat company is selling its long-range seaplane: a hull, two engines, enough fuel to reach the last island. They want someone who will fly it, not someone who will sell it on.' },
     offer: { type: 'plane', model: 'goeland', price: 6600 },
   },
+  // ---- Archipel des Lanternes ----
   {
     kind: 'opportunity', id: 'o-pilote-iles', weight: 2, region: 'archipel',
-    title: { fr: 'Quelqu\'un sur le ponton', en: 'Someone on the jetty' },
-    text: { fr: "À l'Anse-des-Lanternes, quelqu'un attend sur le ponton avec un sac et une lanterne, et demande si votre compagnie prend encore des pilotes.", en: 'At Lanterncove, someone is waiting on the jetty with a bag and a lantern, asking whether your company is still taking pilots.' },
+    title: { fr: 'Un pilote se présente', en: 'A pilot turns up' },
+    text: { fr: "Un pilote attend près du hangar, un sac à l'épaule, et demande si votre compagnie prend encore du monde.", en: 'A pilot is waiting by the hangar with a bag over one shoulder, asking whether your company is still taking people on.' },
     offer: { type: 'pilot', pilot: 'rotating' },
   },
   // ---- Forêt de Cuivre ----
@@ -561,8 +561,8 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
   },
   {
     kind: 'opportunity', id: 'o-pilote-foret', weight: 2, region: 'cuivre',
-    title: { fr: 'Quelqu\'un à la lisière', en: 'Someone at the forest edge' },
-    text: { fr: "Aux Charbonnières, quelqu'un attend au bord de la piste, un sac sur l'épaule, et demande si l'avion repart vers la Croisette.", en: 'At Charwood, someone is waiting at the edge of the strip with a bag over one shoulder, asking whether the plane is going back to Crosslet.' },
+    title: { fr: 'Une lettre de candidature', en: 'A letter of application' },
+    text: { fr: "Avec le courrier est arrivée une lettre de candidature : un pilote cherche une compagnie et assure savoir voler partout, jour et nuit.", en: 'Among the mail came a letter of application: a pilot is looking for a company and promises to fly anywhere, day or night.' },
     offer: { type: 'pilot', pilot: 'rotating' },
   },
 ];
