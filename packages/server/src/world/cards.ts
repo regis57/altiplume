@@ -330,7 +330,7 @@ export const EVENTS: readonly EventCard[] = [
     text: { fr: "Le pilote a le nez rouge et la voix de Moulin-Gris un jour de brume.", en: 'The pilot has a red nose and a voice like Greymill on a foggy day.' },
     choices: [
       { id: 'rest', label: { fr: 'Le laisser au lit', en: 'Send them to bed' }, outcome: { fr: "Une journée de repos. Le moral remonte, le courrier attend.", en: 'A day of rest. Spirits lift, the mail waits.' }, effects: { delayHours: 24, morale: 3 } },
-      { id: 'fly', label: { fr: 'Voler avec un grog', en: 'Fly on a hot toddy' }, outcome: { fr: "Le vol se fait. Le pilote s'en souviendra.", en: 'The flight gets done. The pilot will remember it.' }, effects: { morale: -3 } },
+      { id: 'fly', label: { fr: 'Voler avec un grog', en: 'Fly on a hot toddy' }, outcome: { fr: "La piste est libre : le pilote volera quand vous l'enverrez, grog en poche. Il s'en souviendra.", en: "The strip is clear: the pilot will fly when you send them, toddy in hand. They'll remember it." }, effects: { morale: -3 } },
     ],
   },
   {

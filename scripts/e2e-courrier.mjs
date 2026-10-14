@@ -179,6 +179,24 @@ try {
   assert(await page.$eval('#vols-vide', (e) => e.classList.contains('cache')), 'la page s\'est remise d\'aplomb');
   assert(await page.$('#vols .vol .jauge'), 'la jauge du vol est revenue');
 
+  // « Saisir » n'est pas un vol (le 14/10, deux cartes saisies, et on attendait un
+  // décollage) : le bouton dit ce qu'on fait, la carte ce qu'on y gagne, le message ce
+  // qui s'est passé.
+  db.exec("DELETE FROM company_hand WHERE card LIKE 'e-%'");
+  for (const c of ['o-carte', 'o-pilote']) db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, ?, 0 FROM companies').run(c);
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  const carte = page.locator('#main .carte', { hasText: 'La vieille carte de Bastien' });
+  assert((await carte.textContent()).includes("Ce n'est pas un vol"), "l'opportunité dit qu'elle n'est pas un vol");
+  const cachetsAvant = Number(await page.textContent('#cachets'));
+  await carte.locator('button', { hasText: 'La prendre · +1 cachet' }).click();
+  await page.waitForSelector('#jeu-message.ok');
+  assert((await page.textContent('#jeu-message')) === '+1 cachet en caisse.', `le message dit ce qui s'est passé (${await page.textContent('#jeu-message')})`);
+  assert(Number(await page.textContent('#cachets')) === cachetsAvant + 1, 'le cachet est en caisse');
+  const passage = page.locator('#main .carte', { hasText: 'Un pilote de passage' });
+  await passage.locator('button', { hasText: 'Embaucher' }).click();
+  await page.waitForFunction(() => /rejoint la compagnie\.$/.test(document.querySelector('#jeu-message')?.textContent ?? ''));
+
   // Et le tout en anglais.
   // L'aérodrome se recharge de lui-même dans la nouvelle langue.
   await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);
