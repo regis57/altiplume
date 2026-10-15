@@ -8,6 +8,7 @@
 import { formatDate, getLocale, placeAfter, t, translatePage } from './i18n.ts';
 import { convoyState } from './convoi.ts';
 import { nextCap } from './cap.ts';
+import { planeOffer } from './offre.ts';
 import { formatRemaining } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, setMusicSeason, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
@@ -693,6 +694,18 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       const kind = offer.type === 'plane' && world.planes.find((p) => p.id === offer.model)?.runway === 'water' ? 'seaplane' : offer.type;
       li.append(el('p', 'aide', `${fill(t(`offer.${kind}.gives`))} ${t('offer.notFlight')}`));
       const take = el('button', 'bouton'); take.type = 'button'; take.textContent = fill(t(`offer.${offer.type}.button`));
+      // Un avion à vendre : ce qu'il faut, dit avant le clic, comme pour les routes.
+      // L'argent et la place bloquent l'achat ; la piste avertit seulement.
+      if (offer.type === 'plane' && offer.model && offer.price !== undefined) {
+        const state = planeOffer(world, c, offer.model, offer.price);
+        const needs = el('ul', 'conditions');
+        needs.append(conditionItem(state.money, t('offer.needPrice').replace('{price}', String(offer.price)).replace('{have}', String(c.francs))));
+        needs.append(conditionItem(state.place, t(state.seaplane ? 'offer.needMooring' : 'offer.needBay')));
+        if (state.runwayName) needs.append(conditionItem(state.runway, t('offer.needRunway').replace('{runway}', `${t('game.quoteOpen')}${state.runwayName}${t('game.quoteClose')}`)));
+        li.append(needs);
+        if (!state.runway) li.append(el('p', 'aide', t('offer.runwayLater')));
+        take.disabled = !state.canBuy;
+      }
       take.addEventListener('click', async () => {
         take.disabled = true;
         const r = await api('POST', `/v1/company/cards/${card.id}/play`, {}).catch(() => null);
