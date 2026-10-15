@@ -1,0 +1,522 @@
+{
+  "regions": [
+    {
+      "id": "brume",
+      "page": "s-vallee"
+    },
+    {
+      "id": "saline",
+      "page": "s-cote",
+      "route": {
+        "requires": "s-vallee",
+        "cost": 10
+      }
+    },
+    {
+      "id": "archipel",
+      "page": "s-archipel",
+      "route": {
+        "requires": "s-cote",
+        "cost": 15
+      }
+    },
+    {
+      "id": "cuivre",
+      "page": "s-foret",
+      "route": {
+        "requires": "s-vallee",
+        "cost": 12
+      }
+    }
+  ],
+  "destinations": [
+    {
+      "id": "pont-de-brume",
+      "region": "brume",
+      "distance": 1,
+      "runway": "medium"
+    },
+    {
+      "id": "les-tilleuls",
+      "region": "brume",
+      "distance": 1.6,
+      "runway": "short"
+    },
+    {
+      "id": "moulin-gris",
+      "region": "brume",
+      "distance": 2.2,
+      "runway": "medium"
+    },
+    {
+      "id": "haut-ferrand",
+      "region": "brume",
+      "distance": 2.8,
+      "runway": "short"
+    },
+    {
+      "id": "lanterne-du-val",
+      "region": "brume",
+      "distance": 3.6,
+      "runway": "medium"
+    },
+    {
+      "id": "combe-aux-rosees",
+      "region": "brume",
+      "distance": 6,
+      "runway": "long"
+    },
+    {
+      "id": "port-sel",
+      "region": "saline",
+      "distance": 7.5,
+      "runway": "medium"
+    },
+    {
+      "id": "les-oeillets",
+      "region": "saline",
+      "distance": 7.9,
+      "runway": "short"
+    },
+    {
+      "id": "marais-blanc",
+      "region": "saline",
+      "distance": 9.6,
+      "runway": "medium"
+    },
+    {
+      "id": "anse-aux-goemons",
+      "region": "saline",
+      "distance": 10.5,
+      "runway": "water"
+    },
+    {
+      "id": "phare-de-brisant",
+      "region": "saline",
+      "distance": 11.5,
+      "runway": "water"
+    },
+    {
+      "id": "ile-sainte-ambre",
+      "region": "saline",
+      "distance": 13,
+      "runway": "water"
+    },
+    {
+      "id": "ile-aux-fanaux",
+      "region": "archipel",
+      "distance": 14,
+      "runway": "water"
+    },
+    {
+      "id": "grand-recif",
+      "region": "archipel",
+      "distance": 15,
+      "runway": "water"
+    },
+    {
+      "id": "sainte-lueur",
+      "region": "archipel",
+      "distance": 16,
+      "runway": "water"
+    },
+    {
+      "id": "le-rocher-noir",
+      "region": "archipel",
+      "distance": 17,
+      "runway": "water"
+    },
+    {
+      "id": "anse-des-lanternes",
+      "region": "archipel",
+      "distance": 18,
+      "runway": "water"
+    },
+    {
+      "id": "ile-du-bout",
+      "region": "archipel",
+      "distance": 19,
+      "runway": "water"
+    },
+    {
+      "id": "les-charbonnieres",
+      "region": "cuivre",
+      "distance": 7,
+      "runway": "short"
+    },
+    {
+      "id": "villechaudron",
+      "region": "cuivre",
+      "distance": 8,
+      "runway": "medium"
+    },
+    {
+      "id": "les-scieries",
+      "region": "cuivre",
+      "distance": 9,
+      "runway": "short"
+    },
+    {
+      "id": "sonnefeuille",
+      "region": "cuivre",
+      "distance": 10,
+      "runway": "clearing"
+    },
+    {
+      "id": "vert-de-gris",
+      "region": "cuivre",
+      "distance": 11,
+      "runway": "clearing"
+    },
+    {
+      "id": "le-hetre-roi",
+      "region": "cuivre",
+      "distance": 12,
+      "runway": "clearing"
+    }
+  ],
+  "planes": [
+    {
+      "id": "grive",
+      "range": 8,
+      "runway": "short",
+      "price": 1800
+    },
+    {
+      "id": "martinet",
+      "range": 10,
+      "runway": "medium",
+      "price": 3200
+    },
+    {
+      "id": "heron",
+      "range": 16,
+      "runway": "long",
+      "price": 6500
+    },
+    {
+      "id": "sterne",
+      "range": 14,
+      "runway": "water",
+      "price": 4725
+    },
+    {
+      "id": "goeland",
+      "range": 22,
+      "runway": "water",
+      "price": 7800
+    },
+    {
+      "id": "pic",
+      "range": 12,
+      "runway": "clearing",
+      "price": 3675
+    }
+  ],
+  "pilots": [
+    {
+      "id": "prosper",
+      "traits": [
+        "weathersense",
+        "homeheart"
+      ]
+    },
+    {
+      "id": "ilias",
+      "traits": [
+        "daredevil",
+        "thrifty"
+      ]
+    },
+    {
+      "id": "garance",
+      "traits": [
+        "daredevil",
+        "homeheart"
+      ]
+    },
+    {
+      "id": "yse",
+      "traits": [
+        "nightowl",
+        "luckycharm"
+      ]
+    },
+    {
+      "id": "aurele",
+      "traits": [
+        "goldenhands",
+        "longhaul"
+      ]
+    },
+    {
+      "id": "solenn",
+      "traits": [
+        "nightowl",
+        "goldenhands"
+      ]
+    },
+    {
+      "id": "teodor",
+      "traits": [
+        "longhaul",
+        "luckycharm"
+      ]
+    },
+    {
+      "id": "hedda",
+      "traits": [
+        "longhaul",
+        "thrifty"
+      ]
+    },
+    {
+      "id": "gaspard",
+      "traits": [
+        "weathersense",
+        "thrifty"
+      ]
+    },
+    {
+      "id": "rosalie",
+      "traits": [
+        "goldenhands",
+        "homeheart"
+      ]
+    }
+  ],
+  "traits": [
+    {
+      "id": "nightowl"
+    },
+    {
+      "id": "thrifty"
+    },
+    {
+      "id": "daredevil"
+    },
+    {
+      "id": "weathersense"
+    },
+    {
+      "id": "goldenhands"
+    },
+    {
+      "id": "longhaul",
+      "range": 1.2
+    },
+    {
+      "id": "homeheart"
+    },
+    {
+      "id": "luckycharm"
+    }
+  ],
+  "zones": [
+    {
+      "id": "runway",
+      "levels": [
+        {
+          "level": 1,
+          "runway": "short"
+        },
+        {
+          "level": 2,
+          "runway": "medium"
+        },
+        {
+          "level": 3,
+          "runway": "long"
+        }
+      ]
+    },
+    {
+      "id": "hangar",
+      "levels": [
+        {
+          "level": 1,
+          "planes": 1
+        },
+        {
+          "level": 2,
+          "planes": 2
+        },
+        {
+          "level": 3,
+          "planes": 3
+        }
+      ]
+    },
+    {
+      "id": "ponton",
+      "levels": [
+        {
+          "level": 1,
+          "seaplanes": 0
+        },
+        {
+          "level": 2,
+          "seaplanes": 1
+        },
+        {
+          "level": 3,
+          "seaplanes": 2
+        }
+      ]
+    },
+    {
+      "id": "tour",
+      "levels": [
+        {
+          "level": 1
+        },
+        {
+          "level": 2
+        },
+        {
+          "level": 3
+        }
+      ]
+    }
+  ],
+  "stamps": [
+    {
+      "id": "s-fondation"
+    },
+    {
+      "id": "s-premier-vol"
+    },
+    {
+      "id": "s-pont-de-brume"
+    },
+    {
+      "id": "s-les-tilleuls"
+    },
+    {
+      "id": "s-moulin-gris"
+    },
+    {
+      "id": "s-haut-ferrand"
+    },
+    {
+      "id": "s-lanterne-du-val"
+    },
+    {
+      "id": "s-combe-aux-rosees"
+    },
+    {
+      "id": "s-nuit"
+    },
+    {
+      "id": "s-delai"
+    },
+    {
+      "id": "s-histoire"
+    },
+    {
+      "id": "s-vallee"
+    },
+    {
+      "id": "s-route-saline"
+    },
+    {
+      "id": "s-port-sel"
+    },
+    {
+      "id": "s-les-oeillets"
+    },
+    {
+      "id": "s-marais-blanc"
+    },
+    {
+      "id": "s-anse-aux-goemons"
+    },
+    {
+      "id": "s-phare-de-brisant"
+    },
+    {
+      "id": "s-ile-sainte-ambre"
+    },
+    {
+      "id": "s-hydravion"
+    },
+    {
+      "id": "s-cote"
+    },
+    {
+      "id": "s-route-archipel"
+    },
+    {
+      "id": "s-ile-aux-fanaux"
+    },
+    {
+      "id": "s-grand-recif"
+    },
+    {
+      "id": "s-sainte-lueur"
+    },
+    {
+      "id": "s-le-rocher-noir"
+    },
+    {
+      "id": "s-anse-des-lanternes"
+    },
+    {
+      "id": "s-ile-du-bout"
+    },
+    {
+      "id": "s-archipel"
+    },
+    {
+      "id": "s-route-cuivre"
+    },
+    {
+      "id": "s-les-charbonnieres"
+    },
+    {
+      "id": "s-villechaudron"
+    },
+    {
+      "id": "s-les-scieries"
+    },
+    {
+      "id": "s-sonnefeuille"
+    },
+    {
+      "id": "s-vert-de-gris"
+    },
+    {
+      "id": "s-le-hetre-roi"
+    },
+    {
+      "id": "s-clairiere"
+    },
+    {
+      "id": "s-printemps"
+    },
+    {
+      "id": "s-ete"
+    },
+    {
+      "id": "s-automne"
+    },
+    {
+      "id": "s-hiver"
+    },
+    {
+      "id": "s-annee"
+    },
+    {
+      "id": "s-convoi"
+    },
+    {
+      "id": "s-fonderie"
+    },
+    {
+      "id": "s-cloche"
+    },
+    {
+      "id": "s-foret"
+    }
+  ]
+}

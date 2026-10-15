@@ -96,7 +96,8 @@ export function localizeWorld(locale: Locale) {
       id: p.id, archetype: p.archetype, name: tx(p.name), description: tx(p.description),
       range: p.range, capacity: p.capacity, speed: p.speed, reliability: p.reliability, runway: p.runway, price: p.price, upkeep: p.upkeep,
     })),
-    traits: WORLD.traits.map((t) => ({ id: t.id, name: tx(t.name), description: tx(t.description) })),
+    // La portée d'un trait (« Longues routes ») : le cap s'en sert pour dire qu'un pilote suffirait.
+    traits: WORLD.traits.map((t) => ({ id: t.id, name: tx(t.name), description: tx(t.description), ...(t.effects.range ? { range: t.effects.range } : {}) })),
     pilots: WORLD.pilots.map((p) => ({
       id: p.id, name: tx(p.name), gender: p.gender, age: p.age, origin: tx(p.origin), traits: p.traits,
       portrait: tx(p.portrait), greeting: tx(p.greeting), wage: p.wage, storyTitle: tx(p.story.title), scenes: p.story.scenes.length,
