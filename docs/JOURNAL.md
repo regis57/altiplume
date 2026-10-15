@@ -770,3 +770,33 @@ Réécrire la description depuis le même poste n'y change rien : la ligne revie
 Dix tests le gardent : la signature avec ou sans lien de session, la variante à emoji, les fins de ligne de Windows, le texte sans signature qui ressort identique, la même phrase au milieu d'un texte qui reste en place, le nettoyage qui ne s'applique pas deux fois. Contre-épreuve : avec une fonction qui ne retire rien, cinq échouent. Essayé enfin sur les 92 vraies descriptions : les 92 sont nettoyées, les dix autres ne bougent pas, et l'API de GitHub (simulée) ne reçoit que le champ du texte.
 
 La leçon est dans le contrôle, pas dans une promesse : un défaut qui revient à chaque PR se corrige par une machine, et une règle se vérifie à l'arrivée.
+
+## Chapitre 49 — Une copie restaurée, et trois jours (14 octobre 2026, 20 h 45 – 23 h 15)
+
+La sauvegarde attendait depuis le premier jour, et le joueur l'avait dit : « quand je le dirai ». Il l'a dit ce soir, « si je suis motivé ». Il l'était.
+
+Jusqu'ici, la copie quotidienne de la base vivait sur le NAS lui-même : elle protégeait d'une erreur, pas de la perte du NAS. Un disque qui meurt emportait le jeu *et* ses copies. Une tâche Hyper Backup copie désormais chaque nuit, à 03 h 05, le dossier des sauvegardes sur un disque USB branché au NAS, **chiffrée** côté client, avec un mot de passe qui n'existe nulle part ailleurs que dans le gestionnaire de l'auteur. Seul ce dossier part : le fichier des secrets (le jeton du tunnel, les clés) ne quitte pas le NAS. Puis l'essentiel : une restauration d'essai, le soir même. L'écran a dit « Réussi ». Une sauvegarde jamais restaurée n'est qu'une hypothèse ; celle-ci l'a été une fois, et le sera chaque trimestre.
+
+L'essai a aussi montré un écart. La rotation laissée par défaut, « Smart Recycle », garde des versions horaires, puis journalières, puis hebdomadaires, pendant des mois ; or la page de confidentialité promet qu'un compte effacé disparaît des sauvegardes au plus tard 30 jours après. Écrit tel quel dans le manifeste, corrigé dans l'heure par le joueur : les versions les plus anciennes partent d'abord, trois au plus.
+
+Puis une décision, en une ligne : *« Partout où il est mis 30 jours de sauvegarde : c'est 3. »* Trois copies sur le NAS, trois versions sur le disque. Un compte effacé disparaît donc au plus tard **6 jours** après, et pas 3 : il faut additionner le séjour sur le NAS et celui sur le disque, et la page de confidentialité dit la somme, en français et en anglais, comme le registre et le manifeste. La contrepartie est écrite aussi : on ne revient qu'à trois jours en arrière. Le script collé dans la tâche du NAS a été recollé le soir même ; le contrôle de la veille, lui, a retiré tout seul la signature de chaque nouvelle PR, et les 92 anciennes ont été nettoyées d'un clic.
+
+## Chapitre 50 — Qui veille (15 octobre 2026, 0 h 50 – 1 h 20)
+
+« Vite fait, quelle est la pénibilité de mettre en place la supervision ? » Moins qu'une PR, pour l'essentiel. Le joueur a ouvert lui-même un compte gratuit chez UptimeRobot dans la foulée : deux moniteurs toutes les cinq minutes, de l'extérieur — la page d'accueil, et `/v1/version`, qui prouve que le jeu tourne et pas seulement le tunnel — et une page de statut publique qui ne montre que ces deux noms.
+
+Restait à savoir qu'une sauvegarde n'a *pas* eu lieu. Le script a appris à appeler un service de surveillance à sa toute fin, une fois la copie vérifiée ; l'adresse de ce signal est un secret, rangée dans un fichier du NAS, jamais dans le dépôt. Mais le moniteur prévu chez UptimeRobot s'est révélé payant : c'était une supposition, pas une vérification, et c'est écrit ainsi. Un autre service gratuit faisait l'affaire. Le joueur a coupé court : le NAS le prévient déjà quand une tâche échoue, son onduleur quand le courant manque, et UptimeRobot quand le site se tait. Il avait raison. Le seul cas restant — une tâche désactivée par erreur, le site tournant normalement — serait vu au plus tard par la restauration trimestrielle, pour une copie de trois jours. Le code est resté, inactif sans son fichier ; la décision est dans le manifeste, à la rubrique de ce qui a été écarté, et pourquoi.
+
+Une surveillance se pèse contre ce qui veille déjà. Celui qui connaît son installation le sait mieux que la liste des bonnes pratiques.
+
+## Chapitre 51 — La route la plus proche (15 octobre 2026, 9 h 15 – 15 h 30)
+
+Le matin, entre deux vols, le joueur envoie cinq captures « pour info ». La vallée livrée, la Côte de Saline ouverte, huit cachets en caisse, une seule Grive. Et la fiche du cap : *Prochaine route : Archipel des Lanternes* — livrer les six escales de la Côte, gagner encore sept cachets.
+
+Le cap disait vrai, mais pas tout. **La Forêt de Cuivre ne demandait plus que quatre cachets** : sa page, « Toute la vallée », était déjà dans l'album. Le cap prenait la première région fermée dans l'ordre de la liste ; or les routes s'ouvrent dans n'importe quel ordre. Le jour où il avait été écrit, la liste et la distance donnaient la même réponse ; le monde s'est ramifié depuis, et rien ne l'a signalé. Et sur les six escales de la Côte à livrer, **quatre étaient hors d'atteinte** : Marais-Blanc à 9,6 lieues quand la Grive en porte 8, trois autres sur l'eau. Le conseil qui suivait — une Grive d'occasion — n'en débloquait aucune. Il aurait fallu une Sterne et son ponton, puis un Martinet (avec une place au hangar et une piste plus longue) ou un pilote endurant : plusieurs milliers de francs, pour un joueur qui en avait un peu plus de 800.
+
+Le correctif tient en deux phrases. Le cap vise la route **la plus proche** : d'abord celle dont la page est acquise, puis celle qui demande le moins d'escales hors d'atteinte, de livraisons, de cachets. Et quand une escale est hors d'atteinte, il dit **pourquoi** et **ce qu'il y faut** — l'avion le moins cher qui y va, la place au hangar ou au ponton, la piste — avec les règles du serveur. Il a même trouvé ce qu'on n'avait pas vu : un pilote de Longues routes allonge la portée d'un cinquième, et 8 × 1,2 font exactement 9,6. Marais-Blanc est à la portée d'une Grive bien pilotée.
+
+Dix tests, sur les vrais chiffres du monde, dont la situation exacte du joueur ce matin-là ; avec l'ancien choix, celui-là échoue. Le compte des cachets, qui intriguait (dix-sept, moins dix, et pourtant huit), était juste : ouvrir une route colle une page dans l'album, et la page rapporte un cachet.
+
+Le joueur a ouvert ce jour une page de plus au wiki, le jour 5, et fixé la fin du récit : il s'arrêtera au jour 7.
