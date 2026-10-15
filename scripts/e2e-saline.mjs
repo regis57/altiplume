@@ -108,6 +108,11 @@ try {
   assert((await page.textContent('#cachets')) === '1', 'dix cachets dépensés, la page de la route rendue');
   assert((await page.textContent('#album')).includes('La route de la Côte'), 'la page dans l\'album');
   assert((await page.textContent('#bord')).includes('Route ouverte : Côte de Saline'), 'le livre de bord');
+  // Le cas du 15 octobre : la Côte ouverte, le cap vise la Forêt (sa page est déjà dans
+  // l'album), pas l'Archipel, qui demande toute la Côte et une flotte qu'on n'a pas.
+  const cap = (await page.textContent('#cap')).replace(/\s+/g, ' ');
+  assert(cap.includes('Prochaine route : Forêt de Cuivre') && cap.includes("La page « Toute la vallée » est dans l'album"),
+    `le cap vise la route la plus proche (${cap})`);
 
   // Le ponton, puis la Sterne.
   const ponton = page.locator('#zones li', { hasText: 'Le ponton' });

@@ -7,6 +7,7 @@
  */
 import { formatDate, getLocale, placeAfter, t, translatePage } from './i18n.ts';
 import { convoyState } from './convoi.ts';
+import { nextCap } from './cap.ts';
 import { formatRemaining } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, setMusicSeason, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
@@ -21,12 +22,12 @@ interface WorldView {
   home: { name: string; address: string; description: string };
   regions: { id: string; name: string; tagline: string; description: string; page: string; route?: { requires: string; cost: number } }[];
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
-  planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number; runway: string }[];
+  planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number; runway: string; price: number }[];
   seasons: { id: string; name: string; tagline: string; effects: { duration?: number; reward?: number } }[];
   cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number; model?: string; morale?: number; stamps?: number } }[];
-  traits: { id: string; name: string; description: string }[];
+  traits: { id: string; name: string; description: string; range?: number }[];
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
-  zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number }[] }[];
+  zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number; runway?: string; planes?: number; seaplanes?: number }[] }[];
   decorations: { id: string; name: string; description: string; cost: number; morale: number }[];
   stamps: { id: string; name: string; description: string; value: number }[];
 }
@@ -268,39 +269,51 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   // Le premier vol : trois gestes, tant qu'aucun sac n'est revenu.
   $('fiche-premier-vol')?.classList.toggle('cache', c.logbook.some((l) => l.kind === 'flight.arrived'));
 
-  // Le cap : le prochain déblocage, et ce qui manque pour y arriver — dit en une
-  // fiche, pour ne pas avoir à le recouper entre les routes et l'album. La même
-  // règle que les routes : la première région fermée, ses deux conditions.
+  // Le cap : la route la plus proche, et ce qui manque vraiment pour y arriver — dit en
+  // une fiche, pour ne pas avoir à le recouper entre les routes, l'album et le hangar.
+  // Le choix et les manques se calculent dans `cap.ts` ; ici, on ne fait que les dire.
   const cap = $('cap');
   if (cap) {
     cap.replaceChildren();
     const quote = (s: string) => `${t('game.quoteOpen')}${s}${t('game.quoteClose')}`;
-    const next = world.regions.find((r) => r.route && !c.regions.includes(r.id));
-    if (next?.route) {
-      const route = next.route;
-      cap.append(el('p', 'cap-titre', t('goal.nextRoute').replace('{region}', next.name)));
+    const next = nextCap(world, c);
+    if (next.kind === 'route') {
+      const region = world.regions.find((r) => r.id === next.region)!;
+      const stopName = (id: string) => world.destinations.find((d) => d.id === id)?.name ?? id;
+      const planeName = (id: string) => world.planes.find((p) => p.id === id)?.name ?? id;
+      const pageName = quote(stampName(world, next.requires));
+      cap.append(el('p', 'cap-titre', t('goal.nextRoute').replace('{region}', region.name)));
       const steps = el('ul', 'conditions');
-      const hasPage = c.album.some((a) => a.id === route.requires);
-      const enough = c.stamps >= route.cost;
-      const pageName = quote(stampName(world, route.requires));
-      const fromRegion = world.regions.find((x) => x.page === route.requires);
-      const toDeliver = fromRegion && !hasPage
-        ? world.destinations.filter((d) => d.region === fromRegion.id && !c.album.some((a) => a.id === `s-${d.id}`)).map((d) => d.name)
-        : [];
-      steps.append(conditionItem(hasPage, hasPage || toDeliver.length === 0
+      steps.append(conditionItem(next.hasPage, next.hasPage || next.toDeliver.length === 0
         ? t('goal.pageDone').replace('{page}', pageName)
-        : t('goal.deliver').replace('{list}', toDeliver.join(', ')).replace('{page}', pageName)));
-      steps.append(conditionItem(enough, enough
-        ? t('goal.stampsDone').replace('{cost}', String(route.cost))
-        : t('goal.earnStamps').replace('{n}', String(route.cost - c.stamps)).replace('{have}', String(c.stamps)).replace('{cost}', String(route.cost))));
+        : t('goal.deliver').replace('{list}', next.toDeliver.map(stopName).join(', ')).replace('{page}', pageName)));
+      steps.append(conditionItem(next.enough, next.enough
+        ? t('goal.stampsDone').replace('{cost}', String(next.cost))
+        : t('goal.earnStamps').replace('{n}', String(next.cost - c.stamps)).replace('{have}', String(c.stamps)).replace('{cost}', String(next.cost))));
       cap.append(steps);
-      if (hasPage && enough) cap.append(el('p', 'aide', t('goal.ready').replace('{button}', quote(t('game.openRoute')))));
+      // Les escales que la flotte ne peut pas livrer : pourquoi, et ce qu'il y faut.
+      for (const b of next.blockers) {
+        const why = { range: 'goal.tooFar', water: 'goal.onWater', clearing: 'goal.inClearing', strip: 'goal.shortStrip' }[b.need];
+        const plane = { range: 'goal.planeRange', water: 'goal.planeWater', clearing: 'goal.planeClearing', strip: 'goal.planeStrip' }[b.need];
+        const needs = [
+          ...(b.plane ? [t(plane).replace('{plane}', planeName(b.plane))] : []),
+          ...b.works.map((w) => t({ hangar: 'goal.workHangar', pontoon: 'goal.workPontoon', runway: 'goal.workRunway' }[w])),
+        ];
+        const trait = b.pilotTrait ? world.traits.find((x) => x.id === b.pilotTrait)?.name : undefined;
+        let text = t(why).replace('{list}', joinList(b.stops.map(stopName)));
+        if (needs.length > 0) {
+          text += ' ' + (trait
+            ? t('goal.takesOrPilot').replace('{needs}', joinList(needs)).replace('{trait}', quote(trait))
+            : t('goal.takes').replace('{needs}', joinList(needs)));
+        }
+        cap.append(el('p', 'aide', text));
+      }
+      if (next.hasPage && next.enough) cap.append(el('p', 'aide', t('goal.ready').replace('{button}', quote(t('game.openRoute')))));
       // Le palier du premier mois : tant qu'on n'a qu'un avion, le cap le dit.
       if (c.planes.length === 1) cap.append(el('p', 'aide', t('goal.secondPlane')));
     } else {
       // Toutes les routes sont ouvertes : l'album devient le cap.
-      const missing = world.stamps.length - c.album.length;
-      cap.append(el('p', 'cap-titre', missing > 0 ? t('goal.album').replace('{n}', String(missing)) : t('goal.done')));
+      cap.append(el('p', 'cap-titre', next.kind === 'album' ? t('goal.album').replace('{n}', String(next.missing)) : t('goal.done')));
     }
   }
   void setupPasskeyInvitation(api, setMessage);
@@ -549,6 +562,12 @@ function planeName(world: WorldView, c: CompanyView, ownedId: string): string {
   return world.planes.find((p) => p.id === owned?.model)?.name ?? '';
 }
 function stampName(world: WorldView, id: string): string { return world.stamps.find((s) => s.id === id)?.name ?? id; }
+
+/** « a », « a et b », « a, b et c » — dans la langue courante. */
+function joinList(items: readonly string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')}${t('goal.and')}${items[items.length - 1]}`;
+}
 
 /** Les nouvelles depuis la dernière visite : ce qu'on trouve en revenant. */
 function renderNews(world: WorldView, c: CompanyView): void {
