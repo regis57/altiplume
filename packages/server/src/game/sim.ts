@@ -87,6 +87,19 @@ export interface Fleet {
   readonly pilots: number;
   /** Le facteur « Longues routes » du pilote le plus endurant ; 1 si personne ne l'a. */
   readonly reach: number;
+  /** La piste de l'aérodrome ; sans elle (anciens appels), on ne filtre pas les avions proposés. */
+  readonly home?: Runway;
+}
+
+/**
+ * Un avion qu'on peut proposer au joueur : sa piste n'est pas plus courte que d'un cran
+ * par rapport à ce qu'il demande. Le Héron (grande piste) n'arrive qu'après la piste
+ * roulée ; le 16 octobre, il tombait dès le premier jour, sur un pré fauché, à 5 600 F,
+ * pour une compagnie qui en avait 818. L'hydravion part de la rivière : pas concerné.
+ */
+export function planeWithinReach(model: PlaneModel, home: Runway): boolean {
+  if (model.runway === 'water') return true;
+  return RUNWAY_ORDER[model.runway] <= RUNWAY_ORDER[home] + 1;
 }
 
 /**
@@ -113,7 +126,9 @@ export function companyFleet(db: Database, companyId: string): Fleet {
   const pilots = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(companyId) as { pilot: string }[])
     .flatMap((r) => { const p = findPilot(r.pilot); return p ? [p] : []; });
   const reach = pilots.reduce((best, p) => Math.max(best, traitFactor(p, 'range')), 1);
-  return { planes, pilots: pilots.length, reach };
+  const level = (db.prepare("SELECT level FROM company_zones WHERE company_id = ? AND zone = 'runway'").get(companyId) as { level: number } | undefined)?.level ?? 1;
+  const home = WORLD.zones.find((z) => z.id === 'runway')!.levels.find((l) => l.level === level)?.runway ?? 'short';
+  return { planes, pilots: pilots.length, reach, home };
 }
 
 /** Le cachet « toute la région » de chaque région (défini avec le monde). */
@@ -207,7 +222,10 @@ export function drawCards(
     // Une carte de saison ne vient qu'en sa saison ; sans saison donnée, elle ne vient pas.
     && (c.kind === 'opportunity' || c.season === undefined || c.season === season)
     // Et jamais un contrat que les avions du hangar ne peuvent pas porter.
-    && !(c.kind === 'contract' && fleet !== undefined && !canCarry(c, fleet)));
+    && !(c.kind === 'contract' && fleet !== undefined && !canCarry(c, fleet))
+    // Ni un avion à vendre qui demande deux crans de piste de plus que l'aérodrome n'en a.
+    && !(c.kind === 'opportunity' && c.offer.type === 'plane' && fleet?.home !== undefined
+      && !planeWithinReach(findPlane(c.offer.model)!, fleet.home)));
   const seeds = WORLD.seasons.find((x) => x.id === season)?.effects.seedsWeight ?? 1;
   const waiting = (c: (typeof pool)[number]) => c.kind === 'contract' && !album.includes(`s-${c.destination}`);
   const out: string[] = [];
