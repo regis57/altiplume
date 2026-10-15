@@ -11,7 +11,7 @@ fait », un vol doit se faire ; quand il dit « vous dormez sur place », rien n
 décoller ; quand il dit « la nuit », il doit faire nuit chez celui qui joue.
 
 Cette page est le résumé de la journée, dans l'ordre où elle s'est déroulée. Le récit,
-chapitres 45 à 48, est dans le [Journal](Journal) ; les règles du monde sont dans
+chapitres 45 à 50, est dans le [Journal](Journal) ; les règles du monde sont dans
 [Monde](Monde) ; la veille, dans [Jour 3](Jour-3).
 
 ## Dans l'ordre
@@ -148,3 +148,5 @@ le 19 octobre dans une PR dédiée, et l'accessibilité, à mesurer avec les per
 concernées. Le crible des cartes, des saisons, de l'économie et de la chance est fini.
 
 Jouable sur [altiplume.com](https://altiplume.com).
+
+La suite : [Jour 5](Jour-5).
