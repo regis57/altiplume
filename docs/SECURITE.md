@@ -283,7 +283,11 @@ décidé de l'ouvrir.
    `scripts/nas-backup.sh`, la page de confidentialité (en français et en anglais), le
    registre des traitements et le manifeste disent la même chose. Contrepartie assumée :
    on ne peut revenir qu'à trois jours en arrière. Le script collé dans la tâche
-   planifiée du NAS a été recollé le soir même.
+   planifiée du NAS devait être recollé le soir même ; il ne l'a pas été. Le 15 au matin,
+   le dossier gardait sept copies, la tâche contenait encore `GARDER=30` ; recollé et
+   relu le 15 à 17 h 40. La version USB de la nuit du 15 contient encore les copies du
+   11 octobre et sort de la rotation vers le 18 : d'ici là, la promesse des 6 jours n'est
+   pas tenue pour elles.
 
 **La leçon.** Une copie qui n'a jamais été restaurée et une durée de conservation qu'on
 ne relit pas après l'avoir réglée sont deux intentions de plus. Désormais : la restauration

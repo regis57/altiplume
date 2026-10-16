@@ -779,7 +779,7 @@ Jusqu'ici, la copie quotidienne de la base vivait sur le NAS lui-même : elle pr
 
 L'essai a aussi montré un écart. La rotation laissée par défaut, « Smart Recycle », garde des versions horaires, puis journalières, puis hebdomadaires, pendant des mois ; or la page de confidentialité promet qu'un compte effacé disparaît des sauvegardes au plus tard 30 jours après. Écrit tel quel dans le manifeste, corrigé dans l'heure par le joueur : les versions les plus anciennes partent d'abord, trois au plus.
 
-Puis une décision, en une ligne : *« Partout où il est mis 30 jours de sauvegarde : c'est 3. »* Trois copies sur le NAS, trois versions sur le disque. Un compte effacé disparaît donc au plus tard **6 jours** après, et pas 3 : il faut additionner le séjour sur le NAS et celui sur le disque, et la page de confidentialité dit la somme, en français et en anglais, comme le registre et le manifeste. La contrepartie est écrite aussi : on ne revient qu'à trois jours en arrière. Le script collé dans la tâche du NAS a été recollé le soir même ; le contrôle de la veille, lui, a retiré tout seul la signature de chaque nouvelle PR, et les 92 anciennes ont été nettoyées d'un clic.
+Puis une décision, en une ligne : *« Partout où il est mis 30 jours de sauvegarde : c'est 3. »* Trois copies sur le NAS, trois versions sur le disque. Un compte effacé disparaît donc au plus tard **6 jours** après, et pas 3 : il faut additionner le séjour sur le NAS et celui sur le disque, et la page de confidentialité dit la somme, en français et en anglais, comme le registre et le manifeste. La contrepartie est écrite aussi : on ne revient qu'à trois jours en arrière. Le script collé dans la tâche du NAS devait être recollé le soir même (on l'a cru fait ; le chapitre suivant dira que non) ; le contrôle de la veille, lui, a retiré tout seul la signature de chaque nouvelle PR, et les 92 anciennes ont été nettoyées d'un clic.
 
 ## Chapitre 50 — Qui veille (15 octobre 2026, 0 h 50 – 1 h 20)
 
@@ -800,3 +800,21 @@ Le correctif tient en deux phrases. Le cap vise la route **la plus proche** : d'
 Dix tests, sur les vrais chiffres du monde, dont la situation exacte du joueur ce matin-là ; avec l'ancien choix, celui-là échoue. Le compte des cachets, qui intriguait (dix-sept, moins dix, et pourtant huit), était juste : ouvrir une route colle une page dans l'album, et la page rapporte un cachet.
 
 Le joueur a ouvert ce jour une page de plus au wiki, le jour 5, et fixé la fin du récit : il s'arrêtera au jour 7.
+
+## Chapitre 52 — Ce que la nuit a montré (15 octobre 2026, 17 h – 16 octobre, 0 h 45)
+
+Le joueur revient avec des preuves. La copie USB de 03 h 05 a réussi, en onze secondes. UptimeRobot a envoyé sa première vraie alerte, à 6 h 56 : le NAS redémarre chaque matin, et le jeu se tait une douzaine de minutes ; l'alerte, puis le retour, sont arrivés par courriel. La chaîne de surveillance marche, et elle a même appris quelque chose au joueur sur sa propre machine.
+
+Puis une capture du dossier des sauvegardes : **sept copies**. Avec trois promises. La tâche planifiée contenait encore `GARDER=30` : le script recollé la veille n'avait pas été enregistré, et le Jour 4, le manifeste et le journal l'avaient déjà écrit « recollé le soir même ». Corrigé à 17 h 40, ligne relue. La conséquence est écrite sans détour : la version USB de cette nuit contient encore les copies du 11 octobre, et la promesse des six jours ne sera tenue pour elles que vers le 18. Une étape faite à la main se vérifie comme le reste, et c'est maintenant une étape écrite du déploiement.
+
+Après minuit, en jouant sur une autre compagnie : une carte *Le Héron des Messageries — Acheter · 5600 F*, pour 818 francs en caisse, un hangar plein et un pré fauché. Le bouton était actif ; le refus ne venait qu'après le clic ; et rien ne disait qu'il faudrait aussi la grande piste. Le Héron ne vient plus avant la piste roulée, et chaque carte d'avion dit maintenant, avant le clic, comme les routes, le prix, la place et la piste. Le joueur a choisi que la piste avertisse sans bloquer : *on peut l'acheter avant d'avoir la piste ; il restera au sol jusque-là.*
+
+## Chapitre 53 — Un voisin sous le domaine (16 octobre 2026, 20 h 20 – 21 h 15)
+
+Un second site s'installe sous `altiplume.com`, sur le même NAS. Le joueur l'a monté proprement : son tunnel, son conteneur, son dossier, ses secrets ; un sous-domaine qui déclare au monde qu'il n'envoie aucun courrier ; A+ à l'Observatory. Il demande : « tout va bien d'après toi ? »
+
+Presque. Un écran ouvert dans Cloudflare proposait de désactiver le certificat universel : il couvre les deux sites, et Altiplume demande aux navigateurs de ne jamais revenir au HTTP, sous-domaines compris ; on n'y touche pas. DNSSEC n'était pas visible dans l'export : il l'est maintenant. Et une question qu'un site seul ne se posait pas : un sous-domaine peut déposer un cookie pour tout le domaine. Rien à voler — le vrai cookie de session ne quitte pas `altiplume.com` —, mais de quoi imposer une fausse session à un joueur. La parade tient en un préfixe, `__Host-`, que les navigateurs refusent à tout autre nom que le site exact. Quatre tests en conditions de production, une reconnexion pour chacun, et une vérification dans le navigateur du joueur le soir même.
+
+La capture de cette vérification montrait aussi, en bas, la valeur du cookie. Déconnexion dans la minute, session annulée côté serveur, et une habitude de plus : on coupe le bas du panneau avant d'envoyer.
+
+Le joueur a ouvert la page du jour 6, et il continue de jouer, « pour comprendre si nos mécanismes sont bons ».

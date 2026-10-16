@@ -93,7 +93,8 @@ chapitres 45 à 50, est dans le [Journal](Journal) ; les règles du monde sont d
     sauvegardes au plus tard 6 jours après (3 sur le NAS, 3 sur le disque), et non plus
     30 : le script, la page de confidentialité (français et anglais), le registre et le
     manifeste le disent. Contrepartie assumée : on ne revient qu'à trois jours en arrière.
-    Le script collé dans la tâche du NAS, recollé le soir même.
+    Le script collé dans la tâche du NAS devait être recollé ; il ne l'a été que le 15 à
+    17 h 40 (voir le [Jour 5](Jour-5)).
 14. **La supervision, et l'alarme qu'on n'a pas gardée.** Le joueur a ouvert un compte
     gratuit chez UptimeRobot : deux moniteurs toutes les 5 minutes (la page d'accueil et
     `/v1/version`), une page de statut qui ne montre que cela. Pour savoir qu'une sauvegarde

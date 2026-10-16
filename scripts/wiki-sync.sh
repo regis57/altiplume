@@ -22,6 +22,7 @@ copy docs/JOUR-2.md     "Jour-2"
 copy docs/JOUR-3.md     "Jour-3"
 copy docs/JOUR-4.md     "Jour-4"
 copy docs/JOUR-5.md     "Jour-5"
+copy docs/JOUR-6.md     "Jour-6"
 copy docs/JOURNAL.md    "Journal"
 copy docs/COUTS.md      "Couts"
 copy docs/MONDE.md      "Monde"
@@ -43,6 +44,7 @@ gratuit, sans mot de passe. Le jeu : [altiplume.com](https://altiplume.com). Le 
 - **[Jour 3](Jour-3)** — le troisième jour : la sécurité, ce qui tient par construction et ce qui se vérifie sans cesse.
 - **[Jour 4](Jour-4)** — le quatrième jour : les cartes disent vrai, ce que le jeu raconte est ce que le jeu fait.
 - **[Jour 5](Jour-5)** — le cinquième jour : le jeu montre le chemin, la route la plus proche et ce qui en sépare.
+- **[Jour 6](Jour-6)** — le sixième jour : un voisin sous le domaine, ce qui tient pour un site seul tient-il à deux.
 - **[Journal](Journal)** — le récit de l'aventure, chapitre par chapitre.
 - **[Coûts](Couts)** — ce que le projet coûte, euro par euro, et le temps passé.
 - **[Monde](Monde)** — les Vallées de Brume, les pilotes, les avions, les cartes.
@@ -64,6 +66,7 @@ cat > "$WIKI/_Sidebar.md" <<'SIDE'
 - [Jour 3](Jour-3)
 - [Jour 4](Jour-4)
 - [Jour 5](Jour-5)
+- [Jour 6](Jour-6)
 - [Journal](Journal)
 - [Coûts](Couts)
 - [Monde](Monde)

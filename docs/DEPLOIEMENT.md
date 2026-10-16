@@ -227,7 +227,9 @@ revenir qu'à trois jours en arrière. Un mal découvert plus tard n'a plus de c
 `GARDER=3` est dans `scripts/nas-backup.sh` ; **le script collé dans la tâche planifiée
 du NAS ne change pas tout seul** : après chaque modification du fichier, recoller son
 contenu dans la tâche « Altiplume - sauvegarde » (Planificateur de tâches → Modifier →
-Paramètres de tâche).
+Paramètres de tâche), cliquer **OK**, puis **vérifier** : rouvrir la tâche, lire la ligne
+`GARDER=`, et l'exécuter une fois (Exécuter) ; la sortie liste les copies supprimées.
+Le 14 octobre, le recollage n'avait pas été enregistré, et personne ne l'a vu avant le 15.
 
 ### L'alarme de sauvegarde : prévue dans le script, **non activée**
 
