@@ -11,6 +11,9 @@ services:
   api:
     # Étiquette suivie : `latest` = dernière fusion sur main. Pour figer une version
     # précise, remplacer par `ghcr.io/regis57/altiplume@sha256:<empreinte>`.
+    # C'est l'image de l'auteur : pour votre propre version, publiez la vôtre depuis votre
+    # copie du dépôt et remplacez par `ghcr.io/<votre-compte>/<votre-depot>:latest`
+    # (voir docs/DEPLOIEMENT.md, la note en tête).
     image: ghcr.io/regis57/altiplume:latest
     container_name: altiplume-api
     restart: unless-stopped

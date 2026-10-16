@@ -5,6 +5,16 @@ DSM 7.2 ou plus, avec Container Manager. Aucune ligne de commande n'est nécessa
 
 > **`<nom-de-domaine>`** : à remplacer partout par votre domaine. Pour l'instance de
 > l'auteur, c'est `altiplume.com` (voir le [README](https://github.com/regis57/altiplume#readme)).
+>
+> **L'image et le dépôt sont ceux de l'auteur.** `ghcr.io/regis57/altiplume` est l'image
+> publiée par ce dépôt-ci. Pour faire tourner votre propre version, faites votre copie du
+> dépôt (*fork*) et activez-y les Actions : sa CI publiera l'image `ghcr.io/<votre-compte>/<votre-depot>` à chaque
+> fusion sur `main`. Puis remplacez, partout dans cette page :
+> - `ghcr.io/regis57/altiplume` par votre image, dans le `docker-compose.yml` (ligne
+>   `image:` du service `api`) et dans Container Manager ;
+> - l'adresse brute du `docker-compose.yml` (`raw.githubusercontent.com/regis57/altiplume/…`)
+>   par celle de votre dépôt ;
+> - `--owner regis57` par votre compte, pour vérifier la provenance de l'image.
 
 ## Ce qui est déjà en place (10 octobre 2026)
 
