@@ -164,6 +164,9 @@ chaque projet, sur le NAS, et dans le gestionnaire de mots de passe de l'auteur.
 noms de menus sont ceux de l'interface d'octobre 2026 ; ils bougent parfois, la logique
 reste.
 
+> **`<nom-de-domaine>`** : à remplacer partout par votre domaine. Pour l'instance de
+> l'auteur, c'est `altiplume.com`.
+
 ### 1. Le domaine (environ 10 € par an)
 
 1. Créer un compte Cloudflare (gratuit) : mot de passe unique, tiré du gestionnaire de
@@ -205,7 +208,7 @@ Le tunnel exige que le DNS soit chez Cloudflare ; acheter le domaine au même en
    `.env` du projet sur le NAS (`TUNNEL_TOKEN=…`), jamais dans le dépôt ni dans une
    conversation. Le conteneur `cloudflared` du projet le lit au démarrage
    (voir [Déploiement](Deploiement)).
-3. **Public Hostname** : sous-domaine vide, domaine `altiplume.com`, service **HTTP**,
+3. **Public Hostname** : sous-domaine vide, domaine `<nom-de-domaine>`, service **HTTP**,
    adresse `api:3000` (le nom du service dans `docker-compose.yml` ; le conteneur
    `cloudflared` le joint par le réseau privé du projet). Cloudflare crée lui-même
    l'enregistrement DNS (un CNAME *proxied*, nuage orange).
@@ -218,7 +221,7 @@ Le tunnel exige que le DNS soit chez Cloudflare ; acheter le domaine au même en
 
 ### 4. Le courrier : recevoir et envoyer, sans serveur de mail
 
-1. **Recevoir** (`bonjour@altiplume.com`) : **Email → Email Routing**, l'activer ;
+1. **Recevoir** (`bonjour@<nom-de-domaine>`) : **Email → Email Routing**, l'activer ;
    Cloudflare ajoute ses MX, sa clé DKIM et son SPF. Ajouter l'adresse de destination
    (la boîte personnelle, confirmée par courriel), puis une **adresse personnalisée**
    qui y renvoie.
@@ -245,7 +248,7 @@ Le tunnel exige que le DNS soit chez Cloudflare ; acheter le domaine au même en
 
 ### 6. Un second projet sous un sous-domaine
 
-Depuis le 16 octobre, un second site vit sous `*.altiplume.com`, sur le même NAS. La
+Depuis le 16 octobre, un second site vit sous le domaine d'Altiplume, sur le même NAS. La
 règle : **deux projets qui partagent un domaine, pas une maison.**
 
 Mise en place :
@@ -256,8 +259,8 @@ Mise en place :
 2. **Un projet Container Manager, un dossier et un `.env` par site** (`docker/altiplume`,
    `docker/<second-projet>`) ; chacun son réseau Docker (celui que crée son
    `docker-compose`) ; aucun `ports:` ; aucun montage du dossier ou du `.env` de l'autre.
-3. **Le sous-domaine d'un seul niveau** (`second.altiplume.com`) : il est couvert par le
-   certificat universel ; un deuxième niveau (`a.b.altiplume.com`) ne le serait pas.
+3. **Le sous-domaine d'un seul niveau** (`second.<nom-de-domaine>`) : il est couvert par le
+   certificat universel ; un deuxième niveau (`a.b.<nom-de-domaine>`) ne le serait pas.
 4. **S'il n'envoie pas de courrier, le dire** : un MX nul (`0 .`), un SPF `v=spf1 -all`
    et un DMARC `v=DMARC1; p=reject;` sur le sous-domaine. Personne ne peut alors écrire
    en son nom.
@@ -269,7 +272,7 @@ Les points à vérifier :
 - [ ] **Les cookies.** Un sous-domaine peut poser un cookie pour tout le domaine. Le
       cookie de session d'Altiplume porte le préfixe `__Host-` (16 octobre 2026), que
       les navigateurs refusent à un sous-domaine ; le second site n'a pas à poser de
-      cookie avec `Domain=altiplume.com`, et préfixe les siens de la même façon.
+      cookie avec `Domain=<nom-de-domaine>`, et préfixe les siens de la même façon.
 - [ ] **Les en-têtes de sécurité.** Ils sont propres à chaque application : passer le
       second site à l'Observatory à part (A+ le 16 octobre).
 - [ ] **Les réglages de zone sont communs.** HTTPS forcé, TLS minimum, DNSSEC, CAA,
@@ -296,7 +299,7 @@ l'image (échec sur toute alerte moyenne ou haute non examinée). Une alerte pro
 `.github/zap/plan.yaml`, avec sa raison. À la main, depuis un poste avec Docker
 (version fixée, jamais `stable` ni `latest`) :
 ```
-docker run --rm -t ghcr.io/zaproxy/zaproxy:2.17.0 zap-baseline.py -t https://altiplume.com -I
+docker run --rm -t ghcr.io/zaproxy/zaproxy:2.17.0 zap-baseline.py -t https://<nom-de-domaine> -I
 ```
 
 **Trivy sur l'image, à la main.** Version fixée — surtout pas `latest`, qui a
@@ -328,11 +331,11 @@ la maison. Depuis un téléphone en 4G, il testerait l'adresse de l'opérateur.
 - Shodan : chercher l'adresse ; aucun service ne doit apparaître.
 
 **Blacklight.** [themarkup.org/blacklight](https://themarkup.org/blacklight) →
-`https://altiplume.com`, appareil *Mobile*, lieu *Europe* puis *Californie*. Le
+`https://<nom-de-domaine>`, appareil *Mobile*, lieu *Europe* puis *Californie*. Le
 résultat attendu est « 0 » partout. Le contrôle continu (`scripts/e2e-tiers.mjs`)
 dit la même chose à chaque PR, sans passer par un service extérieur.
 
-**HIBP domaine.** Ajouter `altiplume.com` dans « Domain search » (vérification
+**HIBP domaine.** Ajouter `<nom-de-domaine>` dans « Domain search » (vérification
 par TXT DNS ou par email), puis vérifier qu'aucune adresse n'y est associée.
 Rappel : même en cas de fuite, le jeu ne stocke aucun mot de passe, et les
 jetons sont des empreintes SHA-256 inutilisables telles quelles.
