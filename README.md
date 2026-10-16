@@ -20,7 +20,7 @@ jeu installable sur téléphone, sans mot de passe, conforme au RGPD, hébergé 
 NAS domestique sans aucun port ouvert, et une notification « ton courrier est
 arrivé » reçue sur un iPhone à 14 h 23. Le résumé — chronologie, décisions clefs —
 est [Les 24 heures](https://github.com/regis57/altiplume/wiki/Les-24-heures), et la
-suite, [Jour 2](https://github.com/regis57/altiplume/wiki/Jour-2) et [Jour 3](https://github.com/regis57/altiplume/wiki/Jour-3) (la sécurité), [Jour 4](https://github.com/regis57/altiplume/wiki/Jour-4) (les cartes disent vrai), [Jour 5](https://github.com/regis57/altiplume/wiki/Jour-5) (le jeu montre le chemin) ; le récit complet, le [Journal](https://github.com/regis57/altiplume/wiki/Journal) ; les
+suite, [Jour 2](https://github.com/regis57/altiplume/wiki/Jour-2) et [Jour 3](https://github.com/regis57/altiplume/wiki/Jour-3) (la sécurité), [Jour 4](https://github.com/regis57/altiplume/wiki/Jour-4) (les cartes disent vrai), [Jour 5](https://github.com/regis57/altiplume/wiki/Jour-5) (le jeu montre le chemin), [Jour 6](https://github.com/regis57/altiplume/wiki/Jour-6) (un voisin sous le domaine) ; le récit complet, le [Journal](https://github.com/regis57/altiplume/wiki/Journal) ; les
 coûts (un nom de domaine, environ dix euros) sont dans
 [Coûts](https://github.com/regis57/altiplume/wiki/Couts).
 
