@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{title}} — Altiplume</title>
     <meta name="description" content="{{description}}" />
+    <meta name="robots" content="{{robots}}" />
     <!-- L'aperçu d'un lien partagé : une carte par langue. Les robots de partage ne
          lisent pas de JavaScript ; « ?lang=en » leur sert cet en-tête en anglais. -->
     <link rel="canonical" href="{{url}}" />
@@ -24,7 +25,7 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="{{ogImageAlt}}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="color-scheme" content="light dark" />
+{{jsonld}}    <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#cfd8dd" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1f262c" media="(prefers-color-scheme: dark)" />
     <script src="{{theme}}"></script>
