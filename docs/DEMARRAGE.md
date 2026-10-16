@@ -18,6 +18,7 @@ Ordre recommandé. Chaque étape est courte ; rien n'est irréversible sauf l'ac
 3. Laisser le plan **Free** sur le site. Ne rien configurer d'autre pour l'instant.
 
 Pourquoi Cloudflare : le tunnel vers le NAS exige que les DNS soient chez eux, et le domaine y est vendu au prix coûtant.
+La suite chez Cloudflare (réglages de la zone, DNSSEC, tunnel, courrier, second projet) : [Sécurité → Cloudflare, pas à pas](Securite#cloudflare-pas-à-pas).
 
 ## 2. GitHub (toi, 20 min) — dépôt PUBLIC, plan Free, 0 €
 

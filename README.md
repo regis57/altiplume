@@ -76,6 +76,13 @@ L'image de l'API est publiée sur `ghcr.io/regis57/altiplume` à chaque fusion s
 Le déploiement sur un NAS Synology, sans ligne de commande, est décrit dans
 [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
 
+La configuration chez Cloudflare (le domaine au prix coûtant, les réglages de la zone,
+DNSSEC, le tunnel sans aucun port ouvert, le courrier, et la coexistence avec un second
+projet sous un sous-domaine, avec ses points à vérifier) est décrite pas à pas, sans
+aucune valeur secrète, dans
+[Sécurité → Cloudflare, pas à pas](https://github.com/regis57/altiplume/wiki/Securite#cloudflare-pas-à-pas)
+(source : [docs/SECURITE.md](docs/SECURITE.md)).
+
 ## Soutenir
 
 Altiplume est gratuit, sans publicité et sans traqueur, et le restera : il coûte
