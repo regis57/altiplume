@@ -3,12 +3,15 @@
 Mode d'emploi du premier déploiement et des mises à jour, sur un Synology DS218+ sous
 DSM 7.2 ou plus, avec Container Manager. Aucune ligne de commande n'est nécessaire.
 
+> **`<nom-de-domaine>`** : à remplacer partout par votre domaine. Pour l'instance de
+> l'auteur, c'est `altiplume.com` (voir le [README](https://github.com/regis57/altiplume#readme)).
+
 ## Ce qui est déjà en place (10 octobre 2026)
 
 - DSM à jour, vérification en deux étapes, blocage automatique.
 - Container Manager installé ; dossier partagé `docker` avec un sous-dossier `altiplume`.
 - Tunnel Cloudflare `nas-altiplume` créé, **connecté et sain**, avec une route publiée
-  `altiplume.com → http://api:3000`.
+  `<nom-de-domaine> → http://api:3000`.
 - Un conteneur **temporaire** `altiplume-tunnel`, créé à la main pour amorcer le tunnel.
   Il sera remplacé par celui du projet (étape 4) — ne pas en avoir deux en même temps.
 
@@ -25,20 +28,20 @@ Depuis la version « comptes », l'API envoie des emails de connexion : il faut 
 compte **Brevo** (gratuit, 300 emails/jour) **avant** de déployer. Sans clé, le serveur
 refuse de démarrer — c'est voulu : un jeu où personne ne peut s'inscrire n'a pas à
 tourner. Voir DEMARRAGE.md, section Brevo, pour obtenir la clé et faire reconnaître
-le domaine `altiplume.com` comme expéditeur (DKIM).
+le domaine `<nom-de-domaine>` comme expéditeur (DKIM).
 
 Sur ton ordinateur, ouvre le Bloc-notes et colle ceci, en remplaçant les valeurs :
 
 ```
 TUNNEL_TOKEN=eyJ...le jeton du tunnel, en entier, sans espace...
-PUBLIC_ORIGIN=https://altiplume.com
+PUBLIC_ORIGIN=https://<nom-de-domaine>
 MAIL_API_KEY=xkeysib-...la clé d'API Brevo...
-MAIL_FROM=courrier@altiplume.com
-MAIL_CONTACT=bonjour@altiplume.com
+MAIL_FROM=courrier@<nom-de-domaine>
+MAIL_CONTACT=bonjour@<nom-de-domaine>
 ```
 
 `MAIL_FROM` doit être une adresse du domaine déclaré chez Brevo. `MAIL_CONTACT` est
-la boîte qui reçoit le formulaire de contact — chez nous, `bonjour@altiplume.com`,
+la boîte qui reçoit le formulaire de contact — par exemple `bonjour@<nom-de-domaine>`,
 redirigée vers la boîte personnelle de l'éditeur par Cloudflare Email Routing.
 Laissée vide, la page de contact se déclare simplement indisponible.
 
@@ -55,7 +58,7 @@ Ce fichier ne quitte jamais le NAS.
 **Container Manager → Conteneur** : sélectionne `altiplume-tunnel`, **Action →
 Arrêter**, puis **Action → Supprimer**. Le projet va créer un conteneur du même nom ;
 tant que l'ancien existe, Docker refusera de créer le nouveau (*name already in use*).
-Pendant une minute, `altiplume.com` répondra une erreur de tunnel : c'est attendu.
+Pendant une minute, `<nom-de-domaine>` répondra une erreur de tunnel : c'est attendu.
 
 ## 4. Créer le projet
 
@@ -72,8 +75,8 @@ Valide. Container Manager télécharge les deux images et démarre les deux cont
 
 ## 5. Vérifier
 
-Dans un navigateur : `https://altiplume.com/healthz` doit afficher `{"status":"ok"}`, et
-`https://altiplume.com/` la page d'accueil avec l'enveloppe d'inscription. Inscris-toi
+Dans un navigateur : `https://<nom-de-domaine>/healthz` doit afficher `{"status":"ok"}`, et
+`https://<nom-de-domaine>/` la page d'accueil avec l'enveloppe d'inscription. Inscris-toi
 avec ta propre adresse : le lien doit arriver en moins d'une minute.
 
 Sur la page du tunnel chez Cloudflare : **Active replicas : 1**, statut **Healthy**.
@@ -97,7 +100,7 @@ version ; la méthode fiable est de repartir de l'image) :
 4. **Projet → Créer** : nom `altiplume`, chemin `/docker/altiplume`, source **Utiliser un
    docker-compose.yml existant**, pas de portail web. Container Manager retélécharge
    l'image et recrée les conteneurs.
-5. Vérifier `https://altiplume.com/healthz`.
+5. Vérifier `https://<nom-de-domaine>/healthz`.
 
 Interruption de service : environ une minute. Validé le 11/10/2026 à 00 h 02.
 
@@ -116,7 +119,7 @@ la version « passkeys » ajoute ses tables sans toucher aux comptes existants.
    écran ? » montre les mêmes six chiffres. **Oui, c'est mon écran** : le PC passe
    sur « Mon compte » tout seul.
 
-Les passkeys sont liées au domaine `altiplume.com` : une clé créée sur le site
+Les passkeys sont liées au domaine `<nom-de-domaine>` : une clé créée sur le site
 public ne fonctionne pas en local, et inversement. C'est une protection contre le
 hameçonnage, pas un défaut.
 
@@ -297,7 +300,7 @@ les clés VAPID se refont avec `scripts/nas-vapid.sh`.
    sudo docker run --rm -v altiplume_altiplume-data:/data -v /volume1/docker/altiplume/sauvegardes:/s:ro alpine \
      sh -c 'rm -f /data/altiplume.db-wal /data/altiplume.db-shm && cp /s/altiplume-AAAAMMJJ-HHMM.db /data/altiplume.db && chown 1000:1000 /data/altiplume.db'
    ```
-3. **Projet → Démarrer**, puis `https://altiplume.com/healthz`.
+3. **Projet → Démarrer**, puis `https://<nom-de-domaine>/healthz`.
 
 À tester une fois par trimestre, sur une copie, pour être sûr que ça marche le jour
 où on en aura besoin. Noter la date du test ici :
@@ -313,9 +316,9 @@ Avant de rouvrir le jeu après une restauration réelle, décider comment traite
 
 ## En cas de problème
 
-- `altiplume.com` répond **502** : le conteneur `api` ne tourne pas, ou le tunnel du
+- `<nom-de-domaine>` répond **502** : le conteneur `api` ne tourne pas, ou le tunnel du
   projet ne le voit pas. Vérifie que les deux conteneurs sont dans le même projet.
-- `altiplume.com` répond **530** ou *Tunnel error* : aucun connecteur n'est relié.
+- `<nom-de-domaine>` répond **530** ou *Tunnel error* : aucun connecteur n'est relié.
   Regarde le journal du conteneur `altiplume-tunnel`.
 - Le conteneur `api` redémarre en boucle : son journal dit pourquoi. Le plus souvent,
   une variable manquante dans `.env`.

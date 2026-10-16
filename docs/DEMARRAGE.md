@@ -2,6 +2,9 @@
 
 Ordre recommandé. Chaque étape est courte ; rien n'est irréversible sauf l'achat du domaine (10 €).
 
+> **`<nom-de-domaine>`** : à remplacer partout par votre domaine. Pour l'instance de l'auteur, c'est
+> `altiplume.com`.
+
 ## 0. Choisir et verrouiller le nom (toi)
 
 1. Choisir le nom final parmi les candidats (voir réponse du 10/10).
@@ -86,7 +89,7 @@ tourne, puis tu reviens dans le ruleset `protect-main` et tu ajoutes les checks
 
 Réalisé : DSM 7.3.2 à jour, vérification en deux étapes, blocage automatique
 (10 tentatives / 5 min), Container Manager installé, dossier `docker/altiplume` créé,
-tunnel Cloudflare `nas-altiplume` connecté et sain, route `altiplume.com → http://api:3000`.
+tunnel Cloudflare `nas-altiplume` connecté et sain, route `<nom-de-domaine> → http://api:3000`.
 
 Abandonné : l'utilisateur DSM dédié. L'isolation vient du conteneur (non-root, lecture
 seule, sans capacité), pas d'un compte Synology ; l'étape ajoutait de la complexité sans
@@ -104,7 +107,7 @@ La suite — déployer réellement — est dans **DEPLOIEMENT.md**.
 ## 4. Brevo (toi, 15 min) — nécessaire avant de déployer la version « comptes »
 
 1. Créer le compte gratuit sur brevo.com (300 emails par jour, sans carte bancaire).
-2. **Expéditeurs et IP → Domaines → Ajouter un domaine** : `altiplume.com`. Brevo donne
+2. **Expéditeurs et IP → Domaines → Ajouter un domaine** : `<nom-de-domaine>`. Brevo donne
    deux ou trois enregistrements DNS (DKIM, et un enregistrement de vérification).
 3. Dans Cloudflare → ton domaine → **DNS**, ajouter ces enregistrements tels quels
    (type TXT ou CNAME, nom et valeur copiés). Revenir sur Brevo et cliquer *Vérifier*.
@@ -114,7 +117,7 @@ La suite — déployer réellement — est dans **DEPLOIEMENT.md**.
 5. **SMTP et API → Clés API → Créer une clé** nommée `altiplume-nas`. La copier une fois
    : elle ne sera plus affichée. C'est un secret : elle va dans le `.env` du NAS, jamais
    dans le dépôt.
-6. **Expéditeurs** : ajouter `courrier@altiplume.com` comme expéditeur (le domaine étant
+6. **Expéditeurs** : ajouter `courrier@<nom-de-domaine>` comme expéditeur (le domaine étant
    vérifié, pas de confirmation par email nécessaire).
 
 ## 5. Première PR — FAIT le 10/10/2026 (PR #1 fusionnée)
