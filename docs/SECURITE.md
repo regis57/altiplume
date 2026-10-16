@@ -330,6 +330,12 @@ d'être simplement une copie de la base.
 - Aucun port ouvert : le NAS sort vers Cloudflare par un tunnel ; rien n'entre.
 - Pas de mot de passe ; jetons stockés en empreinte ; sessions `HttpOnly`,
   `Secure`, `SameSite=Lax`, et les écritures n'acceptent que du JSON (anti-CSRF).
+- Le cookie de session porte le préfixe `__Host-` (depuis le 16 octobre 2026) : un
+  autre site vit désormais sous `*.altiplume.com`, et un sous-domaine peut déposer un
+  cookie pour tout le domaine. Le navigateur refuse un cookie `__Host-` qui ne vient
+  pas du nom exact, en HTTPS, sans `Domain` : aucun sous-domaine ne peut poser une
+  fausse session. Il ne peut pas non plus écrire à la place d'un joueur : les écritures
+  sont en JSON, et le navigateur bloque ces requêtes faute d'autorisation CORS.
 - CSP `default-src 'none'` sans inline, Trusted Types exigés : une XSS n'aurait
   ni script à exécuter ni puits d'injection à atteindre.
 - COOP/COEP/CORP : le document est isolé des autres origines ; aucune ressource
