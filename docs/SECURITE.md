@@ -285,6 +285,24 @@ Les points à vérifier :
 - [ ] **Les secrets.** Deux jetons de tunnel, deux `.env`, rangés séparément ; aucun
       dans un dépôt, une capture ou une conversation.
 
+## Le référencement, sans rien exposer (16 octobre 2026)
+
+Les moteurs de recherche ne voient que ce qu'on leur montre, et on ne leur montre que
+les pages publiques : l'accueil, l'aide, le contact, les textes juridiques. Elles sont
+listées dans `/sitemap.xml`, en français et en anglais (`?lang=en`), reliées par
+`hreflang` pour qu'un moteur ne les compte pas en double. `/robots.txt` interdit le
+reste : l'API, les sondes, l'aérodrome, le compte, et les pages de connexion (un lien
+de connexion indexé serait un lien périmé affiché au monde). Ces mêmes pages portent
+`noindex` dans leur en-tête : un test vérifie que les deux listes concordent. L'accueil
+porte une fiche JSON-LD (un jeu, gratuit, dans le navigateur, sous AGPL) : ce sont des
+données, pas un script, la CSP n'y change rien. Rien de tout cela ne dit quoi que ce
+soit de plus que le menu du site.
+
+À faire une fois, à la main : déclarer `https://altiplume.com/sitemap.xml` dans la
+Google Search Console et les Bing Webmaster Tools (vérification du domaine par un
+enregistrement DNS TXT chez Cloudflare, qu'on peut retirer ensuite). C'est le seul
+geste qui ne se fait pas dans le dépôt.
+
 ## Modes opératoires (à la main, hors CI)
 
 **Relancer un contrôle automatique.** Onglet *Actions* du dépôt → *ZAP*,

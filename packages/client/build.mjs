@@ -99,16 +99,43 @@ for (const file of readdirSync(pagesDir)) {
   const content = source.slice(sep + 5);
   const page = file.replace(/\.html$/, '');
   const path = page === 'index' ? '/' : `/${page}`;
+  // Référencement : une page privée ou transactionnelle dit « noindex » (« robots:
+  // noindex » dans son en-tête) ; les autres sont indexables, et sont listées dans
+  // le plan du site (packages/server/src/routes/referencement.ts). Une page peut
+  // avoir sa propre description (« description: », « description-en: ») ; sinon,
+  // celle du site. L'accueil porte en plus une fiche JSON-LD, pour que les moteurs
+  // sachent que c'est un jeu, gratuit, dans le navigateur.
+  const noindex = (meta.robots ?? '').includes('noindex');
   for (const lang of ['fr', 'en']) {
     const site = SITE[lang];
     const title = lang === 'fr' ? meta.title : meta['title-en'];
+    const description = (lang === 'fr' ? meta.description : meta['description-en']) || site.description;
     const url = `${origin}${path}${lang === 'en' ? '?lang=en' : ''}`;
+    const jsonld = page === 'index' ? `    <script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'VideoGame',
+      name: 'Altiplume',
+      url,
+      inLanguage: ['fr', 'en'],
+      description,
+      applicationCategory: 'Game',
+      gamePlatform: 'Web browser',
+      operatingSystem: 'Any',
+      genre: lang === 'fr' ? ['Gestion', 'Cozy'] : ['Management', 'Cozy'],
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      image: `${origin}${site.image}`,
+      author: { '@type': 'Person', name: 'Régis', url: 'https://github.com/regis57' },
+      license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+    }).replaceAll('<', '\\u003c')}</script>\n` : '';
     const html = layout
       .replaceAll('{{lang}}', lang)
       .replaceAll('{{title}}', escapeAttr(title))
       .replaceAll('{{titleFr}}', escapeAttr(meta.title))
       .replaceAll('{{titleEn}}', escapeAttr(meta['title-en']))
-      .replaceAll('{{description}}', escapeAttr(site.description))
+      .replaceAll('{{description}}', escapeAttr(description))
+      .replaceAll('{{robots}}', noindex ? 'noindex, nofollow' : 'index, follow')
+      .replace('{{jsonld}}', jsonld)
       .replaceAll('{{url}}', url)
       .replaceAll('{{urlFr}}', `${origin}${path}`)
       .replaceAll('{{urlEn}}', `${origin}${path}?lang=en`)
