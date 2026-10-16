@@ -150,15 +150,137 @@ main.
 
 ### Les réglages faits à la main le 11 octobre (Cloudflare, gratuits)
 
-Pour mémoire, et pour les refaire sur un autre domaine un jour :
+Faits le 11 octobre : HTTPS forcé, TLS 1.2 au minimum, SPF, DMARC et CAA. Le mode
+opératoire complet, à jour et refaisable sur un autre domaine, est le chapitre
+[Cloudflare, pas à pas](#cloudflare-pas-à-pas) ci-dessous.
 
-1. SSL/TLS → Edge Certificates → **Always Use HTTPS : On**.
-2. SSL/TLS → Edge Certificates → **Minimum TLS Version : TLS 1.2**.
-3. DNS → TXT `altiplume.com` : `v=spf1 include:spf.brevo.com -all` ;
-   TXT `_dmarc.altiplume.com` : `v=DMARC1; p=quarantine; rua=mailto:rua@dmarc.brevo.com`
-   (passer à `p=reject` après une semaine sans rejet légitime dans les rapports
-   Brevo) ; CAA : `0 issue` pour `letsencrypt.org`, `pki.goog`, `digicert.com`,
-   `comodoca.com`, `ssl.com`.
+## Cloudflare, pas à pas
+
+Tout ce qui se règle chez Cloudflare pour qu'un domaine serve un jeu hébergé sur un NAS
+domestique, **sans ouvrir aucun port** : du domaine acheté au prix coûtant jusqu'à la
+coexistence avec un second projet sous un sous-domaine. Les valeurs secrètes (jeton du
+tunnel, clés) n'apparaissent nulle part ici : elles vivent dans le fichier `.env` de
+chaque projet, sur le NAS, et dans le gestionnaire de mots de passe de l'auteur. Les
+noms de menus sont ceux de l'interface d'octobre 2026 ; ils bougent parfois, la logique
+reste.
+
+### 1. Le domaine (environ 10 € par an)
+
+1. Créer un compte Cloudflare (gratuit) : mot de passe unique, tiré du gestionnaire de
+   mots de passe, et **vérification en deux étapes** (application ou clé de sécurité).
+   Ce compte tient le domaine, le DNS, le certificat et le tunnel : c'est la clé de tout.
+2. **Domain Registration → Register Domains** : chercher le nom, acheter le `.com`.
+   Cloudflare le vend **au prix coûtant** (environ 10 € par an, sans marge, renouvelé au
+   même prix) ; les coordonnées du titulaire sont masquées dans l'annuaire public.
+   Laisser le **renouvellement automatique** activé : un domaine qui expire, c'est le jeu
+   et le courrier qui s'arrêtent, et le nom qui peut partir.
+3. Garder le plan **Free** sur le domaine. Rien d'autre n'est payant ici.
+
+Le tunnel exige que le DNS soit chez Cloudflare ; acheter le domaine au même endroit
+évite tout transfert.
+
+### 2. Les réglages de la zone (gratuits)
+
+1. **SSL/TLS → Edge Certificates** :
+   - **Always Use HTTPS : On** ;
+   - **Minimum TLS Version : TLS 1.2** ;
+   - **TLS 1.3** : laissé actif (par défaut) ;
+   - **Universal SSL : ne jamais le désactiver.** Le certificat couvre le domaine et ses
+     sous-domaines d'un niveau. Le jeu demande aux navigateurs de ne plus jamais revenir
+     au HTTP, sous-domaines compris (HSTS, `includeSubDomains; preload`, envoyé par le jeu
+     lui-même) : sans certificat, le domaine et tous ses sous-domaines deviendraient
+     inaccessibles, sans moyen pour le visiteur de passer outre.
+2. **DNS → Settings → DNSSEC : activé** (fait le 16 octobre 2026). Le domaine étant
+   enregistré chez Cloudflare, il n'y a rien à recopier chez un autre registrar.
+3. **DNS → Records → CAA** : seules ces autorités peuvent émettre un certificat pour le
+   domaine, en `issue` et en `issuewild` : `letsencrypt.org`, `pki.goog`,
+   `digicert.com`, `ssl.com` (celles qu'utilise Cloudflare). Les sous-domaines en héritent.
+
+### 3. Le tunnel : le NAS sort, rien n'entre
+
+1. **Zero Trust → Networks → Tunnels → Create a tunnel**, type **Cloudflared**, un nom
+   par projet (ici `nas-altiplume`).
+2. Cloudflare propose une commande d'installation : ne pas la lancer. N'en garder que le
+   **jeton** (la longue chaîne après `--token`). C'est un **secret** : il va dans le
+   `.env` du projet sur le NAS (`TUNNEL_TOKEN=…`), jamais dans le dépôt ni dans une
+   conversation. Le conteneur `cloudflared` du projet le lit au démarrage
+   (voir [Déploiement](Deploiement)).
+3. **Public Hostname** : sous-domaine vide, domaine `altiplume.com`, service **HTTP**,
+   adresse `api:3000` (le nom du service dans `docker-compose.yml` ; le conteneur
+   `cloudflared` le joint par le réseau privé du projet). Cloudflare crée lui-même
+   l'enregistrement DNS (un CNAME *proxied*, nuage orange).
+4. Côté NAS : **aucun `ports:`** dans le `docker-compose.yml`, aucune redirection dans
+   la box. Le tunnel est une connexion **sortante** ; le balayage de ports le vérifie
+   de l'extérieur (voir le constat du 13 octobre).
+5. Contrôle : la page du tunnel affiche **Healthy** et une réplique active.
+6. Si le jeton fuit : supprimer le tunnel et en créer un autre (nouveau jeton), puis
+   remplacer `TUNNEL_TOKEN` dans le `.env` et redémarrer le projet.
+
+### 4. Le courrier : recevoir et envoyer, sans serveur de mail
+
+1. **Recevoir** (`bonjour@altiplume.com`) : **Email → Email Routing**, l'activer ;
+   Cloudflare ajoute ses MX, sa clé DKIM et son SPF. Ajouter l'adresse de destination
+   (la boîte personnelle, confirmée par courriel), puis une **adresse personnalisée**
+   qui y renvoie.
+2. **Envoyer** (les liens de connexion) : Brevo, voir [Démarrage](Demarrage), section 4.
+   Ses enregistrements (deux CNAME DKIM et un TXT de vérification) se collent tels quels
+   dans **DNS → Records**, avec le nuage **gris** (non *proxied*) pour les CNAME.
+3. **Un seul SPF.** Un domaine ne peut avoir qu'un enregistrement SPF : celui-ci réunit
+   les deux services, `v=spf1 include:spf.brevo.com include:_spf.mx.cloudflare.net -all`.
+   Deux SPF séparés invalideraient les deux.
+4. **DMARC** : `_dmarc` en TXT, `v=DMARC1; p=quarantine; rua=mailto:rua@dmarc.brevo.com`.
+   Passer à `p=reject` quand les rapports n'ont plus montré de rejet légitime pendant une
+   semaine (décision de l'auteur : pas encore).
+
+### 5. Vérifier de l'extérieur
+
+À refaire après chaque changement de zone, avec des outils publics et gratuits :
+
+- **Mozilla HTTP Observatory**, **securityheaders.com**, **SSL Labs** : A+ attendu sur
+  les trois (le tableau en tête de cette page) ;
+- **internet.nl** : DNSSEC, IPv6, courrier (SPF, DKIM, DMARC) et HTTPS en un test ;
+- **dnsviz.net** : la chaîne DNSSEC, maillon par maillon ;
+- **MXToolbox** : SPF et DMARC lus comme un serveur de courrier les lit ;
+- le **balayage de ports** (mode opératoire plus bas) : aucun port ouvert.
+
+### 6. Un second projet sous un sous-domaine
+
+Depuis le 16 octobre, un second site vit sous `*.altiplume.com`, sur le même NAS. La
+règle : **deux projets qui partagent un domaine, pas une maison.**
+
+Mise en place :
+
+1. **Un tunnel par projet**, chacun avec son jeton. On pourrait ajouter un *Public
+   Hostname* au tunnel existant ; un tunnel séparé permet de couper ou de régénérer l'un
+   sans toucher l'autre.
+2. **Un projet Container Manager, un dossier et un `.env` par site** (`docker/altiplume`,
+   `docker/<second-projet>`) ; chacun son réseau Docker (celui que crée son
+   `docker-compose`) ; aucun `ports:` ; aucun montage du dossier ou du `.env` de l'autre.
+3. **Le sous-domaine d'un seul niveau** (`second.altiplume.com`) : il est couvert par le
+   certificat universel ; un deuxième niveau (`a.b.altiplume.com`) ne le serait pas.
+4. **S'il n'envoie pas de courrier, le dire** : un MX nul (`0 .`), un SPF `v=spf1 -all`
+   et un DMARC `v=DMARC1; p=reject;` sur le sous-domaine. Personne ne peut alors écrire
+   en son nom.
+
+Les points à vérifier :
+
+- [ ] **HTTPS partout.** Le HSTS d'Altiplume couvre les sous-domaines : le second site
+      doit répondre en HTTPS, toujours (c'est le cas derrière le tunnel).
+- [ ] **Les cookies.** Un sous-domaine peut poser un cookie pour tout le domaine. Le
+      cookie de session d'Altiplume porte le préfixe `__Host-` (16 octobre 2026), que
+      les navigateurs refusent à un sous-domaine ; le second site n'a pas à poser de
+      cookie avec `Domain=altiplume.com`, et préfixe les siens de la même façon.
+- [ ] **Les en-têtes de sécurité.** Ils sont propres à chaque application : passer le
+      second site à l'Observatory à part (A+ le 16 octobre).
+- [ ] **Les réglages de zone sont communs.** HTTPS forcé, TLS minimum, DNSSEC, CAA,
+      règles de pare-feu : un changement fait pour l'un s'applique à l'autre ; relire
+      les deux sites après chaque modification.
+- [ ] **La surveillance.** Un moniteur UptimeRobot par site, s'il doit être suivi.
+- [ ] **Les données.** Si le second site recueille des données personnelles, il lui
+      faut sa page de confidentialité, sa ligne au registre et ses sauvegardes : celles
+      d'Altiplume ne le couvrent pas.
+- [ ] **Les secrets.** Deux jetons de tunnel, deux `.env`, rangés séparément ; aucun
+      dans un dépôt, une capture ou une conversation.
 
 ## Modes opératoires (à la main, hors CI)
 
