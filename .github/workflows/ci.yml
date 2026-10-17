@@ -146,3 +146,25 @@ jobs:
         env:
           CHROMIUM_PATH: /usr/bin/google-chrome
         run: node scripts/e2e-mise-en-page.mjs
+
+  # L'accessibilité, mesurée : axe-core passe sur chaque page, en français et en
+  # anglais, sur PC et téléphone, en thème clair et sombre, et le job échoue à la
+  # moindre infraction aux règles WCAG 2.2 de niveau A ou AA (scripts/e2e-accessibilite.mjs).
+  accessibilite:
+    name: accessibilité
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Mesurer l'accessibilité dans un vrai navigateur
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: node scripts/e2e-accessibilite.mjs

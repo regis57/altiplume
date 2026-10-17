@@ -74,7 +74,7 @@
     --encre-douce: #b4bcc2;
     --vert-de-gris: #8fa898;
     --cachet: #d6584b;
-    --cachet-encre: #e9796c;
+    --cachet-encre: #f08f83; /* assez clair pour rester lisible sur le papier sombre (contraste ≥ 4,5) */
     --avion-bleu: #7ea2d4;
     --laiton: #d9b35a;
     --laiton-clair: #e6c67a;
@@ -92,7 +92,7 @@
   --encre-douce: #b4bcc2;
   --vert-de-gris: #8fa898;
   --cachet: #d6584b;
-  --cachet-encre: #e9796c;
+  --cachet-encre: #f08f83; /* assez clair pour rester lisible sur le papier sombre (contraste ≥ 4,5) */
   --avion-bleu: #7ea2d4;
   --laiton: #d9b35a;
   --laiton-clair: #e6c67a;
@@ -421,7 +421,7 @@ input[aria-invalid='true'] { border-color: var(--erreur); }
   height: var(--taille);
   border-radius: 50%;
   border: 3px solid var(--cachet);
-  color: var(--cachet);
+  color: var(--cachet-encre); /* l'encre plus sombre : le texte du cachet reste lisible (contraste ≥ 4,5) */
   display: grid;
   place-content: center;
   text-align: center;
