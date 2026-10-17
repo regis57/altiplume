@@ -334,12 +334,29 @@ Hors v0.1 : classement, saisons, autres régions. (La publicité, prévue ici à
 
 ## 16. Feuille de route
 
-| Version | Contenu | Repère |
-|---|---|---|
-| **v0.1** | La tranche ci-dessus | Jouable par des proches |
-| **v0.2** | Côte de Saline + Archipel, hydravion, histoires de pilotes, décoration complète | Ouverture publique, en essai |
-| **v0.3** | Saisons et événements, la Forêt de Cuivre, le fret lourd, l'aérodrome qui grandit | Première « année » de jeu |
-| **v1.0** | Les sept régions, cinq avions, 20 pilotes, bande-son complète | Passage VPS si nécessaire |
+| Version | Contenu | Repère | Statut |
+|---|---|---|---|
+| **v0.1** | La tranche ci-dessus | Jouable par des proches | ✅ 11 octobre 2026 (les [24 heures](Les-24-heures)) |
+| **v0.2** | Côte de Saline + Archipel, hydravion, histoires de pilotes, décoration complète | Ouverture publique, en essai | ✅ 12 octobre 2026 (version `0.2.0`) |
+| **v0.3** | Saisons et événements, la Forêt de Cuivre, le fret lourd, l'aérodrome qui grandit | Première « année » de jeu | ✅ **17 octobre 2026** (étiquette `v0.3.0`) |
+| **v1.0** | Les sept régions, cinq avions, 20 pilotes, bande-son complète | Passage VPS si nécessaire | En cours |
+
+**Où en est la v1.0** (mesuré le 17 octobre) : 4 régions sur 7 — il manque les
+Hauts-Plateaux d'Ocre, le Désert de Verre et le Grand Blanc ; **6 avions** sur les cinq
+demandés, l'objectif est donc dépassé (deux autres viendront avec les régions
+manquantes : le planeur postal et le long-courrier terrestre) ; 10 pilotes sur 20, à
+compléter par paires pour que la parité tienne à chaque palier ; 4 musiques de saison.
+Ces nombres ne changent pas : la v1.0 reste définie par eux.
+
+**Deux conditions s'y ajoutent, qui ne sont pas du contenu.** « 1.0 » veut dire que le
+jeu sort d'essai (`stage` ne dira plus « essai » sur `/v1/version`), et on n'en sort pas
+sur un compte de régions :
+
+1. **L'accessibilité mesurée**, pas seulement soignée — avec les outils et avec des
+   personnes concernées. C'est la seule ligne encore vide du tableau de [Sécurité](Securite).
+2. **Une partie jouée de bout en bout sans trouver de mécanisme qui ment** : c'est le
+   crible du jour 4 appliqué à la partie entière, et c'est ce que l'auteur fait depuis
+   le jour 5 — le cap et la carte du Héron en sont sortis.
 
 ## 17. Risques et parades
 

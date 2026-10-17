@@ -818,3 +818,19 @@ Presque. Un écran ouvert dans Cloudflare proposait de désactiver le certificat
 La capture de cette vérification montrait aussi, en bas, la valeur du cookie. Déconnexion dans la minute, session annulée côté serveur, et une habitude de plus : on coupe le bas du panneau avant d'envoyer.
 
 Le joueur a ouvert la page du jour 6, et il continue de jouer, « pour comprendre si nos mécanismes sont bons ».
+
+## Chapitre 54 — Nommer (17 octobre 2026)
+
+Le référencement d'abord, parce qu'il restait une question simple : qu'est-ce qu'un moteur de recherche a le droit de lire ? Les pages publiques, et elles seules — l'accueil, l'aide, le contact, les trois textes juridiques —, listées en deux langues et reliées par `hreflang` pour qu'on ne les compte pas deux fois. Le reste est interdit : l'API, les sondes, l'aérodrome, le compte, et surtout les pages de connexion. Un lien de connexion indexé serait un lien périmé affiché au monde. Les mêmes pages portent `noindex`, et un test vérifie que les deux listes disent la même chose : le jour où une page s'ajoutera sans être rangée d'un côté ou de l'autre, il échouera.
+
+Puis le dépôt lui-même : dix-sept sujets, pour qu'on le trouve. `phaser` figurait dans la liste proposée par le document de démarrage ; le jeu n'utilise pas cette bibliothèque, et un sujet faux est une promesse fausse. Il a été retiré.
+
+Entre-temps, deux décisions d'exploitation, prises par le joueur sans qu'on les lui demande. Le NAS ne redémarre plus chaque matin mais **une fois par semaine** : l'alerte du 15 octobre lui avait appris quelque chose sur sa propre machine, et il en a tiré la conséquence — une coupure sur sept pour les joueurs. Et le courriel de test de DSM, à l'ordre du jour depuis deux jours, était sans objet : il reçoit déjà les messages de son NAS. Une vérification qui a déjà eu lieu dans la vraie vie n'a pas à être rejouée pour la forme ; on la raye, on ne la simule pas.
+
+Restait à **nommer**. Le document de conception avait posé un repère sur la v0.3 : les saisons et leurs événements, la Forêt de Cuivre, le fret lourd, l'aérodrome qui grandit. Tout cela était livré depuis le 14 octobre. Mais la version affichée en haut de chaque page annonçait encore `0.2.0`, et le dépôt n'avait pas une seule étiquette. Un palier atteint que rien ne déclare est un palier invisible : impossible de dire « ça marchait avant », impossible de revenir à une version précise. Le dépôt passe en `0.3.0`, avec une étiquette `v0.3.0`.
+
+La feuille de route dit maintenant où en est la v1.0 : quatre régions sur sept, six avions pour cinq demandés, dix pilotes sur vingt, quatre musiques. Le joueur a tranché : **ces nombres ne changent pas.** On ne rapetisse pas une ambition parce qu'elle est loin. Deux conditions s'y ajoutent, qui ne sont pas du contenu : l'accessibilité mesurée — la seule ligne encore vide du tableau de sécurité, après sept jours —, et une partie jouée de bout en bout sans y trouver de mécanisme qui ment. « 1.0 » voudra dire que le jeu sort d'essai.
+
+Et c'est ici que le récit s'arrête, comme annoncé au jour 5. Sept jours, cent seize PR fusionnées, toutes vertes, toutes sous le nom de l'auteur. Ce qui restait à faire est écrit dans le [jour 7](Jour-7), sans personne pour le raconter ensuite — deux constats de sauvegarde, une migration après le 19 octobre, des vérifications trimestrielles, une accessibilité à mesurer, et trois régions à dessiner.
+
+La leçon des sept jours tient en une phrase, et les trois dernières journées l'ont dite chacune à sa manière : **ce qui n'est pas vérifié à l'arrivée, confronté au code, ou nommé pour ce qu'il est, n'existe pas encore.** Le jeu, lui, existe. Il tourne sur un NAS domestique, sans un port ouvert, et quelqu'un y pose du courrier tous les jours.
