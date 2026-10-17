@@ -55,3 +55,5 @@ après le 19 octobre dans une PR dédiée, la restauration d'essai chaque trimes
 l'accessibilité, à mesurer avec les personnes concernées.
 
 Jouable sur [altiplume.com](https://altiplume.com).
+
+La suite, et la fin du récit : [Jour 7](Jour-7).
