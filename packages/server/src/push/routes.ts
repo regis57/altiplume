@@ -12,7 +12,8 @@ import type { Database } from '../db/database.ts';
 import { audit } from '../db/repos/audit.ts';
 import { newId } from '../auth/tokens.ts';
 import { requirePlayer } from '../auth/session.ts';
-import { findDestination, findPilot } from '../world/index.ts';
+import { findCard, findDestination, findPilot } from '../world/index.ts';
+import { isStanding } from '../game/sim.ts';
 import { isLocale, type Locale } from '../auth/validation.ts';
 import { isPushServiceEndpoint, type PushMessage, type PushSubscription } from './webpush.ts';
 
@@ -81,7 +82,7 @@ export function registerPushRoutes(app: FastifyInstance, ctx: AppContext): void 
 // ---- L'arrivée du courrier ----
 
 interface ArrivalRow {
-  id: string; player_id: string; locale: string; pilot: string; destination: string; reward: number; bonus: number; deadline_at: number; arrives_at: number;
+  id: string; player_id: string; locale: string; pilot: string; card: string; destination: string; reward: number; bonus: number; deadline_at: number; arrives_at: number;
 }
 
 /**
@@ -110,7 +111,8 @@ function arrivalMessage(row: ArrivalRow): PushMessage {
   const pilot = template?.name[locale] ?? row.pilot;
   const e = template?.gender === 'f' ? 'e' : '';
   const place = findDestination(row.destination)?.name[locale] ?? row.destination;
-  const onTime = row.arrives_at <= row.deadline_at;
+  // La ligne régulière n'a pas de délai : jamais « délai tenu ».
+  const onTime = !isStanding(findCard(row.card)) && row.arrives_at <= row.deadline_at;
   const francs = row.reward + (onTime ? row.bonus : 0);
   return locale === 'en'
     ? { title: 'Your mail has arrived', body: `${pilot} has landed at ${place}. +${francs} F${onTime ? ' · deadline met' : ''}.`, url: '/aerodrome', tag: 'courrier' }
@@ -124,7 +126,7 @@ function arrivalMessage(row: ArrivalRow): PushMessage {
  */
 export async function notifyArrivals(ctx: AppContext, now: number = ctx.now()): Promise<number> {
   const rows = ctx.db.prepare(`
-    SELECT f.id, c.player_id, p.locale, cp.pilot, f.destination, f.reward, f.bonus, f.deadline_at,
+    SELECT f.id, c.player_id, p.locale, cp.pilot, f.card, f.destination, f.reward, f.bonus, f.deadline_at,
            f.departed_at + f.duration_ms AS arrives_at
     FROM flights f
     JOIN companies c ON c.id = f.company_id
