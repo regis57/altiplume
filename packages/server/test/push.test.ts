@@ -172,15 +172,16 @@ describe('notifications — abonnements', () => {
 });
 
 describe('notifications — le courrier se pose', () => {
-  async function flying(t: Awaited<ReturnType<typeof pushApp>>) {
+  async function flying(t: Awaited<ReturnType<typeof pushApp>>, card = 'c-journal') {
     const me = browser();
     await t.json('POST', '/v1/push/subscriptions', { endpoint: me.subscription.endpoint, keys: { p256dh: me.subscription.p256dh, auth: me.subscription.auth } }, t.cookie);
     await t.json('POST', '/v1/company', { name: 'Messageries de la Croisette' }, t.cookie);
     const company = t.ctx.db.prepare('SELECT id, founded_at FROM companies').get() as { id: string; founded_at: number };
     t.ctx.db.prepare('DELETE FROM company_hand WHERE company_id = ?').run(company.id);
-    t.ctx.db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, 'c-journal', company.founded_at);
+    // La ligne régulière n'est jamais en main : elle est toujours là.
+    if (card !== 'c-ligne-reguliere') t.ctx.db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, company.founded_at);
     const state = (await t.json('GET', '/v1/company', undefined, t.cookie)).json();
-    const r = await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: state.planes[0].id, pilot: state.pilots[0].id }, t.cookie);
+    const r = await t.json('POST', '/v1/company/flights', { card, plane: state.planes[0].id, pilot: state.pilots[0].id }, t.cookie);
     expect(r.statusCode).toBe(201);
     const flight = r.json().flights[0] as { arrivesAt: number; departedAt: number };
     return { me, flight };
@@ -195,6 +196,15 @@ describe('notifications — le courrier se pose', () => {
     expect(t.push.sent[0]!.message).toEqual({ title: 'Votre courrier est arrivé', body: "Prosper Chickenman s'est posé à Pont-de-Brume. +41 F · délai tenu.", url: '/aerodrome', tag: 'courrier' });
     expect(await notifyArrivals(t.ctx)).toBe(0); // jamais deux fois
     expect(t.push.sent).toHaveLength(1);
+    await t.app.close();
+  });
+
+  it('la ligne régulière n\'a pas de délai : jamais « délai tenu » (revue du 18/10)', async () => {
+    const t = await pushApp();
+    const { flight } = await flying(t, 'c-ligne-reguliere');
+    t.advance(flight.arrivesAt - flight.departedAt + 1);
+    expect(await notifyArrivals(t.ctx)).toBe(1);
+    expect(t.push.sent[0]!.message.body).toMatch(/^Prosper Chickenman s'est posé à Pont-de-Brume\. \+\d+ F\.$/);
     await t.app.close();
   });
 

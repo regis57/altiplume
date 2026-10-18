@@ -219,6 +219,11 @@ export function restedAt(minutes: number, now: number): number | null {
   return now + Math.ceil((minutes - FATIGUE_LIMIT_MIN + 1) / FATIGUE_RECOVERY_RATE) * 60_000;
 }
 
+/** La ligne régulière : pas de contrat, pas de prime, pas de délai à tenir. */
+export function isStanding(card: ReturnType<typeof findCard>): boolean {
+  return card?.kind === 'contract' && card.standing === true;
+}
+
 /** Fin d'occupation d'un avion et d'un pilote : l'aller, puis le retour. */
 export function busyUntil(f: Pick<FlightRow, 'departed_at' | 'duration_ms'>): number {
   return f.departed_at + 2 * f.duration_ms;
@@ -315,7 +320,10 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
     let deadlinesMet = row.deadlines_met;
     for (const f of arrived) {
       const arrivedAt = f.departed_at + f.duration_ms;
-      const onTime = arrivedAt <= f.deadline_at;
+      const card = findCard(f.card);
+      // La ligne régulière n'a ni contrat ni délai : elle ne compte jamais « à l'heure »
+      // (ni moral, ni page « À l'heure », ni « délai tenu » dans les nouvelles).
+      const onTime = !isStanding(card) && arrivedAt <= f.deadline_at;
       // L'ailier d'un convoi : il a volé, son pilote y gagne en affinité et en moral,
       // mais c'est la tête qui encaisse, annonce et colle les pages.
       if (f.convoy !== null && f.convoy !== f.id) {
@@ -351,7 +359,6 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       if (f.convoy === f.id) stamps.push('s-convoi');
       // La première livraison de chaque saison ; les quatre font une année.
       stamps.push(`s-${seasonOf(arrivedAt).season}`);
-      const card = findCard(f.card);
       if (card?.kind === 'contract' && card.stamp) stamps.push(card.stamp);
       if (deadlinesMet >= 10) stamps.push('s-delai');
       for (const s of stamps) {

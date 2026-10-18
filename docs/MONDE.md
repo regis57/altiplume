@@ -324,7 +324,7 @@ vallée, 2 pour la Côte, 2 pour l'Archipel, 3 pour la forêt). La liste ci-dess
 celle de la vallée, hors fret lourd et saisons, qui ont leurs sections.
 
 - **La ligne régulière** : le sac de Pont-de-Brume, toujours disponible, jamais tirée,
-  25 F sans bonus. La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
+  25 F sans bonus ni délai (elle ne compte donc jamais comme un délai tenu). La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
   11/10 après la première partie de Régis : à 14 h, il n'avait plus rien à expédier).
   **La caisse vide non plus** (règle du 11/10 au soir, après une partie arrêtée à 3 F) :
   la poste avance le salaire et le carburant, rien n'est débité au départ, et le tarif
@@ -401,6 +401,8 @@ au pied du pommier.
   quatre avec « Météo dans la peau »).
 - **À l'arrivée** : la récompense, plus le bonus si le délai souple est tenu ; jamais
   de pénalité. Affinité +1 avec le pilote ; moral +1 si à l'heure, −1 si incident.
+  La ligne régulière n'a pas de délai : elle n'est jamais « à l'heure » (ni moral, ni
+  pas vers la page « À l'heure », ni « délai tenu » à l'arrivée ; règle du 18/10).
 - **Fatigue** : elle se compte en **minutes de vol**, aller et retour compris, au
   trait du pilote près (« Cœur de village » × 1,25, « Longues routes » × 0,85). Un
   saut à Pont-de-Brume pèse dix minutes, un aller-retour de plateau une heure, une
@@ -427,7 +429,7 @@ au pied du pommier.
 ## L'album de cachets
 
 Douze pages pour la vallée : Fondation, Premier vol, une par village, Vol de nuit,
-À l'heure (dix délais tenus), Une histoire, Toute la vallée. Neuf pour la Côte : La
+À l'heure (dix délais de contrat tenus), Une histoire, Toute la vallée. Neuf pour la Côte : La
 route de la Côte, une par escale, Sur l'eau, Toute la Côte. Huit pour l'Archipel : La
 route des îles, une par île, Tout l'Archipel. Neuf pour la forêt : La route de la
 forêt, une par escale, Dans la clairière, Toute la forêt. Trois pour le fret lourd :
