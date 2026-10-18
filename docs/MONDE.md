@@ -303,7 +303,7 @@ reste vrai quand on en ajoute.
 | Météo dans la peau | Weather Sense | Retard de brume et de vent de mer ÷ 2 |
 | Mains d'or | Golden Hands | Usure −25 %, fiabilité +4 % |
 | Longues routes | Long Haul | Portée +20 %, fatigue −15 % |
-| Cœur de village | Home Heart | Fatigue +25 % loin de chez soi, chance +5 % |
+| Cœur de village | Home Heart | Fatigue +25 % sur les vols hors des Vallées de Brume (rien dans la vallée), chance +5 % |
 | Porte-bonheur | Lucky Charm | Chance +15 % (plus d'opportunités, moins d'imprévus) |
 
 La chance de la compagnie est celle de son pilote **le plus chanceux** (× 1,15 au plus),
@@ -404,13 +404,14 @@ au pied du pommier.
   La ligne régulière n'a pas de délai : elle n'est jamais « à l'heure » (ni moral, ni
   pas vers la page « À l'heure », ni « délai tenu » à l'arrivée ; règle du 18/10).
 - **Fatigue** : elle se compte en **minutes de vol**, aller et retour compris, au
-  trait du pilote près (« Cœur de village » × 1,25, « Longues routes » × 0,85). Un
+  trait du pilote près (« Cœur de village » × 1,25 sur les vols qui se posent hors des
+  Vallées de Brume, la région de l'aérodrome ; « Longues routes » × 0,85 partout). Un
   saut à Pont-de-Brume pèse dix minutes, un aller-retour de plateau une heure, une
   traversée de l'Archipel deux heures et demie. Le pilote se repose quand il a
-  **huit heures de vol** dans les bras — une trentaine de sauts à Pont-de-Brume, sept
-  allers-retours de plateau. **En l'air, rien ne s'efface ; au sol, une minute de
-  repos efface deux minutes de vol** : une longue journée se rattrape dans
-  l'après-midi, pas le lendemain. L'écran ne montre pas la fatigue d'un pilote qui
+  **huit heures de vol** dans les bras — quarante-huit sauts à Pont-de-Brume, huit
+  allers-retours de plateau (Prosper compris : la vallée est chez lui). **En l'air,
+  rien ne s'efface ; au sol, une minute de repos efface deux minutes de vol** : une
+  longue journée se rattrape dans l'après-midi, pas le lendemain. L'écran ne montre pas la fatigue d'un pilote qui
   peut encore voler : un pilote au repos apparaît « trop fatigué » dans la liste du
   formulaire d'expédition, avec le temps qui reste avant qu'il reprenne son service.
   (Le serveur envoie la fatigue en crans d'une heure de vol, dix au plus ; l'écran ne
