@@ -141,7 +141,7 @@ voulue, annotée. Les 28 restantes ont été lues : gabarits d'e-mails (chaque
 valeur échappée), gabarits de construction, images Docker non épinglées par
 empreinte (suivi par Dependabot ; épinglage prévu).
 
-**Les machines de la CI, figées elles aussi.** Depuis le 14 octobre, chaque job tourne sur `ubuntu-24.04`, plus sur `ubuntu-latest` : GitHub fait passer `latest` à Ubuntu 26 à partir du 19 octobre, et plusieurs contrôles s'appuient sur ce que l'image fournit (Chrome pour les parcours, Java pour ZAP). Le passage à Ubuntu 26 se fera exprès, dans une PR, quand il aura été essayé.
+**Les machines de la CI, figées elles aussi.** Depuis le 14 octobre, chaque job tourne sur une image nommée, plus sur `ubuntu-latest` : GitHub fait passer `latest` à Ubuntu 26 à partir du 19 octobre, et plusieurs contrôles s'appuient sur ce que l'image fournit (Chrome pour les parcours, Java pour ZAP). **Le 18 octobre**, les dix-huit jobs passent de `ubuntu-24.04` à `ubuntu-26.04`, dans une PR dédiée, un jour avant la bascule de `latest` : l'image 26.04 est servie par GitHub depuis le 17 septembre (Chrome, Java 11 à 25, Docker fournis), et la CI entière l'a essayée sur cette PR avant la fusion.
 
 **La chaîne d'approvisionnement des contrôleurs eux-mêmes.** En mars 2026, l'action
 GitHub de Trivy a été compromise (étiquettes réécrites) et le binaire 0.69.4

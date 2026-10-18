@@ -31,7 +31,7 @@ jobs:
   une-pr:
     name: description de la PR
     if: github.event_name == 'pull_request_target' && github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       pull-requests: write
@@ -52,7 +52,7 @@ jobs:
   toutes:
     name: toutes les PR
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       pull-requests: write
