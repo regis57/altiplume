@@ -431,7 +431,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         b.textContent = `${t('game.restore')} · ${formatNumber(next.cost)} F`;
         b.disabled = c.francs < next.cost;
         if (b.disabled) b.title = t('error.not_enough_francs');
-        b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/zones/${z.id}/upgrade`, b, 'game.restored'));
+        // Le niveau du bouton : le serveur refuse s'il n'est plus le prochain (requête rejouée).
+        b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/zones/${z.id}/upgrade`, b, 'game.restored', { level: next.level }));
         const actions = el('div', 'actions'); actions.append(b); li.append(actions);
       } else {
         li.append(el('p', 'aide', t('game.zoneMax')));
@@ -546,9 +547,12 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
 }
 
 
-async function refresh(api: Api, setMessage: SetMessage, world: WorldView): Promise<void> {
+async function refresh(api: Api, setMessage: SetMessage, world: WorldView, carried: readonly News[] = []): Promise<void> {
   const r = await api('GET', '/v1/company').catch(() => null);
-  if (r && r.status === 200) render(api, setMessage, world, r.body as unknown as CompanyView);
+  if (r && r.status === 200) {
+    const c = r.body as unknown as CompanyView;
+    render(api, setMessage, world, carried.length ? { ...c, news: [...carried, ...c.news] } : c);
+  }
 }
 
 /**
@@ -575,7 +579,11 @@ const CREW_ERRORS = new Set([
 function refused(api: Api, setMessage: SetMessage, world: WorldView, r: { status: number; body: Record<string, unknown> } | null): void {
   const error = r ? String(r.body['error'] ?? 'server_error') : 'network';
   setMessage('jeu-message', `error.${error}`);
-  if (!CREW_ERRORS.has(error)) void refresh(api, setMessage, world);
+  // Le serveur a rattrapé le temps avant de refuser : les nouvelles viennent avec le
+  // refus, et le GET suivant n'en aurait plus.
+  const news = Array.isArray(r?.body['news']) ? (r.body['news'] as News[]) : [];
+  if (!CREW_ERRORS.has(error)) void refresh(api, setMessage, world, news);
+  else if (news.length) { shownNews = [...shownNews, ...news]; renderNews(world, shownNews); }
 }
 
 function destName(world: WorldView, id: string): string { return world.destinations.find((d) => d.id === id)?.name ?? id; }
@@ -931,9 +939,9 @@ function renderLogbook(world: WorldView, c: CompanyView): void {
 }
 
 /** Un achat de construction : même chemin pour une zone et une décoration. */
-async function build(api: Api, setMessage: SetMessage, world: WorldView, path: string, button: HTMLButtonElement, doneKey: string): Promise<void> {
+async function build(api: Api, setMessage: SetMessage, world: WorldView, path: string, button: HTMLButtonElement, doneKey: string, body: Record<string, unknown> = {}): Promise<void> {
   button.disabled = true;
-  const r = await api('POST', path, {}).catch(() => null);
+  const r = await api('POST', path, body).catch(() => null);
   if (r && r.status === 200) { setMessage('jeu-message', doneKey, 'ok'); render(api, setMessage, world, r.body as unknown as CompanyView); }
   else { refused(api, setMessage, world, r); button.disabled = false; }
 }

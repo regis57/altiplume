@@ -60,6 +60,15 @@ describe('le formulaire de contact', () => {
     await t.app.close();
   });
 
+  it('avale aussi un envoi direct à l\'API, sans le délai de rédaction', async () => {
+    const t = await testApp();
+    const r = await t.json('POST', '/v1/contact', { message: bon.message });
+    expect(r.statusCode).toBe(202);
+    expect(r.json()).toEqual({ sent: true });
+    expect(t.mailer.sent).toHaveLength(0);
+    await t.app.close();
+  });
+
   it('nettoie le sujet et l\'adresse : pas d\'injection d\'en-tête par retour à la ligne', async () => {
     const t = await testApp();
     const r = await t.json('POST', '/v1/contact', {

@@ -15,7 +15,7 @@ async function fleet() {
   t.ctx.db.prepare('UPDATE companies SET francs = 20000').run();
   const give = (card: string) => t.ctx.db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES ((SELECT id FROM companies), ?, ?)').run(card, t.ctx.now());
   const state = async () => (await t.json('GET', '/v1/company', undefined, cookie)).json();
-  await t.json('POST', '/v1/company/zones/hangar/upgrade', {}, cookie);
+  await t.json('POST', '/v1/company/zones/hangar/upgrade', { level: 2 }, cookie);
   give('o-grive');
   expect((await t.json('POST', '/v1/company/cards/o-grive/play', {}, cookie)).statusCode).toBe(200);
   give('o-pilote');

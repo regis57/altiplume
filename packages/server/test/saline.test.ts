@@ -104,7 +104,7 @@ describe('la Côte de Saline — l\'hydravion', () => {
     expect(r.statusCode).toBe(400);
     expect(r.json().error).toBe('no_pontoon');
     // Le ponton se construit ; le hangar, lui, est encore plein (une Grive, niveau 1).
-    r = await t.json('POST', '/v1/company/zones/ponton/upgrade', {}, t.cookie);
+    r = await t.json('POST', '/v1/company/zones/ponton/upgrade', { level: 2 }, t.cookie);
     expect(r.statusCode).toBe(200);
     expect(r.json().zones.ponton).toBe(2);
     expect(r.json().zones.hangar).toBe(1);

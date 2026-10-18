@@ -15,18 +15,35 @@ async function company() {
 describe('restaurer et décorer', () => {
   it('monte la piste niveau par niveau, au prix du monde, et refuse au-delà', async () => {
     const t = await company();
-    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', {}, t.cookie)).json().error).toBe('not_enough_francs'); // 900 > 300
+    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 2 }, t.cookie)).json().error).toBe('not_enough_francs'); // 900 > 300
     t.ctx.db.prepare('UPDATE companies SET francs = 5000').run();
-    const r = await t.json('POST', '/v1/company/zones/runway/upgrade', {}, t.cookie);
+    const r = await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 2 }, t.cookie);
     expect(r.statusCode).toBe(200);
     expect(r.json().zones.runway).toBe(2);
     expect(r.json().francs).toBe(5000 - 900);
     expect(r.json().logbook[0]).toMatchObject({ kind: 'build.zone', francs: -900, ref: 'runway:2' });
-    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', {}, t.cookie)).json().zones.runway).toBe(3);
-    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', {}, t.cookie)).json().error).toBe('zone_max');
+    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 3 }, t.cookie)).json().zones.runway).toBe(3);
+    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 4 }, t.cookie)).json().error).toBe('zone_max');
     // La tour existe depuis le 12/10 ; le café, pas encore.
-    expect((await t.json('POST', '/v1/company/zones/cafe/upgrade', {}, t.cookie)).statusCode).toBe(404);
+    expect((await t.json('POST', '/v1/company/zones/cafe/upgrade', { level: 2 }, t.cookie)).statusCode).toBe(404);
     expect((await t.state()).francs).toBe(5000 - 900 - 2400);
+    await t.app.close();
+  });
+
+  it('une restauration rejouée ne monte pas un niveau de plus que le bouton', async () => {
+    const t = await company();
+    t.ctx.db.prepare('UPDATE companies SET francs = 5000').run(); // de quoi payer aussi le niveau 3
+    // « Restaurer · 900 F » (niveau 2), envoyé deux fois : la première réponse s'est perdue.
+    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 2 }, t.cookie)).statusCode).toBe(200);
+    const replay = await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 2 }, t.cookie);
+    expect(replay.statusCode).toBe(409);
+    expect(replay.json().error).toBe('zone_changed');
+    const s = await t.state();
+    expect(s.zones.runway).toBe(2);
+    expect(s.francs).toBe(5000 - 900);
+    // Sans niveau dit, rien ne monte.
+    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', {}, t.cookie)).statusCode).toBe(400);
+    expect((await t.state()).zones.runway).toBe(2);
     await t.app.close();
   });
 
@@ -35,7 +52,7 @@ describe('restaurer et décorer', () => {
     t.ctx.db.prepare('UPDATE companies SET francs = 5000').run();
     t.ctx.db.prepare("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'o-martinet', 0 FROM companies").run();
     expect((await t.json('POST', '/v1/company/cards/o-martinet/play', {}, t.cookie)).json().error).toBe('hangar_full');
-    expect((await t.json('POST', '/v1/company/zones/hangar/upgrade', {}, t.cookie)).json().zones.hangar).toBe(2);
+    expect((await t.json('POST', '/v1/company/zones/hangar/upgrade', { level: 2 }, t.cookie)).json().zones.hangar).toBe(2);
     expect((await t.json('POST', '/v1/company/cards/o-martinet/play', {}, t.cookie)).json().planes).toHaveLength(2);
     await t.app.close();
   });
@@ -81,13 +98,13 @@ describe('la tour', () => {
   it('monte au prix du monde, pour chaque compagnie, même fondée avant elle', async () => {
     const t = await company();
     t.ctx.db.prepare('UPDATE companies SET francs = 5000').run();
-    let r = await t.json('POST', '/v1/company/zones/tour/upgrade', {}, t.cookie);
+    let r = await t.json('POST', '/v1/company/zones/tour/upgrade', { level: 2 }, t.cookie);
     expect(r.statusCode).toBe(200);
     expect(r.json().zones.tour).toBe(2);
-    r = await t.json('POST', '/v1/company/zones/tour/upgrade', {}, t.cookie);
+    r = await t.json('POST', '/v1/company/zones/tour/upgrade', { level: 3 }, t.cookie);
     expect(r.json().zones.tour).toBe(3);
     expect(r.json().francs).toBe(5000 - 1200 - 3000);
-    expect((await t.json('POST', '/v1/company/zones/tour/upgrade', {}, t.cookie)).json().error).toBe('zone_max');
+    expect((await t.json('POST', '/v1/company/zones/tour/upgrade', { level: 4 }, t.cookie)).json().error).toBe('zone_max');
     await t.app.close();
   });
 });

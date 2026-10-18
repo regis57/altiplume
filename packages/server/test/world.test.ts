@@ -326,6 +326,19 @@ describe('noms de compagnie', () => {
     expect(foldName('Aéro-Postale')).toBe('aero postale');
     expect(isDeniedName('Lufthansa Express')).toBe(true);
     expect(isDeniedName('Lanterne & Fils')).toBe(false);
+    // Une marque cachée dans un mot n'en est pas une : « ups », « panam ».
+    for (const n of ['Les Loups du Ciel', 'Coups de Vent & Cie', 'Teacups Airmail', 'Panama Lignes']) {
+      expect(isDeniedName(n), n).toBe(false);
+      expect(cleanCompanyName(n), n).toBe(n);
+    }
+    // Les marques, seules, accolées ou découpées, restent refusées.
+    for (const n of ['UPS Express', 'Pan Am', 'Panam Lignes', 'Aéro-Postale', 'AirFrance', 'Air France Cargo', 'Lufthansa']) {
+      expect(isDeniedName(n), n).toBe(true);
+    }
+  });
+
+  it('ne propose jamais « Comptoir du Comptoir »', () => {
+    for (let seed = 0; seed < 2000; seed += 1) expect(suggestNames('fr', seed)).not.toContain('Comptoir du Comptoir');
   });
 });
 

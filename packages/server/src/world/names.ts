@@ -22,7 +22,7 @@ const BANKS: Readonly<Record<Locale, Bank>> = {
     words: {
       adj: ['Dorée', 'Pâle', 'Haute', 'Vive', 'Lointaine', 'Sereine', 'Première', 'Vagabonde', 'Fidèle', 'Claire'],
       nom_f: ['Brume', 'Nuée', 'Aurore', 'Escale', 'Plume', 'Alizée', 'Lanterne', 'Rosée', 'Voile', 'Dérive'],
-      nom_m: ['Zéphyr', 'Cachet', 'Laiton', 'Levant', 'Sillage', 'Fanal', 'Comptoir', 'Pli', 'Courant', 'Matin'],
+      nom_m: ['Zéphyr', 'Cachet', 'Laiton', 'Levant', 'Sillage', 'Fanal', 'Relais', 'Pli', 'Courant', 'Matin'],
       // Les lieux portent leur article contracté : « Compagnie de la Brume », jamais « des Brume ».
       lieu: ['de la Brume', 'de la Saline', "de l'Ocre", 'du Cuivre', 'des Lanternes', 'du Grand Blanc', 'de Verre', 'des Trois Vents', 'de la Croisette'],
     },
@@ -58,9 +58,18 @@ export function foldName(s: string): string {
   return s.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N} ]/gu, ' ').replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Une marque se compare à des mots entiers, seuls ou accolés : « Aéro-Postale »,
+ * « Pan Am », « AirFrance » et « Air France Cargo » sont refusés, mais « ups » ne
+ * refuse plus « Les Loups du Ciel », ni « panam » « Panama Lignes ».
+ */
 export function isDeniedName(name: string): boolean {
-  const f = ` ${foldName(name)} `;
-  return DENYLIST.some((bad) => f.includes(` ${bad} `) || f.includes(bad.replace(/ /g, '')));
+  const words = foldName(name).split(' ');
+  const runs = new Set<string>();
+  for (let i = 0; i < words.length; i += 1) {
+    for (let j = i + 1; j <= words.length; j += 1) runs.add(words.slice(i, j).join(''));
+  }
+  return DENYLIST.some((bad) => runs.has(bad.replace(/ /g, '')));
 }
 
 function fill(pattern: string, rng: Rng, bank: Bank): string {

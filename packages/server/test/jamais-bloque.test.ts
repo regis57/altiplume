@@ -166,7 +166,7 @@ describe('ce que l\'aérodrome promet, il le fait', () => {
     t.give('c-journal');
     let r = await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: martinet, pilot: s.pilots[0].id }, t.cookie);
     expect(r.json().error).toBe('home_runway_too_short');
-    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', {}, t.cookie)).statusCode).toBe(200);
+    expect((await t.json('POST', '/v1/company/zones/runway/upgrade', { level: 2 }, t.cookie)).statusCode).toBe(200);
     r = await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: martinet, pilot: s.pilots[0].id }, t.cookie);
     expect(r.statusCode).toBe(201);
     await t.app.close();

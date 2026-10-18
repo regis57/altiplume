@@ -69,7 +69,8 @@ export function registerContactRoutes(app: FastifyInstance, ctx: AppContext): vo
 
     // Les robots : on leur répond comme si tout allait bien, pour ne rien leur apprendre.
     const trapped = (body.site ?? '').length > 0;
-    const tooFast = (body.elapsed ?? MIN_FILL_MS) < MIN_FILL_MS;
+    // Le vrai formulaire envoie toujours `elapsed` : sans lui, c'est un envoi direct à l'API.
+    const tooFast = (body.elapsed ?? 0) < MIN_FILL_MS;
     if (trapped || tooFast) {
       audit(ctx.db, 'contact.rejected', null, { raison: trapped ? 'piege' : 'trop-rapide' }, ctx.now());
       return reply.code(202).send({ sent: true });

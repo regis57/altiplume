@@ -15,6 +15,20 @@ describe('base de données', () => {
     expect(migrate(db)).toBe(0);
   });
 
+  it('recalcule la forme repliée des pseudonymes qui ne sont pas en alphabet latin', () => {
+    const db = openDatabase({ path: ':memory:' });
+    const oleg = createPlayer(db, { ...player, email: 'oleg@example.test', nickname: 'Олег' }, T0);
+    const regis = createPlayer(db, player, T0);
+    // L'état d'avant la migration 16 : la clé d'Олег était vide.
+    db.prepare("UPDATE players SET nickname_key = '' WHERE id = ?").run(oleg.id);
+    db.prepare('DELETE FROM schema_migrations WHERE version = 16').run();
+    expect(migrate(db)).toBe(1);
+    const key = (id: string) => (db.prepare('SELECT nickname_key AS k FROM players WHERE id = ?').get(id) as { k: string }).k;
+    expect(key(oleg.id)).toBe('олег');
+    expect(key(regis.id)).toBe('regis');
+    expect(nicknameTaken(db, 'Мария')).toBe(false);
+  });
+
   it('annule une transaction qui lève', () => {
     const db = openDatabase({ path: ':memory:' });
     expect(() => transaction(db, () => {

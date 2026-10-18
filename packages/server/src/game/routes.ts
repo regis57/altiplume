@@ -4,7 +4,7 @@
  * Le navigateur n'envoie que des intentions (« fonde la compagnie sous ce nom ») ;
  * tout ce qui a une valeur — francs, cachets, avions, pilotes — vient du serveur.
  */
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { AppContext } from '../context.ts';
 import { audit } from '../db/repos/audit.ts';
 import { awardStamp, findCompanyByPlayer, foundCompany, loadCompanyState, renameCompany, type CompanyState } from '../db/repos/companies.ts';
@@ -133,6 +133,15 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     return { company, news };
   }
 
+  /**
+   * Un refus, avec les nouvelles du rattrapage : `current()` les a déjà consommées
+   * (vols encaissés, cachets collés, cartes tirées). Sans elles, le GET suivant n'en
+   * rendrait plus aucune, et le joueur ne saurait jamais qu'un vol est rentré.
+   */
+  function refuse(reply: FastifyReply, code: number, error: string, news: readonly News[]) {
+    return reply.code(code).send({ error, news });
+  }
+
   app.get('/v1/company', { preHandler: requirePlayer }, async (request, reply) => {
     const now = ctx.now();
     const c = current(request.player!.id, now);
@@ -152,7 +161,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const body = request.body as { card: string; plane: string; pilot: string; wingPlane?: string; wingPilot?: string };
     const wing = body.wingPlane && body.wingPilot ? { plane: body.wingPlane, pilot: body.wingPilot } : undefined;
     const plan = planDispatch(ctx.db, c.company, body.card, body.plane, body.pilot, now, wing);
-    if (!plan.ok) return reply.code(400).send({ error: plan.error });
+    if (!plan.ok) return refuse(reply, 400, plan.error, c.news);
     const flight = dispatch(ctx.db, c.company, playerId, plan.plan, now);
     audit(ctx.db, 'flight.dispatched', playerId, { destination: flight.destination, ...(plan.plan.wing ? { convoy: true } : {}) }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
@@ -171,7 +180,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const { card } = request.params as { card: string };
     const { choice } = request.body as { choice?: string };
     const result = playCard(ctx.db, c.company, card, choice, now);
-    if (!result.ok) return reply.code(400).send({ error: result.error });
+    if (!result.ok) return refuse(reply, 400, result.error, c.news);
     audit(ctx.db, 'card.played', playerId, { card }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(200).send({ effects: result.effects, ref: result.ref ?? null, ...view(ctx.db, state, now, c.news) });
@@ -179,7 +188,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
 
   /** Restaurer une zone : la piste, le hangar. */
   app.post('/v1/company/zones/:zone/upgrade', {
-    schema: { params: { type: 'object', required: ['zone'], properties: { zone: { type: 'string', maxLength: 20 } } }, body: { type: 'object', additionalProperties: false, properties: {} } },
+    schema: { params: { type: 'object', required: ['zone'], properties: { zone: { type: 'string', maxLength: 20 } } }, body: { type: 'object', required: ['level'], additionalProperties: false, properties: { level: { type: 'integer', minimum: 2, maximum: 99 } } } },
     preHandler: requirePlayer, config: { rateLimit: { max: 30, timeWindow: '15 minutes' } },
   }, async (request, reply) => {
     const now = ctx.now();
@@ -187,8 +196,11 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const c = current(playerId, now);
     if (!c) return reply.code(404).send({ error: 'no_company' });
     const { zone } = request.params as { zone: string };
-    const result = upgradeZone(ctx.db, c.company, zone, now);
-    if (!result.ok) return reply.code(result.error === 'zone_unknown' ? 404 : 400).send({ error: result.error });
+    // Le niveau acheté est celui du bouton : une requête rejouée (réponse perdue,
+    // second tap) ne monte pas un cran de plus à un autre prix.
+    const { level } = request.body as { level: number };
+    const result = upgradeZone(ctx.db, c.company, zone, now, level);
+    if (!result.ok) return refuse(reply, result.error === 'zone_unknown' ? 404 : result.error === 'zone_changed' ? 409 : 400, result.error, c.news);
     audit(ctx.db, 'company.built', playerId, { zone, level: result.level }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(200).send(view(ctx.db, state, now, c.news));
@@ -205,7 +217,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     if (!c) return reply.code(404).send({ error: 'no_company' });
     const { region } = request.params as { region: string };
     const result = openRegion(ctx.db, c.company, region, now);
-    if (!result.ok) return reply.code(result.error === 'region_unknown' ? 404 : result.error === 'region_open' ? 409 : 400).send({ error: result.error });
+    if (!result.ok) return refuse(reply, result.error === 'region_unknown' ? 404 : result.error === 'region_open' ? 409 : 400, result.error, c.news);
     audit(ctx.db, 'route.opened', playerId, { region }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(200).send(view(ctx.db, state, now, c.news));
@@ -222,7 +234,7 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     if (!c) return reply.code(404).send({ error: 'no_company' });
     const { decoration } = request.params as { decoration: string };
     const result = placeDecoration(ctx.db, c.company, decoration, now);
-    if (!result.ok) return reply.code(result.error === 'decoration_unknown' ? 404 : 400).send({ error: result.error });
+    if (!result.ok) return refuse(reply, result.error === 'decoration_unknown' ? 404 : 400, result.error, c.news);
     audit(ctx.db, 'company.built', playerId, { decoration }, now);
     const state = loadCompanyState(ctx.db, findCompanyByPlayer(ctx.db, playerId)!);
     return reply.code(200).send(view(ctx.db, state, now, c.news));
@@ -278,11 +290,11 @@ export function registerGameRoutes(app: FastifyInstance, ctx: AppContext): void 
     const scene = template.story.scenes[i];
     if (!scene) return reply.code(404).send({ error: 'not_found' });
     if (hired.affinity < scene.affinity) return reply.code(403).send({ error: 'scene_locked', affinity: scene.affinity });
-    if (hired.scenesSeen <= i) {
-      ctx.db.prepare('UPDATE company_pilots SET scenes_seen = ? WHERE id = ?').run(i + 1, hired.id);
-      // Première histoire entendue : une page dans l'album.
-      if (i === 0) awardStamp(ctx.db, company.id, 's-histoire', ctx.now());
-    }
+    if (hired.scenesSeen <= i) ctx.db.prepare('UPDATE company_pilots SET scenes_seen = ? WHERE id = ?').run(i + 1, hired.id);
+    // Première histoire entendue : une page dans l'album, quel que soit l'ordre de
+    // lecture. Lire la scène 2 avant la 1 ne doit pas la faire perdre ; elle ne se
+    // colle qu'une fois.
+    if (i === 0) awardStamp(ctx.db, company.id, 's-histoire', ctx.now());
     return localizeScene(template, i, localeOf(request, request.query as { locale?: string }));
   });
 }
