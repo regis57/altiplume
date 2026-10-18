@@ -16,6 +16,7 @@ export type AuditEvent =
   | 'player.expired'
   | 'magic_link.sent'
   | 'magic_link.rejected'
+  | 'magic_link.failed'
   | 'passkey.added'
   | 'passkey.removed'
   | 'passkey.rejected'
