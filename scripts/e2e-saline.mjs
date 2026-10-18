@@ -146,7 +146,9 @@ try {
   assert((await page.textContent('#vols .vol')).includes('Anse-aux-Goémons'), 'le vol vers l\'anse est affiché');
 
   // Une heure plus tard : les pages « Sur l'eau » et « Anse-aux-Goémons ».
-  db.exec('UPDATE flights SET departed_at = departed_at - 60 * 60 * 1000');
+  // Au moins la durée réelle du vol, qu'un incident allonge de 30 % : un décalage fixe
+  // laissait parfois le vol en l'air, et le parcours échouait au hasard.
+  db.exec('UPDATE flights SET departed_at = departed_at - MAX(60 * 60 * 1000, duration_ms + 60 * 1000)');
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   const news = await page.textContent('#nouvelles');
