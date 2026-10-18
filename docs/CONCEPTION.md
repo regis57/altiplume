@@ -26,7 +26,7 @@ On hérite d'un petit aérodrome en herbe, à moitié ruiné, dans un monde inve
 
 ### Session courte (2 à 5 minutes, téléphone)
 1. Les vols arrivés ont déposé revenus et courrier : on encaisse.
-2. Trois cartes ont été tirées pour la journée : contrats, imprévus, opportunités. On en garde ce qu'on veut dans une main de cinq.
+2. Trois cartes ont été tirées pour la journée : contrats, imprévus, opportunités. Elles prennent la place qui reste dans une main de cinq ; on joue ou on défausse celles qu'on veut.
 3. On affecte un pilote et un avion à une ligne, on expédie.
 4. Éventuellement un achat ou une réparation.
 
@@ -74,9 +74,9 @@ Cinq zones à restaurer, chacune débloquant une capacité :
 Puis la décoration pure : fleurs, bancs, drapeaux, enseigne, peintures du hangar. Sans effet sur le jeu, sauf un léger bonus de moral des pilotes. C'est le Stardew en nous.
 
 ### 4.2 Les pilotes
-- Un roster tournant au café ; on recrute avec un contrat d'embauche.
-- **Traits** (deux par pilote) : Nocturne, Économe, Tête brûlée, Météo dans la peau, Mains d'or, Grand voyageur, Casanier, Porte-bonheur…
-- **Fatigue** et **moral** : un pilote fatigué vole moins bien ; un pilote heureux apporte des cartes bonus.
+- Des pilotes passent au café ; on les recrute avec une carte « pilote de passage », toujours le suivant d'une liste fixe (voir le [Monde](Monde)).
+- **Traits** (deux par pilote, huit en tout) : Nocturne, Économe, Tête brûlée, Météo dans la peau, Mains d'or, Longues routes, Cœur de village, Porte-bonheur.
+- **Fatigue** et **moral** : un pilote fatigué ne vole pas moins bien : après huit heures de vol, il se repose au sol jusqu'à pouvoir repartir ; un pilote heureux casse moins (un quart d'incidents en moins à 20 de moral, un quart de plus à 0). La chance, qui fait venir plus d'opportunités, vient des traits, pas du moral.
 - **Affinité** : grandit à chaque vol. Des paliers débloquent des **histoires personnelles** en quelques écrans dialogués. C'est le contenu émotionnel du jeu, celui qu'on écrira avec le plus de soin.
 - Les pilotes ont des noms natifs selon la locale du joueur, et des origines réparties dans les sept régions du monde inventé.
 
@@ -100,7 +100,7 @@ Le moteur de variété du jeu, et l'héritage des démos de Tarot et de 8 améri
 - **Contrats** : une destination, un chargement, un délai souple, une récompense. Le délai souple donne un bonus s'il est tenu, jamais de pénalité s'il ne l'est pas.
 - **Imprévus** : météo, panne, pilote malade, grève du bac. Ils se résolvent par un choix (payer, attendre, risquer).
 - **Opportunités** : un avion d'occasion, un pilote de passage, une fête au village.
-- **Histoires** : cartes rares qui ouvrent un chapitre de pilote.
+- **Histoires** : pas de carte. Les trois scènes d'un pilote s'ouvrent par l'affinité, à 3, 7 et 12 vols faits ensemble.
 
 Le tirage est **déterministe côté serveur** (graine par joueur et par jour) : reproductible, auditable, impossible à manipuler depuis le navigateur.
 
@@ -124,10 +124,10 @@ La rentabilité se joue sur le choix des lignes, l'adéquation avion/ligne, le r
 
 Ce qui fait grandir une séance d'une heure, c'est la **flotte**, parce qu'un vol lointain se lance en partant et rapporte pendant l'absence : environ **125 F** avec la Grive seule, **210 F** avec un Pic et un hangar à deux places, **235 F** avec un deuxième pilote, **330 F** avec la Côte et la Sterne, **460 F** avec l'Archipel, le Goéland et quatre pilotes (avant imprévus, hors prime d'hiver). Ouvrir une route sans l'avion qui va avec ne rapporte presque rien : la Grive seule n'atteint que deux escales de la Forêt.
 
-**Le premier mois** (crible du 14 octobre 2026). À une heure par jour, la vallée est livrée en cinq jours (neuf pour neuf joueurs sur dix) et la route suivante s'ouvre dans la foulée ; mais la Grive n'y atteint qu'une escale, et le deuxième avion arrivait vers le jour 36. Trois à quatre semaines à rejouer la même vallée, c'était trop. Deux décisions : la **Grive d'occasion** (1 500 F, plus 700 F de hangar) passe deux fois plus souvent dans les cartes — deux Grives doublent les séances vers le jour 16 — et le cap la signale tant qu'on n'a qu'un avion ; le **Pic et la Sterne baissent d'un huitième** (3 675 F et 4 725 F ; 3 150 F et 3 850 F en occasion), ce qui ramène le Pic vers le jour 28 avec une Grive, plus tôt avec deux.
+**Le premier mois** (crible du 14 octobre 2026). À une heure par jour, la vallée est livrée en cinq jours (neuf pour neuf joueurs sur dix) et la route suivante s'ouvre dans la foulée ; mais la Grive n'y atteint que deux escales, et le deuxième avion arrivait vers le jour 36. Trois à quatre semaines à rejouer la même vallée, c'était trop. Deux décisions : la **Grive d'occasion** (1 500 F, plus 700 F de hangar) passe deux fois plus souvent dans les cartes — deux Grives doublent les séances vers le jour 16 — et le cap la signale tant qu'on n'a qu'un avion ; le **Pic et la Sterne baissent d'un huitième** (3 675 F et 4 725 F ; 3 150 F et 3 850 F en occasion), ce qui ramène le Pic vers le jour 28 avec une Grive, plus tôt avec deux.
 
 ### 4.6 Les saisons
-Les saisons suivent le vrai calendrier (printemps le 20 mars, été le 21 juin, automne le 23 septembre, hiver le 21 décembre) : quand il neige chez le joueur, il neige sur la Croisette. Chaque saison change une ou deux règles, jamais plus, et aucune ne punit l'absence : les semences au printemps, moins de brume et de vent de mer l'été, plus de brume l'automne, des vols plus longs mais mieux payés l'hiver. Deux contrats et un imprévu par saison ne se tirent qu'en leur temps ; la scène change de couleurs. Le détail est dans le [Monde](MONDE.md). (L'ébauche d'origine — deux semaines par saison, des fêtes à événements — a été abandonnée le 12 octobre au profit du calendrier réel.)
+Les saisons suivent le vrai calendrier (printemps le 20 mars, été le 21 juin, automne le 23 septembre, hiver le 21 décembre) : quand il neige chez le joueur, il neige sur la Croisette. Chaque saison change une ou deux règles, jamais plus, et aucune ne punit l'absence : les semences au printemps, moins de brume et de vent de mer l'été, plus de brume l'automne, des vols plus longs mais mieux payés l'hiver. Deux contrats et un imprévu par saison ne se tirent qu'en leur temps ; la scène change de couleurs. Le détail est dans le [Monde](Monde). (L'ébauche d'origine — deux semaines par saison, des fêtes à événements — a été abandonnée le 12 octobre au profit du calendrier réel.)
 
 ### 4.7 Pourquoi on revient — les récompenses
 
@@ -175,8 +175,8 @@ Le joueur fonde une compagnie ; trois noms lui sont proposés, il peut en tirer 
 
 ## 7. Direction artistique
 
-- **Résolution interne** de la scène : 320 × 180, mise à l'échelle par entiers (×4 = 1280 × 720, ×6 = 1920 × 1080). Sur téléphone en portrait, la scène occupe le tiers haut de l'écran en 320 × 180 letterboxée ; les panneaux d'interface (cartes, lignes, pilotes) occupent le reste.
-- **Interface en DOM/CSS, pas en canvas.** Décision structurante : l'interface d'un jeu de gestion est faite de listes, de cartes et de boutons. En DOM, elle est lisible par les lecteurs d'écran, navigable au clavier, redimensionnable, traduisible. Seule la scène de l'aérodrome est en canvas.
+- **Résolution interne** de la scène : 320 × 144, dessinée pixel par pixel en SVG par `scripts/scene-build.mjs`. Elle prend la largeur de la page, 16 rem de haut au plus, et sur un écran large elle se recadre en gardant le bas de l'image plutôt que de se déformer ; les panneaux d'interface (cartes, lignes, pilotes) occupent le reste.
+- **Interface en DOM/CSS, pas en canvas.** Décision structurante : l'interface d'un jeu de gestion est faite de listes, de cartes et de boutons. En DOM, elle est lisible par les lecteurs d'écran, navigable au clavier, redimensionnable, traduisible. La scène de l'aérodrome est un SVG ; le seul canvas du jeu est le QR code de la connexion.
 - **Palette** : 32 couleurs maximum, chaudes, inspirée des affiches de compagnies aériennes des années 1930. Ciel pâle, ocre, laiton, vert-de-gris, bleu brume, rouge cachet. Chaque région emprunte 8 couleurs à la palette commune et en ajoute 4 propres.
 - **Sprites** : décor 16 × 16, pilotes 24 × 32, avions 32 × 16 (vue de trois quarts, trois frames d'hélice).
 - **Typographie** : une police pixel sous licence OFL pour les titres ; pour le texte courant, une police **lisible** (sans-serif OFL, taille ≥ 16 px CSS), parce que les polices pixel pures échouent aux critères de lisibilité. Un réglage « Tout en pixel » pour les puristes.
@@ -200,7 +200,7 @@ Objectif ferme, pas une case à cocher. Le choix de l'interface en DOM rend l'es
 
 - Contraste ≥ 4,5:1 pour tout texte, ≥ 3:1 pour les éléments d'interface : la palette définit des **paires texte/fond homologuées**, et le pipeline vérifie les contrastes automatiquement.
 - Navigation complète au clavier, focus visible, ordre logique.
-- Lecteur d'écran : chaque panneau est une région ARIA nommée ; les arrivées de vols annoncées dans une zone `aria-live` polie ; la scène canvas a une description textuelle équivalente.
+- Lecteur d'écran : chaque panneau est une région ARIA nommée ; les arrivées de vols annoncées dans une zone `aria-live` polie ; la scène SVG est décorative et cachée aux lecteurs d'écran (`aria-hidden`) : l'état du jeu se lit dans les panneaux.
 - Cibles tactiles ≥ 44 × 44 px CSS.
 - Aucune information portée par la couleur seule (icône + texte toujours). Exemple : les conditions d'une route fermée portent ✓ ou ✗, la couleur, et « fait » / « manque » pour les lecteurs d'écran.
 - Un texte coupé à l'écran (les légendes de l'album, sur deux lignes) reste **entier dans la page** : lu par les lecteurs d'écran, affiché au survol.
@@ -227,7 +227,7 @@ Objectif ferme, pas une case à cocher. Le choix de l'interface en DOM rend l'es
 ### Vue d'ensemble
 ```
 [Navigateur / PWA]  ──HTTPS──▶  [Cloudflare]  ──Tunnel──▶  [NAS : conteneurs]
- Phaser (scène)                   DNS, TLS,                  api  (Node/Fastify)
+ SVG (scène)                      DNS, TLS,                  api  (Node/Fastify)
  DOM (interface)                  anti-DDoS,                 web  (statique)
  Service worker                   cache statique             cloudflared
                                                              sqlite (volume)
@@ -236,7 +236,7 @@ Objectif ferme, pas une case à cocher. Le choix de l'interface en DOM rend l'es
 ### Choix
 | Couche | Choix | Licence | Pourquoi |
 |---|---|---|---|
-| Scène | Phaser 3 | MIT | Mûr, pixel-perfect, grande communauté |
+| Scène | SVG dessiné pixel par pixel, généré par `scripts/scene-build.mjs` | — | Aucune dépendance ; net à toutes les tailles ; les couleurs vivent dans `styles.css` et suivent l'heure et le mode nuit |
 | Interface | DOM + CSS, TypeScript sans framework lourd | — | Accessibilité, légèreté, longévité |
 | PWA | Service worker, manifest, Web Push écrit dans le dépôt (VAPID + aes128gcm, node:crypto) | — | Installable, notifications « courrier arrivé » ; pas de cache hors-ligne : le serveur fait autorité (décision du 11/10) |
 | API | Node 22 LTS + Fastify | MIT | Rapide, léger sur un NAS, écosystème sûr |
@@ -250,12 +250,12 @@ Migration ultérieure vers Postgres possible sans changer l'application (couche 
 - Le client envoie des **intentions** ; le serveur valide et résout.
 - **Pas de tick** : l'état se calcule à la lecture à partir des horodatages (un vol parti à T avec une durée D est arrivé si maintenant ≥ T + D). Aucun cron, aucune charge à vide : idéal pour un NAS.
 - RNG déterministe par joueur et par jour, graine côté serveur.
-- Écritures idempotentes (identifiant de requête) : un double tap n'expédie pas deux fois.
+- Pas d'identifiant de requête : un double appui n'expédie pas deux fois parce que le bouton se désactive pendant l'envoi, et que le serveur refuse un avion ou un pilote déjà en vol.
 
 ### Modèle de données (esquisse)
-`players` (id, email, nickname, locale, created_at, consent_*), `passkeys`, `sessions`, `companies`, `aerodrome_zones`, `pilots`, `planes`, `routes`, `flights` (departed_at, duration_s, outcome_seed), `cards`, `hands`, `ledger` (chaque mouvement de francs ou de cachets, append-only), `world_stats` (agrégats anonymes).
+`players` (id, email, nickname, locale, created_at, consent_*), `passkeys`, `sessions`, `companies`, `aerodrome_zones`, `pilots`, `planes`, `routes`, `flights` (departed_at, duration_s, outcome_seed), `cards`, `hands`, `ledger` (chaque mouvement de francs, en ajout seulement), `world_stats` (agrégats anonymes).
 
-Le `ledger` append-only est la source de vérité de l'économie : on peut rejouer, auditer, corriger.
+Le `ledger` (le livre de bord) garde, en ajout seulement, les mouvements de francs depuis la fondation : départs, arrivées, cartes jouées, achats, chantiers ; il note aussi, à zéro franc, les embauches et les routes ouvertes. Il ne porte ni le capital de départ ni les cachets : la caisse et les cachets de la compagnie sont dans `companies`, et les cachets se lisent dans l'album. Il sert à relire une partie, pas à la reconstruire.
 
 ### API
 REST JSON, versionnée (`/v1`), OpenAPI généré et publié, validation stricte des schémas en entrée (rien n'entre sans schéma).
@@ -267,14 +267,14 @@ REST JSON, versionnée (`/v1`), OpenAPI généré et publié, validation stricte
 Cible : OWASP ASVS niveau 2.
 
 - **Données minimales** : email, pseudonyme, clé publique de passkey, locale, état du jeu. Pas de mot de passe. Pas d'adresse IP conservée au-delà de 7 jours (anti-abus seulement). Pas d'analytique tierce.
-- **En-têtes** : CSP stricte avec nonces (aucun script inline), HSTS préchargé, `Referrer-Policy: strict-origin`, `Permissions-Policy` minimale, COOP/COEP.
+- **En-têtes** : CSP stricte sans nonce, parce qu'il n'y a aucun script ni style en ligne, HSTS préchargé, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` minimale, COOP/COEP.
 - **Auth** : liens magiques à usage unique, 10 minutes ; passkeys liées au domaine (découvrables, l'authenticateur ne reçoit que le pseudonyme, dix par compte, compteur de signatures vérifié) ; flux QR pour PC avec code à six chiffres à confirmer sur le téléphone, 90 secondes, usage unique, trois secrets distincts (code d'appareil dans le QR — en fragment d'URL —, jeton d'interrogation gardé par le PC, code lisible pour la personne) ; sessions en cookies `HttpOnly`, `Secure`, `SameSite=Lax`.
-- **Limitation de débit** par IP et par compte sur l'auth et les écritures.
+- **Limitation de débit** par adresse IP (celle que donne Cloudflare, gardée en mémoire sous forme d'empreinte salée) : 120 requêtes d'API et 600 de pages par minute, et des plafonds plus serrés sur l'authentification, les écritures et le contact. En plus, trois liens de connexion au plus par adresse email et par quart d'heure. Pas de compteur par compte.
 - **Serveur autoritatif** sur tout ce qui a une valeur.
 - **Secrets** : variables d'environnement sur le NAS, jamais dans Git ; gitleaks bloque tout commit fautif.
 - **Chaîne d'approvisionnement** : dépendances épinglées par hachage, Dependabot, audit automatique, liste blanche de licences (MIT, BSD, Apache-2.0, ISC, CC0, OFL), SBOM CycloneDX publié, image Docker signée (cosign) et vérifiée au démarrage, conteneurs non-root en lecture seule.
 - **Sauvegardes** chiffrées, quotidiennes, restauration testée chaque trimestre et consignée.
-- **Journalisation** structurée sans données personnelles, 30 jours.
+- **Journalisation** structurée : une ligne par requête, avec la méthode, le chemin sans ce qui suit « ? » et l'adresse IP du visiteur ; Docker garde trois fichiers de 10 Mo, et la politique de confidentialité annonce 7 jours.
 - `SECURITY.md` avec contact et délai de réponse ; divulgation responsable bienvenue.
 
 ---

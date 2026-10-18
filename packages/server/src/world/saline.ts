@@ -26,8 +26,8 @@ export const SALINE: Region = {
 /**
  * Six escales, de la plus proche à la plus lointaine. Les distances continuent
  * celles de la vallée : la Combe-aux-Rosées est à 6 lieues, Port-Sel à 7,5.
- * Deux se font avec les avions de la vallée, une demande le Martinet, trois
- * demandent la Sterne.
+ * Deux se font avec la Grive ; Marais-Blanc demande le Martinet, le Pic, ou la
+ * Grive avec un pilote de Longues routes (8 × 1,2 = 9,6) ; trois demandent la Sterne.
  */
 export const SALINE_DESTINATIONS: readonly Destination[] = [
   {

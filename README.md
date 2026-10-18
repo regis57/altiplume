@@ -31,7 +31,7 @@ coûts (un nom de domaine, environ dix euros) sont dans
 - **v0.2** (livrée) — la Côte de Saline (six escales dont trois sur l'eau,
   l'hydravion Sterne, le ponton) et l'Archipel des Lanternes (six îles, les vols de
   nuit, le Goéland) ; la scène redessinée en 320 × 144 avec chaque décoration visible.
-- **Vers la v0.3** (12 octobre) — la Forêt de Cuivre et une route qui bifurque, le
+- **v0.3** (livrée le 17 octobre) — la Forêt de Cuivre et une route qui bifurque, le
   Pic et ses clairières, les convois de fret lourd, les saisons du calendrier,
   l'aérodrome qui se voit grandir (hangar, tour, chaque avion à sa place) ; dix
   pilotes, cinq femmes et cinq hommes. Le 14 octobre, en rejouant : un album en
@@ -45,8 +45,10 @@ coûts (un nom de domaine, environ dix euros) sont dans
   contrôlés chaque semaine.
 
 Connexion par lien magique, passkey ou QR code ; export et suppression de ses
-données en un clic. La conception complète est dans
-[docs/CONCEPTION.md](docs/CONCEPTION.md), le monde dans [docs/MONDE.md](docs/MONDE.md).
+données en un clic ; ce que le jeu garde, pourquoi et combien de temps est dans le
+[Registre des traitements](https://github.com/regis57/altiplume/wiki/Registre-des-traitements).
+La conception complète est dans [docs/CONCEPTION.md](docs/CONCEPTION.md), le monde dans
+[docs/MONDE.md](docs/MONDE.md).
 
 ## Principes
 
@@ -74,7 +76,8 @@ npm run dev        # API et client sur http://localhost:3000 ; les liens de conn
 L'image de l'API est publiée sur `ghcr.io/regis57/altiplume` à chaque fusion sur
 `main`, avec une attestation de provenance vérifiable par `gh attestation verify`.
 Le déploiement sur un NAS Synology, sans ligne de commande, est décrit dans
-[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
+[docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) ; la mise en route du projet (nom, domaine,
+GitHub, NAS, Brevo), dans [Démarrage](https://github.com/regis57/altiplume/wiki/Demarrage).
 
 La configuration chez Cloudflare (le domaine au prix coûtant, les réglages de la zone,
 DNSSEC, le tunnel sans aucun port ouvert, le courrier, et la coexistence avec un second

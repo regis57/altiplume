@@ -70,7 +70,7 @@ de la vallée (la Combe est à 6 lieues). Trois escales sont des plans d'eau.
 | **Île Sainte-Ambre** | Amber Holm | 13 | 56 min | **eau** | L'île du large, sa chapelle, ses lettres attendues | lettres d'amour, lettres, fragile, coquillages |
 
 Port-Sel et les Œillets sont à portée de la Grive ; Marais-Blanc demande le
-Martinet ; les trois escales sur l'eau demandent la **Sterne**. Chaque première
+Martinet, le Pic, ou la Grive avec un pilote de Longues routes (8 × 1,2 = 9,6) ; les trois escales sur l'eau demandent la **Sterne**. Chaque première
 livraison vaut 2 ou 3 cachets ; les six escales collent « Toute la Côte » (au large,
 des lanternes — l'Archipel viendra). Le premier amerrissage colle « Sur l'eau ».
 
@@ -101,8 +101,8 @@ l'album.
 | **Anse-des-Lanternes** | Lanterncove | 18 | 68 min | Le bourg, la fabrique de lanternes, la poste de minuit ; nuit | lettres, colis, fragile, urgent |
 | **Île-du-Bout** | Lastholm | 19 | 71 min | La dernière île ; après, le Grand Blanc ; nuit | lettres, lettres d'amour, fragile |
 
-La Sterne n'atteint les trois premières qu'avec un pilote de Longues routes (14 × 1,2) ;
-le **Goéland** atteint tout. Chaque première livraison vaut 3 cachets ; les six îles
+La Sterne atteint l'Île-aux-Fanaux (14 lieues, sa portée) ; Grand-Récif et Sainte-Lueur,
+seulement avec un pilote de Longues routes (14 × 1,2 = 16,8) ; le **Goéland** atteint tout. Chaque première livraison vaut 3 cachets ; les six îles
 collent « Tout l'Archipel ». Deux imprévus (la lanterne du ponton fendue, l'invitation des îles),
 une opportunité (un pilote qui se présente au hangar), et le Goéland, vendu à Port-Sel une fois la
 route de l'Archipel ouverte (jusqu'au 18 octobre, il venait dès la Côte : à 6 600 F, c'était une
@@ -214,7 +214,6 @@ bouton, seule la saison du jour choisit le thème.
 | **Grive G-2** | Thrush G-2 | biplan courrier | 8 | 2 | 12 l/h | 94 % | courte | 1 800 F (la première est dans le hangar ; une seconde d'occasion, 1 500 F, à Moulin-Gris) |
 | **Martinet M-1** | Swift M-1 | monoplan rapide | 10 | 1 | 24 l/h | 86 % | moyenne | 3 200 F |
 | **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F (5 600 F en occasion, aux Messageries de Pont-de-Brume) |
-
 | **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 4 725 F (3 850 F en occasion, à Port-Sel) |
 | **Goéland G-4** | Gull G-4 | hydravion long-courrier | 22 | 4 | 16 l/h | 91 % | **eau** | 7 800 F (6 600 F en occasion, à Port-Sel) |
 | **Pic P-1** | Woodpecker W-1 | monoplan à aile haute | 12 | 2 | 13 l/h | 93 % | **clairière** | 3 675 F (3 150 F en occasion, à Villechaudron) |
@@ -246,11 +245,11 @@ histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 |---|---|---|---|---|
 | **Prosper Chickenman** | 44 | Vallées de Brume | Météo dans la peau · Cœur de village | *Le premier jour de brume* — la croix du chemin, la brume qui lève au quart, la marque au crayon dans le hangar de Bastien |
 | **Ilias Ferrant** | 27 | Hauts-Plateaux d'Ocre | Tête brûlée · Économe | *Le col et la lettre* — la moitié de la paie pour l'auberge du col, plein gaz, le Grand Blanc un jour |
+| **Garance Thuillier** | 29 | Pont-de-Brume | Tête brûlée · Cœur de village | *De l'autre côté de la rivière* — le quai du marché, trois mètres de trop, la seconde marque sur la poutre |
 | **Ysé Loranne** | 31 | Archipel des Lanternes | Nocturne · Porte-bonheur | *Les lanternes du Val* — une lanterne sur six, le bateau-poste, la lanterne de cuivre au bout de la piste |
 | **Aurèle Combray** (*Aurel*) | 58 | Côte de Saline | Mains d'or · Longues routes | *Le moteur qui tousse* — du fil de fer, la photo dans la casquette, l'atelier qu'il ne vendra pas |
 | **Solenn Darrieux** | 36 | Forêt de Cuivre | Nocturne · Mains d'or | *La lanterne de la forêt* — ce qu'on voit la nuit, le moteur de son père, la lanterne de cuivre au bout du ponton |
 | **Teodor Vashti** | 41 | Désert de Verre | Longues routes · Porte-bonheur | *Le compte des étoiles* — trois chiffres sur la manche, le foulard du frère, la lettre vers le Grand Blanc |
-| **Garance Thuillier** | 29 | Pont-de-Brume | Tête brûlée · Cœur de village | *De l'autre côté de la rivière* — le quai du marché, trois mètres de trop, la seconde marque sur la poutre |
 | **Hedda Vilmorin** | 49 | Grand Blanc | Longues routes · Économe | *Ce que le nord garde* — le litre de trop, les boîtes de la dernière lanterne, pourquoi elle est descendue |
 | **Gaspard Sorbier** | 52 | Villechaudron (Forêt de Cuivre) | Météo dans la peau · Économe | *Trente ans à pied* — la forêt vue à l'endroit, le creux du Hêtre-Roi, le sac de Bastien |
 | **Rosalie Martel** | 26 | Haut-Ferrand | Mains d'or · Cœur de village | *La marque au marteau* — ce qui sonne encore, le poinçon sur la lanterne de Solenn, la cloche de Sonnefeuille |
@@ -316,6 +315,14 @@ bout (règle du 14/10).
 Trois par jour, dans une main de cinq. Tirage déterministe (graine par joueur et par
 jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 
+Le monde compte **105 cartes qui se tirent** (compté sur le monde chargé, le 18 octobre
+2026) : **72 contrats** — 28 pour la vallée (dont 3 de fret lourd et 6 de saison), 18
+pour la Côte (dont 2 de fret lourd et 2 de saison), 13 pour l'Archipel et 13 pour la
+forêt (dont 1 de fret lourd chacun) —, **20 imprévus** (14 pour la vallée, dont 4 de
+saison ; 2 pour chacune des trois autres régions) et **13 opportunités** (6 pour la
+vallée, 2 pour la Côte, 2 pour l'Archipel, 3 pour la forêt). La liste ci-dessous est
+celle de la vallée, hors fret lourd et saisons, qui ont leurs sections.
+
 - **La ligne régulière** : le sac de Pont-de-Brume, toujours disponible, jamais tirée,
   25 F sans bonus. La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
   11/10 après la première partie de Régis : à 14 h, il n'avait plus rien à expédier).
@@ -323,7 +330,7 @@ jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
   la poste avance le salaire et le carburant, rien n'est débité au départ, et le tarif
   moins l'avance est versé à l'arrivée — jamais moins que zéro. Avec Prosper et la Grive :
   25 − 14 = 11 F nets par aller-retour. C'est le plancher du jeu, pas sa fortune.
-- **20 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
+- **19 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
   un délai souple (tenu → bonus ; dépassé → rien). Les lointains paient mieux ; chaque
   contrat couvre au moins le salaire et l'entretien d'un vol.
 - **10 imprévus** — et **un imprévu en main bloque la piste** : rien ne décolle, ligne
@@ -401,8 +408,11 @@ au pied du pommier.
   **huit heures de vol** dans les bras — une trentaine de sauts à Pont-de-Brume, sept
   allers-retours de plateau. **En l'air, rien ne s'efface ; au sol, une minute de
   repos efface deux minutes de vol** : une longue journée se rattrape dans
-  l'après-midi, pas le lendemain. Le joueur voit dix crans (une heure de vol par
-  cran) et le moment exact où son pilote reprend son service.
+  l'après-midi, pas le lendemain. L'écran ne montre pas la fatigue d'un pilote qui
+  peut encore voler : un pilote au repos apparaît « trop fatigué » dans la liste du
+  formulaire d'expédition, avec le temps qui reste avant qu'il reprenne son service.
+  (Le serveur envoie la fatigue en crans d'une heure de vol, dix au plus ; l'écran ne
+  les affiche pas.)
 - **Cartes** : trois par jour de jeu (minuit UTC), dans la place qui reste d'une main
   de cinq. Ce qu'on n'a pas la place de prendre, quelqu'un d'autre l'a porté : ce
   n'est pas une perte. Une carte défaussée ne revient pas le jour même.
