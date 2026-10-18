@@ -147,6 +147,30 @@ affichait une version qui les contient tous (`bc093e6`).
   plus tard le 24 octobre. Contre-épreuve : les tests nouveaux de `comptes.test.ts`
   échouent sur le code d'avant.
 
+**Le même jour, en fin d'après-midi (les décisions déléguées par l'auteur)** : trois
+autres écarts relevés par la revue ont été corrigés, fusionnés entre 17 h 45 et 17 h 56
+(PR #137, #138, #139), et mis en ligne le soir même avec le reste de la journée (la page
+`/v1/version` affichait `e4f85745de6f`).
+
+- **Le quota de courriels (#137).** Brevo envoie 300 courriels par jour pour tout le
+  jeu ; une seule source pouvait les épuiser, et plus personne ne recevait de lien de
+  connexion jusqu'au lendemain. Désormais : 250 liens par jour au plus (minuit UTC),
+  dont 150 inscriptions, pour garder des liens aux joueurs inscrits ; le plafond
+  atteint, la réponse ne dit pas qui est inscrit. En IPv6, la limite de débit compte
+  par bloc /64, la part d'un abonné. Contre-épreuve : quatre des cinq tests de
+  `budget.test.ts` échouent sans le correctif.
+- **Le code envoyé aux joueurs (#138).** Les bibliothèques du client (QR code,
+  passkeys, polices) étaient rangées en dépendances de développement : ni `npm audit`
+  ni la liste stricte des licences ne les voyaient. Elles sont désormais de
+  production : 135 paquets de production vérifiés au lieu de 103. L'image n'en
+  embarque pas davantage. Contre-épreuve : `dependances.test.ts` échoue sur l'ancien
+  `package.json`.
+- **L'image publiée (#139).** Celle qu'on vérifiait n'était pas celle qu'on publiait :
+  une seconde construction partait sur le registre. Désormais l'image publiée est
+  reprise par son empreinte et revérifiée (démarrage, Trivy) avant de recevoir
+  `latest`. Constaté sur la publication de 17 h 57 : la revérification a tourné, et
+  `latest` désigne exactement l'empreinte vérifiée.
+
 **Reste à constater** :
 - le premier contrôle du lundi capable d'échouer, le 20 octobre, qui sera aussi le
   premier sur Ubuntu 26 ;
@@ -161,7 +185,7 @@ gratuits, tous dans GitHub Actions ou une application GitHub, aucun secret.
 
 | Contrôleur | Où | Quand | Ce qui bloque | Mesuré le 12/10 |
 |---|---|---|---|---|
-| **Trivy** 0.69.3 | `release.yml` (job *docker*) ; `securite.yml` (job *image publiée*) | Avant chaque publication d'image, PR comprises ; chaque lundi sur `latest` | Une faille **critique** déjà corrigée en amont, ou un secret dans l'image, quelle que soit sa gravité (depuis le 18/10) : **l'image n'est pas publiée** | 0 critique corrigeable ; vert sur la PR #58 et sur `main` |
+| **Trivy** 0.69.3 | `release.yml` (job *docker*) ; `securite.yml` (job *image publiée*) | Avant chaque publication d'image, PR comprises ; chaque lundi sur `latest` | Une faille **critique** déjà corrigée en amont, ou un secret dans l'image, quelle que soit sa gravité (depuis le 18/10) : **l'image n'est pas publiée** ; sur `main`, l'image publiée est revérifiée par son empreinte avant de recevoir `latest` (depuis le 18/10) | 0 critique corrigeable ; vert sur la PR #58 et sur `main` |
 | **OWASP ZAP** 2.17.0, passif | `zap.yml` ; plan `.github/zap/plan.yaml` | Chaque PR qui touche l'appli, chaque fusion, chaque lundi | Une alerte **moyenne ou haute** non déclarée faux positif (avec sa raison) dans le plan | 58 adresses ; 0 haute ; 0 moyenne réelle ; vert sur la PR #59 et sur `main` |
 | **Opengrep** v1.30.1 | `opengrep.yml` | Chaque PR, chaque fusion | Une trouvaille de niveau **ERROR** | 0 ERROR, 28 avertissements lus ; vert sur la PR #60 et sur `main` |
 | **Socket** | Application GitHub, réglée par `socket.yml` | Chaque PR qui touche une dépendance ; rapport à chaque fusion | Contrôle « Socket Security » sur la PR (paquet malveillant, script d'installation, accès réseau inattendu, nom imité…) | Rapport de projet vert sur `main` (12/10) |
@@ -533,7 +557,8 @@ DSM, pour que ces alertes ne soient pas des intentions de plus.
 **OSV-Scanner** (Google). Écarté le 13 octobre : il ne dirait rien que les trois
 contrôles déjà en place ne disent pas. Il lit `package-lock.json` et compare à la
 base OSV, qui rassemble pour npm les mêmes avis de sécurité que ceux de GitHub, déjà
-lus par `npm audit` (à chaque PR) ; Trivy relit les dépendances de l'image
+lus par `npm audit` (à chaque PR — y compris, depuis le 18 octobre, les
+bibliothèques envoyées aux navigateurs, qu'il ne voyait pas avant) ; Trivy relit les dépendances de l'image
 elle-même, chaque semaine ; Socket regarde ce que font les paquets, ce qu'aucune
 base d'avis ne voit. Un quatrième lecteur des mêmes avis ne trouverait pas plus,
 demanderait un binaire de plus à épingler et à tenir à jour, et ferait échouer la CI
@@ -574,6 +599,10 @@ d'être simplement une copie de la base.
   serveur sait de l'adresse saisie ; les notifications ne partent que vers les services
   de notification des navigateurs ; la base écrase ce qu'elle efface et se récrit à
   chaque démarrage.
+- Depuis le 18/10 aussi : 250 liens de connexion par jour au plus, dont 150
+  inscriptions, et la limite de débit compte une adresse IPv6 par bloc /64 ; le code
+  envoyé aux navigateurs est audité comme de la production ; l'image qui reçoit
+  `latest` est celle qui a été vérifiée, reprise par son empreinte.
 - Le formulaire de contact n'est pas un relais : le destinataire vient de la
   configuration du serveur, jamais du navigateur ; rien n'est écrit en base (donc
   aucune injection SQL possible — il n'y a pas de requête) ; sujet et adresse sont
