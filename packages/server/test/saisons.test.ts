@@ -4,6 +4,7 @@ import { drawCards, seasonEffect } from '../src/game/sim.ts';
 import { seasonOf } from '../src/sim/saison.ts';
 import { makeRng } from '../src/sim/rng.ts';
 import { WORLD, cardRegion, findCard } from '../src/world/index.ts';
+import type { Card, Text } from '../src/world/types.ts';
 
 const signup = { email: 'regis@example.test', nickname: 'Régis', locale: 'fr', ageConfirmed: true, acceptTerms: true };
 
@@ -113,5 +114,62 @@ describe('les saisons — en vol', () => {
     expect(pages).toContain('s-hiver');
     expect(pages).toContain('s-annee');
     await t.app.close();
+  });
+});
+
+/**
+ * Une carte sans saison se tire toute l'année (une opportunité, toujours) : son
+ * texte ne peut pas parler d'une saison. Le 18/10, en automne, « Les Tilleuls fêtent
+ * la floraison » ; le pressoir cassait « la veille de la récolte » et la fleur de sel
+ * était « la première récolte de l'année », en toute saison.
+ */
+describe('les saisons — les textes', () => {
+  // Les mots d'une saison, pris en début de mot (« gel » prend « geler », pas « Angèle »).
+  const SAISONNIERS: Record<keyof Text, RegExp> = {
+    fr: /(?<!\p{L})(saisons?|printemps|printani\p{L}*|(?:l'|cet |en |d')été|estival\p{L}*|automn\p{L}*|hiver\p{L}*|neig\p{L}*|enneig\p{L}*|gel(?:é|ée|er|ent|ait)?s?|givre|verglas|dégel|redoux|floraison|en fleurs?|bourgeon\p{L}*|sève|récolte\p{L}*|vendange\p{L}*|moisson\p{L}*|fenaison|cueillette|feuilles mortes|canicule|chaleur|noël|pâques|toussaint|étrennes|nouvel an|jour de l'an|janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)(?!\p{L})/iu,
+    en: /(?<!\p{L})(seasons?|seasonal|spring(?:time)?|summer\p{L}*|autumn\p{L}*|winter\p{L}*|snow\p{L}*|frost\p{L}*|freez\p{L}*|froze\p{L}*|thaw\p{L}*|blossom\p{L}*|bloom\p{L}*|buds?|sap|harvest\p{L}*|vintage|haymaking|heatwave|heat|christmas|easter|new year\p{L}*|january|february|march|april|june|july|august|september|october|november|december|(?:of|in) may|may day)(?!\p{L})/iu,
+  };
+  // Ce qui reste vrai toute l'année : un souvenir, ou une consigne.
+  const PERMIS: Record<string, readonly string[]> = {
+    'c-chaudiere': ["l'hiver dernier", 'last winter'], // l'hiver passé : vrai en toute saison
+    'c-cuivre-mine': ["depuis l'automne", 'since autumn'], // depuis le dernier automne
+    'c-cire': ['ni geler', 'nor freeze'], // une consigne d'emballage
+  };
+
+  function textes(c: Card): { où: string; t: Text }[] {
+    const out = [{ où: 'titre', t: c.title }, { où: 'texte', t: c.text }];
+    if (c.kind === 'event') for (const ch of c.choices) out.push({ où: `${ch.id}.choix`, t: ch.label }, { où: `${ch.id}.issue`, t: ch.outcome });
+    return out;
+  }
+
+  it("ne parlent d'une saison que si elles ne se tirent qu'en elle", () => {
+    const sansSaison = WORLD.cards.filter((c) => c.kind === 'opportunity' || !c.season);
+    expect(sansSaison.length).toBeGreaterThan(80);
+    const fautes: string[] = [];
+    for (const c of sansSaison) {
+      for (const { où, t } of textes(c)) {
+        for (const lang of ['fr', 'en'] as const) {
+          let s = t[lang];
+          for (const p of PERMIS[c.id] ?? []) s = s.replace(p, '');
+          const m = s.match(SAISONNIERS[lang]);
+          if (m) fautes.push(`${c.id} ${où} ${lang} : « ${m[0]} »`);
+        }
+      }
+    }
+    expect(fautes).toEqual([]);
+  });
+
+  it('les exceptions sont encore là, mot pour mot', () => {
+    for (const [id, phrases] of Object.entries(PERMIS)) {
+      const tout = textes(findCard(id)!).flatMap(({ t }) => [t.fr, t.en]).join(' ');
+      for (const p of phrases) expect(tout, `${id} : ${p}`).toContain(p);
+    }
+  });
+
+  it('le filtre reconnaît une saison, et pas un mot ordinaire', () => {
+    for (const s of ['Les Tilleuls fêtent la floraison.', 'la veille de la récolte', "L'été, Sainte-Ambre a des visiteurs", 'Le premier matin de mai', 'La neige a tout recouvert.']) expect(s).toMatch(SAISONNIERS.fr);
+    for (const s of ['celebrating the blossom', 'the day before the harvest', 'In summer Amber Holm', 'the first morning of May', 'Snow has covered everything.']) expect(s).toMatch(SAISONNIERS.en);
+    for (const s of ['La fleur de sel', 'Il a été là', 'La maison du maire', 'Angèle et Gélase']) expect(s).not.toMatch(SAISONNIERS.fr);
+    for (const s of ['Someone may claim it.', 'The salt flower', 'Up on the ridge', 'a spare glass']) expect(s).not.toMatch(SAISONNIERS.en);
   });
 });
