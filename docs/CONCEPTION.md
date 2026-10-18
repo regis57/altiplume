@@ -266,7 +266,7 @@ REST JSON, versionnée (`/v1`), OpenAPI généré et publié, validation stricte
 
 Cible : OWASP ASVS niveau 2.
 
-- **Données minimales** : email, pseudonyme, clé publique de passkey, locale, état du jeu. Pas de mot de passe. Pas d'adresse IP conservée au-delà de 7 jours (anti-abus seulement). Pas d'analytique tierce.
+- **Données minimales** : email, pseudonyme, clé publique de passkey, locale, état du jeu. Pas de mot de passe. Les adresses IP ne vivent que dans les journaux techniques, pour le diagnostic et l'anti-abus : 30 Mo au plus par conteneur, effacés à chaque mise à jour du jeu, sans durée fixe (décision du 18 octobre 2026 : le texte suit le réglage). Pas d'analytique tierce.
 - **En-têtes** : CSP stricte sans nonce, parce qu'il n'y a aucun script ni style en ligne, HSTS préchargé, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` minimale, COOP/COEP.
 - **Auth** : liens magiques à usage unique, 10 minutes ; passkeys liées au domaine (découvrables, l'authenticateur ne reçoit que le pseudonyme, dix par compte, compteur de signatures vérifié) ; flux QR pour PC avec code à six chiffres à confirmer sur le téléphone, 90 secondes, usage unique, trois secrets distincts (code d'appareil dans le QR — en fragment d'URL —, jeton d'interrogation gardé par le PC, code lisible pour la personne) ; sessions en cookies `HttpOnly`, `Secure`, `SameSite=Lax`.
 - **Limitation de débit** par adresse IP (celle que donne Cloudflare, gardée en mémoire sous forme d'empreinte salée) : 120 requêtes d'API et 600 de pages par minute, et des plafonds plus serrés sur l'authentification, les écritures et le contact. En plus, trois liens de connexion au plus par adresse email et par quart d'heure. Pas de compteur par compte.

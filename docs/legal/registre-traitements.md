@@ -44,7 +44,7 @@ d'Altiplume (personne physique, France). Version du 18 octobre 2026.
 | **Finalité** | Diagnostic des pannes, détection d'abus. |
 | **Base légale** | Intérêt légitime. |
 | **Données** | Lignes de journal du serveur web pouvant contenir des adresses IP (via les en-têtes transmis par Cloudflare), chemins demandés, codes de réponse. |
-| **Durée** | 7 jours (rotation Docker : 3 fichiers de 10 Mo). |
+| **Durée** | Pas de durée fixe. Les journaux sont effacés à chaque mise à jour du jeu (les conteneurs sont recréés) ; entre deux, la rotation Docker garde au plus 3 fichiers de 10 Mo par conteneur et efface les lignes les plus anciennes. Avec peu de trafic et sans mise à jour, une ligne peut rester plusieurs semaines, voire davantage. |
 
 ## Traitement 5 — Limitation de débit
 

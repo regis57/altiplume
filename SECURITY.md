@@ -24,8 +24,9 @@ scanner automatique sans démonstration d'impact, et l'ingénierie sociale.
   magiques à usage unique et des passkeys (WebAuthn). Il n'y a pas d'empreinte de
   mot de passe à dérober.
 - **Données personnelles minimales :** une adresse email, un pseudonyme, une clé
-  publique de passkey, une locale. Pas d'adresse IP conservée au-delà de 7 jours,
-  pas d'analytique tierce.
+  publique de passkey, une locale. Les adresses IP ne
+  vivent que dans les journaux techniques (30 Mo au plus, effacés à chaque mise à
+  jour du jeu) ; pas d'analytique tierce.
 - **Serveur autoritatif :** aucune valeur de jeu n'est acceptée depuis le client.
 - **Chaîne d'approvisionnement :** dépendances épinglées, actions GitHub épinglées
   par empreinte SHA, licences vérifiées, audit à chaque pull request. Les paquets
