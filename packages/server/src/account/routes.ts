@@ -41,23 +41,25 @@ export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): vo
     const body = request.body as { nickname?: string; locale?: string; timezone?: string };
     const now = ctx.now();
 
-    if (body.timezone !== undefined) {
-      // Le fuseau du navigateur, pour que la nuit du jeu soit celle du joueur.
-      if (!isTimezone(body.timezone)) return reply.code(400).send({ error: 'invalid', fields: ['timezone_unsupported'] });
-      setPlayerTimezone(ctx.db, p.id, body.timezone);
-    }
-    if (body.locale !== undefined) {
-      if (!isLocale(body.locale)) return reply.code(400).send({ error: 'invalid', fields: ['locale_unsupported'] });
-      setPlayerLocale(ctx.db, p.id, body.locale);
-    }
-    if (body.nickname !== undefined) {
-      const nickname = cleanNickname(body.nickname);
+    // Tout se vérifie d'abord, puis tout s'écrit ensemble : un refus n'enregistre rien.
+    // Avant, la langue était déjà changée quand le pseudonyme était refusé.
+    // Le fuseau du navigateur, pour que la nuit du jeu soit celle du joueur.
+    if (body.timezone !== undefined && !isTimezone(body.timezone)) return reply.code(400).send({ error: 'invalid', fields: ['timezone_unsupported'] });
+    if (body.locale !== undefined && !isLocale(body.locale)) return reply.code(400).send({ error: 'invalid', fields: ['locale_unsupported'] });
+    const nickname = body.nickname !== undefined ? cleanNickname(body.nickname) : null;
+    if (nickname !== null) {
       const error = validateNickname(nickname);
       if (error) return reply.code(400).send({ error: 'invalid', fields: [error] });
       if (nicknameTaken(ctx.db, nickname, p.id)) return reply.code(409).send({ error: 'invalid', fields: ['nickname_taken'] });
-      renamePlayer(ctx.db, p.id, nickname);
-      audit(ctx.db, 'player.renamed', p.id, {}, now);
     }
+    transaction(ctx.db, () => {
+      if (body.timezone !== undefined) setPlayerTimezone(ctx.db, p.id, body.timezone);
+      if (body.locale !== undefined) setPlayerLocale(ctx.db, p.id, body.locale);
+      if (nickname !== null) {
+        renamePlayer(ctx.db, p.id, nickname);
+        audit(ctx.db, 'player.renamed', p.id, {}, now);
+      }
+    });
     return reply.code(204).send();
   });
 
@@ -77,7 +79,7 @@ export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): vo
     const payload = {
       exportedAt: new Date(now).toISOString(),
       player: {
-        id: p.id, email: p.email, nickname: p.nickname, locale: p.locale,
+        id: p.id, email: p.email, nickname: p.nickname, locale: p.locale, timezone: p.timezone,
         ageConfirmed: p.ageConfirmed, termsVersion: p.termsVersion,
         termsAcceptedAt: new Date(p.termsAcceptedAt).toISOString(),
         createdAt: new Date(p.createdAt).toISOString(), lastSeenAt: new Date(p.lastSeenAt).toISOString(),
@@ -86,7 +88,20 @@ export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): vo
       passkeys, // noms et dates seulement : la clé publique n'est pas une donnée sur la personne
       notifications, // adresses d'abonnement aux notifications, sans les clés
       events,
-      game: (() => { const c = findCompanyByPlayer(ctx.db, p.id); return c ? loadCompanyState(ctx.db, c) : null; })(),
+      game: (() => {
+        const c = findCompanyByPlayer(ctx.db, p.id);
+        if (!c) return null;
+        // Tout ce que la base garde de la compagnie, pas seulement ce que l'écran montre.
+        const rows = (sql: string) => ctx.db.prepare(sql).all(c.id);
+        return {
+          ...loadCompanyState(ctx.db, c),
+          counters: ctx.db.prepare('SELECT flights_count AS flights, deadlines_met AS deadlinesMet FROM companies WHERE id = ?').get(c.id),
+          regions: rows('SELECT region, opened_at FROM company_regions WHERE company_id = ? ORDER BY opened_at'),
+          hand: rows('SELECT card, drawn_at FROM company_hand WHERE company_id = ? ORDER BY drawn_at'),
+          flights: rows('SELECT id, card, destination, departed_at, duration_ms, deadline_at, reward, bonus, incident, convoy, settled_at FROM flights WHERE company_id = ? ORDER BY departed_at'),
+          ledger: rows('SELECT at, kind, francs, ref FROM ledger WHERE company_id = ? ORDER BY at, id'),
+        };
+      })(),
     };
     return reply
       .header('content-disposition', 'attachment; filename="altiplume-mes-donnees.json"')

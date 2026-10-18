@@ -33,9 +33,21 @@ export function openDatabase(options: OpenOptions): Database {
   db.exec('PRAGMA busy_timeout = 5000');
   // Bon compromis durabilité / vitesse en WAL : une coupure ne corrompt rien.
   db.exec('PRAGMA synchronous = NORMAL');
+  // Ce qui est effacé est écrasé, pas seulement marqué libre : sans cela, l'adresse
+  // d'un compte supprimé restait lisible dans le fichier et dans chaque sauvegarde.
+  db.exec('PRAGMA secure_delete = ON');
 
   migrate(db);
   return db;
+}
+
+/**
+ * Récrit le fichier de la base page par page : ce que d'anciens effacements avaient
+ * laissé dans la place libre disparaît. Lancé au démarrage du serveur (le NAS
+ * redémarre chaque semaine) ; la base est petite, c'est l'affaire d'un instant.
+ */
+export function compact(db: Database): void {
+  db.exec('VACUUM');
 }
 
 /**
