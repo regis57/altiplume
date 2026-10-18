@@ -15,11 +15,26 @@ import type { Message } from '../mail/mailer.ts';
 import type { Locale } from '../auth/validation.ts';
 import { isLocale } from '../auth/validation.ts';
 
-const MONTH_MS = 30 * 86_400_000;
-export const FIRST_WARNING_MS = 22 * MONTH_MS;
-export const SECOND_WARNING_MS = 23 * MONTH_MS;
-export const EXPIRY_MS = 24 * MONTH_MS;
+/**
+ * Des mois du calendrier, pas des tranches de trente jours : « 24 mois » valaient 720
+ * jours, et un compte partait onze jours avant la date promise (revue du 18/10).
+ * Le 31 janvier plus un mois donne le dernier jour de février.
+ */
+export function afterMonths(ms: number, months: number): number {
+  const d = new Date(ms);
+  const day = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(day, last));
+  return d.getTime();
+}
+export const FIRST_WARNING_MONTHS = 22;
+export const SECOND_WARNING_MONTHS = 23;
+export const EXPIRY_MONTHS = 24;
 const BATCH = 50;
+/** Une marge pour la présélection en base : le calcul exact se fait ensuite, ligne par ligne. */
+const SLACK_MS = 4 * 86_400_000;
 
 interface Row { id: string; email: string; nickname: string; locale: string; last_seen_at: number; inactivity_warned: number }
 
@@ -66,22 +81,33 @@ export async function sweepInactive(ctx: AppContext, now: number): Promise<{ war
   let warned = 0; let expired = 0;
 
   // 3. L'effacement : 24 mois, et les deux avertissements envoyés.
-  const gone = db.prepare('SELECT id FROM players WHERE last_seen_at < ? AND inactivity_warned >= 2 LIMIT ?').all(now - EXPIRY_MS, BATCH) as { id: string }[];
+  const gone = (db.prepare('SELECT id, last_seen_at FROM players WHERE last_seen_at <= ? AND inactivity_warned >= 2 LIMIT ?')
+    .all(afterMonths(now, -EXPIRY_MONTHS) + SLACK_MS, BATCH) as { id: string; last_seen_at: number }[])
+    .filter((p) => now > afterMonths(p.last_seen_at, EXPIRY_MONTHS));
   for (const p of gone) {
     if (deletePlayer(db, p.id)) { expired += 1; audit(db, 'player.expired', null, {}, now); }
   }
 
   // 2. et 1. Les avertissements, le second d'abord pour ne pas envoyer les deux le même jour.
-  for (const [stage, since] of [[2, SECOND_WARNING_MS], [1, FIRST_WARNING_MS]] as const) {
-    const rows = db.prepare('SELECT id, email, nickname, locale, last_seen_at, inactivity_warned FROM players WHERE last_seen_at < ? AND inactivity_warned = ? LIMIT ?')
-      .all(now - since, stage - 1, BATCH) as unknown as Row[];
+  const current = db.prepare('SELECT last_seen_at, inactivity_warned FROM players WHERE id = ?');
+  for (const [stage, months] of [[2, SECOND_WARNING_MONTHS], [1, FIRST_WARNING_MONTHS]] as const) {
+    const rows = (db.prepare('SELECT id, email, nickname, locale, last_seen_at, inactivity_warned FROM players WHERE last_seen_at <= ? AND inactivity_warned = ? LIMIT ?')
+      .all(afterMonths(now, -months) + SLACK_MS, stage - 1, BATCH) as unknown as Row[])
+      .filter((row) => now > afterMonths(row.last_seen_at, months));
     for (const row of rows) {
+      // Le joueur a pu revenir pendant l'envoi des courriels précédents : on relit.
+      const fresh = current.get(row.id) as { last_seen_at: number; inactivity_warned: number } | undefined;
+      if (!fresh || fresh.last_seen_at !== row.last_seen_at || fresh.inactivity_warned !== stage - 1) continue;
       try {
-        await ctx.mailer.send(warningMessage(row, ctx.config.publicOrigin, row.last_seen_at + EXPIRY_MS, stage === 2));
+        await ctx.mailer.send(warningMessage(row, ctx.config.publicOrigin, afterMonths(row.last_seen_at, EXPIRY_MONTHS), stage === 2));
       } catch {
         continue; // on réessaiera au prochain passage ; rien n'est marqué tant que rien n'est parti
       }
-      db.prepare('UPDATE players SET inactivity_warned = ? WHERE id = ?').run(stage, row.id);
+      // Seulement si rien n'a bougé pendant l'envoi : une connexion entre-temps a remis
+      // le compteur à zéro, et l'écrire à 2 aurait mené à un effacement sans avertissement.
+      const changes = Number(db.prepare('UPDATE players SET inactivity_warned = ? WHERE id = ? AND inactivity_warned = ? AND last_seen_at = ?')
+        .run(stage, row.id, stage - 1, row.last_seen_at).changes);
+      if (changes === 0) continue;
       audit(db, 'player.inactivity_warned', null, { stage }, now);
       warned += 1;
     }

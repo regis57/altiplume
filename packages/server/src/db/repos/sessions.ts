@@ -4,7 +4,7 @@ import { fingerprint, newToken } from '../../auth/tokens.ts';
 /** Durée de vie d'une session, glissante : chaque usage la prolonge. */
 export const SESSION_TTL_MS = 30 * 24 * 3_600_000;
 /** On ne réécrit la date d'usage qu'au-delà de cet intervalle, pour ménager la base. */
-const TOUCH_INTERVAL_MS = 10 * 60_000;
+export const TOUCH_INTERVAL_MS = 10 * 60_000;
 
 export interface Session {
   readonly id: string;

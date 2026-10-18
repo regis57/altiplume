@@ -1,6 +1,6 @@
 import { buildApp } from './app.ts';
 import { loadConfig, ConfigError } from './config.ts';
-import { openDatabase } from './db/database.ts';
+import { openDatabase, compact } from './db/database.ts';
 import { purgeExpiredLinks } from './db/repos/magicLinks.ts';
 import { purgeExpiredSessions } from './db/repos/sessions.ts';
 import { purgeOldAudit } from './db/repos/audit.ts';
@@ -21,6 +21,7 @@ try {
 }
 
 const db = openDatabase({ path: config.databasePath });
+compact(db);
 const mailer: Mailer = config.mail.apiKey
   ? new BrevoMailer(config.mail.apiKey, config.mail.from)
   : new ConsoleMailer();

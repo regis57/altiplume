@@ -118,6 +118,23 @@ describe('passkeys — ajout', () => {
     expect(r.json().error).toBe('passkey_limit');
     await t.app.close();
   });
+
+  it('le plafond tient même avec des défis demandés d\'avance (revue du 18/10)', async () => {
+    const t = await signedIn();
+    for (let i = 0; i < 9; i += 1) expect((await enroll(t)).response.statusCode).toBe(201);
+    const ask = async () => (await t.json('POST', '/v1/passkeys/options', {}, t.cookie)).json() as { options: { challenge: string }; challengeToken: string };
+    const a = await ask();
+    const b = await ask();
+    const send = (o: { options: { challenge: string }; challengeToken: string }) => {
+      const auth = new FakeAuthenticator({ origin: ORIGIN, rpId: 'localhost', backedUp: true });
+      return t.json('POST', '/v1/passkeys/register', { challengeToken: o.challengeToken, response: auth.create(o.options.challenge) }, t.cookie);
+    };
+    expect((await send(a)).statusCode).toBe(201);
+    const second = await send(b);
+    expect(second.statusCode).toBe(409);
+    expect(second.json().error).toBe('passkey_limit');
+    await t.app.close();
+  });
 });
 
 describe('passkeys — connexion', () => {

@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { AppContext } from '../context.ts';
 import { findPlayerById, touchPlayer, type Player } from '../db/repos/players.ts';
-import { createSession, resolveSession, revokeSession, SESSION_TTL_MS } from '../db/repos/sessions.ts';
+import { createSession, resolveSession, revokeSession, SESSION_TTL_MS, TOUCH_INTERVAL_MS } from '../db/repos/sessions.ts';
 
 /** Le nom du cookie de session hors production (http://localhost, tests). */
 export const SESSION_COOKIE = 'altiplume_session';
@@ -66,6 +66,9 @@ export function registerSessionHook(app: FastifyInstance, ctx: AppContext): void
     if (!player) return;
     request.player = player;
     request.sessionToken = token;
+    // La session vient d'être prolongée en base : le cookie aussi, sinon le navigateur
+    // l'effaçait trente jours après la connexion, même pour qui vient chaque jour.
+    if (ctx.now() - session.lastUsedAt > TOUCH_INTERVAL_MS) reply.setCookie(name, token, cookieOptions(ctx));
     if (ctx.now() - player.lastSeenAt > 3_600_000) touchPlayer(ctx.db, player.id, ctx.now());
   });
 }

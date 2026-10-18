@@ -135,6 +135,8 @@ export function registerPasskeyRoutes(app: FastifyInstance, ctx: AppContext): vo
     if (!verification.verified) return reply.code(400).send({ error: 'passkey_rejected' });
     const info = verification.registrationInfo;
     if (findPasskey(ctx.db, info.credential.id)) return reply.code(409).send({ error: 'passkey_exists' });
+    // Le plafond se revérifie ici : plusieurs défis demandés d'avance le contournaient.
+    if (listPasskeys(ctx.db, player.id).length >= MAX_PASSKEYS) return reply.code(409).send({ error: 'passkey_limit' });
 
     const name = cleanName(body.name, defaultName(info.credentialBackedUp, player.locale));
     createPasskey(ctx.db, {
