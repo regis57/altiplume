@@ -163,7 +163,7 @@ const FR: Record<string, string> = {
   'card.plane': 'Avion',
   'card.pilot': 'Pilote',
   'version.stage': 'essai',
-  'version.aria': 'Version et stade du projet',
+  'version.aria': 'Version et stade du projet :',
   'footer.version': 'Version et essai',
   'card.busy': 'en vol',
   'card.heavy': 'Fret lourd · deux avions',
@@ -563,7 +563,7 @@ const EN: Record<string, string> = {
   'card.plane': 'Plane',
   'card.pilot': 'Pilot',
   'version.stage': 'beta',
-  'version.aria': 'Version and project stage',
+  'version.aria': 'Version and project stage:',
   'footer.version': 'Version & beta',
   'card.busy': 'flying',
   'card.heavy': 'Heavy freight · two planes',
@@ -891,7 +891,8 @@ export function translatePage(): void {
   const toggle = document.querySelector<HTMLButtonElement>('[data-action=toggle-lang]');
   if (toggle) {
     toggle.textContent = current === 'fr' ? 'EN' : 'FR';
-    toggle.setAttribute('aria-label', current === 'fr' ? 'Switch to English' : 'Passer en français');
+    // Le nom lu reprend le texte affiché (« EN », « FR ») : WCAG 2.5.3, étiquette dans le nom.
+    toggle.setAttribute('aria-label', current === 'fr' ? 'EN: switch to English' : 'FR : passer en français');
     toggle.lang = current === 'fr' ? 'en' : 'fr';
   }
 }
