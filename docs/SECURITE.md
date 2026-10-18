@@ -447,6 +447,11 @@ décidé de l'ouvrir.
    relu le 15 à 17 h 40. La version USB de la nuit du 15 contient encore les copies du
    11 octobre et sort de la rotation vers le 18 : d'ici là, la promesse des 6 jours n'est
    pas tenue pour elles.
+7. **Constaté le 18 octobre à 3 h 06, côté NAS.** Le dossier des sauvegardes contient
+   **trois copies**, et trois seulement : celles des 16, 17 et 18 octobre, prises à
+   3 h 00 (284, 292 et 300 Ko). Les copies du 11 au 15 sont sorties de la rotation. La
+   promesse des trois copies sur le NAS est tenue, mesurée après trois exécutions de la
+   tâche corrigée. Côté disque USB, le nombre de versions **reste à constater** (point 5).
 
 **La leçon.** Une copie qui n'a jamais été restaurée et une durée de conservation qu'on
 ne relit pas après l'avoir réglée sont deux intentions de plus. Désormais : la restauration

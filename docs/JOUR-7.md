@@ -57,7 +57,9 @@ Deux choses, et elles sont écrites ici pour ne pas être oubliées une fois le 
 terminé :
 
 - **trois copies** dans le dossier des sauvegardes du NAS, après une exécution de la
-  tâche (le script est corrigé depuis le 15 à 17 h 40, la mesure n'a pas été refaite) ;
+  tâche (le script est corrigé depuis le 15 à 17 h 40, la mesure n'a pas été refaite) —
+  **constaté le 18 octobre à 3 h 06** : trois copies, celles des 16, 17 et 18, et rien
+  d'autre ;
 - **trois versions au plus** dans la copie USB, mesurables à partir du 18 octobre —
   d'ici là, la version de la nuit du 15 contient encore les copies du 11.
 
