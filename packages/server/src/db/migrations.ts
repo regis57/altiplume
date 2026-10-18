@@ -4,10 +4,15 @@
  * Principe de minimisation : on ne stocke que ce qui sert au jeu. Pas de nom, pas
  * d'adresse, pas d'IP, pas de date de naissance — seulement la confirmation d'âge.
  */
+import type { DatabaseSync } from 'node:sqlite';
+import { foldNickname } from '../auth/validation.ts';
+
 export interface Migration {
   readonly version: number;
   readonly name: string;
   readonly sql: string;
+  /** Ce que le SQL seul ne sait pas faire, dans la même transaction, après lui. */
+  readonly run?: (db: DatabaseSync) => void;
 }
 
 export const MIGRATIONS: readonly Migration[] = [
@@ -344,5 +349,20 @@ export const MIGRATIONS: readonly Migration[] = [
       -- navigateur. Par défaut, celui de Paris.
       ALTER TABLE players ADD COLUMN timezone TEXT NOT NULL DEFAULT 'Europe/Paris';
     `,
+  },
+  {
+    version: 16,
+    name: 'pseudonymes-toutes-ecritures',
+    sql: `
+      -- La forme repliée des pseudonymes garde les lettres de toutes les écritures
+      -- (18/10) : « Олег » et « Мария » ne se replient plus tous deux en chaîne vide.
+      -- Les clés latines ne changent pas ; les autres se recalculent ci-dessous.
+      SELECT 1;
+    `,
+    run: (db) => {
+      const players = db.prepare('SELECT id, nickname FROM players').all() as { id: string; nickname: string }[];
+      const update = db.prepare('UPDATE players SET nickname_key = ? WHERE id = ?');
+      for (const p of players) update.run(foldNickname(p.nickname), p.id);
+    },
   },
 ];

@@ -736,14 +736,19 @@ export function openRegion(db: Database, company: Company, regionId: string, now
 
 // ---- Restaurer et décorer ----
 
-export type BuildError = 'zone_unknown' | 'zone_max' | 'decoration_unknown' | 'decoration_owned' | 'not_enough_francs';
+export type BuildError = 'zone_unknown' | 'zone_max' | 'zone_changed' | 'decoration_unknown' | 'decoration_owned' | 'not_enough_francs';
 
-/** Monte une zone d'un niveau, si la caisse le permet. */
-export function upgradeZone(db: Database, company: Company, zoneId: string, now: number): { ok: true; level: number } | { ok: false; error: BuildError } {
+/**
+ * Monte une zone d'un niveau, si la caisse le permet. `level` est le niveau que le
+ * joueur a vu sur le bouton : si la zone n'est plus juste en dessous (requête rejouée,
+ * second onglet), rien ne se passe, et il ne paie pas un niveau qu'il n'a pas vu.
+ */
+export function upgradeZone(db: Database, company: Company, zoneId: string, now: number, level: number): { ok: true; level: number } | { ok: false; error: BuildError } {
   const zone = WORLD.zones.find((z) => z.id === zoneId);
   if (!zone) return { ok: false, error: 'zone_unknown' };
   return transaction(db, () => {
     const current = (db.prepare('SELECT level FROM company_zones WHERE company_id = ? AND zone = ?').get(company.id, zoneId) as { level: number } | undefined)?.level ?? 1;
+    if (level !== current + 1) return { ok: false as const, error: 'zone_changed' as const };
     const next = zone.levels.find((l) => l.level === current + 1);
     if (!next) return { ok: false as const, error: 'zone_max' as const };
     const francs = (db.prepare('SELECT francs FROM companies WHERE id = ?').get(company.id) as { francs: number }).francs;

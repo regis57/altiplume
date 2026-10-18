@@ -73,6 +73,7 @@ export function migrate(db: Database): number {
     db.exec('BEGIN');
     try {
       db.exec(migration.sql);
+      migration.run?.(db);
       db.prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)')
         .run(migration.version, Date.now());
       db.exec('COMMIT');

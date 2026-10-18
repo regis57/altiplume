@@ -95,7 +95,7 @@ describe('la Forêt de Cuivre — les clairières', () => {
     t.give('o-pic');
     let r = await t.json('POST', '/v1/company/cards/o-pic/play', {}, t.cookie);
     expect(r.json().error).toBe('hangar_full');
-    await t.json('POST', '/v1/company/zones/hangar/upgrade', {}, t.cookie);
+    await t.json('POST', '/v1/company/zones/hangar/upgrade', { level: 2 }, t.cookie);
     r = await t.json('POST', '/v1/company/cards/o-pic/play', {}, t.cookie);
     expect(r.statusCode).toBe(200);
     const s = r.json();
@@ -118,7 +118,7 @@ describe('la Forêt de Cuivre — les clairières', () => {
     const t = await company();
     t.wholeValley(12);
     await t.open();
-    await t.json('POST', '/v1/company/zones/hangar/upgrade', {}, t.cookie);
+    await t.json('POST', '/v1/company/zones/hangar/upgrade', { level: 2 }, t.cookie);
     t.give('o-pic');
     const s = (await t.json('POST', '/v1/company/cards/o-pic/play', {}, t.cookie)).json();
     const pic = s.planes[1].id; const prosper = s.pilots[0].id;

@@ -57,20 +57,32 @@ const RESERVED = new Set([
  * Liste d'exclusion minimale. Elle n'a pas vocation à être exhaustive — aucune
  * liste ne l'est — mais à écarter l'évident. Comparaison sans accents ni casse,
  * chiffres usuels remplacés (3→e, 1→i, 0→o, 4→a, 5→s).
+ *
+ * Deux listes. Les mots sans ambiguïté sont cherchés partout, même collés
+ * (« xXnaziXx »). Ceux qui se cachent dans des mots ordinaires ne comptent que
+ * comme mots entiers : « viol » est dans « Violette », « rape » dans « Drapeau »,
+ * « pute » dans « Computer », « porn » dans « Pornic ».
  */
-const OFFENSIVE = [
-  'nazi', 'hitler', 'nigger', 'negre', 'nègre', 'pute', 'salope', 'connard', 'connasse',
-  'encule', 'enculé', 'fdp', 'ntm', 'pd', 'tapette', 'bougnoule', 'youpin', 'faggot',
-  'retard', 'rape', 'viol', 'cunt', 'whore', 'bitch', 'porn', 'sex', 'pedo', 'pédo',
+const OFFENSIVE_ANYWHERE = [
+  'nazi', 'hitler', 'nigger', 'negre', 'nègre', 'salope', 'connard', 'connasse',
+  'encule', 'enculé', 'tapette', 'bougnoule', 'youpin', 'faggot', 'whore', 'pedo', 'pédo',
+];
+const OFFENSIVE_WORDS = [
+  'pute', 'fdp', 'ntm', 'pd', 'retard', 'rape', 'viol', 'cunt', 'bitch', 'porn', 'sex',
 ];
 
+/**
+ * Forme repliée, pour l'unicité et les listes : sans accents ni casse, chiffres-lettres
+ * remplacés, ponctuation et espaces retirés. Les lettres de toutes les écritures
+ * restent : « Олег » et « Мария » sont deux noms, pas deux chaînes vides.
+ */
 export function foldNickname(nickname: string): string {
   return nickname
     .normalize('NFKD')
     .replace(/\p{M}/gu, '')
     .toLowerCase()
     .replace(/3/g, 'e').replace(/1/g, 'i').replace(/0/g, 'o').replace(/4/g, 'a').replace(/5/g, 's')
-    .replace(/[^a-z0-9]/g, '');
+    .replace(/[^\p{L}\p{N}]/gu, '');
 }
 
 export function validateNickname(raw: string): ValidationError | null {
@@ -80,10 +92,14 @@ export function validateNickname(raw: string): ValidationError | null {
   if (!NICKNAME_RE.test(nickname)) return 'nickname_invalid_chars';
   const folded = foldNickname(nickname);
   if (RESERVED.has(nickname.toLowerCase()) || RESERVED.has(folded)) return 'nickname_reserved';
-  // Mots courts : égalité stricte seulement, sinon « pd » bloquerait « Édouard ».
-  for (const word of OFFENSIVE) {
-    const w = foldNickname(word);
-    if (w.length <= 3 ? folded === w : folded.includes(w)) return 'nickname_offensive';
+  for (const word of OFFENSIVE_ANYWHERE) {
+    if (folded.includes(foldNickname(word))) return 'nickname_offensive';
+  }
+  // Mots entiers seulement : le pseudonyme entier, ou l'un de ses mots (séparés par
+  // espace, tiret, apostrophe). Sinon « pd » bloquerait « Édouard », « viol » « Violaine ».
+  const words = new Set([folded, ...nickname.split(/[ '-]+/).map(foldNickname)]);
+  for (const word of OFFENSIVE_WORDS) {
+    if (words.has(foldNickname(word))) return 'nickname_offensive';
   }
   return null;
 }

@@ -102,6 +102,32 @@ describe('la compagnie', () => {
     await t.app.close();
   });
 
+  it('colle la page « Une histoire » même si la scène 2 est lue avant la 1', async () => {
+    const t = await signedIn();
+    await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, t.cookie);
+    t.ctx.db.prepare('UPDATE company_pilots SET affinity = 50').run();
+    expect((await t.json('GET', '/v1/company/pilots/prosper/story/1', undefined, t.cookie)).statusCode).toBe(200);
+    expect((await t.json('GET', '/v1/company/pilots/prosper/story/0', undefined, t.cookie)).statusCode).toBe(200);
+    const company = (await t.json('GET', '/v1/company', undefined, t.cookie)).json();
+    expect(company.album.map((s: { id: string }) => s.id)).toContain('s-histoire');
+    expect(company.pilots[0].scenesSeen).toBe(2);
+    expect(company.stamps).toBe(2);
+    await t.app.close();
+  });
+
+  it('rend les nouvelles du rattrapage même quand l\'action est refusée', async () => {
+    const t = await signedIn();
+    await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, t.cookie);
+    const s = (await t.json('GET', '/v1/company', undefined, t.cookie)).json();
+    t.ctx.db.prepare('DELETE FROM company_hand').run();
+    t.advance(26 * 3_600_000); // le jour change : de nouvelles cartes arrivent
+    const r = await t.json('POST', '/v1/company/flights', { card: 'c-inexistante', plane: s.planes[0].id, pilot: s.pilots[0].id }, t.cookie);
+    expect(r.statusCode).toBe(400);
+    expect(r.json().error).toBe('card_unknown');
+    expect(r.json().news).toContainEqual(expect.objectContaining({ kind: 'cards.drawn' }));
+    await t.app.close();
+  });
+
   it('part avec le compte : export puis effacement', async () => {
     const t = await signedIn();
     await t.json('POST', '/v1/company', { name: 'Brume & Cie' }, t.cookie);

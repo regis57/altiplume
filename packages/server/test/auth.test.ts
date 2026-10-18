@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sessionCookie, testApp } from './helpers.ts';
+import { validateNickname } from '../src/auth/validation.ts';
 
 const signup = { email: 'Regis@Example.TEST', nickname: 'Régis', locale: 'fr', ageConfirmed: true, acceptTerms: true };
 
@@ -43,6 +44,34 @@ describe('inscription', () => {
     const r = await t.json('POST', '/v1/auth/register', { ...signup, email: 'autre@example.test', nickname: 'REGIS' });
     expect(r.statusCode).toBe(409);
     expect(r.json().fields).toContain('nickname_taken');
+    await t.app.close();
+  });
+
+  it('laisse passer les prénoms et les mots où un mot interdit se cache', async () => {
+    // Autant de prénoms de femmes que d'hommes.
+    for (const n of ['Violette', 'Violaine', 'Viola', 'Eugène Viollet', 'Marco Rapetti', 'Basile de Pornic']) {
+      expect(validateNickname(n), n).toBeNull();
+    }
+    for (const n of ['Drapeau', 'Parapente', 'Computer', 'Retardataire']) expect(validateNickname(n), n).toBeNull();
+    // Les mots eux-mêmes restent refusés : seuls, dans un nom composé, ou déguisés.
+    for (const n of ['Viol', 'V1ol', 'Jean-Pute', 'Le Porn', 'xXnaziXx', 'Hitler2']) {
+      expect(validateNickname(n), n).toBe('nickname_offensive');
+    }
+    const t = await testApp();
+    expect((await t.json('POST', '/v1/auth/register', { ...signup, nickname: 'Violette' })).statusCode).toBe(202);
+    await t.app.close();
+  });
+
+  it('distingue les pseudonymes de toutes les écritures', async () => {
+    const t = await testApp();
+    for (const [i, nickname] of ['Олег', 'Мария', 'さくら', 'Ægir'].entries()) {
+      const r = await t.json('POST', '/v1/auth/register', { ...signup, email: `joueur${i}@example.test`, nickname });
+      expect(r.statusCode, nickname).toBe(202);
+      expect((await t.json('POST', '/v1/auth/verify', { token: t.lastToken() })).statusCode, nickname).toBe(201);
+    }
+    // Le même nom, lui, reste pris, quelle que soit la casse.
+    expect((await t.json('POST', '/v1/auth/register', { ...signup, email: 'autre@example.test', nickname: 'МАРИЯ' })).statusCode).toBe(409);
+    expect((await t.json('POST', '/v1/auth/register', { ...signup, email: 'gir@example.test', nickname: 'Gir' })).statusCode).toBe(202);
     await t.app.close();
   });
 
