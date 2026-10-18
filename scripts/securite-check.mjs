@@ -21,6 +21,34 @@ const strict = process.argv.includes('--strict');
 const rows = [];
 function row(domaine, attendu, reel, ok, action = '') { rows.push({ domaine, attendu, reel, ok, action }); }
 
+/** Une adresse IPv4 ou IPv6 tombe-t-elle dans une plage CIDR ? */
+function inCidr(ip, cidr) {
+  const [base, bits] = cidr.split('/');
+  const v6 = ip.includes(':');
+  if (v6 !== base.includes(':')) return false;
+  const width = v6 ? 128 : 32;
+  const n = Number(bits ?? width);
+  const value = v6 ? ipv6(ip) : ipv4(ip);
+  const start = v6 ? ipv6(base) : ipv4(base);
+  if (value === null || start === null || !(n >= 0 && n <= width)) return false;
+  const shift = BigInt(width - n);
+  return (value >> shift) === (start >> shift);
+}
+function ipv4(ip) {
+  const p = ip.split('.').map(Number);
+  if (p.length !== 4 || p.some((x) => !Number.isInteger(x) || x < 0 || x > 255)) return null;
+  return p.reduce((acc, x) => (acc << 8n) + BigInt(x), 0n);
+}
+function ipv6(ip) {
+  const [head, tail] = ip.split('::');
+  const part = (s) => (s ? s.split(':') : []);
+  const h = part(head);
+  const t = tail === undefined ? [] : part(tail);
+  const groups = tail === undefined ? h : [...h, ...Array(8 - h.length - t.length).fill('0'), ...t];
+  if (groups.length !== 8 || groups.some((g) => !/^[0-9a-f]{1,4}$/i.test(g))) return null;
+  return groups.reduce((acc, g) => (acc << 16n) + BigInt(parseInt(g, 16)), 0n);
+}
+
 async function json(url, init) {
   const r = await fetch(url, { ...init, headers: { accept: 'application/json', 'user-agent': 'altiplume-securite-check', ...(init?.headers ?? {}) } });
   if (!r.ok) throw new Error(`${url} → ${r.status}`);
@@ -76,7 +104,6 @@ try {
   const caa = await dns(host, 'CAA');
   row('Certificats — CAA', 'les autorités de Cloudflare seulement', caa.length ? caa.map((c) => String(c.data)).join(' ; ') : 'absent (toute autorité peut émettre)', caa.length > 0,
     caa.length ? '' : `Cloudflare DNS → CAA ${host} : issue letsencrypt.org, pki.goog, digicert.com, comodoca.com, ssl.com (les autorités de l'Universal SSL)`);
-  const a = (await dns(host, 'A')).map((x) => x.data);
   // Depuis le 11/10, le domaine reçoit du courrier par Cloudflare Email Routing :
   // des MX sont attendus, mais seulement ceux de Cloudflare. Un autre serveur de
   // courrier sur ce domaine serait une surprise, donc une alerte.
@@ -85,8 +112,22 @@ try {
   row('Courrier entrant — MX', 'uniquement les MX de Cloudflare Email Routing', mx.length ? mx.join(', ') : 'aucun MX',
     mx.length > 0 && etrangers.length === 0,
     etrangers.length ? `Serveur de courrier inattendu : ${etrangers.join(', ')} — vérifier la zone DNS` : '');
-  row('Surface réseau', 'seulement des adresses Cloudflare', a.join(', '), a.length > 0, '');
 } catch (e) { row('DNS', '—', `indisponible (${e.message})`, null); }
+
+// ---- Surface réseau : chaque adresse du domaine, IPv4 et IPv6, chez Cloudflare ----
+// Les adresses ne sont jamais recopiées dans le rapport : il est publié dans le
+// résumé du workflow, et une adresse hors Cloudflare serait celle de la maison.
+try {
+  const adresses = [...(await dns(host, 'A')), ...(await dns(host, 'AAAA'))].filter((x) => x.type === 1 || x.type === 28).map((x) => String(x.data));
+  const plages = async (url) => (await (await fetch(url, { headers: { 'user-agent': 'altiplume-securite-check' } })).text()).split(/\s+/).filter(Boolean);
+  const cloudflare = [...(await plages('https://www.cloudflare.com/ips-v4')), ...(await plages('https://www.cloudflare.com/ips-v6'))];
+  if (cloudflare.length < 10) throw new Error('liste des plages Cloudflare illisible');
+  const dehors = adresses.filter((ip) => !cloudflare.some((plage) => inCidr(ip, plage)));
+  row('Surface réseau', 'seulement des adresses Cloudflare (IPv4 et IPv6)',
+    adresses.length === 0 ? 'aucune adresse' : dehors.length === 0 ? `${adresses.length} adresse(s), toutes chez Cloudflare` : `${dehors.length} adresse(s) sur ${adresses.length} hors Cloudflare (non recopiées ici)`,
+    adresses.length > 0 && dehors.length === 0,
+    dehors.length ? 'Cloudflare → DNS → Records : chaque enregistrement A et AAAA doit avoir le nuage orange (Proxied)' : '');
+} catch (e) { row('Surface réseau', 'seulement des adresses Cloudflare (IPv4 et IPv6)', `indisponible (${e.message})`, null); }
 
 // ---- Le site : en-têtes et redirection ----
 try {

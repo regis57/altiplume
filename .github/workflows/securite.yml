@@ -37,6 +37,9 @@ jobs:
       - name: Contrôler
         env:
           HOST: ${{ inputs.host || 'altiplume.com' }}
+        # « bash » tout court fait tourner l'étape avec pipefail : sans lui, le « | tee »
+        # rendait toujours 0, et le contrôle ne pouvait jamais échouer.
+        shell: bash
         run: |
           node scripts/securite-check.mjs "$HOST" --strict | tee rapport.md
           echo "## Contrôle de sécurité externe" >> "$GITHUB_STEP_SUMMARY"
@@ -73,6 +76,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m --skip-db-update \
             --scanners vuln --severity CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE"
+          # Un secret bloque quelle que soit sa gravité : Trivy classe une clé privée
+          # « élevée » et une clé Brevo « basse », sous le filtre « critique ».
+          "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m --skip-db-update \
+            --scanners secret --exit-code 1 "$IMAGE"
 
   # Ce que le visiteur reçoit vraiment : en-têtes, redirections et cookies tels
   # que Cloudflare les laisse passer. Même plan, même verdict que ci-dessus ; une

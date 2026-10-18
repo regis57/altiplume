@@ -145,7 +145,16 @@ jobs:
         run: |
           "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m \
             --skip-db-update \
-            --scanners vuln,secret --severity CRITICAL --ignore-unfixed \
+            --scanners vuln --severity CRITICAL --ignore-unfixed \
+            --exit-code 1 altiplume:verif
+
+      # Un secret bloque quelle que soit sa gravité. Sous le filtre « critique », Trivy
+      # laissait passer une clé privée (classée « élevée ») et une clé Brevo (« basse »).
+      - name: Trivy — aucun secret dans l'image, quelle que soit sa gravité
+        run: |
+          "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m \
+            --skip-db-update \
+            --scanners secret \
             --exit-code 1 altiplume:verif
 
       - name: Se connecter au registre
