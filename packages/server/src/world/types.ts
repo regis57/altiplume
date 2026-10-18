@@ -171,6 +171,11 @@ export interface EventCard {
   readonly region?: RegionId;
   /** Ne se tire qu'en cette saison. */
   readonly season?: Season;
+  /**
+   * Ne se tire que si la compagnie a un hydravion : un imprévu qui parle de coque ou
+   * de flotteurs ne tombe pas chez qui n'en a pas, et c'est un hydravion qui en paie l'usure.
+   */
+  readonly needsSeaplane?: true;
 }
 
 export interface OpportunityCard {

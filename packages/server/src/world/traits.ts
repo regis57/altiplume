@@ -27,7 +27,7 @@ export const TRAITS: readonly Trait[] = [
   {
     id: 'weathersense',
     name: { fr: 'Météo dans la peau', en: 'Weather Sense' },
-    description: { fr: "Sent venir la brume et le grain avant qu'ils soient là. Brouillard et vent de mer retardent ce pilote deux fois moins.", en: 'Feels fog and squalls coming before they arrive. Fog and sea wind cost this pilot half the delay.' },
+    description: { fr: "Sent venir la brume et le grain avant qu'ils soient là. Brouillard et vent de mer retardent ce pilote deux fois moins souvent.", en: 'Feels fog and squalls coming before they arrive. Fog and sea wind hold this pilot up half as often.' },
     effects: { fogRisk: 0.5 },
   },
   {

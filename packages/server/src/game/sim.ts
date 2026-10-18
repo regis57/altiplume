@@ -75,10 +75,25 @@ export function canLand(plane: PlaneModel, destination: Destination): boolean {
  * Ce qu'une flotte peut porter jusqu'à une escale : le plus gros avion capable
  * d'y aller et de s'y poser, puis les deux plus gros ensemble — le convoi.
  */
-export function carryCapacity(models: readonly PlaneModel[], destination: Destination, reach = 1): { alone: number; convoy: number } {
-  const able = models.filter((m) => canLand(m, destination) && destination.distance <= m.range * reach)
-    .map((m) => m.capacity).sort((a, b) => b - a);
-  return { alone: able[0] ?? 0, convoy: (able[0] ?? 0) + (able[1] ?? 0) };
+export function carryCapacity(models: readonly PlaneModel[], destination: Destination, reach = 1, longHaulers = 2): { alone: number; convoy: number } {
+  // Ce qu'un avion porte jusque-là, avec ou sans un pilote « Longues routes » aux commandes.
+  // Ce pilote ne mène qu'un avion à la fois : dans un convoi, l'allonge ne compte que
+  // pour autant d'avions qu'il y a de pilotes qui l'ont.
+  const carries = (m: PlaneModel, boosted: boolean) => (canLand(m, destination) && destination.distance <= m.range * (boosted ? reach : 1) ? m.capacity : 0);
+  const boost = longHaulers > 0;
+  let alone = 0;
+  for (const m of models) alone = Math.max(alone, carries(m, boost));
+  let convoy = alone;
+  for (let i = 0; i < models.length; i += 1) {
+    for (let j = i + 1; j < models.length; j += 1) {
+      const a = models[i]!; const b = models[j]!;
+      const pairs = [carries(a, false) + carries(b, false)];
+      if (longHaulers >= 1) pairs.push(carries(a, true) + carries(b, false), carries(a, false) + carries(b, true));
+      if (longHaulers >= 2) pairs.push(carries(a, true) + carries(b, true));
+      convoy = Math.max(convoy, ...pairs);
+    }
+  }
+  return { alone, convoy };
 }
 
 /** Ce que la compagnie possède : ses avions, ses pilotes, et l'allonge du meilleur. */
@@ -89,6 +104,12 @@ export interface Fleet {
   readonly reach: number;
   /** La piste de l'aérodrome ; sans elle (anciens appels), on ne filtre pas les avions proposés. */
   readonly home?: Runway;
+  /** Combien de pilotes ont l'allonge ; sans elle (anciens appels), autant qu'il faut. */
+  readonly longHaulers?: number;
+  /** Plus aucune place possible : la zone est à son dernier niveau, et pleine. */
+  readonly noRoom?: { readonly hangar: boolean; readonly ponton: boolean };
+  /** Tous les pilotes du monde sont déjà embauchés. */
+  readonly allPilotsHired?: boolean;
 }
 
 /**
@@ -113,7 +134,7 @@ export function planeWithinReach(model: PlaneModel, home: Runway): boolean {
 export function canCarry(card: ContractCard, fleet: Fleet): boolean {
   const destination = findDestination(card.destination);
   if (!destination) return false;
-  const { alone, convoy } = carryCapacity(fleet.planes, destination, fleet.reach);
+  const { alone, convoy } = carryCapacity(fleet.planes, destination, fleet.reach, fleet.longHaulers ?? 2);
   if (alone >= card.bags) return true;
   // Le fret lourd : deux avions, et deux pilotes pour les mener.
   return fleet.planes.length >= 2 && fleet.pilots >= 2 && convoy >= card.bags;
@@ -126,9 +147,22 @@ export function companyFleet(db: Database, companyId: string): Fleet {
   const pilots = (db.prepare('SELECT pilot FROM company_pilots WHERE company_id = ?').all(companyId) as { pilot: string }[])
     .flatMap((r) => { const p = findPilot(r.pilot); return p ? [p] : []; });
   const reach = pilots.reduce((best, p) => Math.max(best, traitFactor(p, 'range')), 1);
-  const level = (db.prepare("SELECT level FROM company_zones WHERE company_id = ? AND zone = 'runway'").get(companyId) as { level: number } | undefined)?.level ?? 1;
-  const home = WORLD.zones.find((z) => z.id === 'runway')!.levels.find((l) => l.level === level)?.runway ?? 'short';
-  return { planes, pilots: pilots.length, reach, home };
+  const longHaulers = pilots.filter((p) => traitFactor(p, 'range') > 1).length;
+  const zoneLevel = (zone: string) => (db.prepare('SELECT level FROM company_zones WHERE company_id = ? AND zone = ?').get(companyId, zone) as { level: number } | undefined)?.level ?? 1;
+  const home = WORLD.zones.find((z) => z.id === 'runway')!.levels.find((l) => l.level === zoneLevel('runway'))?.runway ?? 'short';
+  // Une zone sans niveau suivant et pleine : aucun avion de plus ne pourra jamais y dormir.
+  const noRoomIn = (zone: 'hangar' | 'ponton') => {
+    const levels = WORLD.zones.find((z) => z.id === zone)!.levels;
+    if (levels.some((l) => l.level > zoneLevel(zone))) return false;
+    const last = levels.find((l) => l.level === zoneLevel(zone));
+    const places = (zone === 'ponton' ? last?.seaplanes : last?.planes) ?? 0;
+    return planes.filter((m) => (m.runway === 'water') === (zone === 'ponton')).length >= places;
+  };
+  return {
+    planes, pilots: pilots.length, reach, home, longHaulers,
+    noRoom: { hangar: noRoomIn('hangar'), ponton: noRoomIn('ponton') },
+    allPilotsHired: WORLD.pilots.every((p) => pilots.some((h) => h.id === p.id)),
+  };
 }
 
 /** Le cachet « toute la région » de chaque région (défini avec le monde). */
@@ -225,7 +259,15 @@ export function drawCards(
     && !(c.kind === 'contract' && fleet !== undefined && !canCarry(c, fleet))
     // Ni un avion à vendre qui demande deux crans de piste de plus que l'aérodrome n'en a.
     && !(c.kind === 'opportunity' && c.offer.type === 'plane' && fleet?.home !== undefined
-      && !planeWithinReach(findPlane(c.offer.model)!, fleet.home)));
+      && !planeWithinReach(findPlane(c.offer.model)!, fleet.home))
+    // Ni un avion qu'aucune place ne pourra jamais accueillir (hangar ou ponton à leur
+    // dernier niveau, et pleins), ni un pilote quand tous sont déjà là : ces cartes ne
+    // pouvaient que dire « non », pour toujours (revue du 18 octobre).
+    && !(c.kind === 'opportunity' && c.offer.type === 'plane' && fleet?.noRoom
+      && fleet.noRoom[findPlane(c.offer.model)!.runway === 'water' ? 'ponton' : 'hangar'])
+    && !(c.kind === 'opportunity' && c.offer.type === 'pilot' && fleet?.allPilotsHired === true)
+    // Ni un imprévu de coque ou de flotteurs chez qui n'a pas d'hydravion.
+    && !(c.kind === 'event' && c.needsSeaplane === true && fleet !== undefined && !fleet.planes.some((m) => m.runway === 'water')));
   const seeds = WORLD.seasons.find((x) => x.id === season)?.effects.seedsWeight ?? 1;
   const waiting = (c: (typeof pool)[number]) => c.kind === 'contract' && !album.includes(`s-${c.destination}`);
   const out: string[] = [];
@@ -488,8 +530,10 @@ export function planDispatch(
  * Nocturne) ; le moral la fait varier de × 0,75 (20) à × 1,25 (0) ; l'humidité des
  * sous-bois de la Forêt de Cuivre la multiplie par 1,5.
  */
-export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template' | 'tower'> & { timezone?: string }, now: number): number {
-  const nightFlight = plan.destination.hazard === 'night' && isNight(now, plan.timezone ?? DEFAULT_TIMEZONE);
+export function incidentRisk(plan: Pick<DispatchPlan, 'destination' | 'model' | 'plane' | 'pilot' | 'template' | 'tower'> & { timezone?: string; durationMs?: number }, now: number): number {
+  // La nuit se juge à l'arrivée, comme la page « Vol de nuit » de l'album : c'est
+  // l'atterrissage aux lanternes qui est risqué.
+  const nightFlight = plan.destination.hazard === 'night' && isNight(now + (plan.durationMs ?? 0), plan.timezone ?? DEFAULT_TIMEZONE);
   // La nuit : × 2, ÷ 4 pour un pilote Nocturne, et × 0,7 encore avec le feu de la tour.
   const nightFactor = nightFlight ? 2 * traitFactor(plan.template, 'nightRisk') * (plan.tower?.night ?? 1) : 1;
   const moraleFactor = 1 + (10 - plan.pilot.morale) / 40;
@@ -519,7 +563,7 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     if (plan.destination.hazard === 'fog' && rng() < 0.5 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'fogRisk') * lookout) durationMs += FOG_DELAY_MS;
     if (plan.destination.hazard === 'seawind' && rng() < 0.4 * traitFactor(plan.template, 'fogRisk') * seasonEffect(now, 'seawindRisk') * lookout) durationMs += SEAWIND_DELAY_MS;
     // L'ailier a son propre moteur, et donc son propre aléa ; le convoi attend le plus lent.
-    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination, ...(plan.timezone ? { timezone: plan.timezone } : {}), ...(plan.tower ? { tower: plan.tower } : {}) }, now) : false;
+    const wingIncident = plan.wing ? rng() > 1 - incidentRisk({ ...plan.wing, destination: plan.destination, durationMs: plan.durationMs, ...(plan.timezone ? { timezone: plan.timezone } : {}), ...(plan.tower ? { tower: plan.tower } : {}) }, now) : false;
     if (leadIncident || wingIncident) durationMs = Math.round(durationMs * INCIDENT_DELAY_FACTOR);
 
     // Ligne régulière : rien au départ, le tarif moins l'avance à l'arrivée — et jamais moins que zéro.
@@ -572,7 +616,19 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
       if (e.francs && e.francs < 0 && company.francs + e.francs < 0) return { ok: false as const, error: 'not_enough_francs' as const };
       if (e.francs) { db.prepare('UPDATE companies SET francs = francs + ? WHERE id = ?').run(e.francs, company.id); effects['francs'] = e.francs; }
       if (e.morale) { db.prepare('UPDATE company_pilots SET morale = MIN(20, MAX(0, morale + ?)) WHERE company_id = ?').run(e.morale, company.id); effects['morale'] = e.morale; }
-      if (e.wear) { db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = (SELECT id FROM company_planes WHERE company_id = ? ORDER BY wear LIMIT 1)').run(e.wear, company.id); effects['wear'] = e.wear; }
+      if (e.wear) {
+        // L'avion le moins usé parmi ceux qui sont au sol — jamais un avion en l'air —
+        // et un hydravion quand l'imprévu parle de coque ou de flotteurs.
+        const water = WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id);
+        const grounded = (db.prepare('SELECT id, model, wear FROM company_planes WHERE company_id = ? ORDER BY wear').all(company.id) as { id: string; model: string; wear: number }[])
+          .filter((p) => !db.prepare('SELECT 1 FROM flights WHERE plane_id = ? AND departed_at + 2 * duration_ms > ?').get(p.id, now))
+          .filter((p) => !card.needsSeaplane || water.includes(p.model));
+        const target = grounded[0];
+        if (target && target.wear < 100) {
+          db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(e.wear, target.id);
+          effects['wear'] = Math.min(e.wear, 100 - target.wear);
+        }
+      }
       if (e.waitHours) {
         // Attendre, c'est attendre : la piste reste fermée le nombre d'heures annoncé
         // (règle du 14/10 ; avant, le « retard » visait un vol en l'air, et s'il n'y en
