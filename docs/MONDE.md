@@ -362,7 +362,7 @@ Quatre zones à restaurer (le café et l'atelier de peinture viendront peut-êtr
 - **La tour** (v0.3, promise dès la conception) : un poteau → la vigie (1 200 F : on
   monte voir le temps avant chaque départ, et la brume et le vent de mer retardent un
   quart moins souvent) → la tour et son feu (3 000 F : un feu tournant balaie la
-  vallée la nuit, et les vols de nuit ont un tiers d'incidents en moins). Le feu
+  vallée la nuit, et les vols de nuit ont près d'un tiers d'incidents en moins : 30 %). Le feu
   clignote dans la scène au crépuscule et la nuit.
 
 **Les avions sont sur le terrain.** Chaque avion au repos a sa place et son dessin :
