@@ -312,7 +312,7 @@ bout (règle du 14/10).
 
 ## Les cartes
 
-Trois par jour, dans une main de cinq. Tirage déterministe (graine par joueur et par
+Trois par jour, dans une main de cinq, y compris les jours où le joueur ne vient pas. Tirage déterministe (graine par joueur et par
 jour) : rejouable, auditable, impossible à manipuler depuis le navigateur.
 
 Le monde compte **105 cartes qui se tirent** (compté sur le monde chargé, le 18 octobre
@@ -414,8 +414,11 @@ au pied du pommier.
   (Le serveur envoie la fatigue en crans d'une heure de vol, dix au plus ; l'écran ne
   les affiche pas.)
 - **Cartes** : trois par jour de jeu (minuit UTC), dans la place qui reste d'une main
-  de cinq. Ce qu'on n'a pas la place de prendre, quelqu'un d'autre l'a porté : ce
-  n'est pas une perte. Une carte défaussée ne revient pas le jour même.
+  de cinq. Les jours d'absence tirent aussi les leurs, au retour, du plus ancien au
+  plus récent (le serveur ne remonte que deux jours : 3 + 3 remplissent une main
+  vide) ; une compagnie neuve ne tire que le jour de sa fondation. Ce qu'on n'a pas
+  la place de prendre, quelqu'un d'autre l'a porté : ce n'est pas une perte. Une
+  carte défaussée ne revient pas le jour même.
 - **L'escale attend sa lettre** (14 octobre 2026) : parmi les contrats du tirage, ceux
   d'une escale qui n'a encore jamais reçu de courrier pèsent **trois fois plus**. Les
   contrats gardent ensemble le même poids, donc ni plus ni moins d'imprévus. Sans

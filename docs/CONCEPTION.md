@@ -96,7 +96,7 @@ Usure à chaque vol, entretien au hangar, pièces améliorables à l'atelier (mo
 ### 4.4 Les cartes
 Le moteur de variété du jeu, et l'héritage des démos de Tarot et de 8 américain.
 
-- **Main de 5**, tirage de 3 par jour (jour = 24 h réelles).
+- **Main de 5**, tirage de 3 par jour (jour = 24 h réelles). Les jours d'absence tirent aussi leurs cartes, au retour, du plus ancien au plus récent : seules se perdent celles qui n'ont pas la place dans la main (deux jours suffisent à remplir une main vide).
 - **Contrats** : une destination, un chargement, un délai souple, une récompense. Le délai souple donne un bonus s'il est tenu, jamais de pénalité s'il ne l'est pas.
 - **Imprévus** : météo, panne, pilote malade, grève du bac. Ils se résolvent par un choix (payer, attendre, risquer).
 - **Opportunités** : un avion d'occasion, un pilote de passage, une fête au village.

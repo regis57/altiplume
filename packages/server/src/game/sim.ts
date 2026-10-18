@@ -373,6 +373,9 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
     if (deadlinesMet !== row.deadlines_met) db.prepare('UPDATE companies SET deadlines_met = ? WHERE id = ?').run(deadlinesMet, company.id);
 
     // 2. Le tirage du jour, une fois par jour de jeu, dans la place qui reste.
+    // Les jours d'absence tirent aussi leurs cartes, du plus ancien au plus récent :
+    // seules se perdent celles qu'on n'a pas la place de prendre. Deux jours suffisent
+    // à remplir une main vide (3 + 3 ≥ 5) ; une compagnie neuve ne tire que le jour même.
     const today = gameDayIndex(now);
     if (row.last_draw_day < today) {
       const fleet = companyFleet(db, company.id);
@@ -384,16 +387,23 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
       });
       for (const h of stuck) db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, h.card);
       if (stuck.length > 0) news.push({ kind: 'cards.released', count: stuck.length });
-      const hand = listHand(db, company.id);
-      const room = HAND_SIZE - hand.length;
       const luck = companyLuck(db, company.id);
+      const regions = unlockedRegions(db, company.id);
       const inFlight = (db.prepare('SELECT card FROM flights WHERE company_id = ? AND settled_at IS NULL').all(company.id) as { card: string }[]).map((r) => r.card);
       const album = (db.prepare('SELECT stamp FROM company_stamps WHERE company_id = ?').all(company.id) as { stamp: string }[]).map((r) => r.stamp);
-      const drawn = drawCards(makeRng(deriveSeed(playerId, today, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, unlockedRegions(db, company.id), album, seasonOf(now).season, fleet);
+      const first = row.last_draw_day < 0 ? today : Math.max(row.last_draw_day + 1, today - 1);
       let added = 0;
-      for (const card of drawn.slice(0, Math.max(0, room))) {
-        db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, now);
-        added += 1;
+      let room = HAND_SIZE - listHand(db, company.id).length;
+      for (let d = first; d <= today && room > 0; d += 1) {
+        // La main a changé au passage précédent : la place et les exclusions se recalculent.
+        const hand = listHand(db, company.id);
+        room = HAND_SIZE - hand.length;
+        const drawn = drawCards(makeRng(deriveSeed(playerId, d, 'cards')), [...hand.map((h) => h.card), ...inFlight], luck, DAILY_DRAW, regions, album, seasonOf(now).season, fleet);
+        for (const card of drawn.slice(0, room)) {
+          db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(company.id, card, now);
+          added += 1;
+        }
+        room = HAND_SIZE - listHand(db, company.id).length;
       }
       db.prepare('UPDATE companies SET last_draw_day = ? WHERE id = ?').run(today, company.id);
       if (added > 0) news.push({ kind: 'cards.drawn', count: added });
