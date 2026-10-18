@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { drawCards, planeWithinReach, type Fleet } from '../src/game/sim.ts';
 import { makeRng } from '../src/sim/rng.ts';
 import { findPlane, WORLD } from '../src/world/index.ts';
+import type { RegionId } from '../src/world/types.ts';
 
 /** Tout ce qui peut tomber : on tire autant de cartes qu'il en existe. */
-function everything(fleet: Fleet): string[] {
-  return drawCards(makeRng(7), [], 1, WORLD.cards.length, ['brume', 'saline', 'archipel', 'cuivre'], [], undefined, fleet);
+function everything(fleet: Fleet, regions: RegionId[] = ['brume', 'saline', 'archipel', 'cuivre']): string[] {
+  return drawCards(makeRng(7), [], 1, WORLD.cards.length, regions, [], undefined, fleet);
 }
 
 const grive = findPlane('grive')!;
@@ -38,5 +39,14 @@ describe("un avion à vendre arrive à son heure", () => {
 
   it('sans piste connue (anciens appels), rien ne change', () => {
     expect(everything({ planes: [grive], pilots: 1, reach: 1 })).toContain('o-heron');
+  });
+
+  it("le Goéland attend la route de l'Archipel (le 18 octobre, il tombait dès la Côte ouverte, à 6 600 F devant 194 F)", () => {
+    const fleet: Fleet = { planes: [grive], pilots: 1, reach: 1, home: 'short' };
+    const cote = everything(fleet, ['brume', 'saline']);
+    expect(cote).not.toContain('o-goeland');
+    // La Sterne, elle, est l'hydravion de la Côte : elle vient avec la Côte.
+    expect(cote).toContain('o-sterne');
+    expect(everything(fleet, ['brume', 'saline', 'archipel'])).toContain('o-goeland');
   });
 });

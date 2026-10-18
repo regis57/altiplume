@@ -93,7 +93,7 @@ describe('le monde — intégrité', () => {
     expect(WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id)).toEqual(['sterne', 'goeland']);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.season && c.id !== 'c-treuil' && saline(c))).toHaveLength(15);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && saline(c))).toHaveLength(2);
-    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(3); // + le Goéland, vendu à Port-Sel
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && saline(c))).toHaveLength(2); // la Sterne et la carte marine ; le Goéland est à l'Archipel depuis le 18/10
     expect(WORLD.regions.map((r) => r.id)).toEqual(['brume', 'saline', 'archipel', 'cuivre']);
     expect(WORLD.regions[1]!.route).toEqual({ requires: 's-vallee', cost: 10 });
     expect(WORLD.region.route).toBeUndefined();
@@ -104,7 +104,7 @@ describe('le monde — intégrité', () => {
     expect(ponton.levels.map((l) => l.seaplanes)).toEqual([0, 1, 2]);
   });
 
-  it("livre l'Archipel des Lanternes (v0.2) : 6 îles sur l'eau, la plupart de nuit, 12+2+1 cartes, le Goéland, une route à 15 cachets, deux pilotes de plus", () => {
+  it("livre l'Archipel des Lanternes (v0.2) : 6 îles sur l'eau, la plupart de nuit, 12+2+2 cartes dont le Goéland, une route à 15 cachets, deux pilotes de plus", () => {
     const archipel = (c: (typeof WORLD.cards)[number]) => cardRegion(c) === 'archipel';
     const iles = regionDestinations('archipel');
     expect(iles).toHaveLength(6);
@@ -112,7 +112,7 @@ describe('le monde — intégrité', () => {
     expect(iles.filter((d) => d.hazard === 'night').length).toBeGreaterThanOrEqual(4);
     expect(WORLD.cards.filter((c) => c.kind === 'contract' && !c.heavy && archipel(c))).toHaveLength(12);
     expect(WORLD.cards.filter((c) => c.kind === 'event' && archipel(c))).toHaveLength(2);
-    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && archipel(c))).toHaveLength(1);
+    expect(WORLD.cards.filter((c) => c.kind === 'opportunity' && archipel(c))).toHaveLength(2); // un pilote, et le Goéland (depuis le 18/10)
     expect(WORLD.regions[2]!.route).toEqual({ requires: 's-cote', cost: 15 });
     for (const id of ['s-archipel', 's-route-archipel']) expect(WORLD.stamps.some((s) => s.id === id), id).toBe(true);
     // Le Goéland atteint tout ; la Sterne n'atteint les îles qu'avec un pilote de Longues routes (× 1,2 → 16,8).

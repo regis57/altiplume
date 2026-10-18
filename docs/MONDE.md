@@ -105,7 +105,8 @@ La Sterne n'atteint les trois premières qu'avec un pilote de Longues routes (14
 le **Goéland** atteint tout. Chaque première livraison vaut 3 cachets ; les six îles
 collent « Tout l'Archipel ». Deux imprévus (la lanterne du ponton fendue, l'invitation des îles),
 une opportunité (un pilote qui se présente au hangar), et le Goéland, vendu à Port-Sel une fois la
-Côte ouverte.
+route de l'Archipel ouverte (jusqu'au 18 octobre, il venait dès la Côte : à 6 600 F, c'était une
+carte qu'on ne pouvait que laisser passer).
 
 ## La Forêt de Cuivre (*Copperwood*) — v0.3
 
