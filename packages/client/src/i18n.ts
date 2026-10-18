@@ -76,9 +76,11 @@ const FR: Record<string, string> = {
   'goal.deliver': "Livrer une première fois : {list} — la page {page} se collera dans l'album.",
   'goal.pageDone': "La page {page} est dans l'album.",
   'goal.earnStamps': "Gagner encore {n} cachets ({have} en caisse sur {cost}) — chaque page de l'album en rapporte.",
+  'goal.earnStampsOne': "Gagner encore {n} cachet ({have} en caisse sur {cost}) — chaque page de l'album en rapporte.",
   'goal.stampsDone': 'Les {cost} cachets sont en caisse.',
   'goal.ready': 'Tout y est : le bouton {button} attend dans les routes.',
   'goal.album': "Toutes les routes sont ouvertes. Reste l'album : {n} pages à coller.",
+  'goal.albumOne': "Toutes les routes sont ouvertes. Reste l'album : une dernière page à coller.",
   'goal.done': "Toutes les routes sont ouvertes et l'album est plein. Le courrier, lui, continue.",
   'goal.secondPlane': "Et pour voler plus : un deuxième avion. Une Grive d'occasion passe dans les cartes (1 500 F), et il lui faut un hangar à deux places.",
   'goal.and': ' et ',
@@ -109,7 +111,7 @@ const FR: Record<string, string> = {
   'game.flights': 'En vol',
   'game.noFlights': "Personne en l'air. La Grive attend devant le hangar.",
   'game.mailHelp': "Trois cartes par jour, cinq en main au plus. Un contrat s'expédie ; un imprévu se tranche — et bloque la piste tant qu'il ne l'est pas ; une opportunité se saisit ou se laisse.",
-  'game.handEmpty': 'Rien en main. De nouvelles cartes arrivent demain — la ligne régulière, elle, part quand vous voulez.',
+  'game.handEmpty': 'Rien en main. De nouvelles cartes arrivent au prochain tirage, à minuit en temps universel (UTC) — la ligne régulière, elle, part quand vous voulez.',
   'card.standing': 'Ligne régulière · toujours disponible',
   'game.logbook': 'Le livre de bord',
   'news.cards': 'Cartes du jour :',
@@ -252,6 +254,9 @@ const FR: Record<string, string> = {
   'footer.contact': 'Nous écrire',
   'footer.help': 'Comment on joue',
   'nav.help': 'Aide',
+  'nav.home': 'Altiplume, accueil',
+  'nav.label': 'Compte',
+  'footer.source': 'Code source (AGPL-3.0)',
   'firstFlight.more': 'Tout le jeu en cinq minutes de lecture : <a href="/aide">comment on joue</a>.',
   'contact.title': "Écrire à l'aérodrome",
   'contact.pitch': "Une question, un bug, une idée, un mot gentil : la boîte aux lettres est au bout du chemin. Le message part directement chez l'éditeur ; il n'est enregistré nulle part.",
@@ -476,9 +481,11 @@ const EN: Record<string, string> = {
   'goal.deliver': 'Deliver a first bag to {list} — that fills the {page} page of the album.',
   'goal.pageDone': 'The {page} page is in the album.',
   'goal.earnStamps': 'Earn {n} more stamps ({have} of {cost} in the till) — every album page brings some in.',
+  'goal.earnStampsOne': 'Earn {n} more stamp ({have} of {cost} in the till) — every album page brings some in.',
   'goal.stampsDone': 'All {cost} stamps are in the till.',
   'goal.ready': 'Everything is there: the {button} button is waiting down in the routes.',
   'goal.album': 'Every route is open. The album remains: {n} pages to fill.',
+  'goal.albumOne': 'Every route is open. The album remains: one last page to fill.',
   'goal.done': 'Every route is open and the album is full. The mail, of course, goes on.',
   'goal.secondPlane': 'And to fly more: a second plane. A second-hand Thrush turns up in the cards (1,500 F), and it needs a two-bay hangar.',
   'goal.and': ' and ',
@@ -509,7 +516,7 @@ const EN: Record<string, string> = {
   'game.flights': 'In the air',
   'game.noFlights': 'Nobody is flying. The Thrush waits in front of the hangar.',
   'game.mailHelp': 'Three cards a day, five in hand at most. A contract is dispatched; a mishap is decided — and blocks the runway until it is; an opportunity is taken or left.',
-  'game.handEmpty': 'Nothing in hand. New cards arrive tomorrow — the regular run, though, leaves whenever you like.',
+  'game.handEmpty': 'Nothing in hand. New cards come with the next draw, at midnight UTC — the regular run, though, leaves whenever you like.',
   'card.standing': 'Regular run · always available',
   'game.logbook': 'The logbook',
   'news.cards': "Today's cards:",
@@ -652,6 +659,9 @@ const EN: Record<string, string> = {
   'footer.contact': 'Write to us',
   'footer.help': 'How to play',
   'nav.help': 'Help',
+  'nav.home': 'Altiplume, home',
+  'nav.label': 'Account',
+  'footer.source': 'Source code (AGPL-3.0)',
   'firstFlight.more': 'The whole game in five minutes of reading: <a href="/aide">how to play</a>.',
   'contact.title': 'Write to the aerodrome',
   'contact.pitch': "A question, a bug, an idea, a kind word: the letter box is at the end of the lane. Your message goes straight to the publisher; it is not stored anywhere.",
@@ -838,12 +848,30 @@ export function setLocale(locale: Locale): void {
   try { localStorage.setItem(STORAGE_KEY, locale); } catch { /* sans importance */ }
 }
 
-/** Date dans la langue courante. `short` : « 11 oct. 2026 » ; `long` : « 11 octobre 2026 ». */
-export function formatDate(ms: number, style: 'short' | 'long' = 'long'): string {
+/**
+ * Date dans la langue courante. `short` : « 11 oct. 2026 » ; `long` : « 11 octobre 2026 ».
+ * `utc` : le jour en temps universel, pour une date du calendrier du jeu (les saisons
+ * basculent à minuit UTC) ; sinon, le jour à l'heure du joueur.
+ */
+export function formatDate(ms: number, style: 'short' | 'long' = 'long', utc = false): string {
   const tag = current === 'fr' ? 'fr-FR' : 'en-GB';
-  return new Date(ms).toLocaleDateString(tag, style === 'short'
-    ? { day: '2-digit', month: 'short', year: 'numeric' }
-    : { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(ms).toLocaleDateString(tag, {
+    ...(style === 'short' ? { day: '2-digit', month: 'short', year: 'numeric' } as const : { day: 'numeric', month: 'long', year: 'numeric' } as const),
+    ...(utc ? { timeZone: 'UTC' } : {}),
+  });
+}
+
+/** Un nombre écrit comme dans la langue : « 12 500 » en français, « 12,500 » en anglais. */
+export function formatNumber(n: number): string {
+  return n.toLocaleString(current === 'fr' ? 'fr-FR' : 'en-GB');
+}
+
+/**
+ * La clé au singulier ou au pluriel, selon la règle de la langue : en français, 0 et 1
+ * sont au singulier (« 0 page ») ; en anglais, seul 1 l'est (« 0 pages »).
+ */
+export function plural(n: number, one: string, other: string): string {
+  return new Intl.PluralRules(current === 'fr' ? 'fr-FR' : 'en-GB').select(n) === 'one' ? one : other;
 }
 
 export function t(key: string): string {

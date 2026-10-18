@@ -110,6 +110,17 @@ describe('le cap dit ce qui manque à la flotte', () => {
     ]);
   });
 
+  it("un Martinet acheté sur le pré ne livre pas Marais-Blanc : il y faut une piste plus longue", () => {
+    // Revue du 18 octobre : la carte d'offre permet d'acheter le Martinet avant la piste
+    // roulée ; le serveur refuse alors chaque départ (« piste trop courte chez soi »). Le
+    // cap comptait pourtant Marais-Blanc comme livrable, sans rien dire.
+    const cap = route({ ...apresForet, planes: [{ model: 'grive' }, { model: 'martinet' }], zones: { hangar: 2 } });
+    expect(cap.blockers[0]).toEqual({ need: 'range', plane: null, works: ['runway'], pilotTrait: 'longhaul', stops: ['marais-blanc'] });
+    // La piste roulée : le Martinet décolle, Marais-Blanc n'est plus un obstacle.
+    const roulee = route({ ...apresForet, planes: [{ model: 'grive' }, { model: 'martinet' }], zones: { hangar: 2, runway: 2 } });
+    expect(roulee.blockers.flatMap((b) => b.stops)).not.toContain('marais-blanc');
+  });
+
   it("une piste trop courte pour tous les avions de la flotte est dite comme telle", () => {
     // Un Héron seul (grande piste) : seule la Combe-aux-Rosées, en piste longue, l'accueille.
     const cap = route({ ...debut, planes: [{ model: 'heron' }], zones: { runway: 3 } });

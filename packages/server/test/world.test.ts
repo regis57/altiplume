@@ -279,11 +279,13 @@ describe('le monde — intégrité', () => {
     const view = {
       regions: w.regions.map((r) => ({ id: r.id, page: r.page, ...(r.route ? { route: r.route } : {}) })),
       destinations: w.destinations.map((d) => ({ id: d.id, region: d.region, distance: d.distance, runway: d.runway })),
-      planes: w.planes.map((p) => ({ id: p.id, range: p.range, runway: p.runway, price: p.price })),
-      pilots: w.pilots.map((p) => ({ id: p.id, traits: p.traits })),
-      traits: w.traits.map((t) => ({ id: t.id, ...(t.range ? { range: t.range } : {}) })),
-      zones: w.zones.map((z) => ({ id: z.id, levels: z.levels.map((l) => ({ level: l.level, ...(l.runway ? { runway: l.runway } : {}), ...(l.planes !== undefined ? { planes: l.planes } : {}), ...(l.seaplanes !== undefined ? { seaplanes: l.seaplanes } : {}) })) })),
+      planes: w.planes.map((p) => ({ id: p.id, range: p.range, runway: p.runway, price: p.price, capacity: p.capacity, speed: p.speed, upkeep: p.upkeep })),
+      pilots: w.pilots.map((p) => ({ id: p.id, traits: p.traits, wage: p.wage })),
+      traits: w.traits.map((t) => ({ id: t.id, ...(t.range ? { range: t.range } : {}), ...(t.speed ? { speed: t.speed } : {}), ...(t.fuel ? { fuel: t.fuel } : {}) })),
+      zones: w.zones.map((z) => ({ id: z.id, levels: z.levels.map((l) => ({ level: l.level, ...(l.runway ? { runway: l.runway } : {}), ...(l.planes !== undefined ? { planes: l.planes } : {}), ...(l.seaplanes !== undefined ? { seaplanes: l.seaplanes } : {}), ...(l.maintenance !== undefined ? { maintenance: l.maintenance } : {}) })) })),
       stamps: w.stamps.map((s) => ({ id: s.id })),
+      // L'estimation avant l'envoi (envoi.ts) : ce que la saison fait à la durée.
+      seasons: w.seasons.map((x) => ({ id: x.id, effects: x.effects.duration !== undefined ? { duration: x.effects.duration } : {} })),
     };
     const text = `${JSON.stringify(view, null, 2)}\n`;
     const file = new URL('../../client/test/monde-du-cap.json', import.meta.url);
@@ -291,6 +293,8 @@ describe('le monde — intégrité', () => {
     expect(readFileSync(file, 'utf8'), 'monde-du-cap.json est périmé : relancer avec MAJ_MONDE_CAP=1').toBe(text);
     // Le trait qui allonge la portée voyage jusqu'au client ; les autres n'ont rien à y faire.
     expect(w.traits.filter((t) => 'range' in t).map((t) => t.id)).toEqual(['longhaul']);
+    // La vitesse et l'entretien voyagent aussi : l'estimation avant l'envoi en a besoin.
+    expect(w.traits.filter((t) => 'speed' in t || 'fuel' in t).map((t) => t.id)).toEqual(['thrifty', 'daredevil']);
   });
 });
 

@@ -61,10 +61,22 @@ try {
   await page.click('#verify button[type=submit]');
   await page.waitForURL(`${ORIGIN}/aerodrome`);
   await page.waitForSelector('.choix-nom');
+  // Un second onglet, ouvert sur le même formulaire de fondation.
+  const onglet = await ctx.newPage();
+  await onglet.goto(`${ORIGIN}/aerodrome`);
+  await onglet.waitForSelector('.choix-nom');
   await page.fill('#nom-perso', 'Les Ailes de la Croisette');
   await page.click('#fonder button[type=submit]');
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#t-compagnie')) === 'Les Ailes de la Croisette', 'compagnie fondée');
+  // Dans l'autre onglet, fonder encore : le serveur répond « déjà fondée » (409). Le jeu
+  // montre la compagnie, au lieu de dire que le nom ne convient pas (revue du 18/10).
+  await onglet.fill('#nom-perso', 'Un autre nom');
+  await onglet.click('#fonder button[type=submit]');
+  await onglet.waitForSelector('#aerodrome:not(.cache)');
+  assert((await onglet.textContent('#t-compagnie')) === 'Les Ailes de la Croisette', "l'autre onglet affiche la compagnie déjà fondée");
+  assert((await onglet.textContent('#nom-perso-erreur')) === '', "pas de « nom invalide » pour une compagnie déjà fondée");
+  await onglet.close();
   // L'étiquette de version, en haut à droite de chaque page : le stade et ce qui tourne.
   // Un lecteur d'écran entend d'abord ce que c'est ; l'œil ne voit que le stade et le numéro.
   const etiquette = (await page.evaluate(() => [...document.querySelectorAll('.etiquette-stade, .etiquette-version')].map((e) => e.textContent).join(' '))).replace(/\s+/g, ' ').trim();
@@ -140,6 +152,16 @@ try {
   const capApres = (await page.textContent('#cap')).replace(/\s+/g, ' ');
   assert(!capApres.includes('Pont-de-Brume') && capApres.includes('Les Tilleuls'), `le cap suit les livraisons (${capApres})`);
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-4-arrivee.png'), fullPage: true });
+  // La page redemande l'état (ici : on revient sur l'onglet ; ailleurs, le filet de deux
+  // minutes ou un envoi). La réponse n'a plus de nouvelles : celles de l'arrivée restent
+  // à l'écran jusqu'au rechargement (revue du 18/10 : elles s'effaçaient).
+  await page.waitForTimeout(5_200);
+  await Promise.all([
+    page.waitForResponse((r) => r.url().endsWith('/v1/company') && r.request().method() === 'GET'),
+    page.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))),
+  ]);
+  await page.waitForTimeout(300);
+  assert((await page.textContent('#nouvelles')).includes('Prosper Chickenman est rentré de Pont-de-Brume'), 'les nouvelles restent après une resynchronisation');
 
   // Un imprévu se tranche.
   db.exec("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'e-bougie', founded_at FROM companies");
@@ -213,6 +235,26 @@ try {
   await passage.locator('button', { hasText: 'Embaucher' }).click();
   await page.waitForFunction(() => /rejoint la compagnie\.$/.test(document.querySelector('#jeu-message')?.textContent ?? ''));
 
+  // Neuf francs en caisse : « Y aller · 15 F » et « Changer la bougie (12 F) » sont grisés,
+  // comme le serveur les refuserait ; « Partir comme ça », gratuit, reste ouvert.
+  const francsAvant = db.prepare('SELECT francs FROM companies').get().francs;
+  db.exec('UPDATE companies SET francs = 9');
+  for (const c of ['o-fete', 'e-bougie']) db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, ?, 0 FROM companies').run(c);
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  const fete = page.locator('#main .carte', { hasText: 'Y aller' });
+  assert(await fete.locator('button', { hasText: 'Y aller' }).isDisabled(), 'la fête est grisée sans ses 15 F');
+  const bougie9 = page.locator('#main .carte', { hasText: 'Moteur qui tousse' });
+  assert(await bougie9.locator('button', { hasText: 'Changer la bougie' }).isDisabled(), 'la bougie à 12 F est grisée avec 9 F');
+  assert(!(await bougie9.locator('button', { hasText: 'Partir comme ça' }).isDisabled()), 'le choix gratuit reste ouvert');
+  // « Laisser passer » une carte déjà partie ailleurs : le refus se dit, et la carte s'en va.
+  db.exec("DELETE FROM company_hand WHERE card = 'o-fete'");
+  await fete.locator('button', { hasText: 'Laisser passer' }).click();
+  await page.waitForFunction(() => (document.querySelector('#jeu-message')?.textContent ?? '').includes("Cette carte n'est plus en main."));
+  await page.waitForFunction(() => ![...document.querySelectorAll('#main .carte')].some((c) => c.textContent.includes('Y aller')));
+  db.exec("DELETE FROM company_hand WHERE card LIKE 'e-%'");
+  db.prepare('UPDATE companies SET francs = ?').run(francsAvant);
+
   // Un imprévu au sol : « attendre » ferme vraiment la piste, et la carte dit jusqu'à quand
   // (le 14/10, « Dormir sur place », puis un vol expédié dans la foulée).
   db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, ?, 0 FROM companies').run('e-brume');
@@ -231,6 +273,31 @@ try {
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#bord')).includes('Arrived at Mistbridge'), 'livre de bord en anglais');
   assert((await page.textContent('#cap')).includes('Next route: Saltshore'), 'le cap parle anglais aussi');
+  // Le gabarit aussi : pied de page et noms lus.
+  assert((await page.textContent('footer.pied')).includes('Source code (AGPL-3.0)'), 'pied de page en anglais');
+  assert((await page.getAttribute('a.marque', 'aria-label')) === 'Altiplume, home', 'nom lu du logo en anglais');
+
+  // La page contact (sans adresse de destination ici : le serveur est simulé) : le cachet
+  // « message parti » porte sa date, et l'erreur d'un envoi trop court ne revient pas au
+  // changement de langue.
+  await page.route('**/v1/contact', (route) => route.fulfill({
+    status: route.request().method() === 'POST' ? 202 : 200,
+    contentType: 'application/json',
+    body: route.request().method() === 'POST' ? '{}' : '{"available":true}',
+  }));
+  await page.goto(`${ORIGIN}/contact`);
+  await page.waitForSelector('#contact:not(.cache)');
+  await page.fill('#contact-texte', 'hello');
+  await page.click('#contact button[type=submit]');
+  await page.waitForFunction(() => (document.querySelector('#contact-texte-erreur')?.textContent ?? '').length > 1);
+  await page.fill('#contact-texte', 'A real message, long enough to leave.');
+  await page.click('#contact button[type=submit]');
+  await page.waitForSelector('#cachet:not(.cache)');
+  const dateCachet = (await page.textContent('#cachet-date')).trim();
+  assert(/\d{2} \w+\.? \d{4}/u.test(dateCachet), `le cachet porte sa date (${dateCachet})`);
+  await page.click('[data-action=toggle-lang]');
+  assert((await page.textContent('#contact-texte-erreur')) === '', "l'erreur effacée ne revient pas au changement de langue");
+  await page.unroute('**/v1/contact');
   db.close();
   process.stdout.write('e2e courrier : tout est passé.\n');
 } finally {

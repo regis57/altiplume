@@ -31,3 +31,18 @@ export function formatRemaining(remainingMs: number, locale: Locale = 'fr'): str
   if (minutes === 0) return `${hours} ${unit.hour}`;
   return `${hours} ${unit.hour} ${minutes} ${unit.minute}`;
 }
+
+/**
+ * Les heures où l'écran doit redemander l'état, en plus des vols : la fin du repos d'un
+ * pilote au sol, la réouverture de la piste après un imprévu. Sans elles, l'option du
+ * pilote et le bouton « Expédier » restaient grisés jusqu'au filet de deux minutes
+ * (ou jusqu'au retour sur l'onglet), alors que le serveur acceptait déjà.
+ */
+export function waitsOf(c: {
+  readonly now: number;
+  readonly pilots: readonly { readonly busyUntil: number | null; readonly restedAt: number | null }[];
+  readonly runwayClosedUntil: number | null;
+}): number[] {
+  const rests = c.pilots.filter((p) => p.busyUntil === null && p.restedAt !== null && p.restedAt > c.now).map((p) => p.restedAt as number);
+  return c.runwayClosedUntil !== null && c.runwayClosedUntil > c.now ? [...rests, c.runwayClosedUntil] : rests;
+}

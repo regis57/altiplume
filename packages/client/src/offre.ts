@@ -55,3 +55,12 @@ export function planeOffer(world: OfferWorld, c: OfferCompany, modelId: string, 
   }
   return { seaplane, money, place, runway, runwayName, canBuy: money && place };
 }
+
+/**
+ * Ce que le serveur refuse faute de francs, dit avant le clic : la fête (« Y aller · 15 F »)
+ * quand la caisse n'a pas son prix, un choix d'imprévu payant quand la caisse passerait
+ * sous zéro (`playCard`). Un gain ou un choix gratuit reste toujours ouvert.
+ */
+export function canAfford(francs: number, delta: number | undefined): boolean {
+  return delta === undefined || delta >= 0 || francs + delta >= 0;
+}

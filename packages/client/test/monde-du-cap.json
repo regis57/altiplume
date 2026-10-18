@@ -180,37 +180,55 @@
       "id": "grive",
       "range": 8,
       "runway": "short",
-      "price": 1800
+      "price": 1800,
+      "capacity": 2,
+      "speed": 12,
+      "upkeep": 6
     },
     {
       "id": "martinet",
       "range": 10,
       "runway": "medium",
-      "price": 3200
+      "price": 3200,
+      "capacity": 1,
+      "speed": 24,
+      "upkeep": 10
     },
     {
       "id": "heron",
       "range": 16,
       "runway": "long",
-      "price": 6500
+      "price": 6500,
+      "capacity": 5,
+      "speed": 15,
+      "upkeep": 16
     },
     {
       "id": "sterne",
       "range": 14,
       "runway": "water",
-      "price": 4725
+      "price": 4725,
+      "capacity": 3,
+      "speed": 14,
+      "upkeep": 14
     },
     {
       "id": "goeland",
       "range": 22,
       "runway": "water",
-      "price": 7800
+      "price": 7800,
+      "capacity": 4,
+      "speed": 16,
+      "upkeep": 18
     },
     {
       "id": "pic",
       "range": 12,
       "runway": "clearing",
-      "price": 3675
+      "price": 3675,
+      "capacity": 2,
+      "speed": 13,
+      "upkeep": 9
     }
   ],
   "pilots": [
@@ -219,70 +237,80 @@
       "traits": [
         "weathersense",
         "homeheart"
-      ]
+      ],
+      "wage": 8
     },
     {
       "id": "ilias",
       "traits": [
         "daredevil",
         "thrifty"
-      ]
+      ],
+      "wage": 7
     },
     {
       "id": "garance",
       "traits": [
         "daredevil",
         "homeheart"
-      ]
+      ],
+      "wage": 9
     },
     {
       "id": "yse",
       "traits": [
         "nightowl",
         "luckycharm"
-      ]
+      ],
+      "wage": 8
     },
     {
       "id": "aurele",
       "traits": [
         "goldenhands",
         "longhaul"
-      ]
+      ],
+      "wage": 9
     },
     {
       "id": "solenn",
       "traits": [
         "nightowl",
         "goldenhands"
-      ]
+      ],
+      "wage": 10
     },
     {
       "id": "teodor",
       "traits": [
         "longhaul",
         "luckycharm"
-      ]
+      ],
+      "wage": 11
     },
     {
       "id": "hedda",
       "traits": [
         "longhaul",
         "thrifty"
-      ]
+      ],
+      "wage": 12
     },
     {
       "id": "gaspard",
       "traits": [
         "weathersense",
         "thrifty"
-      ]
+      ],
+      "wage": 8
     },
     {
       "id": "rosalie",
       "traits": [
         "goldenhands",
         "homeheart"
-      ]
+      ],
+      "wage": 9
     }
   ],
   "traits": [
@@ -290,10 +318,12 @@
       "id": "nightowl"
     },
     {
-      "id": "thrifty"
+      "id": "thrifty",
+      "fuel": 0.85
     },
     {
-      "id": "daredevil"
+      "id": "daredevil",
+      "speed": 1.12
     },
     {
       "id": "weathersense"
@@ -335,15 +365,18 @@
       "levels": [
         {
           "level": 1,
-          "planes": 1
+          "planes": 1,
+          "maintenance": 1
         },
         {
           "level": 2,
-          "planes": 2
+          "planes": 2,
+          "maintenance": 1.25
         },
         {
           "level": 3,
-          "planes": 3
+          "planes": 3,
+          "maintenance": 1.5
         }
       ]
     },
@@ -517,6 +550,26 @@
     },
     {
       "id": "s-foret"
+    }
+  ],
+  "seasons": [
+    {
+      "id": "printemps",
+      "effects": {}
+    },
+    {
+      "id": "ete",
+      "effects": {}
+    },
+    {
+      "id": "automne",
+      "effects": {}
+    },
+    {
+      "id": "hiver",
+      "effects": {
+        "duration": 1.15
+      }
     }
   ]
 }

@@ -1,5 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { formatRemaining } from '../src/time.ts';
+import { formatRemaining, waitsOf } from '../src/time.ts';
+
+describe('waitsOf : les jalons qui ne sont pas des vols', () => {
+  it("la fin du repos d'un pilote au sol et la réouverture de la piste", () => {
+    const c = {
+      now: 1_000,
+      pilots: [
+        { busyUntil: null, restedAt: 61_000 },
+        // En vol : son retour est déjà un jalon du vol.
+        { busyUntil: 90_000, restedAt: 120_000 },
+        { busyUntil: null, restedAt: null },
+      ],
+      runwayClosedUntil: 3_601_000,
+    };
+    expect(waitsOf(c)).toEqual([61_000, 3_601_000]);
+  });
+
+  it('rien de passé : une heure déjà franchie ne relance pas sans fin', () => {
+    expect(waitsOf({ now: 5_000, pilots: [{ busyUntil: null, restedAt: 5_000 }], runwayClosedUntil: 4_000 })).toEqual([]);
+  });
+});
 
 describe('formatRemaining', () => {
   it('affiche les minutes seules sous une heure', () => {
