@@ -123,7 +123,9 @@ try {
   if (shots) await page.screenshot({ path: join(shots, 'e2e-courrier-3-en-vol.png'), fullPage: true });
 
   // Six minutes plus tard (dans la base) : arrivée, encaissement, cachets.
-  db.exec('UPDATE flights SET departed_at = departed_at - 6 * 60 * 1000');
+  // Au moins la durée réelle du vol, qu'un incident allonge de 30 % : un décalage fixe
+  // laissait parfois le vol en l'air, et le parcours échouait au hasard.
+  db.exec('UPDATE flights SET departed_at = departed_at - MAX(6 * 60 * 1000, duration_ms + 60 * 1000)');
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   const news = await page.textContent('#nouvelles');
@@ -166,7 +168,8 @@ try {
   // Un écran qui ne ment pas : la page croit la Grive au hangar, un vol est pourtant
   // parti (réponse perdue en chemin, autre appareil…). Le refus du serveur doit
   // remettre la page d'aplomb : le vol s'affiche, avec sa jauge.
-  db.exec('UPDATE flights SET departed_at = departed_at - 11 * 60 * 1000');
+  // L'aller et le retour, même allongés par un incident.
+  db.exec('UPDATE flights SET departed_at = departed_at - MAX(11 * 60 * 1000, 2 * duration_ms + 60 * 1000)');
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert(await page.$eval('#vols-vide', (e) => !e.classList.contains('cache')), 'au départ, personne en l\'air');

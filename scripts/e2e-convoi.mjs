@@ -83,7 +83,9 @@ try {
   assert(vol.startsWith('Convoi · ') && vol.includes(' et '), `un seul vol, deux équipages (${vol})`);
   assert((await page.locator('#vols .vol').count()) === 1, "l'ailier ne s'affiche pas en double");
 
-  db.exec('UPDATE flights SET departed_at = departed_at - 30 * 60 * 1000');
+  // Au moins la durée réelle du vol, qu'un incident allonge de 30 % : un décalage fixe
+  // laissait parfois le vol en l'air, et le parcours échouait au hasard.
+  db.exec('UPDATE flights SET departed_at = departed_at - MAX(30 * 60 * 1000, duration_ms + 60 * 1000)');
   db.close();
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
