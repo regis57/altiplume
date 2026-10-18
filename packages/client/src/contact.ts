@@ -6,6 +6,8 @@
  * fait le reste. Aucun captcha, aucun tiers — la CSP ne les laisserait pas
  * entrer de toute façon.
  */
+import { t } from './i18n.ts';
+
 type Json = Record<string, unknown>;
 type Api = (method: 'GET' | 'POST' | 'PATCH' | 'DELETE', path: string, body?: Json) => Promise<{ status: number; body: Json }>;
 type SetMessage = (id: string, keys: string | string[], kind?: 'ok' | 'error') => void;
@@ -32,9 +34,11 @@ export async function pageContact(api: Api, setMessage: SetMessage, setDate: Set
     const piege = (document.getElementById('contact-site') as HTMLInputElement | null)?.value ?? '';
 
     const erreurTexte = document.getElementById('contact-texte-erreur');
-    if (erreurTexte) erreurTexte.textContent = '';
+    // L'erreur d'un envoi précédent s'efface pour de bon : sans retirer sa clé, le
+    // changement de langue la faisait revenir sous un message déjà parti.
+    if (erreurTexte) { delete erreurTexte.dataset['i18n']; erreurTexte.textContent = ''; }
     if (texte.trim().length < 10) {
-      if (erreurTexte) { erreurTexte.dataset['i18n'] = 'error.message_too_short'; erreurTexte.textContent = ' '; }
+      if (erreurTexte) { erreurTexte.dataset['i18n'] = 'error.message_too_short'; erreurTexte.textContent = t('error.message_too_short'); }
       setMessage('contact-message', 'error.message_too_short');
       document.getElementById('contact-texte')?.focus();
       return;

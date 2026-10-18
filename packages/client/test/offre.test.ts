@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planeOffer, type OfferCompany, type OfferWorld } from '../src/offre.ts';
+import { canAfford, planeOffer, type OfferCompany, type OfferWorld } from '../src/offre.ts';
 
 /** Les avions et les zones du monde, tels que le client les reçoit (noms en français). */
 const world: OfferWorld = {
@@ -37,5 +37,18 @@ describe("la carte d'un avion dit ce qu'il faut, avant le clic", () => {
   it("l'hydravion compte les places au ponton, pas au hangar, et ne demande pas de piste", () => {
     expect(planeOffer(world, { ...alizee, francs: 5000 }, 'sterne', 3850)).toMatchObject({ seaplane: true, place: false, runwayName: null, canBuy: false });
     expect(planeOffer(world, { ...alizee, francs: 5000, zones: { ponton: 2 } }, 'sterne', 3850)).toMatchObject({ place: true, runway: true, canBuy: true });
+  });
+});
+
+describe('la fête et les imprévus payants : grisés sans les francs, comme le serveur', () => {
+  it("« Y aller · 15 F » avec 9 F en caisse : non ; avec 15 F : oui", () => {
+    expect(canAfford(9, -15)).toBe(false);
+    expect(canAfford(15, -15)).toBe(true);
+  });
+
+  it("« Changer la bougie (12 F) » avec 9 F : non ; un choix gratuit ou un gain : toujours", () => {
+    expect(canAfford(9, -12)).toBe(false);
+    expect(canAfford(0, undefined)).toBe(true);
+    expect(canAfford(0, 20)).toBe(true);
   });
 });

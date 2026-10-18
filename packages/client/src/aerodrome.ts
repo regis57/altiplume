@@ -5,11 +5,13 @@
  * `/v1/world` dans la langue courante. Cette page ne calcule rien de ce qui a une
  * valeur : elle affiche.
  */
-import { formatDate, getLocale, placeAfter, t, translatePage } from './i18n.ts';
+import { formatDate, formatNumber, getLocale, placeAfter, plural, t, translatePage } from './i18n.ts';
 import { convoyState } from './convoi.ts';
 import { nextCap } from './cap.ts';
-import { planeOffer } from './offre.ts';
-import { formatRemaining } from './time.ts';
+import { ablePlanes, bestFreeReach, crewEstimate, crewProblem, isResting, pickPlane, pilotFree, pilotReach } from './envoi.ts';
+import { foundingRefusal } from './fondation.ts';
+import { canAfford, planeOffer } from './offre.ts';
+import { formatRemaining, waitsOf } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, setMusicSeason, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
 import { setupPasskeyInvitation } from './passkeys.ts';
@@ -25,8 +27,8 @@ interface WorldView {
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number; runway: string; price: number }[];
   seasons: { id: string; name: string; tagline: string; effects: { duration?: number; reward?: number } }[];
-  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string }[]; offer?: { type: string; price?: number; cost?: number; model?: string; morale?: number; stamps?: number } }[];
-  traits: { id: string; name: string; description: string; range?: number }[];
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string; effects?: { francs?: number } }[]; offer?: { type: string; price?: number; cost?: number; model?: string; morale?: number; stamps?: number } }[];
+  traits: { id: string; name: string; description: string; range?: number; speed?: number; fuel?: number }[];
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number; runway?: string; planes?: number; seaplanes?: number }[] }[];
   decorations: { id: string; name: string; description: string; cost: number; morale: number }[];
@@ -81,6 +83,15 @@ let minutes: Minute[] = [];
 let ticker: ReturnType<typeof setInterval> | null = null;
 let resync: (() => void) | null = null;
 let lastResync = 0;
+/** Les autres jalons : la fin du repos d'un pilote, la réouverture de la piste (voir `waitsOf`). */
+let waits: number[] = [];
+/**
+ * Les nouvelles déjà montrées. Le serveur ne les rend qu'une fois, dans la réponse qui
+ * a fait le rattrapage ; la suivante n'en a plus. On les garde donc jusqu'au
+ * rechargement de la page : avant, le filet de deux minutes, un atterrissage dans un
+ * onglet caché ou le moindre envoi les effaçait, parfois avant qu'on les ait vues.
+ */
+let shownNews: News[] = [];
 /** Garde-fou : deux resynchronisations ne se suivent jamais de moins de cinq secondes. */
 const RESYNC_GUARD_MS = 5_000;
 /** Filet de sécurité : même sans jalon franchi, on revérifie toutes les deux minutes. */
@@ -101,7 +112,8 @@ function tick(): void {
   const now = Date.now() + clockOffset;
   for (const m of minutes) paintMinute(m, now);
   // Un jalon franchi (atterrissage ou retour) : le serveur a du neuf — nouvelles, francs, cachets.
-  const milestone = minutes.some((m) => (now >= m.flight.arrivesAt && !m.flight.settled) || now >= m.flight.busyUntil);
+  const milestone = minutes.some((m) => (now >= m.flight.arrivesAt && !m.flight.settled) || now >= m.flight.busyUntil)
+    || waits.some((w) => now >= w);
   // Le filet vaut aussi quand plus rien ne vole : une page ouverte peut avoir manqué
   // quelque chose — une réponse perdue en chemin, un départ fait depuis un autre
   // appareil. Onglet caché, on ne demande rien : il n'y a personne pour regarder.
@@ -189,7 +201,9 @@ async function founding(api: Api, setMessage: SetMessage, world: WorldView): Pro
   let chosen = '';
 
   async function loadNames(): Promise<void> {
-    const r = await api('GET', `/v1/company/names?locale=${getLocale()}&draw=${draw}`);
+    // Sans réseau, on le dit : le champ « Ou le vôtre » reste là.
+    const r = await api('GET', `/v1/company/names?locale=${getLocale()}&draw=${draw}`).catch(() => null);
+    if (!r || r.status !== 200) { setMessage('jeu-message', r ? 'error.server_error' : 'error.network'); return; }
     const names = (r.body['names'] as string[] | undefined) ?? [];
     box!.replaceChildren();
     names.forEach((name, i) => {
@@ -230,7 +244,15 @@ async function founding(api: Api, setMessage: SetMessage, world: WorldView): Pro
         render(api, setMessage, world, r.body as unknown as CompanyView);
         return;
       }
-      if (err) { err.dataset['i18n'] = 'error.company_name_invalid'; err.textContent = t('error.company_name_invalid'); }
+      const refusal = foundingRefusal(r);
+      if (refusal.kind === 'exists') {
+        // Fondée ailleurs (un autre onglet, une réponse perdue) : on l'affiche.
+        section.classList.add('cache');
+        await pageAerodrome(api, setMessage);
+        return;
+      }
+      if (refusal.kind === 'field') { if (err) { err.dataset['i18n'] = refusal.key; err.textContent = t(refusal.key); } }
+      else setMessage('jeu-message', refusal.key);
     } catch {
       setMessage('jeu-message', 'error.network');
     } finally {
@@ -257,10 +279,12 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
   const season = world.seasons.find((x) => x.id === c.season.id);
   const saison = $('saison');
   if (saison && season) {
-    saison.textContent = `${season.name} · ${t('season.until')} ${formatDate(c.season.endsAt - 86_400_000)} — ${season.tagline}`;
+    // Les saisons basculent à minuit, en temps universel : la veille de la bascule se
+    // lit en UTC, sinon un joueur à l'ouest de Greenwich voit un jour trop tôt.
+    saison.textContent = `${season.name} · ${t('season.until')} ${formatDate(c.season.endsAt - 86_400_000, 'long', true)} — ${season.tagline}`;
   }
-  const francs = $('francs'); if (francs) francs.textContent = String(c.francs);
-  const cachets = $('cachets'); if (cachets) cachets.textContent = String(c.stamps);
+  const francs = $('francs'); if (francs) francs.textContent = formatNumber(c.francs);
+  const cachets = $('cachets'); if (cachets) cachets.textContent = formatNumber(c.stamps);
   renderScene(c);
   animateScene(c);
   // La musique du jour est celle de la saison : on le dit avant de proposer le bouton.
@@ -289,8 +313,8 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         ? t('goal.pageDone').replace('{page}', pageName)
         : t('goal.deliver').replace('{list}', next.toDeliver.map(stopName).join(', ')).replace('{page}', pageName)));
       steps.append(conditionItem(next.enough, next.enough
-        ? t('goal.stampsDone').replace('{cost}', String(next.cost))
-        : t('goal.earnStamps').replace('{n}', String(next.cost - c.stamps)).replace('{have}', String(c.stamps)).replace('{cost}', String(next.cost))));
+        ? t('goal.stampsDone').replace('{cost}', formatNumber(next.cost))
+        : t(plural(next.cost - c.stamps, 'goal.earnStampsOne', 'goal.earnStamps')).replace('{n}', formatNumber(next.cost - c.stamps)).replace('{have}', formatNumber(c.stamps)).replace('{cost}', formatNumber(next.cost))));
       cap.append(steps);
       // Les escales que la flotte ne peut pas livrer : pourquoi, et ce qu'il y faut.
       for (const b of next.blockers) {
@@ -314,14 +338,16 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       if (c.planes.length === 1) cap.append(el('p', 'aide', t('goal.secondPlane')));
     } else {
       // Toutes les routes sont ouvertes : l'album devient le cap.
-      cap.append(el('p', 'cap-titre', next.kind === 'album' ? t('goal.album').replace('{n}', String(next.missing)) : t('goal.done')));
+      cap.append(el('p', 'cap-titre', next.kind === 'album' ? t(plural(next.missing, 'goal.albumOne', 'goal.album')).replace('{n}', formatNumber(next.missing)) : t('goal.done')));
     }
   }
   void setupPasskeyInvitation(api, setMessage);
   void setupNotifications(api, setMessage);
   clockOffset = c.now - Date.now();
+  waits = waitsOf(c);
 
-  renderNews(world, c);
+  shownNews = [...shownNews, ...c.news];
+  renderNews(world, shownNews);
   renderFlights(api, setMessage, world, c);
   renderHand(api, setMessage, world, c);
   renderLogbook(world, c);
@@ -402,7 +428,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       if (next) {
         li.append(el('p', 'aide', `${t('game.next')} ${next.name} — ${next.description}`));
         const b = el('button', 'bouton'); b.type = 'button';
-        b.textContent = `${t('game.restore')} · ${next.cost} F`;
+        b.textContent = `${t('game.restore')} · ${formatNumber(next.cost)} F`;
         b.disabled = c.francs < next.cost;
         if (b.disabled) b.title = t('error.not_enough_francs');
         b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/zones/${z.id}/upgrade`, b, 'game.restored'));
@@ -439,7 +465,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         const hasPage = c.album.some((a) => a.id === r.route!.requires);
         const enough = c.stamps >= r.route.cost;
         const b = el('button', 'bouton'); b.type = 'button';
-        b.textContent = `${t('game.openRoute')} · ${r.route.cost} ${t('game.stamps').toLowerCase()}`;
+        b.textContent = `${t('game.openRoute')} · ${formatNumber(r.route.cost)} ${t('game.stamps').toLowerCase()}`;
         b.disabled = !hasPage || !enough;
         // Les deux conditions, dites en clair, chacune avec son état : ce qui est
         // fait, ce qui manque, et pour la page, les escales qui restent à livrer.
@@ -454,7 +480,7 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         condition(hasPage, toDeliver.length > 0
           ? `${t('game.routePage').replace('{page}', pageName)} — ${t('game.routeStillToDeliver').replace('{list}', toDeliver.join(', '))}`
           : t('game.routePage').replace('{page}', pageName));
-        condition(enough, t('game.routeStamps').replace('{cost}', String(r.route.cost)).replace('{n}', String(c.stamps)));
+        condition(enough, t('game.routeStamps').replace('{cost}', formatNumber(r.route.cost)).replace('{n}', formatNumber(c.stamps)));
         li.append(conditions);
         if (!hasPage) b.title = t('error.route_requires');
         else if (!enough) b.title = t('error.not_enough_stamps');
@@ -477,9 +503,9 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         li.classList.add('posee');
         li.append(el('p', 'aide', t('game.placed')));
       } else {
-        li.append(el('p', 'aide', `${d.cost} F · ${t('game.morale')} +${d.morale}`));
+        li.append(el('p', 'aide', `${formatNumber(d.cost)} F · ${t('game.morale')} +${d.morale}`));
         const b = el('button', 'bouton secondaire'); b.type = 'button';
-        b.textContent = `${t('game.place')} · ${d.cost} F`;
+        b.textContent = `${t('game.place')} · ${formatNumber(d.cost)} F`;
         b.disabled = c.francs < d.cost;
         if (b.disabled) b.title = t('error.not_enough_francs');
         b.addEventListener('click', () => void build(api, setMessage, world, `/v1/company/decorations/${d.id}`, b, 'game.decorated'));
@@ -510,10 +536,10 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
       album.append(li);
     }
     const compte = $('album-compte');
-    // « 1 page », « 0 page » : en français, le singulier va jusqu'à un.
+    // « 0 page », « 1 page » en français ; « 0 stamps », « 1 stamp » en anglais : la règle de la langue.
     if (compte) {
-      compte.textContent = `${t(gagnees <= 1 ? 'game.albumCountOne' : 'game.albumCount').replace('{n}', String(gagnees)).replace('{total}', String(world.stamps.length))}`
-        + ` · ${t(cachetsGagnes <= 1 ? 'game.albumStampsEarnedOne' : 'game.albumStampsEarned').replace('{n}', String(cachetsGagnes))}`;
+      compte.textContent = `${t(plural(gagnees, 'game.albumCountOne', 'game.albumCount')).replace('{n}', formatNumber(gagnees)).replace('{total}', formatNumber(world.stamps.length))}`
+        + ` · ${t(plural(cachetsGagnes, 'game.albumStampsEarnedOne', 'game.albumStampsEarned')).replace('{n}', formatNumber(cachetsGagnes))}`;
     }
   }
   translatePage();
@@ -571,11 +597,11 @@ function joinList(items: readonly string[]): string {
 }
 
 /** Les nouvelles depuis la dernière visite : ce qu'on trouve en revenant. */
-function renderNews(world: WorldView, c: CompanyView): void {
+function renderNews(world: WorldView, news: readonly News[]): void {
   const box = $('nouvelles');
   if (!box) return;
   box.replaceChildren();
-  for (const n of c.news) {
+  for (const n of news) {
     const li = el('li', 'nouvelle');
     if (n.kind === 'cards.drawn') li.textContent = `${t('news.cards')} ${n.count}`;
     else if (n.kind === 'cards.released') li.textContent = `${t('news.released')} ${n.count}`;
@@ -588,7 +614,7 @@ function renderNews(world: WorldView, c: CompanyView): void {
         ? t(tpl?.gender === 'f' && wingTpl?.gender === 'f' ? 'news.arrivedPlF' : 'news.arrivedPl')
         : t(tpl?.gender === 'f' ? 'news.arrivedF' : 'news.arrived');
       const who = n.wing ? `${pilotTemplateName(world, n.pilot)} ${t('game.and')} ${pilotTemplateName(world, n.wing.pilot)}` : pilotTemplateName(world, n.pilot);
-      li.textContent = `${who} ${placeAfter(arrived, destName(world, n.destination))} · +${n.francs} F` +
+      li.textContent = `${who} ${placeAfter(arrived, destName(world, n.destination))} · +${formatNumber(n.francs)} F` +
         (n.bonus ? ` · ${t('news.onTime')}` : '') + (n.incident ? ` · ${t('news.incident')}` : '');
       li.classList.add('bonne');
     } else { li.textContent = `${t('news.stamp')} ${stampName(world, n.stamp)}`; li.classList.add('cachet-nouveau'); }
@@ -645,13 +671,13 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
     if (card.kind === 'contract') {
       // « 1 sac », pas « 1 sacs » ; et pas de « +0 F » : la ligne régulière n'a pas de prime.
       const bags = `${card.bags} ${t(card.bags === 1 ? 'game.bag' : 'game.bags')}`;
-      const bonus = card.bonus ? ` · +${card.bonus} F ${t('card.ifWithin')} ${card.softDeadlineHours} h` : '';
+      const bonus = card.bonus ? ` · +${formatNumber(card.bonus)} F ${t('card.ifWithin')} ${card.softDeadlineHours} h` : '';
       const advance = card.standing ? ` · ${t('card.advanced')}` : '';
       // L'hiver, la prime de froid s'ajoute au tarif : on affiche ce qui sera payé.
       const rewardFactor = world.seasons.find((x) => x.id === c.season.id)?.effects.reward ?? 1;
       const tariff = Math.round((card.reward ?? 0) * rewardFactor);
       const cold = rewardFactor > 1 ? ` (${t('card.coldBonus')})` : '';
-      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${bags} · ${tariff} F${cold}${bonus}${advance}`));
+      li.append(el('p', 'aide', `${destName(world, card.destination ?? '')} · ${bags} · ${formatNumber(tariff)} F${cold}${bonus}${advance}`));
       const send = el('button', 'bouton'); send.type = 'button'; send.textContent = t('card.dispatch');
       if (c.pendingEvent) {
         // Une vache sur la piste : on tranche l'imprévu d'abord.
@@ -671,13 +697,18 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
     } else if (card.kind === 'event') {
       for (const choice of card.choices ?? []) {
         const b = el('button', 'bouton secondaire'); b.type = 'button'; b.textContent = choice.label;
+        // Un choix payant que la caisse ne couvre pas : le serveur le refuserait. Il reste
+        // toujours un choix gratuit.
+        const affordable = canAfford(c.francs, choice.effects?.francs);
+        b.disabled = !affordable;
+        if (!affordable) b.title = t('error.not_enough_francs');
         b.addEventListener('click', async () => {
           actions.querySelectorAll('button').forEach((x) => { x.disabled = true; });
           const r = await api('POST', `/v1/company/cards/${card.id}/play`, { choice: choice.id }).catch(() => null);
           if (r && r.status === 200) {
             const msg = $('jeu-message'); if (msg) { delete msg.dataset['i18nKeys']; msg.textContent = choice.outcome; msg.classList.add('ok'); }
             render(api, setMessage, world, r.body as unknown as CompanyView);
-          } else { refused(api, setMessage, world, r); actions.querySelectorAll('button').forEach((x) => { x.disabled = false; }); }
+          } else { refused(api, setMessage, world, r); actions.querySelectorAll('button').forEach((x) => { x.disabled = x.title === t('error.not_enough_francs'); }); }
         });
         actions.append(b);
       }
@@ -687,7 +718,7 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       // message, après, dit ce qui s'est passé.
       const offer = card.offer ?? { type: 'map' };
       const fill = (s: string) => s
-        .replace('{price}', String(offer.price ?? '')).replace('{cost}', String(offer.cost ?? ''))
+        .replace('{price}', offer.price === undefined ? '' : formatNumber(offer.price)).replace('{cost}', offer.cost === undefined ? '' : formatNumber(offer.cost))
         .replace('{morale}', String(offer.morale ?? '')).replace('{stamps}', String(offer.stamps ?? 1))
         .replace('{plane}', world.planes.find((p) => p.id === offer.model)?.name ?? '');
       // Un hydravion s'amarre au ponton ; les autres dorment au hangar.
@@ -699,12 +730,17 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       if (offer.type === 'plane' && offer.model && offer.price !== undefined) {
         const state = planeOffer(world, c, offer.model, offer.price);
         const needs = el('ul', 'conditions');
-        needs.append(conditionItem(state.money, t('offer.needPrice').replace('{price}', String(offer.price)).replace('{have}', String(c.francs))));
+        needs.append(conditionItem(state.money, t('offer.needPrice').replace('{price}', formatNumber(offer.price)).replace('{have}', formatNumber(c.francs))));
         needs.append(conditionItem(state.place, t(state.seaplane ? 'offer.needMooring' : 'offer.needBay')));
         if (state.runwayName) needs.append(conditionItem(state.runway, t('offer.needRunway').replace('{runway}', `${t('game.quoteOpen')}${state.runwayName}${t('game.quoteClose')}`)));
         li.append(needs);
         if (!state.runway) li.append(el('p', 'aide', t('offer.runwayLater')));
         take.disabled = !state.canBuy;
+      }
+      // La fête se paie d'avance : sans les francs, le serveur refuse.
+      if (offer.type === 'fete' && offer.cost !== undefined && !canAfford(c.francs, -offer.cost)) {
+        take.disabled = true;
+        take.title = t('error.not_enough_francs');
       }
       take.addEventListener('click', async () => {
         take.disabled = true;
@@ -715,7 +751,7 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
           const msg = $('jeu-message');
           if (msg) { delete msg.dataset['i18nKeys']; msg.textContent = fill(t(`offer.${kind}.taken`)).replace('{who}', who); msg.classList.add('ok'); }
           render(api, setMessage, world, r.body as unknown as CompanyView);
-        } else { refused(api, setMessage, world, r); take.disabled = false; }
+        } else { refused(api, setMessage, world, r); take.disabled = take.title === t('error.not_enough_francs'); }
       });
       actions.append(take);
     }
@@ -724,7 +760,9 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
       discard.addEventListener('click', async () => {
         discard.disabled = true;
         const r = await api('DELETE', `/v1/company/cards/${card.id}`, {}).catch(() => null);
-        if (r && r.status === 204) void refresh(api, setMessage, world); else discard.disabled = false;
+        // Un refus se dit, et l'écran se remet d'aplomb : la carte a pu être jouée ailleurs.
+        if (r && r.status === 204) void refresh(api, setMessage, world);
+        else { refused(api, setMessage, world, r); discard.disabled = false; }
       });
       actions.append(discard);
     }
@@ -751,8 +789,12 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
   const form = el('form', 'expedition');
   form.noValidate = true;
   const modelOf = (planeId: string) => world.planes.find((x) => x.id === c.planes.find((p) => p.id === planeId)?.model);
+  // L'heure du serveur : un repos se compte à son horloge, pas à celle du téléphone.
+  const serverNow = () => Date.now() + clockOffset;
+  /** L'allonge d'un pilote choisi ; sans pilote, la meilleure des pilotes libres. */
+  const reachOf = (pilotId: string) => (pilotId ? pilotReach(world, c, pilotId) : bestFreeReach(world, c, serverNow()));
 
-  const planeOptions = (select: HTMLSelectElement, exclude?: string) => {
+  const planeOptions = (select: HTMLSelectElement, reach: number, exclude?: string) => {
     const keep = select.value;
     select.replaceChildren();
     for (const p of c.planes) {
@@ -763,18 +805,22 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
       select.append(o);
     }
     if ([...select.options].some((o) => o.value === keep && !o.disabled)) select.value = keep;
-    else select.value = [...select.options].find((o) => !o.disabled)?.value ?? '';
+    // Sinon, le premier avion libre qui se pose là-bas et y porte (pas la Grive pour
+    // l'eau) ; à défaut, le premier libre, et le formulaire dira pourquoi il ne part pas.
+    else select.value = pickPlane(world, c, dest, reach, exclude) ?? '';
   };
   const pilotOptions = (select: HTMLSelectElement, exclude?: string) => {
     const keep = select.value;
     select.replaceChildren();
+    const now = serverNow();
     for (const p of c.pilots) {
       if (p.id === exclude) continue;
       const tpl = world.pilots.find((x) => x.id === p.pilot);
       // Fatigué : l'accord suit le genre du pilote, et on dit dans combien de temps il repart.
-      const tired = p.restedAt !== null;
+      // L'heure dite passée, il est libre, même si l'écran date d'avant.
+      const tired = isResting(p, now);
       const rest = tired
-        ? ` — ${t(tpl?.gender === 'f' ? 'card.tiredF' : 'card.tired')} · ${t('card.restedIn')} ${formatRemaining((p.restedAt ?? 0) - Date.now(), getLocale())}`
+        ? ` — ${t(tpl?.gender === 'f' ? 'card.tiredF' : 'card.tired')} · ${t('card.restedIn')} ${formatRemaining((p.restedAt ?? 0) - now, getLocale())}`
         : '';
       const o = el('option', undefined, `${tpl?.name ?? p.pilot}${p.busyUntil ? ` — ${t('card.busy')}` : rest}`);
       o.value = p.id; o.disabled = p.busyUntil !== null || tired;
@@ -792,7 +838,7 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
 
   const planeSelect = el('select'); planeSelect.name = 'plane';
   const pilotSelect = el('select'); pilotSelect.name = 'pilot';
-  planeOptions(planeSelect); pilotOptions(pilotSelect);
+  planeOptions(planeSelect, reachOf('')); pilotOptions(pilotSelect);
   // Le convoi : caché tant qu'un seul avion suffit, et tant qu'aucun avion n'est choisi.
   const convoy = el('fieldset', 'convoi cache');
   const legend = el('legend', undefined, t('card.convoy'));
@@ -806,45 +852,44 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
   cancel.addEventListener('click', () => form.remove());
   actions.append(go, cancel);
 
-  /** Ce que vaut la flotte à cet instant : au sol, libre, et pour les pilotes, reposée. */
+  /** Pourquoi l'avion de tête, avec son pilote, ne fait pas ce vol (les refus du serveur) ; `null` s'il le fait. */
+  const leadProblem = () => (planeSelect.value ? crewProblem(world, c, planeSelect.value, reachOf(pilotSelect.value), dest) : null);
+  /**
+   * Ce que vaut la flotte à cet instant : au sol, libre, et pour les pilotes, reposée.
+   * Seul un avion qui peut aller là-bas compte : une Grive ne fait pas un « trop lourd »
+   * pour un contrat sur l'eau, ni une escorte vers l'île.
+   */
   const state = () => convoyState({
-    capacity: planeSelect.value ? modelOf(planeSelect.value)?.capacity ?? null : null,
+    capacity: planeSelect.value && leadProblem() === null ? modelOf(planeSelect.value)?.capacity ?? null : null,
     bags,
-    freePlanes: c.planes.filter((p) => p.busyUntil === null).length,
-    freePilots: c.pilots.filter((p) => p.busyUntil === null && p.restedAt === null).length,
+    freePlanes: ablePlanes(world, c, dest, bestFreeReach(world, c, serverNow())),
+    freePilots: c.pilots.filter((p) => pilotFree(p, serverNow())).length,
   });
   const needsWing = () => state() === 'ask';
-  const crewCost = (planeId: string, pilotId: string) => {
-    const m = modelOf(planeId);
-    const tpl = world.pilots.find((x) => x.id === c.pilots.find((p) => p.id === pilotId)?.pilot);
-    if (!m || !tpl) return null;
-    // Le même calcul que le serveur : un hangar équipé divise l'entretien.
-    const hangar = world.zones.find((z) => z.id === 'hangar')?.levels.find((l) => l.level === (c.zones['hangar'] ?? 1));
-    // L'hiver rallonge les vols : le même facteur que le serveur.
-    const slower = world.seasons.find((x) => x.id === c.season.id)?.effects.duration ?? 1;
-    return { minutes: Math.round((dest.distance / m.speed) * 60 * slower), cost: Math.round(tpl.wage + m.upkeep / (hangar?.maintenance ?? 1)), capacity: m.capacity };
-  };
   const update = () => {
     const wing = needsWing();
     convoy.classList.toggle('cache', !wing);
-    if (wing) { planeOptions(wingPlane, planeSelect.value); pilotOptions(wingPilot, pilotSelect.value); }
+    if (wing) { pilotOptions(wingPilot, pilotSelect.value); planeOptions(wingPlane, reachOf(wingPilot.value), planeSelect.value); }
     // Rien ne peut partir : on le dit, et on ferme le bouton plutôt que de laisser
-    // le joueur buter sur une erreur du serveur.
-    const nothing = !planeSelect.value ? 'card.noPlane' : !pilotSelect.value ? 'card.noPilot' : state() === 'impossible' ? 'card.convoyNone' : null;
+    // le joueur buter sur une erreur du serveur. Un avion qui ne se pose pas là-bas,
+    // ou n'y porte pas, ou ne décolle pas d'ici : la raison du serveur, avant le clic.
+    const problem = leadProblem() ?? (wing && wingPlane.value ? crewProblem(world, c, wingPlane.value, reachOf(wingPilot.value), dest) : null);
+    const nothing = !planeSelect.value ? 'card.noPlane' : !pilotSelect.value ? 'card.noPilot' : problem ? `error.${problem}` : state() === 'impossible' ? 'card.convoyNone' : null;
     go.disabled = nothing !== null;
     if (nothing) { estimate.textContent = t(nothing); return; }
-    const lead = crewCost(planeSelect.value, pilotSelect.value);
-    const second = wing ? crewCost(wingPlane.value, wingPilot.value) : null;
+    // Le calcul du serveur, traits des pilotes compris (envoi.ts).
+    const lead = crewEstimate(world, c, planeSelect.value, pilotSelect.value, dest);
+    const second = wing ? crewEstimate(world, c, wingPlane.value, wingPilot.value, dest) : null;
     if (!lead || (wing && !second)) { estimate.textContent = wing ? t('card.convoyNone') : ''; return; }
-    const minutes = Math.max(lead.minutes, second?.minutes ?? 0);
+    const durationMs = Math.max(lead.durationMs, second?.durationMs ?? 0);
     const cost = lead.cost + (second?.cost ?? 0);
     // La ligne régulière : rien à payer maintenant, le tarif moins l'avance à l'arrivée.
     const money = card.standing
-      ? `${t('card.postAdvances')} · ${t('card.net')} ≈ +${Math.max(0, Math.round((card.reward ?? 0) * (world.seasons.find((x) => x.id === c.season.id)?.effects.reward ?? 1)) - cost)} F`
-      : `${t('card.cost')} ≈ ${cost} F`;
+      ? `${t('card.postAdvances')} · ${t('card.net')} ≈ +${formatNumber(Math.max(0, Math.round((card.reward ?? 0) * (world.seasons.find((x) => x.id === c.season.id)?.effects.reward ?? 1)) - cost))} F`
+      : `${t('card.cost')} ≈ ${formatNumber(cost)} F`;
     const carried = lead.capacity + (second?.capacity ?? 0);
     const short = carried < bags ? ` · ${t('card.convoyShort').replace('{a}', String(carried)).replace('{b}', String(bags))}` : '';
-    estimate.textContent = `${wing ? `${t('flight.convoy')} · ` : ''}≈ ${formatRemaining(minutes * 60_000, getLocale())} ${t('card.oneWay')} · ${money}${short}`;
+    estimate.textContent = `${wing ? `${t('flight.convoy')} · ` : ''}≈ ${formatRemaining(durationMs, getLocale())} ${t('card.oneWay')} · ${money}${short}`;
   };
   for (const s of [planeSelect, pilotSelect, wingPlane, wingPilot]) s.addEventListener('change', update);
 
@@ -879,7 +924,7 @@ function renderLogbook(world: WorldView, c: CompanyView): void {
     else if (e.kind === 'build.zone') what = `${t('log.built')} ${world.zones.find((z) => z.id === (e.ref ?? '').split(':')[0])?.name ?? ''}`;
     else if (e.kind === 'build.decoration') what = `${t('log.decorated')} ${world.decorations.find((d) => d.id === e.ref)?.name ?? ''}`;
     else what = `${t('log.card')} ${world.cards.find((x) => x.id === (e.ref ?? '').split(':')[0])?.title ?? ''}`;
-    const amount = el('span', e.francs >= 0 ? 'montant plus' : 'montant moins', e.francs === 0 ? '' : `${e.francs > 0 ? '+' : ''}${e.francs} F`);
+    const amount = el('span', e.francs >= 0 ? 'montant plus' : 'montant moins', e.francs === 0 ? '' : `${e.francs > 0 ? '+' : ''}${formatNumber(e.francs)} F`);
     li.append(when, ' · ', what, ' ', amount);
     list.append(li);
   }

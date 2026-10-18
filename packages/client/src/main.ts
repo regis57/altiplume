@@ -8,7 +8,7 @@ import { browserSupportsWebAuthn, startAuthentication, WebAuthnError } from '@si
 import { addPasskey } from './passkeys.ts';
 import { toCanvas } from 'qrcode';
 import { formatRemaining } from './time.ts';
-import { getLocale, setLocale, t, translatePage, type Locale } from './i18n.ts';
+import { formatDate, getLocale, setLocale, t, translatePage, type Locale } from './i18n.ts';
 import { pageAerodrome } from './aerodrome.ts';
 import { pageContact } from './contact.ts';
 
@@ -54,11 +54,13 @@ function setMessage(id: string, keys: string | string[], kind: 'ok' | 'error' = 
   el.classList.toggle('ok', kind === 'ok');
 }
 
-/** Pose une date sur un élément ; `translatePage` la formate dans la langue courante. */
+/** Pose une date sur un élément, écrite dans la langue courante ; `translatePage` la réécrit au changement de langue. */
 function setDate(el: HTMLElement | null, ms: number, style: 'short' | 'long' = 'long'): void {
   if (!el) return;
   el.dataset['date'] = String(ms);
   el.dataset['dateStyle'] = style;
+  // Écrite tout de suite : le cachet « message parti » de la page contact sortait sans date.
+  el.textContent = formatDate(ms, style);
 }
 
 function setFieldError(field: string, code: string | null): void {

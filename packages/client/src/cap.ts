@@ -93,16 +93,28 @@ function reaches(plane: Plane, stop: Stop, reach: number): boolean {
   return canLand(plane, stop) && stop.distance <= plane.range * reach;
 }
 
-interface Fleet { readonly models: readonly Plane[]; readonly reach: number }
+interface Fleet {
+  /** Les avions qui décollent de la piste actuelle : ceux qui livrent vraiment. */
+  readonly models: readonly Plane[];
+  /** Tous les avions possédés, cloués au sol compris : ils prennent une place au hangar. */
+  readonly owned: readonly Plane[];
+  /** Les avions achetés avant leur piste : le serveur refuse leur départ (`home_runway_too_short`). */
+  readonly grounded: readonly Plane[];
+  readonly reach: number;
+}
 
 /** Les avions de la compagnie, et l'allonge de son pilote le plus endurant. */
 function fleetOf(world: CapWorld, c: CapCompany): Fleet {
-  const models = c.planes.map((p) => world.planes.find((m) => m.id === p.model)).filter((m): m is Plane => m !== undefined);
+  const owned = c.planes.map((p) => world.planes.find((m) => m.id === p.model)).filter((m): m is Plane => m !== undefined);
+  const home = levelOf(world, c, 'runway')?.runway ?? 'short';
+  // La règle de départ du serveur (checkCrew) : l'hydravion part de la rivière, les
+  // autres demandent une piste au moins aussi longue que la leur.
+  const takesOff = (m: Plane) => m.runway === 'water' || (RUNWAY_ORDER[m.runway] ?? 9) <= (RUNWAY_ORDER[home] ?? 0);
   const reach = c.pilots.reduce((best, p) => {
     const traits = world.pilots.find((x) => x.id === p.pilot)?.traits ?? [];
     return traits.reduce((b, id) => Math.max(b, world.traits.find((t) => t.id === id)?.range ?? 1), best);
   }, 1);
-  return { models, reach };
+  return { models: owned.filter(takesOff), owned, grounded: owned.filter((m) => !takesOff(m)), reach };
 }
 
 function levelOf(world: CapWorld, c: CapCompany, zone: string) {
@@ -114,11 +126,11 @@ function worksFor(world: CapWorld, c: CapCompany, fleet: Fleet, plane: Plane): W
   const works: Work[] = [];
   if (plane.runway === 'water') {
     const berths = levelOf(world, c, 'ponton')?.seaplanes ?? 0;
-    if (fleet.models.filter((m) => m.runway === 'water').length >= berths) works.push('pontoon');
+    if (fleet.owned.filter((m) => m.runway === 'water').length >= berths) works.push('pontoon');
     return works;
   }
   const bays = levelOf(world, c, 'hangar')?.planes ?? 1;
-  if (fleet.models.filter((m) => m.runway !== 'water').length >= bays) works.push('hangar');
+  if (fleet.owned.filter((m) => m.runway !== 'water').length >= bays) works.push('hangar');
   const home = levelOf(world, c, 'runway')?.runway ?? 'short';
   if ((RUNWAY_ORDER[plane.runway] ?? 0) > (RUNWAY_ORDER[home] ?? 0)) works.push('runway');
   return works;
@@ -154,7 +166,11 @@ function routeCap(world: CapWorld, c: CapCompany, fleet: Fleet, region: CapWorld
   if (sourceOpen) {
     for (const stop of toDeliver) {
       if (fleet.models.some((m) => reaches(m, stop, fleet.reach))) continue;
-      const b = blockerFor(world, c, fleet, stop);
+      // Un avion du hangar y va, mais ne décolle pas d'ici : il lui faut sa piste,
+      // pas un avion de plus (le 18 octobre, un Martinet acheté sur le pré).
+      const grounded = fleet.grounded.some((m) => reaches(m, stop, fleet.reach));
+      const found = blockerFor(world, c, fleet, stop);
+      const b = grounded ? { ...found, plane: null, works: ['runway' as const] } : found;
       const same = blockers.find((x) => x.need === b.need && x.plane === b.plane && x.pilotTrait === b.pilotTrait && x.works.join() === b.works.join());
       if (same) (same.stops as string[]).push(stop.id);
       else blockers.push({ ...b, stops: [stop.id] });
