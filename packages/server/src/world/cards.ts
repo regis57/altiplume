@@ -128,11 +128,11 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "Les Œillets n'ont ni bureau ni route carrossable. Les lettres partent par la digue, c'est-à-dire par vous.", en: 'Panbrook has neither post office nor carriage road. Letters leave by the dyke — that is, by you.' }),
   contract('c-fleur-de-sel', 'les-oeillets', 'salt', 1, 153, 12, 33, 2,
     { fr: 'La fleur de sel', en: 'The salt flower' },
-    { fr: "La première récolte de fleur de sel de l'année, dans des boîtes de bois, pour la table d'un notable de Pont-de-Brume. Elle doit arriver sèche.", en: "The first salt-flower harvest of the year, in wooden boxes, for a Mistbridge notable's table. It must arrive dry." }),
+    { fr: "De la fleur de sel cueillie à la main sur les œillets, dans des boîtes de bois, pour la table d'un notable de Pont-de-Brume. Elle doit arriver sèche.", en: "Salt flower skimmed by hand off the pans, in wooden boxes, for a Mistbridge notable's table. It must arrive dry." }),
   // Marais-Blanc — les pilotis
   contract('c-dispensaire', 'marais-blanc', 'medicine', 1, 164, 6, 50, 2,
     { fr: 'Le dispensaire du marais', en: 'The fen clinic' },
-    { fr: "La fièvre des marais revient avec la saison. Le dispensaire de Marais-Blanc a besoin de quinine dans les six heures.", en: 'The fen fever is back with the season. The Whitefen clinic needs quinine within six hours.' }),
+    { fr: "La fièvre des marais est revenue avec la brume. Le dispensaire de Marais-Blanc a besoin de quinine dans les six heures.", en: 'The fen fever has come back with the mist. The Whitefen clinic needs quinine within six hours.' }),
   // Deux sacs depuis le 12/10 : à trois, aucun avion qui se pose au marais ne les portait.
   contract('c-pilotis', 'marais-blanc', 'parcels', 2, 158, 48, 17, 1,
     { fr: 'Colis pour les pilotis', en: 'Parcels for the stilts' },
@@ -250,7 +250,7 @@ export const CONTRACTS: readonly ContractCard[] = [
   // ---- Le fret lourd : deux avions pour un courrier ----
   heavy('c-pressoir', 'les-tilleuls', 'parcels', 3, 150, 48, 30, 2,
     { fr: 'Le pressoir des Tilleuls', en: 'The Lindenhollow press' },
-    { fr: "Le pressoir à cidre du hameau a rendu l'âme la veille de la récolte. Le neuf arrive en pièces de Pont-de-Brume : trois caisses, trop lourdes pour une seule Grive. Les pommes, elles, n'attendront pas.", en: "The hamlet's cider press gave out the day before the harvest. The new one comes in pieces from Mistbridge: three crates, too heavy for a single Thrush. The apples won't wait." }),
+    { fr: "Le pressoir à cidre du hameau a rendu l'âme, la vis cassée net. Le neuf arrive en pièces de Pont-de-Brume : trois caisses, trop lourdes pour une seule Grive. Le cidrier, lui, compte les jours.", en: "The hamlet's cider press has given out, its screw snapped clean through. The new one comes in pieces from Mistbridge: three crates, too heavy for a single Thrush. The cider-maker is counting the days." }),
   heavy('c-chaudiere', 'combe-aux-rosees', 'parcels', 6, 420, 72, 60, 2,
     { fr: 'La chaudière du dispensaire', en: "The clinic's boiler" },
     { fr: "Le dispensaire de Combe-aux-Rosées a passé l'hiver dernier à trois couvertures par lit. La chaudière neuve pèse six sacs : il faudra le Héron, et quelqu'un pour voler à côté de lui.", en: 'The Dewcombe clinic spent last winter at three blankets a bed. The new boiler weighs six bags: it will take the Heron, and someone flying alongside it.' }),
@@ -513,7 +513,7 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
   {
     kind: 'opportunity', id: 'o-fete', weight: 1,
     title: { fr: 'La fête des Tilleuls', en: 'The Lindenhollow fair' },
-    text: { fr: "Les Tilleuls fêtent la floraison. Il y a du cidre, un bal, et tout le monde demande si les pilotes viendront.", en: 'Lindenhollow is celebrating the blossom. There is cider, a dance, and everyone is asking whether the pilots will come.' },
+    text: { fr: "Le hameau des Tilleuls donne sa fête, des lampions à chaque fenêtre. Il y a du cidre, un bal, et tout le monde demande si les pilotes viendront.", en: 'Lindenhollow is holding its fair, a paper lantern in every window. There is cider, a dance, and everyone is asking whether the pilots will come.' },
     offer: { type: 'fete', morale: 6, cost: 15 },
   },
   {
