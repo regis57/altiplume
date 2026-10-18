@@ -392,7 +392,7 @@ export const EVENTS: readonly EventCard[] = [
     ],
   },
   {
-    kind: 'event', id: 'e-grain', weight: 1, region: 'saline',
+    kind: 'event', id: 'e-grain', weight: 1, region: 'saline', needsSeaplane: true,
     title: { fr: 'Un grain annoncé', en: 'A squall on the way' },
     text: { fr: "Le télégraphe de Port-Sel annonce un grain sur la Côte, et le baromètre du hangar dégringole. On ne part pas vers la mer, ou on part vite.", en: 'The Saltharbour telegraph warns of a squall along the Shore, and the hangar barometer is falling fast. Either you stay off the sea, or you go now.' },
     choices: [
@@ -401,7 +401,7 @@ export const EVENTS: readonly EventCard[] = [
     ],
   },
   {
-    kind: 'event', id: 'e-maree', weight: 2, region: 'saline',
+    kind: 'event', id: 'e-maree', weight: 2, region: 'saline', needsSeaplane: true,
     title: { fr: 'Basses eaux', en: 'Low water' },
     text: { fr: "La rivière a baissé. Au bout du ponton, la coque touche la vase.", en: 'The river has dropped. At the end of the pontoon, the hull is touching mud.' },
     choices: [
