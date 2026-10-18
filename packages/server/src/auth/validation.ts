@@ -5,6 +5,8 @@
  * messages d'erreur sont des codes stables, traduits côté client.
  */
 
+import { EXCEPTIONS, MOTS, RACINES } from './pseudonymes-interdits.ts';
+
 export type ValidationError =
   | 'email_invalid'
   | 'nickname_too_short'
@@ -54,22 +56,13 @@ const RESERVED = new Set([
 ]);
 
 /**
- * Liste d'exclusion minimale. Elle n'a pas vocation à être exhaustive — aucune
- * liste ne l'est — mais à écarter l'évident. Comparaison sans accents ni casse,
- * chiffres usuels remplacés (3→e, 1→i, 0→o, 4→a, 5→s).
- *
- * Deux listes. Les mots sans ambiguïté sont cherchés partout, même collés
- * (« xXnaziXx »). Ceux qui se cachent dans des mots ordinaires ne comptent que
- * comme mots entiers : « viol » est dans « Violette », « rape » dans « Drapeau »,
- * « pute » dans « Computer », « porn » dans « Pornic ».
+ * Les pseudonymes refusés vivent dans pseudonymes-interdits.ts, en trois familles :
+ * les racines cherchées partout, les mots refusés seulement entiers, et les
+ * exceptions (Nazir, Benazir, salopette…). Repliées une fois ici, comme le pseudonyme.
  */
-const OFFENSIVE_ANYWHERE = [
-  'nazi', 'hitler', 'nigger', 'negre', 'nègre', 'salope', 'connard', 'connasse',
-  'encule', 'enculé', 'tapette', 'bougnoule', 'youpin', 'faggot', 'whore', 'pedo', 'pédo',
-];
-const OFFENSIVE_WORDS = [
-  'pute', 'fdp', 'ntm', 'pd', 'retard', 'rape', 'viol', 'cunt', 'bitch', 'porn', 'sex',
-];
+const OFFENSIVE_ANYWHERE = RACINES.map(foldNickname);
+const OFFENSIVE_WORDS = new Set(MOTS.map(foldNickname));
+const OFFENSIVE_EXCEPTIONS = new Set(EXCEPTIONS.map(foldNickname));
 
 /**
  * Forme repliée, pour l'unicité et les listes : sans accents ni casse, chiffres-lettres
@@ -85,6 +78,11 @@ export function foldNickname(nickname: string): string {
     .replace(/[^\p{L}\p{N}]/gu, '');
 }
 
+/** Sans accents, casse ni ponctuation, mais les chiffres restent des chiffres (« 88 »). */
+function plainFold(text: string): string {
+  return text.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+}
+
 export function validateNickname(raw: string): ValidationError | null {
   const nickname = raw.trim().replace(/\s+/g, ' ');
   if (nickname.length < NICKNAME_MIN) return 'nickname_too_short';
@@ -92,15 +90,34 @@ export function validateNickname(raw: string): ValidationError | null {
   if (!NICKNAME_RE.test(nickname)) return 'nickname_invalid_chars';
   const folded = foldNickname(nickname);
   if (RESERVED.has(nickname.toLowerCase()) || RESERVED.has(folded)) return 'nickname_reserved';
-  for (const word of OFFENSIVE_ANYWHERE) {
-    if (folded.includes(foldNickname(word))) return 'nickname_offensive';
+  // Les mots du pseudonyme, séparés par espace, tiret, apostrophe.
+  const pieces = nickname.split(/[ '-]+/).filter(Boolean);
+  const parts = pieces.map(foldNickname);
+  // Les racines, partout dans chaque mot — même collées (« xXnaziXx ») —, une fois
+  // retirés les mots entiers qui sont des exceptions : « Nazir » passe, « Nazir Nazi »
+  // non. Un mot ne se recolle à son voisin que si les deux sont des bribes de trois
+  // lettres au plus : « Na Zi » et « Hit Ler » sont refusés, mais « Ana Zimmer » et
+  // « Anna Zinn » sont des noms, pas « nazi » écartelé. Les racines longues (sept
+  // lettres et plus : « White Power », « Sieg Heil ») se cherchent aussi dans le
+  // pseudonyme recollé : à cette longueur, deux noms ne les forment pas par hasard.
+  const kept = parts.filter((p) => !OFFENSIVE_EXCEPTIONS.has(p));
+  const joined = kept.join('');
+  if (OFFENSIVE_ANYWHERE.some((root) => root.length >= 7 && joined.includes(root))) return 'nickname_offensive';
+  const searched = [...kept];
+  for (let i = 0; i < kept.length; i += 1) {
+    let run = '';
+    for (let j = i; j < kept.length && kept[j]!.length <= 3; j += 1) {
+      run += kept[j];
+      if (j > i) searched.push(run);
+    }
   }
-  // Mots entiers seulement : le pseudonyme entier, ou l'un de ses mots (séparés par
-  // espace, tiret, apostrophe). Sinon « pd » bloquerait « Édouard », « viol » « Violaine ».
-  const words = new Set([folded, ...nickname.split(/[ '-]+/).map(foldNickname)]);
-  for (const word of OFFENSIVE_WORDS) {
-    if (words.has(foldNickname(word))) return 'nickname_offensive';
-  }
+  if (OFFENSIVE_ANYWHERE.some((root) => searched.some((w) => w.includes(root)))) return 'nickname_offensive';
+  // Mots entiers seulement : le pseudonyme entier, ou l'un de ses mots. Sinon « pd »
+  // bloquerait « Édouard », « viol » « Violaine ». Les chiffres ne valent des lettres
+  // que dans un mot qui a des lettres : « V1ol » est « viol », « S5 » est « ss », mais
+  // « Agent 55 » n'est pas « Agent SS ».
+  const candidates = [nickname, ...pieces].flatMap((p) => /\p{L}/u.test(p) ? [foldNickname(p), plainFold(p)] : [plainFold(p)]);
+  if (candidates.some((p) => OFFENSIVE_WORDS.has(p))) return 'nickname_offensive';
   return null;
 }
 
