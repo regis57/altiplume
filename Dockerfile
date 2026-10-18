@@ -27,13 +27,15 @@ RUN npm ci --ignore-scripts
 COPY packages/client ./packages/client
 RUN npm run build
 
-# --- Étape 2 : dépendances de production seulement
+# --- Étape 2 : dépendances de production du serveur seulement. Celles du client
+# (qrcode, passkeys, polices) sont déjà dans le code compilé de l'étape 1 : elles sont
+# de production pour l'audit et les licences, mais n'ont rien à faire dans l'image.
 FROM node:22.23-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/server/package.json packages/server/
 COPY packages/client/package.json packages/client/
-RUN npm ci --omit=dev --ignore-scripts
+RUN npm ci --omit=dev --ignore-scripts --workspace @altiplume/server
 
 # --- Étape 3 : image finale
 FROM node:22.23-alpine AS runtime
