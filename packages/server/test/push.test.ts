@@ -6,7 +6,7 @@ import { loadConfig } from '../src/config.ts';
 import { openDatabase } from '../src/db/database.ts';
 import { ConsoleMailer } from '../src/mail/mailer.ts';
 import type { AppContext } from '../src/context.ts';
-import { listSubscriptions, notifyArrivals } from '../src/push/routes.ts';
+import { aLieu, listSubscriptions, notifyArrivals } from '../src/push/routes.ts';
 import {
   encryptPayload, generateVapidKeys, vapidAuthorization, vapidPublicKeyObject, WebPushSender,
   type PushMessage, type PushOutcome, type PushSender, type PushSubscription,
@@ -147,6 +147,16 @@ describe('notifications — abonnements', () => {
     await t.app.close();
   });
 
+  it('le renouvellement par le service worker envoie la forme acceptée (toJSON ajoute expirationTime, refusé)', async () => {
+    const t = await pushApp();
+    const me = browser();
+    const toJSON = { endpoint: me.subscription.endpoint, expirationTime: null, keys: { p256dh: me.subscription.p256dh, auth: me.subscription.auth } };
+    expect((await t.json('POST', '/v1/push/subscriptions', toJSON, t.cookie)).statusCode).toBe(400);
+    // Ce qu'envoie désormais sw.ts : seulement l'adresse et les clés.
+    expect((await t.json('POST', '/v1/push/subscriptions', { endpoint: toJSON.endpoint, keys: toJSON.keys }, t.cookie)).statusCode).toBe(201);
+    await t.app.close();
+  });
+
   it('plafonne à cinq appareils et disparaît avec le compte', async () => {
     const t = await pushApp();
     for (let i = 0; i < 5; i += 1) {
@@ -214,4 +224,64 @@ describe('notifications — le courrier se pose', () => {
     expect((t2.ctx.db.prepare('SELECT notified_at FROM flights').get() as { notified_at: number | null }).notified_at).not.toBeNull();
     await t.app.close(); await t2.app.close();
   });
+
+  it('un convoi prévient une fois, avec la récompense de la tête (revue du 18/10 : l\'ailier annonçait « +0 F »)', async () => {
+    const t = await pushApp();
+    const { flight } = await flying(t);
+    const lead = t.ctx.db.prepare('SELECT * FROM flights').get() as Record<string, unknown>;
+    t.ctx.db.prepare('UPDATE flights SET convoy = id').run();
+    t.ctx.db.prepare(`INSERT INTO flights (id, company_id, card, plane_id, pilot_id, destination, departed_at, duration_ms, deadline_at, reward, bonus, incident, convoy)
+      VALUES ('ailier', ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, ?)`).run(lead['company_id'] as string, lead['card'] as string, lead['plane_id'] as string, lead['pilot_id'] as string, lead['destination'] as string, lead['departed_at'] as number, lead['duration_ms'] as number, lead['deadline_at'] as number, lead['id'] as string);
+    t.advance(flight.arrivesAt - flight.departedAt + 1);
+    expect(await notifyArrivals(t.ctx)).toBe(1);
+    expect(t.push.sent).toHaveLength(1);
+    expect(t.push.sent[0]!.message.body).toContain('+41 F');
+    expect((t.ctx.db.prepare('SELECT count(*) AS n FROM flights WHERE notified_at IS NULL').get() as { n: number }).n).toBe(0);
+    expect(await notifyArrivals(t.ctx)).toBe(0);
+    await t.app.close();
+  });
+
+  it('le journal ne note « notification envoyée » que pour qui l\'a reçue', async () => {
+    const t = await pushApp();
+    const { flight } = await flying(t);
+    // Un second joueur, sans abonnement, dont le vol se pose dans le même passage.
+    await t.json('POST', '/v1/auth/register', { email: 'bastien@example.test', nickname: 'Bastien', locale: 'fr', ageConfirmed: true, acceptTerms: true });
+    const token = decodeURIComponent(/jeton=([A-Za-z0-9_%-]+)/.exec((t.ctx.mailer as ConsoleMailer).sent.at(-1)!.text)![1]!);
+    const other = sessionCookie(await t.json('POST', '/v1/auth/verify', { token }));
+    await t.json('POST', '/v1/company', { name: 'Ailes du Moulin' }, other);
+    const c2 = t.ctx.db.prepare('SELECT c.id, c.founded_at FROM companies c JOIN players p ON p.id = c.player_id WHERE p.nickname = ?').get('Bastien') as { id: string; founded_at: number };
+    t.ctx.db.prepare('DELETE FROM company_hand WHERE company_id = ?').run(c2.id);
+    t.ctx.db.prepare('INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) VALUES (?, ?, ?)').run(c2.id, 'c-journal', c2.founded_at);
+    const state = (await t.json('GET', '/v1/company', undefined, other)).json();
+    expect((await t.json('POST', '/v1/company/flights', { card: 'c-journal', plane: state.planes[0].id, pilot: state.pilots[0].id }, other)).statusCode).toBe(201);
+    t.advance(flight.arrivesAt - flight.departedAt + 60_000);
+    expect(await notifyArrivals(t.ctx)).toBe(1);
+    const audits = t.ctx.db.prepare("SELECT count(*) AS n FROM audit WHERE event = 'push.sent'").get() as { n: number };
+    expect(audits.n).toBe(1);
+    await t.app.close();
+  });
+  it('dans la notification elle-même', async () => {
+    const t = await pushApp();
+    const { flight } = await flying(t);
+    t.ctx.db.prepare("UPDATE flights SET destination = 'les-tilleuls'").run();
+    t.advance(flight.arrivesAt - flight.departedAt + 1);
+    await notifyArrivals(t.ctx);
+    expect(t.push.sent[0]!.message.body).toMatch(/s'est posé aux Tilleuls\./);
+    await t.app.close();
+  });
+});
+
+describe('notifications — le français contracte', () => {
+  it('« aux Tilleuls », « au Hêtre-Roi », « à l\'Île-du-Bout », « au Phare de Brisant »', () => {
+    expect(aLieu('Les Tilleuls')).toBe('aux Tilleuls');
+    expect(aLieu('Le Hêtre-Roi')).toBe('au Hêtre-Roi');
+    expect(aLieu('Le Rocher-Noir')).toBe('au Rocher-Noir');
+    expect(aLieu('Île-du-Bout')).toBe("à l'Île-du-Bout");
+    expect(aLieu('Île Sainte-Ambre')).toBe("à l'Île Sainte-Ambre");
+    expect(aLieu('Anse-des-Lanternes')).toBe("à l'Anse-des-Lanternes");
+    expect(aLieu('Phare de Brisant')).toBe('au Phare de Brisant');
+    expect(aLieu('Lanterne-du-Val')).toBe('à Lanterne-du-Val');
+    expect(aLieu('Pont-de-Brume')).toBe('à Pont-de-Brume');
+  });
+
 });

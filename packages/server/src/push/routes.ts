@@ -84,6 +84,26 @@ interface ArrivalRow {
   id: string; player_id: string; locale: string; pilot: string; destination: string; reward: number; bonus: number; deadline_at: number; arrives_at: number;
 }
 
+/**
+ * « s'est posé à » suivi d'un nom de lieu, avec les contractions du français :
+ * « aux Tilleuls », « au Hêtre-Roi », « à l'Île-du-Bout », « au Phare de Brisant ».
+ * La même règle que `placeAfter` côté client, réduite à la préposition « à ».
+ */
+export function aLieu(name: string): string {
+  const written = /^(?:(Les|Le|La) |(L'))(.+)$/.exec(name);
+  if (written) {
+    const article = written[1] ?? written[2];
+    const rest = written[3] as string;
+    if (article === 'Les') return `aux ${rest}`;
+    if (article === 'Le') return `au ${rest}`;
+    if (article === 'La') return `à la ${rest}`;
+    return `à l'${rest}`;
+  }
+  if (/^(Île|Anse)\b/.test(name)) return `à l'${name}`;
+  if (/^Phare\b/.test(name)) return `au ${name}`;
+  return `à ${name}`;
+}
+
 function arrivalMessage(row: ArrivalRow): PushMessage {
   const locale: Locale = isLocale(row.locale) ? row.locale : 'fr';
   const template = findPilot(row.pilot);
@@ -94,7 +114,7 @@ function arrivalMessage(row: ArrivalRow): PushMessage {
   const francs = row.reward + (onTime ? row.bonus : 0);
   return locale === 'en'
     ? { title: 'Your mail has arrived', body: `${pilot} has landed at ${place}. +${francs} F${onTime ? ' · deadline met' : ''}.`, url: '/aerodrome', tag: 'courrier' }
-    : { title: 'Votre courrier est arrivé', body: `${pilot} s'est posé${e} à ${place}. +${francs} F${onTime ? ' · délai tenu' : ''}.`, url: '/aerodrome', tag: 'courrier' };
+    : { title: 'Votre courrier est arrivé', body: `${pilot} s'est posé${e} ${aLieu(place)}. +${francs} F${onTime ? ' · délai tenu' : ''}.`, url: '/aerodrome', tag: 'courrier' };
 }
 
 /**
@@ -111,25 +131,31 @@ export async function notifyArrivals(ctx: AppContext, now: number = ctx.now()): 
     JOIN players p ON p.id = c.player_id
     LEFT JOIN company_pilots cp ON cp.id = f.pilot_id
     WHERE f.notified_at IS NULL AND f.departed_at + f.duration_ms <= ?
+      -- Un convoi ne prévient qu'une fois, par sa tête : l'ailier ne porte pas la récompense.
+      AND (f.convoy IS NULL OR f.convoy = f.id)
     ORDER BY arrives_at
     LIMIT 100
   `).all(now) as unknown as ArrivalRow[];
   let sent = 0;
   for (const row of rows) {
-    ctx.db.prepare('UPDATE flights SET notified_at = ? WHERE id = ? AND notified_at IS NULL').run(now, row.id);
+    // La tête et ses ailiers, marqués ensemble.
+    ctx.db.prepare('UPDATE flights SET notified_at = ? WHERE (id = ? OR convoy = ?) AND notified_at IS NULL').run(now, row.id, row.id);
     if (!ctx.push) continue;
     // Un vol posé depuis plus d'une heure ne mérite plus une notification : on l'a vu depuis.
     if (now - row.arrives_at > 3_600_000) continue;
     const message = arrivalMessage(row);
+    let sentHere = 0;
     for (const sub of listSubscriptions(ctx.db, row.player_id)) {
       const outcome = await ctx.push.send(sub, message, now);
       if (outcome === 'gone') ctx.db.prepare('DELETE FROM push_subscriptions WHERE id = ?').run(sub.id);
       else if (outcome === 'sent') {
         ctx.db.prepare('UPDATE push_subscriptions SET last_used_at = ? WHERE id = ?').run(now, sub.id);
-        sent += 1;
+        sentHere += 1;
       }
     }
-    if (sent > 0) audit(ctx.db, 'push.sent', row.player_id, { flights: 1 }, now);
+    sent += sentHere;
+    // Le journal ne note l'envoi que pour le joueur qui l'a vraiment reçu.
+    if (sentHere > 0) audit(ctx.db, 'push.sent', row.player_id, { flights: 1 }, now);
   }
   return sent;
 }

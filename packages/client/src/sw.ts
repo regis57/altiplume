@@ -37,14 +37,17 @@ self.addEventListener('notificationclick', (event) => {
   })());
 });
 
-// Si le service de push renouvelle l'abonnement, on prévient le serveur.
+// Si le service de push renouvelle l'abonnement, on prévient le serveur. Seulement
+// l'adresse et les clés, comme la cloche de l'aérodrome : le serveur refuse tout
+// champ en plus, et `toJSON()` ajoute `expirationTime`.
 self.addEventListener('pushsubscriptionchange', (event) => {
   const e = event as ExtendableEvent & { newSubscription?: PushSubscription | null };
   const sub = e.newSubscription;
   if (!sub) return;
+  const json = sub.toJSON();
   e.waitUntil(fetch('/v1/push/subscriptions', {
     method: 'POST', credentials: 'same-origin',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(sub.toJSON()),
+    body: JSON.stringify({ endpoint: json.endpoint, keys: json.keys }),
   }).then(() => undefined, () => undefined));
 });
