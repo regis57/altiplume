@@ -106,6 +106,30 @@ export function encryptPayload(subscription: PushSubscription, plaintext: Buffer
   return Buffer.concat([header, ciphertext]);
 }
 
+/**
+ * Les services de notification des navigateurs : Chrome et ses cousins (Google),
+ * Firefox (Mozilla), Safari (Apple), Edge (Microsoft). Le serveur n'envoie qu'à eux.
+ * Une adresse quelconque ferait partir du serveur une requête vers une machine
+ * choisie par un joueur, qui y lirait d'où elle vient.
+ */
+const PUSH_HOSTS: ReadonlySet<string> = new Set(['fcm.googleapis.com', 'android.googleapis.com', 'updates.push.services.mozilla.com', 'web.push.apple.com']);
+const PUSH_HOST_SUFFIXES: readonly string[] = ['.notify.windows.com'];
+
+export function isPushServiceEndpoint(endpoint: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== 'https:' || url.port !== '' || url.username !== '' || url.password !== '') return false;
+  const host = url.hostname;
+  return PUSH_HOSTS.has(host) || PUSH_HOST_SUFFIXES.some((suffix) => host.endsWith(suffix) && host.length > suffix.length);
+}
+
+/** Un service qui ne répond pas ne doit pas retenir les notifications des autres joueurs. */
+export const PUSH_TIMEOUT_MS = 10_000;
+
 export type PushOutcome = 'sent' | 'gone' | 'failed';
 
 export interface PushSender {
@@ -116,13 +140,19 @@ export interface PushSender {
 export class WebPushSender implements PushSender {
   private readonly keys: VapidKeys;
   private readonly fetchImpl: typeof fetch;
-  constructor(keys: VapidKeys, fetchImpl: typeof fetch = fetch) {
+  private readonly timeoutMs: number;
+  constructor(keys: VapidKeys, fetchImpl: typeof fetch = fetch, timeoutMs = PUSH_TIMEOUT_MS) {
     this.keys = keys;
     this.fetchImpl = fetchImpl;
+    this.timeoutMs = timeoutMs;
   }
   async send(subscription: PushSubscription, message: PushMessage, now: number): Promise<PushOutcome> {
-    const body = encryptPayload(subscription, Buffer.from(JSON.stringify(message)));
+    // Un abonnement enregistré vers autre chose qu'un service de notification n'est
+    // jamais contacté : il est retiré comme un abonnement mort.
+    if (!isPushServiceEndpoint(subscription.endpoint)) return 'gone';
     try {
+      // Dans le try : une clé mal formée échoue pour cet abonnement seulement.
+      const body = encryptPayload(subscription, Buffer.from(JSON.stringify(message)));
       const response = await this.fetchImpl(subscription.endpoint, {
         method: 'POST',
         headers: {
@@ -134,6 +164,8 @@ export class WebPushSender implements PushSender {
           authorization: vapidAuthorization(this.keys, subscription.endpoint, now),
         },
         body,
+        redirect: 'error',
+        signal: AbortSignal.timeout(this.timeoutMs),
       });
       if (response.status === 404 || response.status === 410) return 'gone';
       return response.ok ? 'sent' : 'failed';

@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyInstance, type FastifyRequest, type FastifyServerOptions } from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
@@ -25,8 +25,21 @@ import { registerContactRoutes } from './routes/contact.ts';
 
 export interface BuildOptions {
   readonly logger?: boolean;
+  /** Pour les tests : où écrire le journal (sinon la sortie standard). */
+  readonly logStream?: { write(line: string): void };
   /** Dossier du client compilé ; par défaut packages/client/dist. */
   readonly clientDir?: string;
+}
+
+/**
+ * L'adresse du visiteur. Derrière le tunnel, seul l'en-tête `cf-connecting-ip` est
+ * sûr : Cloudflare le réécrit toujours, alors qu'il garde un `X-Forwarded-For` écrit
+ * par le visiteur lui-même, et c'est l'adresse la plus à gauche que Fastify retient.
+ */
+export function clientAddress(request: FastifyRequest, production: boolean): string {
+  const cf = request.headers['cf-connecting-ip'];
+  if (production && typeof cf === 'string' && cf.length > 0) return cf;
+  return request.ip;
 }
 
 const DEFAULT_CLIENT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../../client/dist');
@@ -39,8 +52,13 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   const production = ctx.config.env === 'production';
   const clientDir = options.clientDir ?? DEFAULT_CLIENT_DIR;
   const pagesEn = englishPages(clientDir);
+  // Le journal ne note jamais l'adresse complète d'une requête : le lien de
+  // connexion porte son jeton dans `?jeton=`, et il ne doit pas s'y retrouver.
+  const logger: FastifyServerOptions['logger'] = options.logger
+    ? { ...(options.logStream ? { stream: options.logStream } : {}), serializers: { req: (req) => ({ method: req.method, url: (req.url ?? '').split('?')[0] ?? '', remoteAddress: clientAddress(req, production) }) } }
+    : false;
   const app = Fastify({
-    logger: options.logger ?? false,
+    logger,
     // `/aide?lang=en` → l'exemplaire anglais de la page, pour les aperçus de liens partagés.
     rewriteUrl: (req) => rewriteLanguage(req.url ?? '/', req.method, pagesEn),
     trustProxy: ctx.config.trustProxy,
@@ -71,7 +89,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
     global: true,
     max: (request) => (isApi(request.url) ? 120 : 600),
     timeWindow: '1 minute',
-    keyGenerator: (request) => `${isApi(request.url) ? 'api' : 'page'}:${who(request.ip)}`,
+    keyGenerator: (request) => `${isApi(request.url) ? 'api' : 'page'}:${who(clientAddress(request, production))}`,
     addHeadersOnExceeding: { 'x-ratelimit-limit': false, 'x-ratelimit-remaining': false, 'x-ratelimit-reset': false },
     addHeaders: { 'x-ratelimit-limit': false, 'x-ratelimit-remaining': false, 'x-ratelimit-reset': true, 'retry-after': true },
   });

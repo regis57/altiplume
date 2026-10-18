@@ -14,7 +14,7 @@ import { newId } from '../auth/tokens.ts';
 import { requirePlayer } from '../auth/session.ts';
 import { findDestination, findPilot } from '../world/index.ts';
 import { isLocale, type Locale } from '../auth/validation.ts';
-import type { PushMessage, PushSubscription } from './webpush.ts';
+import { isPushServiceEndpoint, type PushMessage, type PushSubscription } from './webpush.ts';
 
 const MAX_SUBSCRIPTIONS = 5;
 
@@ -35,15 +35,6 @@ const unsubscribeSchema = {
   body: { type: 'object', required: ['endpoint'], additionalProperties: false, properties: { endpoint: { type: 'string', minLength: 12, maxLength: 1024 } } },
 } as const;
 
-function validEndpoint(endpoint: string): boolean {
-  try {
-    const url = new URL(endpoint);
-    return url.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
 export function listSubscriptions(db: Database, playerId: string): (PushSubscription & { id: string })[] {
   return (db.prepare('SELECT id, endpoint, p256dh, auth FROM push_subscriptions WHERE player_id = ?').all(playerId) as unknown as (PushSubscription & { id: string })[]);
 }
@@ -62,7 +53,7 @@ export function registerPushRoutes(app: FastifyInstance, ctx: AppContext): void 
     if (!ctx.config.push) return reply.code(404).send({ error: 'push_unavailable' });
     const player = request.player!;
     const body = request.body as { endpoint: string; keys: { p256dh: string; auth: string } };
-    if (!validEndpoint(body.endpoint)) return reply.code(400).send({ error: 'invalid', fields: ['endpoint_invalid'] });
+    if (!isPushServiceEndpoint(body.endpoint)) return reply.code(400).send({ error: 'invalid', fields: ['endpoint_invalid'] });
     const now = ctx.now();
     const existing = ctx.db.prepare('SELECT id, player_id FROM push_subscriptions WHERE endpoint = ?').get(body.endpoint) as { id: string; player_id: string } | undefined;
     if (existing) {

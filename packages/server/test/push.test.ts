@@ -18,7 +18,7 @@ function browser() {
   ecdh.generateKeys();
   const auth = randomBytes(16);
   const subscription: PushSubscription = {
-    endpoint: 'https://push.example.test/abonnement/' + randomBytes(8).toString('hex'),
+    endpoint: 'https://fcm.googleapis.com/fcm/send/' + randomBytes(8).toString('hex'),
     p256dh: ecdh.getPublicKey().toString('base64url'),
     auth: auth.toString('base64url'),
   };

@@ -51,22 +51,33 @@ const verifySchema = {
 export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void {
   const verifyUrl = (token: string) => `${ctx.config.publicOrigin}/verifier?jeton=${encodeURIComponent(token)}`;
 
-  async function sendLink(email: string, purpose: 'signup' | 'login', locale: Locale, payload: { nickname: string; locale: string; termsVersion: string } | null): Promise<boolean> {
+  /**
+   * Prépare le lien et confie le courrier à l'envoi, sans l'attendre : la réponse
+   * part aussi vite, et pareille, que l'adresse soit inscrite ou non. Attendre
+   * l'envoi trahissait les adresses inscrites par le délai, et par une erreur 500
+   * quand le service de courrier refusait.
+   */
+  function sendLink(email: string, purpose: 'signup' | 'login', locale: Locale, payload: { nickname: string; locale: string; termsVersion: string } | null): void {
     const now = ctx.now();
     if (countRecentLinks(ctx.db, email, now - LINK_WINDOW_MS) >= LINKS_PER_WINDOW) {
       audit(ctx.db, 'magic_link.rejected', null, { reason: 'too_many' }, now);
-      return false;
+      return;
     }
     const token = createMagicLink(ctx.db, email, purpose, payload, now);
-    await ctx.mailer.send(magicLinkMessage(email, verifyUrl(token), purpose, locale));
-    audit(ctx.db, 'magic_link.sent', null, { purpose }, now);
-    return true;
+    ctx.mailer.send(magicLinkMessage(email, verifyUrl(token), purpose, locale)).then(
+      () => audit(ctx.db, 'magic_link.sent', null, { purpose }, now),
+      () => {
+        audit(ctx.db, 'magic_link.failed', null, { purpose }, now);
+        app.log.warn({ purpose }, 'magic_link.failed');
+      },
+    ).catch(() => undefined);
   }
 
   /**
    * Inscription. La réponse est la même que l'adresse soit nouvelle ou déjà connue —
    * dans ce second cas on envoie un lien de connexion — pour ne pas révéler qui est
-   * inscrit. Seul le pseudonyme déjà pris est signalé : il est public de toute façon.
+   * inscrit. Seul le pseudonyme déjà pris est signalé : il est public de toute façon,
+   * et il est regardé AVANT l'adresse, pour que la réponse ne dépende que de lui.
    */
   app.post('/v1/auth/register', {
     schema: registerSchema,
@@ -86,15 +97,15 @@ export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void 
     if (errors.length > 0) return reply.code(400).send({ error: 'invalid', fields: errors });
 
     const locale = body.locale as Locale;
-    const existing = findPlayerByEmail(ctx.db, email);
-    if (existing) {
-      await sendLink(email, 'login', locale, null);
-      return reply.code(202).send({ status: 'link_sent' });
-    }
     if (nicknameTaken(ctx.db, nickname)) {
       return reply.code(409).send({ error: 'invalid', fields: ['nickname_taken'] });
     }
-    await sendLink(email, 'signup', locale, { nickname, locale, termsVersion: TERMS_VERSION });
+    const existing = findPlayerByEmail(ctx.db, email);
+    if (existing) {
+      sendLink(email, 'login', locale, null);
+      return reply.code(202).send({ status: 'link_sent' });
+    }
+    sendLink(email, 'signup', locale, { nickname, locale, termsVersion: TERMS_VERSION });
     return reply.code(202).send({ status: 'link_sent' });
   });
 
@@ -108,7 +119,7 @@ export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void 
     const locale: Locale = isLocale(body.locale) ? body.locale : 'fr';
     if (isValidEmail(email)) {
       const player = findPlayerByEmail(ctx.db, email);
-      if (player) await sendLink(email, 'login', (isLocale(player.locale) ? player.locale : locale), null);
+      if (player) sendLink(email, 'login', (isLocale(player.locale) ? player.locale : locale), null);
     }
     return reply.code(202).send({ status: 'link_sent' });
   });
