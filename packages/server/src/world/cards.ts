@@ -118,7 +118,7 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "Trois sacs de sel gris des Œillets à porter au port, où les saleurs de poisson l'attendent. Lourd — deux avions —, et sans aucune urgence.", en: "Three sacks of Panbrook grey salt for the harbour, where the fish-salters are waiting. Heavy — two planes' worth — and in no hurry at all." }),
   contract('c-urgent-port', 'port-sel', 'urgent', 1, 150, 3, 50, 2,
     { fr: "Le pli de l'armateur", en: "The shipowner's letter" },
-    { fr: "Un armateur de Port-Sel doit signer avant la marée du soir, sinon le bateau part sans sa cargaison. Un seul pli, qui vaut un bateau.", en: 'A Saltharbour shipowner must sign before the evening tide, or the boat sails without its cargo. One letter, worth a ship.' }),
+    { fr: "Un armateur de Port-Sel doit signer dans les trois heures : à la marée suivante, le bateau part sans sa cargaison. Un seul pli, qui vaut un bateau.", en: 'A Saltharbour shipowner must sign within three hours: on the next tide, the boat sails without its cargo. One letter, worth a ship.' }),
   // Les Œillets — les salines
   contract('c-semences-jardin', 'les-oeillets', 'seeds', 2, 136, 36, 17, 1,
     { fr: 'Semences pour les jardins de sel', en: 'Seeds for the salt gardens' },
@@ -132,7 +132,7 @@ export const CONTRACTS: readonly ContractCard[] = [
   // Marais-Blanc — les pilotis
   contract('c-dispensaire', 'marais-blanc', 'medicine', 1, 164, 6, 50, 2,
     { fr: 'Le dispensaire du marais', en: 'The fen clinic' },
-    { fr: "La fièvre des marais revient avec la saison. Le dispensaire de Marais-Blanc a besoin de quinine avant la nuit.", en: 'The fen fever is back with the season. The Whitefen clinic needs quinine before nightfall.' }),
+    { fr: "La fièvre des marais revient avec la saison. Le dispensaire de Marais-Blanc a besoin de quinine dans les six heures.", en: 'The fen fever is back with the season. The Whitefen clinic needs quinine within six hours.' }),
   // Deux sacs depuis le 12/10 : à trois, aucun avion qui se pose au marais ne les portait.
   contract('c-pilotis', 'marais-blanc', 'parcels', 2, 158, 48, 17, 1,
     { fr: 'Colis pour les pilotis', en: 'Parcels for the stilts' },
@@ -153,7 +153,7 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "Deux gardiens, quinze jours chacun. Leurs lettres sont la seule chose qui monte et descend du phare avec régularité.", en: 'Two keepers, a fortnight each. Their letters are the only thing that goes up and down the lighthouse with any regularity.' }),
   contract('c-lentille', 'phare-de-brisant', 'parts', 2, 217, 12, 56, 3,
     { fr: 'La pièce de la lanterne', en: 'The lantern part' },
-    { fr: "Le mécanisme de rotation du phare a cassé. Une pièce forgée à Haut-Ferrand, à poser avant la nuit, ou la Côte navigue sans lumière.", en: "The lighthouse's turning gear has broken. A part forged in Ferncrest, to fit before dark, or the Shore sails without a light." }),
+    { fr: "Le mécanisme de rotation du phare a cassé. Une pièce forgée à Haut-Ferrand, à poser dans les douze heures, ou la Côte navigue sans lumière.", en: "The lighthouse's turning gear has broken. A part forged in Ferncrest, to fit within twelve hours, or the Shore sails without a light." }),
   // Île Sainte-Ambre — le large
   contract('c-lettres-ile', 'ile-sainte-ambre', 'letters', 3, 228, 48, 22, 1,
     { fr: "Le courrier de l'île", en: 'The island mail' },
@@ -182,7 +182,7 @@ export const CONTRACTS: readonly ContractCard[] = [
     { fr: "La maîtresse de Sainte-Lueur apprend à lire dans le journal de Pont-de-Brume. Deux sacs, et les enfants qui comptent les hublots.", en: 'The Glimmerkirk schoolmistress teaches reading from the Mistbridge paper. Two bags, and the children counting the portholes.' }),
   contract('c-quinine-lueur', 'sainte-lueur', 'medicine', 1, 339, 6, 67, 2,
     { fr: 'La fièvre de Sainte-Lueur', en: 'The Glimmerkirk fever' },
-    { fr: "Trois enfants malades, un dispensaire sans quinine, et la nuit qui tombe. On vise la lanterne de la chapelle.", en: 'Three sick children, a clinic without quinine, and night falling. You aim for the chapel lantern.' }),
+    { fr: "Trois enfants malades, un dispensaire sans quinine, et six heures pour l'y porter. On vise la lanterne de la chapelle.", en: 'Three sick children, a clinic without quinine, and six hours to bring it. You aim for the chapel lantern.' }),
   // Le Rocher-Noir
   contract('c-guetteurs', 'le-rocher-noir', 'newspapers', 1, 347, 48, 19, 1,
     { fr: 'Les nouvelles du rocher', en: 'News for the rock' },
@@ -236,7 +236,7 @@ export const CONTRACTS: readonly ContractCard[] = [
   // Vert-de-Gris
   contract('c-mineurs', 'vert-de-gris', 'medicine', 1, 192, 6, 50, 2,
     { fr: 'La toux des mineurs', en: "The miners' cough" },
-    { fr: "La poussière verte finit toujours par entrer dans les poitrines. Le médecin de Villechaudron envoie ce qu'il faut, et il le faut avant la nuit.", en: "The green dust always gets into chests in the end. The Kettleby doctor is sending what's needed, and it's needed before nightfall." }),
+    { fr: "La poussière verte finit toujours par entrer dans les poitrines. Le médecin de Villechaudron envoie ce qu'il faut, et il le faut dans les six heures.", en: "The green dust always gets into chests in the end. The Kettleby doctor is sending what's needed, and it's needed within six hours." }),
   contract('c-lampes-mine', 'vert-de-gris', 'parts', 2, 206, 24, 28, 1,
     { fr: 'Les lampes de la mine', en: 'Lamps for the pit' },
     { fr: "Deux caisses de lampes de mineur, des mèches et des verres. Au fond, on ne voit que la lumière qu'on emporte.", en: 'Two crates of miners\' lamps, wicks and glasses. Down there, you only see the light you bring with you.' }),
@@ -468,7 +468,7 @@ export const EVENTS: readonly EventCard[] = [
     title: { fr: 'Un hêtre en travers', en: 'A beech across the strip' },
     text: { fr: "Un hêtre de la Forêt de Cuivre, tombé du chargement de bois, barre le bout de la piste. Le tronc est plus gros qu'un tonneau.", en: "A Copperwood beech, fallen off the timber load, blocks the end of the strip. The trunk is thicker than a barrel." },
     choices: [
-      { id: 'saw', label: { fr: 'Payer les scieurs (18 F)', en: 'Pay the sawyers (18 F)' }, outcome: { fr: "Ils descendent des Scieries avec le passe-partout. Une heure plus tard, la piste est libre et le bois déjà vendu.", en: 'They come down from Millhurst with the crosscut saw. An hour later the strip is clear and the timber already sold.' }, effects: { francs: -18 } },
+      { id: 'saw', label: { fr: 'Payer les scieurs (18 F)', en: 'Pay the sawyers (18 F)' }, outcome: { fr: "Ils descendent des Scieries avec le passe-partout. Le temps d'un café, la piste est libre et le bois déjà vendu.", en: 'They come down from Millhurst with the crosscut saw. Before the coffee is cold, the strip is clear and the timber already sold.' }, effects: { francs: -18 } },
       { id: 'wait', label: { fr: 'Attendre le débardeur (3 h)', en: 'Wait for the logger (3 h)' }, outcome: { fr: "Le cheval du débardeur arrive à son pas. Trois heures, et une leçon sur la façon de tirer un tronc sans le fâcher.", en: "The logger's horse arrives at its own pace. Three hours, and a lesson in how to pull a trunk without upsetting it." }, effects: { waitHours: 3, morale: 1 } },
     ],
   },
@@ -477,7 +477,7 @@ export const EVENTS: readonly EventCard[] = [
     title: { fr: "L'humidité des sous-bois", en: 'Damp from the woods' },
     text: { fr: "L'avion est rentré de la forêt couvert de rosée, et la porte du hangar ferme mal. Le moteur tousse comme un charbonnier.", en: "The plane came back from the woods dripping with dew, and the hangar door doesn't shut. Now the engine is coughing like a charcoal-burner." },
     choices: [
-      { id: 'dry', label: { fr: 'Le sécher au poêle (12 F)', en: 'Dry it by the stove (12 F)' }, outcome: { fr: "Une heure près du poêle, douze francs de bois. Le moteur repart, tiède et content.", en: 'Twelve francs of firewood by the stove. The engine starts again, warm and content.' }, effects: { francs: -12 } },
+      { id: 'dry', label: { fr: 'Le sécher au poêle (12 F)', en: 'Dry it by the stove (12 F)' }, outcome: { fr: "Douze francs de bois dans le poêle. Le moteur repart, tiède et content.", en: 'Twelve francs of firewood by the stove. The engine starts again, warm and content.' }, effects: { francs: -12 } },
       { id: 'go', label: { fr: 'Partir quand même', en: 'Go anyway' }, outcome: { fr: "Il crachera, il hésitera, il prendra. Il faudra regarder les bougies de près.", en: 'It will spit, hesitate, catch. The plugs will need a close look.' }, effects: { wear: 8 } },
     ],
   },
