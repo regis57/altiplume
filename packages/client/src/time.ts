@@ -32,6 +32,43 @@ export function formatRemaining(remainingMs: number, locale: Locale = 'fr'): str
   return `${hours} ${unit.hour} ${minutes} ${unit.minute}`;
 }
 
+const DAY_MS = 86_400_000;
+
+/**
+ * Le prochain tirage : le serveur tire les cartes à chaque minuit en temps universel
+ * (packages/server/src/sim/day.ts, jours de 24 h depuis le 1er janvier 2026 à 0 h UTC).
+ * À minuit pile, le tirage vient d'avoir lieu : le prochain est le lendemain.
+ */
+export function nextDrawAt(now: number): number {
+  return Math.floor(now / DAY_MS) * DAY_MS + DAY_MS;
+}
+
+/**
+ * L'heure du prochain tirage, à l'heure du joueur, avec minuit UTC en repère :
+ * « à 2 h (minuit en temps universel) », « at 1 am (midnight UTC) ». Là où minuit UTC
+ * tombe à minuit (Londres l'hiver, Lisbonne, Reykjavik), le repère suffit.
+ *
+ * C'est un affichage, pas une valeur de jeu : le tirage reste celui du serveur.
+ * `timeZone` absent : le fuseau du navigateur.
+ */
+export function nextDrawText(now: number, locale: Locale, timeZone?: string): string {
+  const parts = new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+    hour: 'numeric', minute: '2-digit', ...(locale === 'fr' ? { hourCycle: 'h23' } as const : { hour12: true }), ...(timeZone ? { timeZone } : {}),
+  }).formatToParts(nextDrawAt(now));
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? '';
+  const hour = Number(part('hour'));
+  const minute = part('minute');
+  const evening = part('dayPeriod').toLowerCase().startsWith('p');
+  if (locale === 'fr') {
+    if (hour === 0 && minute === '00') return 'à minuit en temps universel (UTC)';
+    const at = hour === 12 && minute === '00' ? 'à midi' : `à ${hour} h${minute === '00' ? '' : ` ${minute}`}`;
+    return `${at} (minuit en temps universel)`;
+  }
+  if (hour === 12 && minute === '00' && !evening) return 'at midnight UTC';
+  const at = hour === 12 && minute === '00' ? 'at noon' : `at ${hour}${minute === '00' ? '' : `:${minute}`} ${evening ? 'pm' : 'am'}`;
+  return `${at} (midnight UTC)`;
+}
+
 /**
  * Les heures où l'écran doit redemander l'état, en plus des vols : la fin du repos d'un
  * pilote au sol, la réouverture de la piste après un imprévu. Sans elles, l'option du
