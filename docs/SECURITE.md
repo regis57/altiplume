@@ -102,6 +102,57 @@ du ciel, dont il ne sait pas lire le fond) et ce qu'il ne voit pas — la lectur
 lecteur d'écran, le jeu au clavier seul — reste à constater, avec des personnes
 concernées. Lighthouse et WAVE restent à passer à la main.
 
+**Bilan du 18 octobre (la revue du code)** : le code a été relu contre ce que la
+conception, les pages et ce manifeste promettent. La revue a trouvé des défauts de
+sécurité et de vie privée ; ils sont décrits ici **après** leur correction, sans détail
+exploitable. Les correctifs ont été fusionnés le 18 octobre entre 15 h 40 et 16 h 35
+(PR #125, #126, #129). Le NAS a été redéployé le même jour ; la page `/v1/version`
+affichait une version qui les contient tous (`bc093e6`).
+
+- **Le serveur, quatre durcissements (#125).**
+  - Les notifications ne partent plus que vers les services de notification des
+    navigateurs (Google, Mozilla, Apple, Microsoft), avec un délai maximal et sans
+    suivre de redirection ; un abonnement vers une autre adresse est refusé, et retiré
+    s'il existait.
+  - La limite de débit compte les requêtes sur l'adresse transmise par Cloudflare, et
+    non plus sur un en-tête que le visiteur peut écrire lui-même.
+  - Le journal technique écrit le chemin des requêtes sans ce qui suit « ? ».
+  - À l'inscription et à la connexion, la réponse ne dépend plus de ce que le serveur
+    sait de l'adresse saisie.
+
+  Contre-épreuve : les neuf tests de `fuites.test.ts` échouent sur le code d'avant.
+- **Les contrôles de la CI (#126).** Ils pouvaient rester verts alors qu'ils auraient
+  dû échouer :
+  - Le contrôle du lundi ne pouvait pas échouer, parce que son résultat passait par un
+    `| tee` qui rendait toujours « réussi ». Les verdicts verts de ce contrôle avant le
+    18 octobre ne prouvent donc rien ; seules les mesures relevées à la main dans le
+    tableau du haut tiennent.
+  - Trivy ne bloquait un secret dans l'image que s'il était classé « critique » ; il le
+    bloque maintenant quelle que soit sa gravité, à la publication et chaque lundi.
+  - Chaque adresse du domaine, IPv4 et IPv6, est comparée aux plages publiées par
+    Cloudflare, et n'est plus recopiée dans le rapport public.
+
+  Contre-épreuves : une étape qui échoue rend 0 sans le correctif, 1 avec ; une fausse
+  clé passe l'ancienne règle de Trivy et bloque la nouvelle ; une adresse hors
+  Cloudflare passe l'ancienne vérification et échoue à la nouvelle.
+- **Les données effacées (#129).** Un compte supprimé disparaissait des tables, mais
+  son adresse email restait lisible dans le fichier de la base, et donc dans chaque
+  sauvegarde. Désormais :
+  - la base écrase ce qu'elle efface ;
+  - elle se récrit entièrement à chaque démarrage du serveur ;
+  - le NAS redémarre chaque semaine.
+
+  Une sauvegarde faite avant le redéploiement du 18 octobre sort de la rotation en six
+  jours au plus (trois copies sur le NAS, trois versions sur le disque USB), soit au
+  plus tard le 24 octobre. Contre-épreuve : les tests nouveaux de `comptes.test.ts`
+  échouent sur le code d'avant.
+
+**Reste à constater** :
+- le premier contrôle du lundi capable d'échouer, le 20 octobre, qui sera aussi le
+  premier sur Ubuntu 26 ;
+- qu'une copie de la base sur le NAS, prise après le redéploiement, ne contient plus
+  l'adresse d'un compte effacé : vérifié par les tests, pas encore sur un vrai fichier.
+
 ### Les contrôles automatiques (12 octobre 2026)
 
 Le tableau du haut regarde le site **de l'extérieur**. Ceux-ci regardent **de
@@ -110,7 +161,7 @@ gratuits, tous dans GitHub Actions ou une application GitHub, aucun secret.
 
 | Contrôleur | Où | Quand | Ce qui bloque | Mesuré le 12/10 |
 |---|---|---|---|---|
-| **Trivy** 0.69.3 | `release.yml` (job *docker*) ; `securite.yml` (job *image publiée*) | Avant chaque publication d'image, PR comprises ; chaque lundi sur `latest` | Une faille **critique** déjà corrigée en amont, ou un secret dans l'image : **l'image n'est pas publiée** | 0 critique corrigeable ; vert sur la PR #58 et sur `main` |
+| **Trivy** 0.69.3 | `release.yml` (job *docker*) ; `securite.yml` (job *image publiée*) | Avant chaque publication d'image, PR comprises ; chaque lundi sur `latest` | Une faille **critique** déjà corrigée en amont, ou un secret dans l'image, quelle que soit sa gravité (depuis le 18/10) : **l'image n'est pas publiée** | 0 critique corrigeable ; vert sur la PR #58 et sur `main` |
 | **OWASP ZAP** 2.17.0, passif | `zap.yml` ; plan `.github/zap/plan.yaml` | Chaque PR qui touche l'appli, chaque fusion, chaque lundi | Une alerte **moyenne ou haute** non déclarée faux positif (avec sa raison) dans le plan | 58 adresses ; 0 haute ; 0 moyenne réelle ; vert sur la PR #59 et sur `main` |
 | **Opengrep** v1.30.1 | `opengrep.yml` | Chaque PR, chaque fusion | Une trouvaille de niveau **ERROR** | 0 ERROR, 28 avertissements lus ; vert sur la PR #60 et sur `main` |
 | **Socket** | Application GitHub, réglée par `socket.yml` | Chaque PR qui touche une dépendance ; rapport à chaque fusion | Contrôle « Socket Security » sur la PR (paquet malveillant, script d'installation, accès réseau inattendu, nom imité…) | Rapport de projet vert sur `main` (12/10) |
@@ -162,8 +213,10 @@ pas ces versions à jour : on les change à la main, avec la même vérification
 l'onglet Actions) lance `node scripts/securite-check.mjs altiplume.com --strict` :
 Observatory (note et tests échoués), SSL Labs (note, protocoles), DNS (SPF,
 DKIM, DMARC, CAA, adresses, MX), les en-têtes réellement servis, la redirection
-HTTP → HTTPS, l'absence de cookie à l'accueil. Il échoue tant qu'un point est
-sous l'attendu — premier passage le 11 octobre à 17 h 03 : **vert**.
+HTTP → HTTPS, l'absence de cookie à l'accueil. Il doit échouer tant qu'un point est
+sous l'attendu — premier passage le 11 octobre à 17 h 03 : **vert**. Jusqu'au 18 octobre,
+il ne pouvait pas échouer (voir le bilan du 18 octobre) ; le premier passage qui le
+peut est celui du lundi 20 octobre.
 securityheaders.com et l'évaluateur CSP n'ont pas d'API : ils se relancent à la
 main.
 
@@ -514,7 +567,13 @@ d'être simplement une copie de la base.
 - Schémas AJV stricts sur chaque entrée, limitation de débit sur chaque action —
   deux compteurs par personne depuis le 12/10 : 120 requêtes par minute sur l'API,
   600 sur les pages et leurs fichiers ; la clé est une empreinte de l'adresse, salée
-  au démarrage, gardée en mémoire seulement —, journal d'audit sans donnée personnelle.
+  au démarrage, gardée en mémoire seulement, et depuis le 18/10 c'est l'adresse
+  transmise par Cloudflare —, journal d'audit sans donnée personnelle.
+- Depuis le 18/10 : le journal technique écrit le chemin des requêtes sans ce qui suit
+  « ? » ; à l'inscription et à la connexion, la réponse ne dépend pas de ce que le
+  serveur sait de l'adresse saisie ; les notifications ne partent que vers les services
+  de notification des navigateurs ; la base écrase ce qu'elle efface et se récrit à
+  chaque démarrage.
 - Le formulaire de contact n'est pas un relais : le destinataire vient de la
   configuration du serveur, jamais du navigateur ; rien n'est écrit en base (donc
   aucune injection SQL possible — il n'y a pas de requête) ; sujet et adresse sont
