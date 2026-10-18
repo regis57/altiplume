@@ -69,7 +69,7 @@ describe('un imprévu use un avion au sol, jamais un avion en l\'air', () => {
   it('« Décoller quand même » use l\'avion qui reste, pas celui qui vole', async () => {
     const t = await company();
     const grive = t.ctx.db.prepare('SELECT id FROM company_planes').get() as { id: string };
-    t.ctx.db.prepare("INSERT INTO company_planes (id, company_id, model, wear, acquired_at) VALUES ('sol', ?, 'pic', 40, 0)").run(t.id);
+    t.ctx.db.prepare("INSERT INTO company_planes (id, company_id, model, wear, wear_at, acquired_at) VALUES ('sol', ?, 'pic', 40, ?, 0)").run(t.id, t.ctx.now());
     // La Grive (usure 0, la moins usée) est en l'air.
     const pilot = t.ctx.db.prepare('SELECT id FROM company_pilots').get() as { id: string };
     const now = t.ctx.now();

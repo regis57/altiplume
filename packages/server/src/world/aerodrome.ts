@@ -20,8 +20,8 @@ export const ZONES: readonly Zone[] = [
     name: { fr: 'Le hangar', en: 'The hangar' },
     levels: [
       { level: 1, cost: 0, planes: 1, maintenance: 1, name: { fr: 'Porte de travers', en: 'Crooked door' }, description: { fr: "Un seul avion y tient, et la porte ferme mal. On répare avec ce qu'on a.", en: 'One plane fits, and the door never shuts. Repairs with whatever is to hand.' } },
-      { level: 2, cost: 700, planes: 2, maintenance: 1.25, name: { fr: 'Porte neuve, établi', en: 'New door, workbench' }, description: { fr: "Deux avions au sec, un établi, de vrais outils. L'entretien coûte moins.", en: 'Two planes in the dry, a bench, real tools. Upkeep costs less.' } },
-      { level: 3, cost: 2000, planes: 3, maintenance: 1.5, name: { fr: 'Atelier', en: 'Workshop' }, description: { fr: "Trois avions, un treuil, et un coin où quelqu'un a dessiné la place de chaque outil au crayon.", en: 'Three planes, a hoist, and a corner where someone has pencilled the place of every tool.' } },
+      { level: 2, cost: 700, planes: 2, maintenance: 1.25, name: { fr: 'Porte neuve, établi', en: 'New door, workbench' }, description: { fr: "Deux avions au sec, un établi, de vrais outils. L'entretien coûte moins, et l'usure s'efface plus vite.", en: 'Two planes in the dry, a bench, real tools. Upkeep costs less, and wear comes off sooner.' } },
+      { level: 3, cost: 2000, planes: 3, maintenance: 1.5, name: { fr: 'Atelier', en: 'Workshop' }, description: { fr: "Trois avions, un treuil, et un coin où quelqu'un a dessiné la place de chaque outil au crayon. L'entretien coûte encore moins, et l'usure s'efface plus vite encore.", en: 'Three planes, a hoist, and a corner where someone has pencilled the place of every tool. Upkeep costs less again, and wear comes off faster still.' } },
     ],
   },
   {
