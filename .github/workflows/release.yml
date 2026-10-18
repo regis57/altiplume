@@ -11,6 +11,11 @@ name: Release
 # connue et déjà corrigée en amont bloque la publication. Le reste (élevé,
 # critique sans correctif) est listé dans le résumé, pour être suivi.
 #
+# Sur `main`, l'image est publiée d'abord sous sa seule étiquette `sha-…`, puis
+# revérifiée telle qu'elle est sur le registre, par son empreinte ; elle ne reçoit
+# `latest` (ce que le NAS télécharge) qu'après. Une seconde construction n'est
+# jamais tout à fait la première : c'est celle qui part qu'on vérifie.
+#
 # Aucune action tierce : seulement des actions `actions/*`, épinglées par SHA, et le
 # client Docker fourni par le runner. Trivy n'est pas pris par son action GitHub
 # (compromise en mars 2026) mais par son binaire officiel, version et empreinte
@@ -73,13 +78,17 @@ jobs:
           SHA: ${{ github.sha }}
         run: |
           short="${SHA::12}"
-          tags="${IMAGE}:sha-${short}"
+          first="${IMAGE}:sha-${short}"
+          promote=""
           if [ "$REF_TYPE" = "tag" ]; then
-            tags="${tags},${IMAGE}:${REF_NAME#v},${IMAGE}:latest"
+            promote="${IMAGE}:${REF_NAME#v},${IMAGE}:latest"
           elif [ "$REF_NAME" = "main" ]; then
-            tags="${tags},${IMAGE}:latest"
+            promote="${IMAGE}:latest"
           fi
-          echo "tags=${tags}" >> "$GITHUB_OUTPUT"
+          # L'image part sous `first` ; elle ne reçoit `promote` qu'une fois revérifiée.
+          echo "first=${first}" >> "$GITHUB_OUTPUT"
+          echo "promote=${promote}" >> "$GITHUB_OUTPUT"
+          echo "tags=${first}${promote:+,${promote}}" >> "$GITHUB_OUTPUT"
           echo "short=${short}" >> "$GITHUB_OUTPUT"
           # Ce que l'image dira d'elle-même : la version du dépôt (ou celle de
           # l'étiquette), le commit exact, la date de construction. Le client les
@@ -100,22 +109,6 @@ jobs:
             --tag altiplume:verif \
             --load \
             .
-
-      - name: Vérifier que l'image démarre et répond
-        run: |
-          id=$(docker run -d --read-only --tmpfs /tmp -p 3000:3000 \
-            -e PUBLIC_ORIGIN=https://altiplume.test -e MAIL_API_KEY=factice-pour-le-test \
-            altiplume:verif)
-          for i in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:3000/healthz; then ok=1; break; fi
-            sleep 1
-          done
-          docker logs "$id"
-          docker rm -f "$id" >/dev/null
-          [ "${ok:-0}" = "1" ]
-          # Et qu'elle n'embarque plus de gestionnaire de paquets.
-          docker run --rm --entrypoint sh altiplume:verif -c \
-            'for c in npm npx corepack yarn; do if command -v "$c"; then echo "$c est encore là"; exit 1; fi; done'
 
       - name: Installer Trivy (binaire officiel, empreinte vérifiée)
         run: |
@@ -141,21 +134,8 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Trivy — le verdict (aucune faille critique corrigée en amont)
-        run: |
-          "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m \
-            --skip-db-update \
-            --scanners vuln --severity CRITICAL --ignore-unfixed \
-            --exit-code 1 altiplume:verif
-
-      # Un secret bloque quelle que soit sa gravité. Sous le filtre « critique », Trivy
-      # laissait passer une clé privée (classée « élevée ») et une clé Brevo (« basse »).
-      - name: Trivy — aucun secret dans l'image, quelle que soit sa gravité
-        run: |
-          "$RUNNER_TEMP/trivy/trivy" image --quiet --timeout 10m \
-            --skip-db-update \
-            --scanners secret \
-            --exit-code 1 altiplume:verif
+      - name: Vérifier l'image construite (démarrage, gestionnaires de paquets, Trivy)
+        run: scripts/verifier-image.sh altiplume:verif "$RUNNER_TEMP/trivy/trivy"
 
       - name: Se connecter au registre
         if: github.event_name != 'pull_request'
@@ -167,11 +147,8 @@ jobs:
         if: github.event_name != 'pull_request'
         id: push
         env:
-          TAGS: ${{ steps.meta.outputs.tags }}
+          FIRST: ${{ steps.meta.outputs.first }}
         run: |
-          args=""
-          IFS=',' read -ra list <<< "$TAGS"
-          for t in "${list[@]}"; do args="$args --tag $t"; done
           # --sbom et --provenance attachent à l'image un inventaire de ses composants
           # et une trace de construction, lisibles par `docker buildx imagetools inspect`.
           docker buildx build \
@@ -183,11 +160,34 @@ jobs:
             --provenance=mode=max \
             --push \
             --metadata-file metadata.json \
-            $args \
+            --tag "$FIRST" \
             .
           digest=$(jq -r '."containerimage.digest"' metadata.json)
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
-          echo "Image publiée : ${IMAGE}@${digest}"
+          echo "Image publiée : ${IMAGE}@${digest} (étiquette ${FIRST} seulement, pour l'instant)"
+
+      - name: Revérifier l'image publiée, prise par son empreinte
+        if: github.event_name != 'pull_request'
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          docker pull --platform linux/amd64 "${IMAGE}@${DIGEST}"
+          scripts/verifier-image.sh "${IMAGE}@${DIGEST}" "$RUNNER_TEMP/trivy/trivy"
+
+      - name: Donner ses étiquettes à l'image vérifiée
+        if: github.event_name != 'pull_request' && steps.meta.outputs.promote != ''
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+          PROMOTE: ${{ steps.meta.outputs.promote }}
+        run: |
+          IFS=',' read -ra list <<< "$PROMOTE"
+          for t in "${list[@]}"; do
+            docker buildx imagetools create --tag "$t" "${IMAGE}@${DIGEST}"
+            # L'étiquette doit désigner exactement l'empreinte vérifiée.
+            got=$(docker buildx imagetools inspect "$t" --format '{{json .Manifest}}' | jq -r '.digest')
+            if [ "$got" != "$DIGEST" ]; then echo "$t désigne $got, pas $DIGEST"; exit 1; fi
+            echo "$t -> $DIGEST"
+          done
 
       - name: Attester la provenance
         if: github.event_name != 'pull_request'
