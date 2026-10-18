@@ -26,14 +26,19 @@ volontairement étroit.
 
 ## Ce que la CI vérifie
 
-`lint` (ESLint), `typecheck` (TypeScript strict), `test` (Vitest), `audit`
-(vulnérabilités des dépendances), `licenses` (licences autorisées uniquement).
+Le workflow CI (`.github/workflows/ci.yml`) a neuf jobs, lancés à chaque PR : `lint`
+(ESLint), `typecheck` (TypeScript strict), `build`, `test` (Vitest), `audit`
+(vulnérabilités des dépendances), `licenses` (licences autorisées uniquement), et trois
+parcours dans un vrai Chromium : *aucune requête tierce* (`scripts/e2e-tiers.mjs`),
+*mise en page* (`scripts/e2e-mise-en-page.mjs`) et *accessibilité*
+(`scripts/e2e-accessibilite.mjs`, axe-core).
 
-En plus, et à la main : `npm run e2e` joue dans un vrai Chromium le parcours complet
-des passkeys et de la connexion par QR (avec un authenticateur virtuel), celui du
-courrier, et celui de la Côte de Saline (route, ponton, Sterne, amerrissage). Il faut un
-Chromium (`CHROMIUM_PATH=/chemin/vers/chromium`, ou `npx playwright install chromium`).
-Lancez-le avant toute PR qui touche à l'authentification ou au client.
+`npm run e2e` joue les sept parcours de bout en bout : les trois de la CI, et quatre
+qui ne tournent qu'à la main — celui des passkeys et de la connexion par QR (avec un
+authenticateur virtuel), celui du courrier, celui de la Côte de Saline (route, ponton,
+Sterne, amerrissage) et celui du convoi de fret lourd. Il faut un Chromium
+(`CHROMIUM_PATH=/chemin/vers/chromium`, ou `npx playwright install chromium`).
+Lancez-le avant toute PR qui touche au client ou au serveur.
 
 ## La scène
 

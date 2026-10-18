@@ -14,7 +14,12 @@ DSM 7.2 ou plus, avec Container Manager. Aucune ligne de commande n'est nécessa
 >   `image:` du service `api`) et dans Container Manager ;
 > - l'adresse brute du `docker-compose.yml` (`raw.githubusercontent.com/regis57/altiplume/…`)
 >   par celle de votre dépôt ;
-> - `--owner regis57` par votre compte, pour vérifier la provenance de l'image.
+> - `--owner regis57` par votre compte, pour vérifier la provenance de l'image ;
+> - dans `packages/client/build.mjs`, la valeur par défaut `'https://altiplume.com'` (ligne
+>   `const origin = …`) par `https://<nom-de-domaine>`. Cette adresse est écrite dans les
+>   pages au moment où la CI construit l'image (adresse canonique, langues, aperçus des
+>   liens partagés) ; le `PUBLIC_ORIGIN` du `.env` n'agit qu'au démarrage du serveur et
+>   n'y change rien.
 
 ## Ce qui est déjà en place (10 octobre 2026)
 
@@ -190,10 +195,23 @@ iPhone et iPad, il faut d'abord installer Altiplume sur l'écran d'accueil (Part
 
 ## Revenir en arrière
 
-Chaque image porte aussi une étiquette `sha-xxxxxxxxxxxx` correspondant au commit.
-Pour revenir à une version précise : dans le `docker-compose.yml` du projet, remplace
-`:latest` par `:sha-...` (visible dans l'onglet *Actions* du dépôt, résumé du
-workflow *Release*), puis Arrêter → Nettoyer → Construire.
+Chaque image porte aussi une étiquette `sha-xxxxxxxxxxxx` correspondant au commit
+(visible dans l'onglet *Actions* du dépôt, résumé du workflow *Release* de cette
+version). Pour revenir à une version précise :
+
+1. **File Station →** `docker/altiplume` **→** `docker-compose.yml` **→ clic droit →
+   Modifier.** Dans la ligne `image: ghcr.io/regis57/altiplume:latest`, remplacer
+   `:latest` par `:sha-xxxxxxxxxxxx`, puis enregistrer.
+2. **Planificateur de tâches →** sélectionner **Altiplume - redéployer → Exécuter →
+   Oui.** La tâche retélécharge l'image nommée dans le fichier et recrée les
+   conteneurs ; le fichier de sortie doit se terminer par `== OK — exit 0`.
+3. Vérifier `https://<nom-de-domaine>/healthz`, puis `https://<nom-de-domaine>/v1/version` :
+   son champ `revision` commence par les mêmes caractères que l'étiquette choisie.
+
+Pour revenir ensuite à la dernière version : remettre `:latest` dans le fichier (étape 1),
+puis relancer la tâche (étape 2).
+
+Cette procédure n'a pas encore été essayée sur le NAS : reste à constater.
 
 ## Vérifier la provenance d'une image
 
@@ -303,9 +321,15 @@ les clés VAPID se refont avec `scripts/nas-vapid.sh`.
 
 ### Restaurer
 
-1. Planificateur de tâches → arrêter le jeu : dans Container Manager, **Projet →
-   `altiplume` → Arrêt**.
-2. Dans DSM → Terminal (SSH activé le temps de l'opération, désactivé après) :
+**Il n'existe pas encore de procédure sans ligne de commande.** La base vit dans un
+volume Docker, hors des dossiers partagés que File Station montre ; la seule
+procédure écrite demande d'activer SSH le temps de l'opération et de taper une
+commande. Reste à faire : un script collé dans une tâche planifiée, comme pour le
+redéploiement, puis un essai sur une copie. En attendant, la procédure, pour qui a une
+ligne de commande :
+
+1. **Container Manager → Projet → `altiplume` → Action → Arrêt.**
+2. Dans un terminal sur le NAS (SSH activé le temps de l'opération, désactivé après) :
    ```
    sudo docker run --rm -v altiplume_altiplume-data:/data -v /volume1/docker/altiplume/sauvegardes:/s:ro alpine \
      sh -c 'rm -f /data/altiplume.db-wal /data/altiplume.db-shm && cp /s/altiplume-AAAAMMJJ-HHMM.db /data/altiplume.db && chown 1000:1000 /data/altiplume.db'

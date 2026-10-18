@@ -25,9 +25,9 @@ export const ARCHIPEL: Region = {
 };
 
 /**
- * Six escales, toutes sur l'eau, de 14 à 19 lieues. La Sterne y va avec un
- * pilote de Longues routes ; le Goéland, l'hydravion long-courrier, y va avec
- * tout le monde.
+ * Six escales, toutes sur l'eau, de 14 à 19 lieues. La Sterne atteint
+ * l'Île-aux-Fanaux, et Grand-Récif et Sainte-Lueur avec un pilote de Longues
+ * routes ; le Goéland, l'hydravion long-courrier, y va avec tout le monde.
  */
 export const ARCHIPEL_DESTINATIONS: readonly Destination[] = [
   {
