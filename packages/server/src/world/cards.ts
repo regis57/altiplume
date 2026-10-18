@@ -535,13 +535,16 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     text: { fr: "Un des gardiens de Brisant vous confie sa vieille carte de la Côte : les passes, les hauts-fonds, et un trait au crayon vers des îles qui n'y figurent pas encore. Un cachet pour l'album.", en: 'One of the Breaker keepers hands you his old chart of the Shore: the channels, the shoals, and a pencil line towards islands that are not on it yet. A stamp for the album.' },
     offer: { type: 'map', stamps: 1 },
   },
+  // ---- Archipel des Lanternes ----
   {
-    kind: 'opportunity', id: 'o-goeland', weight: 2, region: 'saline',
+    // Le Goéland est l'avion de l'Archipel : il ne vient qu'une fois sa route ouverte.
+    // Le 18 octobre, il tombait dès la Côte ouverte, à 6 600 F devant une caisse de
+    // 194 F, sans ponton ni route pour lui : une carte qui ne pouvait dire que non.
+    kind: 'opportunity', id: 'o-goeland', weight: 2, region: 'archipel',
     title: { fr: 'Un Goéland à Port-Sel', en: 'A Gull at Saltharbour' },
     text: { fr: "La compagnie des bateaux-poste revend son hydravion long-courrier : une coque, deux moteurs, et de quoi tenir jusqu'à la dernière île. Elle veut quelqu'un qui le fera voler, pas quelqu'un qui le revendra.", en: 'The mail-boat company is selling its long-range seaplane: a hull, two engines, enough fuel to reach the last island. They want someone who will fly it, not someone who will sell it on.' },
     offer: { type: 'plane', model: 'goeland', price: 6600 },
   },
-  // ---- Archipel des Lanternes ----
   {
     kind: 'opportunity', id: 'o-pilote-iles', weight: 2, region: 'archipel',
     title: { fr: 'Un pilote se présente', en: 'A pilot turns up' },
