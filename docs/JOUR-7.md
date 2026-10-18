@@ -99,8 +99,10 @@ en `__Host-`. Une copie chiffrée de la base hors du NAS, gardée trois jours, r
 une fois ; deux moniteurs qui regardent le site de l'extérieur.
 
 À faire ensuite, sans récit pour le raconter : les deux constats ci-dessus ; le passage
-à Ubuntu 26 après le 19 octobre ; la restauration d'essai et le balayage de ports chaque
-trimestre ; l'accessibilité, à mesurer avec les personnes concernées. Puis, pour la
-v1.0 : trois régions, dix pilotes, deux avions.
+à Ubuntu 26 après le 19 octobre (**fait le 18**, à la demande de l'auteur, un jour avant
+la bascule de GitHub : les dix-huit jobs de la CI passent à `ubuntu-26.04` dans la
+PR #123, que la CI entière a essayée en vert avant la fusion) ; la restauration d'essai
+et le balayage de ports chaque trimestre ; l'accessibilité, à mesurer avec les personnes
+concernées. Puis, pour la v1.0 : trois régions, dix pilotes, deux avions.
 
 Jouable sur [altiplume.com](https://altiplume.com).
