@@ -52,7 +52,7 @@ d'Altiplume (personne physique, France). Version du 18 octobre 2026.
 |---|---|
 | **Finalité** | Empêcher les abus (envois massifs de liens, tentatives automatisées). |
 | **Base légale** | Intérêt légitime. |
-| **Données** | Adresse IP, en mémoire vive seulement, pour la durée de la fenêtre (quelques minutes). Jamais écrite sur disque. |
+| **Données** | Adresse IP (en IPv6, son bloc /64), sous forme d'empreinte salée, en mémoire vive seulement, pour la durée de la fenêtre (quelques minutes). Jamais écrite sur disque. |
 
 ## Traitement 6 — Formulaire de contact
 

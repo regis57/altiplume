@@ -11,6 +11,7 @@ import { registerSecurityHeaders } from './http/security.ts';
 import { englishPages, rewriteLanguage } from './http/langue.ts';
 import { registerSessionHook } from './auth/session.ts';
 import { registerAuthRoutes } from './auth/routes.ts';
+import { addressBlock } from './auth/budget.ts';
 import { registerPasskeyRoutes } from './auth/passkeys.ts';
 import { registerDeviceRoutes } from './auth/device.ts';
 import { registerAccountRoutes } from './account/routes.ts';
@@ -81,10 +82,11 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   //
   // On ne garde pas l'adresse : la clé est une empreinte courte, salée au démarrage
   // du serveur, en mémoire seulement. Elle ne survit pas à un redémarrage, et ne se
-  // remonte pas jusqu'à l'adresse.
+  // remonte pas jusqu'à l'adresse. En IPv6, la clé est le bloc /64 de l'abonné, pas
+  // l'adresse : il en a des milliards à sa disposition.
   const salt = randomBytes(16);
   const isApi = (url: string) => url.startsWith('/v1/');
-  const who = (ip: string) => createHash('sha256').update(salt).update(ip).digest('base64url').slice(0, 16);
+  const who = (ip: string) => createHash('sha256').update(salt).update(addressBlock(ip)).digest('base64url').slice(0, 16);
   await app.register(fastifyRateLimit, {
     global: true,
     max: (request) => (isApi(request.url) ? 120 : 600),
