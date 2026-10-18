@@ -168,10 +168,13 @@ export function companyFleet(db: Database, companyId: string): Fleet {
 /** Le cachet « toute la région » de chaque région (défini avec le monde). */
 const REGION_STAMP = REGION_PAGE;
 
+/** La région de l'aérodrome : les Vallées de Brume. Le reste, c'est « loin de chez soi ». */
+export const HOME_REGION: RegionId = 'brume';
+
 /** Les régions dont la route est ouverte ; celle de départ l'est toujours. */
 export function unlockedRegions(db: Database, companyId: string): RegionId[] {
   const rows = db.prepare('SELECT region FROM company_regions WHERE company_id = ? ORDER BY opened_at').all(companyId) as { region: string }[];
-  const set = new Set<RegionId>(['brume']);
+  const set = new Set<RegionId>([HOME_REGION]);
   for (const r of rows) if (findRegion(r.region)) set.add(r.region as RegionId);
   return [...set];
 }
@@ -222,6 +225,14 @@ export function restedAt(minutes: number, now: number): number | null {
 /** La ligne régulière : pas de contrat, pas de prime, pas de délai à tenir. */
 export function isStanding(card: ReturnType<typeof findCard>): boolean {
   return card?.kind === 'contract' && card.standing === true;
+}
+
+/**
+ * Ce que le pilote met de fatigue dans un vol vers cette destination : son trait
+ * « fatigue » partout, « fatigueAway » (Cœur de village) hors de la région de l'aérodrome.
+ */
+export function fatigueFactor(pilot: PilotTemplate, destination: Pick<Destination, 'region'>): number {
+  return traitFactor(pilot, 'fatigue') * (destination.region === HOME_REGION ? 1 : traitFactor(pilot, 'fatigueAway'));
 }
 
 /** Fin d'occupation d'un avion et d'un pilote : l'aller, puis le retour. */
@@ -603,7 +614,7 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     const crews: [Crew, boolean][] = [[plan, leadIncident], ...(plan.wing ? [[plan.wing, wingIncident] as [Crew, boolean]] : [])];
     for (const [crew, incident] of crews) {
       const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(crew.template, 'wear'));
-      const fatigueGain = Math.max(1, Math.round(((2 * durationMs) / 60_000) * traitFactor(crew.template, 'fatigue')));
+      const fatigueGain = Math.max(1, Math.round(((2 * durationMs) / 60_000) * fatigueFactor(crew.template, plan.destination)));
       db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(wear, crew.plane.id);
       db.prepare('UPDATE company_pilots SET fatigue = ?, fatigue_at = ? WHERE id = ?')
         .run(Math.min(FATIGUE_MAX_MIN, currentFatigue(crew.pilot, now) + fatigueGain), busyUntil({ departed_at: now, duration_ms: durationMs }), crew.pilot.id);

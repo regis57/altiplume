@@ -45,8 +45,10 @@ export const TRAITS: readonly Trait[] = [
   {
     id: 'homeheart',
     name: { fr: 'Cœur de village', en: 'Home Heart' },
-    description: { fr: "Préfère les vols courts et rentrer dîner. Fatigue vite loin de chez soi, mais attire les bonnes cartes : un peu plus de chance pour la compagnie.", en: 'Prefers short hops and being home for dinner. Tires quickly far from home, but draws the good cards: a little more luck for the company.' },
-    effects: { fatigue: 1.25, luck: 1.05 },
+    description: { fr: "Préfère les vols courts et rentrer dîner. Se fatigue un quart plus vite hors des Vallées de Brume, mais attire les bonnes cartes : un peu plus de chance pour la compagnie.", en: 'Prefers short hops and being home for dinner. Tires a quarter faster once out of Mistvale, but draws the good cards: a little more luck for the company.' },
+    // Loin de chez soi, c'est hors de la région de l'aérodrome (règle du 18/10 : avant,
+    // la fatigue × 1,25 pesait sur tous les vols, même le saut à Pont-de-Brume).
+    effects: { fatigueAway: 1.25, luck: 1.05 },
   },
   {
     id: 'luckycharm',

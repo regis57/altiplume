@@ -85,8 +85,12 @@ export interface Trait {
   readonly id: TraitId;
   readonly name: Text;
   readonly description: Text;
-  /** Modificateurs multiplicatifs appliqués par la simulation ; 1 = neutre. */
-  readonly effects: Readonly<Partial<Record<'speed' | 'fuel' | 'reliability' | 'wear' | 'range' | 'fatigue' | 'fogRisk' | 'nightRisk' | 'luck', number>>>;
+  /**
+   * Modificateurs multiplicatifs appliqués par la simulation ; 1 = neutre.
+   * `fatigue` vaut pour tous les vols ; `fatigueAway` seulement pour ceux qui se
+   * posent hors de la région de l'aérodrome (les Vallées de Brume).
+   */
+  readonly effects: Readonly<Partial<Record<'speed' | 'fuel' | 'reliability' | 'wear' | 'range' | 'fatigue' | 'fatigueAway' | 'fogRisk' | 'nightRisk' | 'luck', number>>>;
 }
 
 export type Gender = 'f' | 'm';
