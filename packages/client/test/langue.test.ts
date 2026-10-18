@@ -58,6 +58,18 @@ describe('les textes disent ce que le jeu fait', () => {
     expect(i18n.t('game.handEmpty')).toContain('midnight UTC');
   });
 
+  it("l'heure du prochain tirage se dit à l'heure du joueur, avec minuit UTC en repère", () => {
+    // Montréal : minuit UTC tombe la veille au soir, à 20 h l'été, à 19 h l'hiver.
+    i18n.setLocale('fr');
+    expect(i18n.t('game.handEmpty')).toMatch(/au prochain tirage, à (19|20) h \(minuit en temps universel\) — /);
+    expect(i18n.t('game.routeOpened')).toMatch(/au prochain tirage, à (19|20) h \(minuit en temps universel\)\.$/);
+    expect(i18n.t('game.routeOpened')).not.toMatch(/demain/i);
+    i18n.setLocale('en');
+    expect(i18n.t('game.handEmpty')).toMatch(/the next draw, at (7|8) pm \(midnight UTC\) — /);
+    expect(i18n.t('game.routeOpened')).toMatch(/the next draw, at (7|8) pm \(midnight UTC\)\.$/);
+    expect(i18n.t('game.routeOpened')).not.toMatch(/tomorrow/i);
+  });
+
   it("le gabarit n'a plus de texte français figé dans l'interface anglaise", () => {
     const layout = readFileSync(new URL('../src/layout.html', import.meta.url), 'utf8');
     // Chaque nom lu (aria-label) se traduit, sauf les boutons que le script réécrit lui-même.

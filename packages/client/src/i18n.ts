@@ -4,6 +4,7 @@
  *
  * Règle : jamais de concaténation de morceaux de phrase. Une clé, une phrase.
  */
+import { nextDrawText } from './time.ts';
 import { trustedHtml } from './trusted.ts';
 
 export type Locale = 'fr' | 'en';
@@ -70,7 +71,7 @@ const FR: Record<string, string> = {
   'game.condMissing': 'manque : ',
   'game.quoteOpen': '« ',
   'game.quoteClose': ' »',
-  'game.routeOpened': "La route est ouverte. Demain, le courrier de cette région sera dans les cartes du jour.",
+  'game.routeOpened': "La route est ouverte. Le courrier de cette région entre dans les cartes au prochain tirage, {draw}.",
   'goal.title': 'Le cap',
   'goal.nextRoute': 'Prochaine route : {region}.',
   'goal.deliver': "Livrer une première fois : {list} — la page {page} se collera dans l'album.",
@@ -112,7 +113,7 @@ const FR: Record<string, string> = {
   'game.flights': 'En vol',
   'game.noFlights': "Personne en l'air. La Grive attend devant le hangar.",
   'game.mailHelp': "Trois cartes par jour, cinq en main au plus. Un contrat s'expédie ; un imprévu se tranche — et bloque la piste tant qu'il ne l'est pas ; une opportunité se saisit ou se laisse.",
-  'game.handEmpty': 'Rien en main. De nouvelles cartes arrivent au prochain tirage, à minuit en temps universel (UTC) — la ligne régulière, elle, part quand vous voulez.',
+  'game.handEmpty': 'Rien en main. De nouvelles cartes arrivent au prochain tirage, {draw} — la ligne régulière, elle, part quand vous voulez.',
   'card.standing': 'Ligne régulière · toujours disponible',
   'game.logbook': 'Le livre de bord',
   'news.cards': 'Nouvelles cartes :',
@@ -478,7 +479,7 @@ const EN: Record<string, string> = {
   'game.condMissing': 'missing: ',
   'game.quoteOpen': '“',
   'game.quoteClose': '”',
-  'game.routeOpened': "The route is open. Tomorrow, this region's mail will be among the day's cards.",
+  'game.routeOpened': "The route is open. This region's mail joins the cards with the next draw, {draw}.",
   'goal.title': 'The heading',
   'goal.nextRoute': 'Next route: {region}.',
   'goal.deliver': 'Deliver a first bag to {list} — that fills the {page} page of the album.',
@@ -520,7 +521,7 @@ const EN: Record<string, string> = {
   'game.flights': 'In the air',
   'game.noFlights': 'Nobody is flying. The Thrush waits in front of the hangar.',
   'game.mailHelp': 'Three cards a day, five in hand at most. A contract is dispatched; a mishap is decided — and blocks the runway until it is; an opportunity is taken or left.',
-  'game.handEmpty': 'Nothing in hand. New cards come with the next draw, at midnight UTC — the regular run, though, leaves whenever you like.',
+  'game.handEmpty': 'Nothing in hand. New cards come with the next draw, {draw} — the regular run, though, leaves whenever you like.',
   'card.standing': 'Regular run · always available',
   'game.logbook': 'The logbook',
   'news.cards': 'New cards:',
@@ -880,8 +881,14 @@ export function plural(n: number, one: string, other: string): string {
   return new Intl.PluralRules(current === 'fr' ? 'fr-FR' : 'en-GB').select(n) === 'one' ? one : other;
 }
 
+/**
+ * Le texte d'une clé dans la langue courante. `{draw}` y devient l'heure du prochain
+ * tirage, à l'heure du joueur (« à 2 h (minuit en temps universel) ») : le tirage
+ * tombe à minuit UTC, qui n'est minuit que pour une partie des joueurs.
+ */
 export function t(key: string): string {
-  return DICT[current][key] ?? DICT.fr[key] ?? key;
+  const text = DICT[current][key] ?? DICT.fr[key] ?? key;
+  return text.includes('{draw}') ? text.replace('{draw}', nextDrawText(Date.now(), current)) : text;
 }
 
 /** Applique la langue courante à toute la page. */
@@ -914,6 +921,12 @@ export function translatePage(): void {
   document.querySelectorAll<HTMLElement>('[data-date]').forEach((el) => {
     const ms = Number(el.dataset['date']);
     if (Number.isFinite(ms)) el.textContent = formatDate(ms, el.dataset['dateStyle'] === 'short' ? 'short' : 'long');
+  });
+  // L'heure du prochain tirage dans l'aide : chaque article la dit dans sa langue ;
+  // sans script, le texte de la page (minuit UTC) reste.
+  document.querySelectorAll<HTMLElement>('[data-tirage]').forEach((el) => {
+    const lang = el.closest<HTMLElement>('[data-lang]')?.dataset['lang'];
+    el.textContent = nextDrawText(Date.now(), lang === 'en' || lang === 'fr' ? lang : current);
   });
   document.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => {
     el.classList.toggle('cache', el.dataset['lang'] !== current);

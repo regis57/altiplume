@@ -664,7 +664,10 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
   const list = $('main');
   if (!list) return;
   list.replaceChildren();
-  $('main-vide')?.classList.toggle('cache', c.hand.length > 0);
+  const vide = $('main-vide');
+  vide?.classList.toggle('cache', c.hand.length > 0);
+  // L'heure du prochain tirage, relue à chaque état : un changement d'heure peut la déplacer.
+  if (vide && c.hand.length === 0) vide.textContent = t('game.handEmpty');
   // La main, puis la ligne régulière — toujours là, jamais défaussée.
   const shown = [...c.hand.map((h) => h.card), ...world.cards.filter((x) => x.standing).map((x) => x.id)];
   for (const id of shown) {
