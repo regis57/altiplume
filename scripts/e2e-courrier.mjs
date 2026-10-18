@@ -87,7 +87,7 @@ try {
   assert((await page.textContent('#francs')) === '300', '300 francs au départ');
   const drawn = await page.$$eval('#main .carte:not(.reguliere)', (c) => c.length);
   assert(drawn === 3, `trois cartes du jour (${drawn})`);
-  assert((await page.textContent('#nouvelles')).includes('Cartes du jour'), 'les nouvelles annoncent le tirage');
+  assert((await page.textContent('#nouvelles')).includes('Nouvelles cartes'), 'les nouvelles annoncent le tirage');
 
   // Le cap : dès la fondation, la fiche nomme la prochaine route et ce qui manque.
   const capDepart = (await page.textContent('#cap')).replace(/\s+/g, ' ');
