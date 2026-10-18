@@ -357,15 +357,17 @@ Quatre zones à restaurer (le café et l'atelier de peinture viendront peut-êtr
 - **La piste** : pré fauché → piste roulée (900 F, le Martinet se pose) → grande piste
   (2 400 F, le Héron se pose).
 - **Le hangar** : porte de travers (1 avion) → porte neuve et établi (700 F, 2 avions,
-  entretien moins cher) → atelier (2 000 F, 3 avions). **On le voit grandir** : au
+  entretien ÷ 1,25 et usure qui redescend × 1,25 plus vite) → atelier (2 000 F,
+  3 avions, ÷ 1,5 et × 1,5). L'entretien du hangar vaut pour toute la flotte,
+  hydravions compris. **On le voit grandir** : au
   premier niveau, de la rouille sur la tôle, la porte qui bâille et une planche qui
   manque ; au deuxième, un appentis contre le mur gauche, l'établi derrière la
   fenêtre ; au troisième, un atelier à toit en dents de scie sur la droite, dont la
   cheminée fume. La peinture du hangar repeint aussi les ajouts.
 - **Le ponton** (v0.2) : la rive nue → ponton sur la rivière (1 500 F, un hydravion
   s'amarre) → double ponton et lanterne (2 800 F, deux hydravions : le second au
-  ponton flottant du milieu de la rivière). L'hydravion ne compte pas dans le hangar,
-  et le hangar ne compte pas pour lui.
+  ponton flottant du milieu de la rivière). L'hydravion ne compte pas dans les places
+  du hangar, et les places du hangar ne comptent pas pour lui.
 - **La tour** (v0.3, promise dès la conception) : un poteau → la vigie (1 200 F : on
   monte voir le temps avant chaque départ, et la brume et le vent de mer retardent un
   quart moins souvent) → la tour et son feu (3 000 F : un feu tournant balaie la
@@ -416,6 +418,13 @@ au pied du pommier.
   formulaire d'expédition, avec le temps qui reste avant qu'il reprenne son service.
   (Le serveur envoie la fatigue en crans d'une heure de vol, dix au plus ; l'écran ne
   les affiche pas.)
+- **Usure** (sur 100) : chaque vol use l'avion de 5 points au départ, 20 avec un
+  incident (× 1,2 avec « Tête brûlée », × 0,75 avec « Mains d'or »), et certains
+  imprévus l'usent au sol ; à 100, sa fiabilité perd un quart. **En l'air, rien ne se
+  répare ; au sol, l'usure redescend de dix points par heure**, × 1,25 avec l'établi
+  et × 1,5 avec l'atelier, jamais sous zéro (règle du 18/10 ; avant, elle ne
+  redescendait jamais). Un avion usé jusqu'à 100 est remis à neuf en dix heures, en six
+  heures quarante à l'atelier. L'écran affiche l'usure à jour à chaque visite.
 - **Cartes** : trois par jour de jeu (minuit UTC), dans la place qui reste d'une main
   de cinq. Les jours d'absence tirent aussi les leurs, au retour, du plus ancien au
   plus récent (le serveur ne remonte que deux jours : 3 + 3 remplissent une main

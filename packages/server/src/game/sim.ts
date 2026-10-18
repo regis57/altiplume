@@ -46,6 +46,13 @@ const SEAWIND_DELAY_MS = 15 * 60_000;
 const INCIDENT_DELAY_FACTOR = 1.3;
 const INCIDENT_WEAR = 15;
 const FLIGHT_WEAR = 5;
+/**
+ * L'usure redescend au sol, comme la fatigue : dix points par heure, multipliés par
+ * l'entretien du hangar (× 1,25 avec l'établi, × 1,5 avec l'atelier). Un avion usé
+ * jusqu'à 100 est remis à neuf en dix heures, six heures quarante à l'atelier. En l'air,
+ * rien ne redescend : le compte part du retour au sol.
+ */
+export const WEAR_RECOVERY_PER_HOUR = 10;
 
 export type News =
   | { kind: 'cards.drawn'; count: number }
@@ -235,6 +242,44 @@ export function fatigueFactor(pilot: PilotTemplate, destination: Pick<Destinatio
   return traitFactor(pilot, 'fatigue') * (destination.region === HOME_REGION ? 1 : traitFactor(pilot, 'fatigueAway'));
 }
 
+/** L'entretien du hangar : 1 avec la porte de travers, 1,25 avec l'établi, 1,5 avec l'atelier. */
+export function hangarMaintenance(db: Database, companyId: string): number {
+  const level = (db.prepare("SELECT level FROM company_zones WHERE company_id = ? AND zone = 'hangar'").get(companyId) as { level: number } | undefined)?.level ?? 1;
+  return WORLD.zones.find((z) => z.id === 'hangar')!.levels.find((l) => l.level === level)?.maintenance ?? 1;
+}
+
+/** Combien de millisecondes au sol effacent un point d'usure, à cet entretien (6 min, 4 min 48 s, 4 min). */
+function msPerWearPoint(maintenance: number): number {
+  return Math.round(3_600_000 / (WEAR_RECOVERY_PER_HOUR * maintenance));
+}
+
+/**
+ * Usure effective, entière. `wear_at` est l'heure à laquelle `wear` a été comptée (le
+ * retour au sol après un vol) : avant, rien ne bouge ; après, un point par
+ * `msPerWearPoint`, sans descendre sous zéro.
+ */
+export function currentWear(row: { wear: number; wear_at: number }, now: number, maintenance: number): number {
+  const points = Math.floor(Math.max(0, now - row.wear_at) / msPerWearPoint(maintenance));
+  return Math.max(0, row.wear - points);
+}
+
+/**
+ * Inscrit en base ce que les avions au sol ont récupéré depuis la dernière fois. Seul
+ * le temps qui a effacé des points entiers est consommé : le reste compte pour la
+ * suite, et une page rechargée toutes les minutes ne perd rien à l'arrondi.
+ */
+export function restPlanes(db: Database, companyId: string, now: number): void {
+  const step = msPerWearPoint(hangarMaintenance(db, companyId));
+  const planes = db.prepare(`SELECT id, wear, wear_at FROM company_planes WHERE company_id = ? AND wear_at < ?
+    AND id NOT IN (SELECT plane_id FROM flights WHERE company_id = ? AND departed_at + 2 * duration_ms > ?)`).all(companyId, now, companyId, now) as { id: string; wear: number; wear_at: number }[];
+  for (const p of planes) {
+    const points = Math.floor((now - p.wear_at) / step);
+    if (points <= 0) continue;
+    if (points >= p.wear) db.prepare('UPDATE company_planes SET wear = 0, wear_at = ? WHERE id = ?').run(now, p.id);
+    else db.prepare('UPDATE company_planes SET wear = ?, wear_at = ? WHERE id = ?').run(p.wear - points, p.wear_at + points * step, p.id);
+  }
+}
+
 /** Fin d'occupation d'un avion et d'un pilote : l'aller, puis le retour. */
 export function busyUntil(f: Pick<FlightRow, 'departed_at' | 'duration_ms'>): number {
   return f.departed_at + 2 * f.duration_ms;
@@ -324,6 +369,8 @@ export function drawCards(
 export function settle(db: Database, company: Company, playerId: string, now: number): News[] {
   return transaction(db, () => {
     const news: News[] = [];
+    // 0. L'usure des avions au sol redescend.
+    restPlanes(db, company.id, now);
     const row = db.prepare('SELECT last_draw_day, flights_count, deadlines_met FROM companies WHERE id = ?').get(company.id) as { last_draw_day: number; flights_count: number; deadlines_met: number };
 
     // 1. Les vols arrivés et pas encore encaissés.
@@ -469,9 +516,13 @@ export interface DispatchPlan extends Crew {
 function checkCrew(
   db: Database, company: Company, destination: Destination, planeId: string, pilotId: string, busy: readonly { plane_id: string; pilot_id: string }[], now: number, bags?: number,
 ): { ok: true; crew: Crew } | { ok: false; error: DispatchError } {
-  const plane = db.prepare('SELECT id, model, wear FROM company_planes WHERE id = ? AND company_id = ?').get(planeId, company.id) as PlaneRow | undefined;
-  const model = plane ? findPlane(plane.model) : undefined;
-  if (!plane || !model) return { ok: false, error: 'plane_unknown' };
+  const row = db.prepare('SELECT id, model, wear, wear_at FROM company_planes WHERE id = ? AND company_id = ?').get(planeId, company.id) as (PlaneRow & { wear_at: number }) | undefined;
+  const model = row ? findPlane(row.model) : undefined;
+  if (!row || !model) return { ok: false, error: 'plane_unknown' };
+  // Un hangar équipé entretient mieux : l'établi divise l'entretien par 1,25, l'atelier par 1,5,
+  // et l'usure redescend d'autant plus vite au sol.
+  const maintenance = hangarMaintenance(db, company.id);
+  const plane: PlaneRow = { id: row.id, model: row.model, wear: currentWear(row, now, maintenance) };
   const pilot = db.prepare('SELECT * FROM company_pilots WHERE id = ? AND company_id = ?').get(pilotId, company.id) as PilotRow | undefined;
   const template = pilot ? findPilot(pilot.pilot) : undefined;
   if (!pilot || !template) return { ok: false, error: 'pilot_unknown' };
@@ -493,8 +544,6 @@ function checkCrew(
     const home = WORLD.zones.find((z) => z.id === 'runway')!.levels.find((l) => l.level === zone('runway'))?.runway ?? 'short';
     if (RUNWAY_ORDER[model.runway] > RUNWAY_ORDER[home]) return { ok: false, error: 'home_runway_too_short' };
   }
-  // Un hangar équipé entretient mieux : l'établi divise l'entretien par 1,25, l'atelier par 1,5.
-  const maintenance = WORLD.zones.find((z) => z.id === 'hangar')!.levels.find((l) => l.level === zone('hangar'))?.maintenance ?? 1;
   const cost = Math.round(template.wage + (model.upkeep * traitFactor(template, 'fuel')) / maintenance);
   // L'hiver, la neige et le froid rallongent les vols.
   const durationMs = Math.round(flightDurationMs(destination, model, traitFactor(template, 'speed')) * seasonEffect(now, 'duration'));
@@ -611,11 +660,13 @@ export function dispatch(db: Database, company: Company, playerId: string, plan:
     db.prepare('DELETE FROM company_hand WHERE company_id = ? AND card = ?').run(company.id, plan.card.id);
     db.prepare('UPDATE companies SET francs = francs - ?, flights_count = flights_count + 1 WHERE id = ?').run(debit, company.id);
     // Chaque équipage s'use et se fatigue pour lui-même : du temps passé en l'air, aller et retour, au trait du pilote près.
+    // L'usure, comme la fatigue, ne redescend qu'une fois l'avion rentré.
     const crews: [Crew, boolean][] = [[plan, leadIncident], ...(plan.wing ? [[plan.wing, wingIncident] as [Crew, boolean]] : [])];
     for (const [crew, incident] of crews) {
       const wear = Math.round((FLIGHT_WEAR + (incident ? INCIDENT_WEAR : 0)) * traitFactor(crew.template, 'wear'));
       const fatigueGain = Math.max(1, Math.round(((2 * durationMs) / 60_000) * fatigueFactor(crew.template, plan.destination)));
-      db.prepare('UPDATE company_planes SET wear = MIN(100, wear + ?) WHERE id = ?').run(wear, crew.plane.id);
+      db.prepare('UPDATE company_planes SET wear = ?, wear_at = ? WHERE id = ?')
+        .run(Math.min(100, crew.plane.wear + wear), busyUntil({ departed_at: now, duration_ms: durationMs }), crew.plane.id);
       db.prepare('UPDATE company_pilots SET fatigue = ?, fatigue_at = ? WHERE id = ?')
         .run(Math.min(FATIGUE_MAX_MIN, currentFatigue(crew.pilot, now) + fatigueGain), busyUntil({ departed_at: now, duration_ms: durationMs }), crew.pilot.id);
     }
@@ -647,6 +698,7 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
       if (e.wear) {
         // L'avion le moins usé parmi ceux qui sont au sol — jamais un avion en l'air —
         // et un hydravion quand l'imprévu parle de coque ou de flotteurs.
+        restPlanes(db, company.id, now);
         const water = WORLD.planes.filter((p) => p.runway === 'water').map((p) => p.id);
         const grounded = (db.prepare('SELECT id, model, wear FROM company_planes WHERE company_id = ? ORDER BY wear').all(company.id) as { id: string; model: string; wear: number }[])
           .filter((p) => !db.prepare('SELECT 1 FROM flights WHERE plane_id = ? AND departed_at + 2 * duration_ms > ?').get(p.id, now))
@@ -684,7 +736,7 @@ export function playCard(db: Database, company: Company, cardId: string, choiceI
           .filter((r) => waterModels.includes(r.model) === seaplane).length;
         if (owned >= capacity) return { ok: false as const, error: seaplane ? 'no_pontoon' as const : 'hangar_full' as const };
         if (company.francs < offer.price) return { ok: false as const, error: 'not_enough_francs' as const };
-        db.prepare('INSERT INTO company_planes (id, company_id, model, wear, acquired_at) VALUES (?, ?, ?, 10, ?)').run(newId(), company.id, model.id, now);
+        db.prepare('INSERT INTO company_planes (id, company_id, model, wear, wear_at, acquired_at) VALUES (?, ?, ?, 10, ?, ?)').run(newId(), company.id, model.id, now, now);
         db.prepare('UPDATE companies SET francs = francs - ? WHERE id = ?').run(offer.price, company.id);
         effects['francs'] = -offer.price; ref = model.id;
         ledger(db, company.id, now, 'purchase.plane', -offer.price, model.id);
@@ -781,6 +833,8 @@ export function upgradeZone(db: Database, company: Company, zoneId: string, now:
     if (!next) return { ok: false as const, error: 'zone_max' as const };
     const francs = (db.prepare('SELECT francs FROM companies WHERE id = ?').get(company.id) as { francs: number }).francs;
     if (francs < next.cost) return { ok: false as const, error: 'not_enough_francs' as const };
+    // Le nouvel atelier entretient mieux à partir de maintenant, pas rétroactivement.
+    if (zoneId === 'hangar') restPlanes(db, company.id, now);
     db.prepare('UPDATE companies SET francs = francs - ? WHERE id = ?').run(next.cost, company.id);
     db.prepare('UPDATE company_zones SET level = ? WHERE company_id = ? AND zone = ?').run(next.level, company.id, zoneId);
     ledger(db, company.id, now, 'build.zone', -next.cost, `${zoneId}:${next.level}`);

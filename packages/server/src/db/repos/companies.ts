@@ -50,7 +50,7 @@ export function foundCompany(db: Database, playerId: string, name: string, now: 
     db.prepare('INSERT INTO companies (id, player_id, name, francs, stamps, founded_at) VALUES (?, ?, ?, ?, ?, ?)')
       .run(id, playerId, name, WORLD.start.francs, WORLD.start.stamps, now);
     for (const model of WORLD.start.planes) {
-      db.prepare('INSERT INTO company_planes (id, company_id, model, wear, acquired_at) VALUES (?, ?, ?, 0, ?)').run(newId(), id, model, now);
+      db.prepare('INSERT INTO company_planes (id, company_id, model, wear, wear_at, acquired_at) VALUES (?, ?, ?, 0, ?, ?)').run(newId(), id, model, now, now);
     }
     for (const pilot of WORLD.start.pilots) {
       db.prepare('INSERT INTO company_pilots (id, company_id, pilot, hired_at) VALUES (?, ?, ?, ?)').run(newId(), id, pilot, now);

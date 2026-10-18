@@ -365,4 +365,19 @@ export const MIGRATIONS: readonly Migration[] = [
       for (const p of players) update.run(foldNickname(p.nickname), p.id);
     },
   },
+  {
+    version: 17,
+    name: 'usure-au-sol',
+    sql: `
+      -- L'usure redescend au sol (18/10), comme la fatigue des pilotes : wear est
+      -- l'usure à l'instant wear_at, d'où elle redescend tant que l'avion ne vole pas.
+      -- Les avions déjà là repartent de maintenant (ou de leur retour, s'ils volent) :
+      -- rien n'est réparé d'avance, rien n'est retiré.
+      ALTER TABLE company_planes ADD COLUMN wear_at INTEGER NOT NULL DEFAULT 0;
+      UPDATE company_planes SET wear_at = MAX(
+        CAST(strftime('%s', 'now') AS INTEGER) * 1000,
+        COALESCE((SELECT MAX(f.departed_at + 2 * f.duration_ms) FROM flights f WHERE f.plane_id = company_planes.id), 0)
+      );
+    `,
+  },
 ];

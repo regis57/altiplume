@@ -91,7 +91,7 @@ Cinq archétypes au lancement complet, trois dans la première version :
 | Hydravion | moyenne | moyenne | lente | bonne | Obligatoire sur la Côte et l'Archipel |
 | Long-courrier | très longue | moyenne | moyenne | fragile | Grand Blanc, Désert |
 
-Usure à chaque vol, entretien au hangar, pièces améliorables à l'atelier (moteur, réservoir, soute, instruments).
+Usure à chaque vol, entretien au hangar : au sol, l'usure redescend de dix points par heure, une fois et quart plus vite avec l'établi, une fois et demie avec l'atelier (règle du 18 octobre 2026 ; un avion usé ne le reste pas, l'absence répare). Pièces améliorables à l'atelier (moteur, réservoir, soute, instruments).
 
 ### 4.4 Les cartes
 Le moteur de variété du jeu, et l'héritage des démos de Tarot et de 8 américain.
