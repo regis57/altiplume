@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import type { AppContext } from '../context.ts';
 import { transaction } from '../db/database.ts';
 import { audit } from '../db/repos/audit.ts';
+import { createMailBudget } from './budget.ts';
 import { consumeMagicLink, countRecentLinks, createMagicLink } from '../db/repos/magicLinks.ts';
 import { createPlayer, findPlayerByEmail, nicknameTaken } from '../db/repos/players.ts';
 import { magicLinkMessage } from '../mail/mailer.ts';
@@ -50,6 +51,7 @@ const verifySchema = {
 
 export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void {
   const verifyUrl = (token: string) => `${ctx.config.publicOrigin}/verifier?jeton=${encodeURIComponent(token)}`;
+  const budget = createMailBudget(ctx.db);
 
   /**
    * Prépare le lien et confie le courrier à l'envoi, sans l'attendre : la réponse
@@ -64,13 +66,14 @@ export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void 
       return;
     }
     const token = createMagicLink(ctx.db, email, purpose, payload, now);
+    const release = budget.reserve(purpose);
     ctx.mailer.send(magicLinkMessage(email, verifyUrl(token), purpose, locale)).then(
       () => audit(ctx.db, 'magic_link.sent', null, { purpose }, now),
       () => {
         audit(ctx.db, 'magic_link.failed', null, { purpose }, now);
         app.log.warn({ purpose }, 'magic_link.failed');
       },
-    ).catch(() => undefined);
+    ).catch(() => undefined).finally(release);
   }
 
   /**
@@ -100,6 +103,13 @@ export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void 
     if (nicknameTaken(ctx.db, nickname)) {
       return reply.code(409).send({ error: 'invalid', fields: ['nickname_taken'] });
     }
+    // Le plafond du jour est regardé avant l'adresse : la réponse ne dit pas qui est inscrit.
+    const full = budget.refusal('signup', ctx.now());
+    if (full) {
+      audit(ctx.db, 'magic_link.rejected', null, { reason: full }, ctx.now());
+      app.log.warn({ reason: full }, 'magic_link.daily_cap');
+      return reply.code(503).send({ error: 'invalid', fields: [full] });
+    }
     const existing = findPlayerByEmail(ctx.db, email);
     if (existing) {
       sendLink(email, 'login', locale, null);
@@ -117,6 +127,12 @@ export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext): void 
     const body = request.body as { email: string; locale?: string };
     const email = normalizeEmail(body.email);
     const locale: Locale = isLocale(body.locale) ? body.locale : 'fr';
+    const full = budget.refusal('login', ctx.now());
+    if (full) {
+      audit(ctx.db, 'magic_link.rejected', null, { reason: full }, ctx.now());
+      app.log.warn({ reason: full }, 'magic_link.daily_cap');
+      return reply.code(503).send({ error: 'invalid', fields: [full] });
+    }
     if (isValidEmail(email)) {
       const player = findPlayerByEmail(ctx.db, email);
       if (player) sendLink(email, 'login', (isLocale(player.locale) ? player.locale : locale), null);
