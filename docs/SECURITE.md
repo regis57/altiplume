@@ -172,8 +172,8 @@ autres écarts relevés par la revue ont été corrigés, fusionnés entre 17 h 
   `latest` désigne exactement l'empreinte vérifiée.
 
 **Reste à constater** :
-- le premier contrôle du lundi capable d'échouer, le 20 octobre, qui sera aussi le
-  premier sur Ubuntu 26 ;
+- le contrôle du lundi 26 octobre : il sera le premier à examiner l'image contenant
+  fastify 5.12.7, mise en ligne le 19 octobre au soir ;
 - qu'une copie de la base sur le NAS, prise après le redéploiement, ne contient plus
   l'adresse d'un compte effacé : vérifié par les tests, pas encore sur un vrai fichier.
 
@@ -240,7 +240,12 @@ DKIM, DMARC, CAA, adresses, MX), les en-têtes réellement servis, la redirectio
 HTTP → HTTPS, l'absence de cookie à l'accueil. Il doit échouer tant qu'un point est
 sous l'attendu — premier passage le 11 octobre à 17 h 03 : **vert**. Jusqu'au 18 octobre,
 il ne pouvait pas échouer (voir le bilan du 18 octobre) ; le premier passage qui le
-peut est celui du lundi 20 octobre.
+peut est celui du lundi 19 octobre (le lundi tombe le 19, pas le 20 : une erreur de
+date, corrigée le 20 octobre). Constaté : il a tourné ce jour-là à 12 h 49 (heure de
+Paris), sur le commit `531879f`, avec ses trois jobs (contrôle externe, image publiée,
+ZAP sur le site public) sur Ubuntu 26.04, et il est **vert**. Il est le premier
+capable d'échouer et le premier sur Ubuntu 26. Le détail de chaque alerte n'a pas été
+relu ce jour-là : seul le verdict des trois jobs est constaté.
 securityheaders.com et l'évaluateur CSP n'ont pas d'API : ils se relancent à la
 main.
 
