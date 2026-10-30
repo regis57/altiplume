@@ -171,9 +171,13 @@ autres écarts relevés par la revue ont été corrigés, fusionnés entre 17 h 
   `latest`. Constaté sur la publication de 17 h 57 : la revérification a tourné, et
   `latest` désigne exactement l'empreinte vérifiée.
 
+**Constaté le 26 octobre** : le contrôle du lundi a tourné à 12 h 10 (heure de Paris), sur
+le commit `68c057d`, et ses trois jobs (contrôle externe, image publiée, ZAP sur le site
+public) sont **verts**. L'image qu'il a examinée est celle qui tourne en ligne (révision
+`68c057d`, construite le 20 octobre), qui contient fastify 5.12.7. Seul le verdict des
+trois jobs est constaté, pas le détail de chaque alerte.
+
 **Reste à constater** :
-- le contrôle du lundi 26 octobre : il sera le premier à examiner l'image contenant
-  fastify 5.12.7, mise en ligne le 19 octobre au soir ;
 - qu'une copie de la base sur le NAS, prise après le redéploiement, ne contient plus
   l'adresse d'un compte effacé : vérifié par les tests, pas encore sur un vrai fichier.
 
