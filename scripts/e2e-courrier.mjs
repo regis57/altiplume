@@ -143,9 +143,9 @@ try {
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   const news = await page.textContent('#nouvelles');
-  assert(news.includes('Prosper Chickenman est rentré de Pont-de-Brume') && news.includes('+41 F') && news.includes('délai tenu'), `nouvelles d'arrivée (${news})`);
+  assert(news.includes('Prosper Chickenman est rentré de Pont-de-Brume') && news.includes('+51 F') && news.includes('délai tenu'), `nouvelles d'arrivée (${news})`);
   assert(news.includes('Premier vol') && news.includes('Pont-de-Brume'), 'deux nouvelles pages dans l\'album');
-  assert((await page.textContent('#francs')) === '327', 'encaissé : 286 + 33 + 8');
+  assert((await page.textContent('#francs')) === '337', 'encaissé : 286 + 41 + 10');
   assert((await page.textContent('#vols .vol')).includes('Sur le retour'), 'avion sur le retour');
   const gagnees = await page.$$eval('#album .page.gagnee', (p) => p.length);
   // Fondation, Premier vol, Pont-de-Brume, et la première livraison de la saison en cours.
@@ -173,7 +173,7 @@ try {
   await bougie.locator('button', { hasText: 'Changer la bougie' }).click();
   await page.waitForSelector('#jeu-message.ok');
   assert((await page.textContent('#jeu-message')).includes('ronronne'), 'le dénouement s\'affiche');
-  assert((await page.textContent('#francs')) === '315', '12 F de bougie');
+  assert((await page.textContent('#francs')) === '325', '12 F de bougie');
 
   // Trusted Types : la politique « altiplume » existe (on ne peut pas la recréer), une chaîne brute
   // est refusée dans un puits d'injection, et les textes à balises sont bien rendus par la politique.

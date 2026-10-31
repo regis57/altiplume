@@ -138,15 +138,15 @@ describe('le courrier — expédier', () => {
     s = await t.state();
     expect(s.flights[0].status).toBe('returning');
     expect(s.flights[0].settled).toBe(true);
-    expect(s.francs).toBe(286 + 33 + 8); // récompense + bonus de délai (4 h)
-    expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 41, bonus: true, incident }));
+    expect(s.francs).toBe(286 + 41 + 10); // récompense + bonus de délai (4 h)
+    expect(s.news).toContainEqual(expect.objectContaining({ kind: 'flight.arrived', destination: 'pont-de-brume', francs: 51, bonus: true, incident }));
     // Le test vit le 11 octobre : la première livraison de l'automne colle aussi sa page.
     expect(s.news.map((n: { kind: string; stamp?: string }) => n.stamp).filter(Boolean)).toEqual(['s-premier-vol', 's-pont-de-brume', 's-automne']);
     expect(s.pilots[0].affinity).toBe(1);
     expect(s.pilots[0].morale).toBe(incident ? 10 : 11);
     expect(s.planes[0].wear).toBeGreaterThanOrEqual(5);
     expect(s.album.map((a: { id: string }) => a.id)).toEqual(['s-fondation', 's-premier-vol', 's-pont-de-brume', 's-automne']);
-    expect((await t.state()).francs).toBe(327); // pas de double encaissement
+    expect((await t.state()).francs).toBe(337); // pas de double encaissement
     // Rentré, disponible.
     t.advance(duration);
     s = await t.state();
@@ -157,7 +157,7 @@ describe('le courrier — expédier', () => {
 
   it('ne verse pas le bonus quand le délai souple est dépassé, et ne punit pas', async () => {
     const t = await company();
-    t.clearHand(); t.give('c-urgent-pont'); // délai 2 h, bonus 18
+    t.clearHand(); t.give('c-urgent-pont'); // délai 2 h, bonus 31
     const s0 = await t.state();
     // Avec un avion déjà usé, l'aléa est plus probable, mais le délai de 2 h tient sur 5 min : forçons un retard par un imprévu.
     await t.json('POST', '/v1/company/flights', { card: 'c-urgent-pont', plane: s0.planes[0].id, pilot: s0.pilots[0].id }, t.cookie);
@@ -165,8 +165,8 @@ describe('le courrier — expédier', () => {
     t.advance(3 * 3_600_000 + 1);
     const s = await t.state();
     const arrived = s.news.find((n: { kind: string }) => n.kind === 'flight.arrived');
-    expect(arrived).toMatchObject({ bonus: false, francs: 58 });
-    expect(s.francs).toBe(300 - 14 + 58);
+    expect(arrived).toMatchObject({ bonus: false, francs: 73 });
+    expect(s.francs).toBe(300 - 14 + 73);
     await t.app.close();
   });
 
