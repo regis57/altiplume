@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { awaitedPilot, canAfford, HAND_SIZE, planeOffer, secondPlaneHint, type OfferCompany, type OfferWorld } from '../src/offre.ts';
 
@@ -24,7 +25,7 @@ const alizee: OfferCompany = { francs: 818, planes: [{ model: 'grive' }], pilots
 describe("la carte d'un avion dit ce qu'il faut, avant le clic", () => {
   it('le Héron à 5 600 F : ni l\'argent, ni la place, ni la piste ; achat grisé', () => {
     expect(planeOffer(world, alizee, 'heron', 5600)).toEqual({
-      seaplane: false, money: false, place: false, runway: false, runwayName: 'Grande piste', canBuy: false, pilot: 'nextDraw', pilotsMissing: 1,
+      seaplane: false, money: false, place: false, runway: false, runwayName: 'Grande piste', canBuy: false, canWait: true, pilot: 'nextDraw', pilotsMissing: 1,
     });
   });
 
@@ -35,12 +36,54 @@ describe("la carte d'un avion dit ce qu'il faut, avant le clic", () => {
 
   it('la Grive d\'occasion : place au hangar à deux places, piste déjà bonne', () => {
     expect(planeOffer(world, { ...alizee, francs: 1500, zones: { hangar: 2 } }, 'grive', 1500))
-      .toEqual({ seaplane: false, money: true, place: true, runway: true, runwayName: 'Pré fauché', canBuy: true, pilot: 'nextDraw', pilotsMissing: 1 });
+      .toEqual({ seaplane: false, money: true, place: true, runway: true, runwayName: 'Pré fauché', canBuy: true, canWait: false, pilot: 'nextDraw', pilotsMissing: 1 });
   });
 
   it("l'hydravion compte les places au ponton, pas au hangar, et ne demande pas de piste", () => {
     expect(planeOffer(world, { ...alizee, francs: 5000 }, 'sterne', 3850)).toMatchObject({ seaplane: true, place: false, runwayName: null, canBuy: false });
     expect(planeOffer(world, { ...alizee, francs: 5000, zones: { ponton: 2 } }, 'sterne', 3850)).toMatchObject({ place: true, runway: true, canBuy: true });
+  });
+});
+
+/**
+ * Les vrais avions et les vrais niveaux du hangar et du ponton : monde-du-cap.json, que
+ * `packages/server/test/world.test.ts` tient à jour (les noms de niveau n'y sont pas ;
+ * ils ne servent qu'à nommer la piste).
+ */
+const monde = JSON.parse(readFileSync(new URL('./monde-du-cap.json', import.meta.url), 'utf8')) as {
+  planes: { id: string; runway: string }[];
+  zones: { id: string; levels: { level: number; planes?: number; seaplanes?: number; runway?: string }[] }[];
+};
+const vrai: OfferWorld = { planes: monde.planes, cards: world.cards, zones: monde.zones.map((z) => ({ id: z.id, levels: z.levels.map((l) => ({ ...l, name: `niveau ${l.level}` })) })) };
+
+describe("une carte d'avion trop chère peut attendre dans la main, et le dit", () => {
+  // Le 31 octobre, l'étude de la progression : garder la carte de la Grive le temps de
+  // réunir la somme avance le deuxième avion ; rien ne disait qu'elle pouvait attendre.
+  const grive: OfferCompany = { ...alizee, zones: { hangar: 2 }, hand: [{ card: 'o-grive' }] };
+
+  it('818 F pour une Grive à 1 500 F, une place au hangar : trop chère pour l\'instant, elle peut attendre', () => {
+    expect(planeOffer(vrai, grive, 'grive', 1500)).toMatchObject({ money: false, place: true, canBuy: false, canWait: true });
+  });
+
+  it("ni l'argent ni la place, mais le hangar peut encore grandir : elle peut attendre", () => {
+    expect(planeOffer(vrai, { ...grive, zones: {} }, 'grive', 1500)).toMatchObject({ money: false, place: false, canBuy: false, canWait: true });
+  });
+
+  it("de quoi l'acheter : rien à attendre, même si la piste manque (elle n'avertit que)", () => {
+    expect(planeOffer(vrai, { ...grive, francs: 1500 }, 'grive', 1500)).toMatchObject({ canBuy: true, canWait: false });
+    expect(planeOffer(vrai, { ...grive, francs: 6000 }, 'heron', 5600)).toMatchObject({ runway: false, canBuy: true, canWait: false });
+  });
+
+  it("l'atelier plein, trois avions : la place ne viendra jamais, la carte ne dit pas d'attendre", () => {
+    const pleine: OfferCompany = { ...grive, planes: [{ model: 'grive' }, { model: 'grive' }, { model: 'pic' }], zones: { hangar: 3 } };
+    expect(planeOffer(vrai, pleine, 'grive', 1500)).toMatchObject({ money: false, place: false, canWait: false });
+    expect(planeOffer(vrai, { ...pleine, francs: 6000 }, 'grive', 1500)).toMatchObject({ money: true, place: false, canBuy: false, canWait: false });
+  });
+
+  it("un hydravion attend le ponton ; le double ponton plein, plus rien à attendre", () => {
+    expect(planeOffer(vrai, { ...grive, francs: 5000 }, 'sterne', 3850)).toMatchObject({ place: false, canBuy: false, canWait: true });
+    const quai: OfferCompany = { ...grive, francs: 5000, planes: [{ model: 'grive' }, { model: 'sterne' }, { model: 'goeland' }], zones: { ponton: 3 } };
+    expect(planeOffer(vrai, quai, 'sterne', 3850)).toMatchObject({ place: false, canBuy: false, canWait: false });
   });
 });
 

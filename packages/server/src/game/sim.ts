@@ -467,9 +467,11 @@ export function settle(db: Database, company: Company, playerId: string, now: nu
     if (deadlinesMet !== row.deadlines_met) db.prepare('UPDATE companies SET deadlines_met = ? WHERE id = ?').run(deadlinesMet, company.id);
 
     // 2. Le tirage du jour, une fois par jour de jeu, dans la place qui reste.
-    // Les jours d'absence tirent aussi leurs cartes, du plus ancien au plus récent :
-    // seules se perdent celles qu'on n'a pas la place de prendre. Deux jours suffisent
-    // à remplir une main vide (3 + 3 ≥ 5) ; une compagnie neuve ne tire que le jour même.
+    // Après une absence, la veille puis le jour tirent leurs cartes (`first`) : deux jours
+    // suffisent à remplir une main vide (3 + 3 ≥ 5), les jours d'avant n'en donneraient pas
+    // une de plus — leurs cartes sont parties avec d'autres. Une carte qui ne trouve pas de
+    // place est perdue pour ce tirage ; elle peut revenir à un autre. Une compagnie neuve
+    // ne tire que le jour même. (L'aide le dit ainsi : aide.test.ts.)
     const today = gameDayIndex(now);
     if (row.last_draw_day < today) {
       const fleet = companyFleet(db, company.id);

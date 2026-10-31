@@ -92,4 +92,15 @@ describe('les textes disent ce que le jeu fait', () => {
     expect(i18n.t('footer.source')).toBe('Source code (AGPL-3.0)');
     expect(i18n.t('nav.home')).toBe('Altiplume, home');
   });
+
+  it("la carte d'un avion qui peut attendre le dit dans les deux langues : elle n'expire pas, elle prend une place", () => {
+    // Une clé absente en anglais retomberait sur le français : le test le verrait.
+    i18n.setLocale('fr');
+    const fr = i18n.t('offer.canWait');
+    expect(fr).toContain("Elle n'expire pas ; elle y prend seulement une place.");
+    i18n.setLocale('en');
+    const en = i18n.t('offer.canWait');
+    expect(en).toContain("It doesn't expire; it just takes up room.");
+    expect(en).not.toBe(fr);
+  });
 });
