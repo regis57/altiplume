@@ -156,11 +156,29 @@ try {
   assert(news.includes("Anse-aux-Goémons") && news.includes("Sur l'eau"), `nouvelles d'amerrissage (${news})`);
   if (shots) await page.screenshot({ path: join(shots, 'e2e-saline-3-amerrissage.png'), fullPage: true });
 
+  // Le cas du 31 octobre : deux Grives au hangar à deux places, le pré fauché, la Forêt
+  // ouverte. Pour Marais-Blanc, le cap désignait le Martinet (5 500 F en tout) ; il dit
+  // maintenant le Pic et l'atelier, chaque prix et le total, avec les chiffres que le
+  // navigateur reçoit du serveur — et ne propose plus de pilote qu'on ne choisit pas.
+  db.exec("INSERT INTO company_planes (id, company_id, model, wear, acquired_at) SELECT 'grive-2', id, 'grive', 10, 0 FROM companies");
+  db.exec("UPDATE company_zones SET level = 2 WHERE zone = 'hangar'");
+  db.exec("INSERT OR IGNORE INTO company_regions (company_id, region, opened_at) SELECT id, 'cuivre', founded_at FROM companies");
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  const capPrix = (await page.textContent('#cap')).replace(/\s+/g, ' ');
+  assert(capPrix.includes('Prochaine route : Archipel des Lanternes')
+    && capPrix.includes("Marais-Blanc : hors de portée de la flotte. Il y faut un avion qui porte plus loin (Pic P-1, 3 150 F d'occasion) et une place de plus au hangar (2 000 F) — 5 150 F en tout."),
+    `le cap dit le Pic, ses prix et le total (${capPrix})`);
+  assert(!capPrix.includes('Martinet') && !capPrix.includes('Longues routes'), `ni Martinet ni pilote à choisir (${capPrix})`);
+
   // Et en anglais.
   // L'aérodrome se recharge de lui-même dans la nouvelle langue.
   await Promise.all([page.waitForEvent('load'), page.click('[data-action=toggle-lang]')]);
   await page.waitForSelector('#aerodrome:not(.cache)');
   assert((await page.textContent('#routes')).includes('Saltshore') && (await page.textContent('#routes')).includes('Route open'), 'routes en anglais');
+  const capEn = (await page.textContent('#cap')).replace(/\s+/g, ' ');
+  assert(capEn.includes("Whitefen: beyond the fleet's range. That takes a longer-range plane (Woodpecker W-1, 3,150 F second-hand) and another hangar bay (2,000 F) — 5,150 F all told."),
+    `le cap en anglais, ses prix et le total (${capEn})`);
   db.close();
   process.stdout.write('e2e saline : tout est passé.\n');
 } finally {

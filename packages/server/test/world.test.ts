@@ -188,6 +188,20 @@ describe('le monde — intégrité', () => {
     }
   });
 
+  it("laisse le cap choisir l'avion au prix : tout avion qui va à une escale y porte un contrat ordinaire", () => {
+    // Le cap (packages/client/src/cap.ts) désigne l'avion du remède le moins cher sans
+    // compter les sacs. Il faut donc que chacun de ceux qui se posent à une escale et y vont
+    // (au mieux avec un pilote de Longues routes) puisse y porter un contrat de toute saison,
+    // sans convoi ni page préalable : sinon le cap désignerait un avion qui n'y livre rien.
+    for (const d of WORLD.destinations) {
+      const ordinary = WORLD.cards.filter((c) => c.kind === 'contract' && c.destination === d.id && !c.heavy && !c.season && !c.requires);
+      for (const p of WORLD.planes) {
+        if (!canLand(p, d) || d.distance > p.range * 1.2) continue;
+        expect(ordinary.some((c) => c.kind === 'contract' && c.bags <= p.capacity), `${p.id} à ${d.id}`).toBe(true);
+      }
+    }
+  });
+
   it('enchaîne la cloche : la cire, puis le bronze en convoi, puis la cloche en convoi', () => {
     const bronze = findCard('c-bronze')!; const cloche = findCard('c-cloche')!;
     expect(bronze.kind === 'contract' && bronze.heavy && bronze.requires === 's-sonnefeuille' && bronze.stamp === 's-fonderie').toBe(true);
@@ -303,10 +317,15 @@ describe('le monde — intégrité', () => {
     const view = {
       regions: w.regions.map((r) => ({ id: r.id, page: r.page, ...(r.route ? { route: r.route } : {}) })),
       destinations: w.destinations.map((d) => ({ id: d.id, region: d.region, distance: d.distance, runway: d.runway })),
-      planes: w.planes.map((p) => ({ id: p.id, range: p.range, runway: p.runway, price: p.price, capacity: p.capacity, speed: p.speed, upkeep: p.upkeep })),
+      // Sans le prix de catalogue : personne ne le paie. Un avion s'achète par sa carte (ci-dessous).
+      planes: w.planes.map((p) => ({ id: p.id, range: p.range, runway: p.runway, capacity: p.capacity, speed: p.speed, upkeep: p.upkeep })),
       pilots: w.pilots.map((p) => ({ id: p.id, traits: p.traits, wage: p.wage })),
       traits: w.traits.map((t) => ({ id: t.id, ...(t.range ? { range: t.range } : {}), ...(t.speed ? { speed: t.speed } : {}), ...(t.fuel ? { fuel: t.fuel } : {}) })),
-      zones: w.zones.map((z) => ({ id: z.id, levels: z.levels.map((l) => ({ level: l.level, ...(l.runway ? { runway: l.runway } : {}), ...(l.planes !== undefined ? { planes: l.planes } : {}), ...(l.seaplanes !== undefined ? { seaplanes: l.seaplanes } : {}), ...(l.maintenance !== undefined ? { maintenance: l.maintenance } : {}) })) })),
+      zones: w.zones.map((z) => ({ id: z.id, levels: z.levels.map((l) => ({ level: l.level, cost: l.cost, ...(l.runway ? { runway: l.runway } : {}), ...(l.planes !== undefined ? { planes: l.planes } : {}), ...(l.seaplanes !== undefined ? { seaplanes: l.seaplanes } : {}), ...(l.maintenance !== undefined ? { maintenance: l.maintenance } : {}) })) })),
+      // Les avions d'occasion, tels que le navigateur les reçoit : le prix de la carte, et la
+      // région qui la fait venir au tirage. Le cap y lit le remède le moins cher.
+      cards: w.cards.flatMap((c) => (c.kind === 'opportunity' && 'offer' in c && c.offer.type === 'plane'
+        ? [{ id: c.id, kind: c.kind, offer: c.offer, ...('region' in c && c.region ? { region: c.region } : {}) }] : [])),
       stamps: w.stamps.map((s) => ({ id: s.id })),
       // L'estimation avant l'envoi (envoi.ts) : ce que la saison fait à la durée.
       seasons: w.seasons.map((x) => ({ id: x.id, effects: x.effects.duration !== undefined ? { duration: x.effects.duration } : {} })),

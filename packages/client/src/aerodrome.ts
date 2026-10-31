@@ -27,7 +27,8 @@ interface WorldView {
   destinations: { id: string; region: string; name: string; distance: number; runway: string }[];
   planes: { id: string; name: string; description: string; capacity: number; speed: number; range: number; upkeep: number; runway: string; price: number }[];
   seasons: { id: string; name: string; tagline: string; effects: { duration?: number; reward?: number } }[];
-  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string; effects?: { francs?: number } }[]; offer?: { type: string; price?: number; cost?: number; model?: string; morale?: number; stamps?: number } }[];
+  // `region` : sur un avion d'occasion ou une embauche, la région qui fait venir la carte (le cap s'en sert).
+  cards: { kind: 'contract' | 'event' | 'opportunity'; id: string; title: string; text: string; region?: string; standing?: true; heavy?: true; season?: string; destination?: string; bags?: number; reward?: number; softDeadlineHours?: number; bonus?: number; choices?: { id: string; label: string; outcome: string; effects?: { francs?: number } }[]; offer?: { type: string; price?: number; cost?: number; model?: string; morale?: number; stamps?: number } }[];
   traits: { id: string; name: string; description: string; range?: number; speed?: number; fuel?: number }[];
   pilots: { id: string; name: string; gender: 'f' | 'm'; origin: string; traits: string[]; portrait: string; greeting: string; storyTitle: string; scenes: number; age: number; wage: number }[];
   zones: { id: string; name: string; levels: { level: number; name: string; description: string; cost: number; maintenance?: number; runway?: string; planes?: number; seaplanes?: number }[] }[];
@@ -321,21 +322,19 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         ? t('goal.stampsDone').replace('{cost}', formatNumber(next.cost))
         : t(plural(next.cost - c.stamps, 'goal.earnStampsOne', 'goal.earnStamps')).replace('{n}', formatNumber(next.cost - c.stamps)).replace('{have}', formatNumber(c.stamps)).replace('{cost}', formatNumber(next.cost))));
       cap.append(steps);
-      // Les escales que la flotte ne peut pas livrer : pourquoi, et ce qu'il y faut.
+      // Les escales que la flotte ne peut pas livrer : pourquoi, ce qu'il y faut au moins
+      // cher, chaque prix (la carte d'occasion, chaque chantier) et le total à réunir.
       for (const b of next.blockers) {
         const why = { range: 'goal.tooFar', water: 'goal.onWater', clearing: 'goal.inClearing', strip: 'goal.shortStrip' }[b.need];
         const plane = { range: 'goal.planeRange', water: 'goal.planeWater', clearing: 'goal.planeClearing', strip: 'goal.planeStrip' }[b.need];
         const needs = [
-          ...(b.plane ? [t(plane).replace('{plane}', planeName(b.plane))] : []),
-          ...b.works.map((w) => t({ hangar: 'goal.workHangar', pontoon: 'goal.workPontoon', runway: 'goal.workRunway' }[w])),
+          ...(b.plane ? [t(plane).replace('{plane}', planeName(b.plane)).replace('{price}', formatNumber(b.price))] : []),
+          ...b.works.map((w) => t({ hangar: 'goal.workHangar', pontoon: 'goal.workPontoon', runway: 'goal.workRunway' }[w.work]).replace('{cost}', formatNumber(w.cost))),
         ];
-        const trait = b.pilotTrait ? world.traits.find((x) => x.id === b.pilotTrait)?.name : undefined;
         let text = t(why).replace('{list}', joinList(b.stops.map(stopName)));
-        if (needs.length > 0) {
-          text += ' ' + (trait
-            ? t('goal.takesOrPilot').replace('{needs}', joinList(needs)).replace('{trait}', quote(trait))
-            : t('goal.takes').replace('{needs}', joinList(needs)));
-        }
+        // Un seul prix se suffit ; deux ou plus, le total les additionne.
+        if (needs.length === 1) text += ' ' + t('goal.takes').replace('{needs}', needs[0]!);
+        else if (needs.length > 1) text += ' ' + t('goal.takesTotal').replace('{needs}', joinList(needs)).replace('{total}', formatNumber(b.total));
         cap.append(el('p', 'aide', text));
       }
       if (next.hasPage && next.enough) cap.append(el('p', 'aide', t('goal.ready').replace('{button}', quote(t('game.openRoute')))));
