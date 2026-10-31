@@ -96,7 +96,7 @@ export function localizeWorld(locale: Locale) {
       id: p.id, archetype: p.archetype, name: tx(p.name), description: tx(p.description),
       range: p.range, capacity: p.capacity, speed: p.speed, reliability: p.reliability, runway: p.runway, price: p.price, upkeep: p.upkeep,
     })),
-    // La portée d'un trait (« Longues routes ») : le cap s'en sert pour dire qu'un pilote suffirait.
+    // La portée d'un trait (« Longues routes ») : le cap s'en sert pour l'allonge des pilotes engagés.
     // La vitesse (« Tête brûlée ») et l'entretien (« Économe ») : l'estimation avant l'envoi
     // doit dire ce que le serveur fera (checkCrew).
     traits: WORLD.traits.map((t) => ({
@@ -112,7 +112,9 @@ export function localizeWorld(locale: Locale) {
       const base = { kind: c.kind, id: c.id, title: tx(c.title), text: tx(c.text) };
       if (c.kind === 'contract') return { ...base, destination: c.destination, cargo: c.cargo, bags: c.bags, reward: c.reward, softDeadlineHours: c.softDeadlineHours, bonus: c.bonus, ...(c.standing ? { standing: true } : {}), ...(c.heavy ? { heavy: true } : {}), ...(c.season ? { season: c.season } : {}) };
       if (c.kind === 'event') return { ...base, choices: c.choices.map((ch) => ({ id: ch.id, label: tx(ch.label), outcome: tx(ch.outcome), effects: ch.effects })) };
-      return { ...base, offer: c.offer };
+      // La région d'une carte d'avion ou d'embauche : elle ne vient au tirage qu'une fois cette
+      // région ouverte (drawCards). Le cap la lit pour ne pas promettre un avion qui ne viendra pas.
+      return { ...base, offer: c.offer, ...(c.region ? { region: c.region } : {}) };
     }),
     zones: WORLD.zones.map((z) => ({
       id: z.id, name: tx(z.name),
