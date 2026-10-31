@@ -95,6 +95,8 @@ try {
   assert(capDepart.includes('Toute la vallée') && capDepart.includes('Pont-de-Brume'), `le cap liste les escales à livrer (${capDepart})`);
   assert(/Gagner encore \d+ cachets \(\d+ en caisse sur 10\)/.test(capDepart), `le cap compte les cachets (${capDepart})`);
   assert(capDepart.includes("Grive d'occasion"), 'le cap signale le deuxième avion à qui n\'en a qu\'un');
+  // Et le pilote qu'il faudra pour le mener (le 31/10 : deux Grives, un pilote, dix jours au sol).
+  assert(capDepart.includes('un pilote pour le mener'), `le cap dit qu'il faudra un pilote (${capDepart})`);
 
   // On s'assure d'avoir un contrat précis en main : le journal pour Pont-de-Brume.
   const db = new DatabaseSync(dbPath);
@@ -234,6 +236,9 @@ try {
   const passage = page.locator('#main .carte', { hasText: 'Un pilote de passage' });
   await passage.locator('button', { hasText: 'Embaucher' }).click();
   await page.waitForFunction(() => /rejoint la compagnie\.$/.test(document.querySelector('#jeu-message')?.textContent ?? ''));
+  // Deux pilotes, un avion : le cap ne réclame plus de pilote, il attend l'avion.
+  const capEquipage = (await page.textContent('#cap')).replace(/\s+/g, ' ');
+  assert(capEquipage.includes('son pilote est déjà là') && !capEquipage.includes('un pilote pour le mener'), `le cap sait que le pilote est là (${capEquipage})`);
 
   // Neuf francs en caisse : « Y aller · 15 F » et « Changer la bougie (12 F) » sont grisés,
   // comme le serveur les refuserait ; « Partir comme ça », gratuit, reste ouvert.

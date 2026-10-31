@@ -491,8 +491,10 @@ export const OPPORTUNITIES: readonly OpportunityCard[] = [
     offer: { type: 'plane', model: 'martinet', price: 2600 },
   },
   {
-    // Poids 1 depuis le 14/10 : c'est le palier du premier mois (deux Grives doublent
-    // les séances vers le jour 16, là où le Pic seul attendait le jour 30).
+    // Poids 1 depuis le 14/10 : c'est le palier du premier mois. Son pilote suit au tirage
+    // d'après (le hangar attend son pilote, sim.ts) : à une heure par jour, deux équipages
+    // volent vers le jour 23, contre le jour 29 sans cette règle (médiane des 60 joueurs,
+    // mesurée le 31/10/2026 par un robot qui ne se trompe jamais : un plafond).
     kind: 'opportunity', id: 'o-grive', weight: 1,
     title: { fr: 'Une Grive à Moulin-Gris', en: 'A Thrush at Greymill' },
     text: { fr: "Le meunier de Moulin-Gris envoyait sa farine par avion ; il l'envoie maintenant par camion. Sa Grive dort dans la grange, entoilée de frais, avec une odeur de farine qui ne partira jamais.", en: 'The Greymill miller used to send his flour by air; now he sends it by lorry. His Thrush sleeps in the barn, freshly doped, with a smell of flour that will never come out.' },
