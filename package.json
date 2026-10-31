@@ -23,6 +23,7 @@
     "start": "node --no-warnings=ExperimentalWarning packages/server/src/server.ts",
     "e2e": "node scripts/e2e-passkeys.mjs && node scripts/e2e-courrier.mjs && node scripts/e2e-saline.mjs && node scripts/e2e-convoi.mjs && node scripts/e2e-tiers.mjs && node scripts/e2e-mise-en-page.mjs && node scripts/e2e-accessibilite.mjs",
     "vapid": "node --no-warnings=ExperimentalWarning scripts/vapid-keys.mjs",
+    "simulation": "node --no-warnings=ExperimentalWarning scripts/simulation.mjs",
     "partage": "npm run build && node scripts/partage-build.mjs"
   },
   "devDependencies": {
