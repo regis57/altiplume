@@ -114,16 +114,24 @@ try {
   assert(cap.includes('Prochaine route : Forêt de Cuivre') && cap.includes("La page « Toute la vallée » est dans l'album"),
     `le cap vise la route la plus proche (${cap})`);
 
+  // La Sterne passe avant le ponton : pas de place à quai, l'achat attend — et la carte
+  // dit qu'elle peut attendre dans la main, elle n'expire pas.
+  db.exec("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'o-sterne', founded_at FROM companies");
+  await page.reload();
+  await page.waitForSelector('#aerodrome:not(.cache)');
+  const offre = page.locator('#main .carte', { hasText: 'Une Sterne à Port-Sel' });
+  assert((await offre.textContent()).includes('Rien ne presse : gardez la carte'), "sans ponton, la carte dit qu'elle peut attendre");
+  assert(await offre.locator('button', { hasText: 'Acheter' }).isDisabled(), "sans ponton, l'achat est grisé");
+
   // Le ponton, puis la Sterne.
   const ponton = page.locator('#zones li', { hasText: 'Le ponton' });
   await ponton.locator('button', { hasText: 'Restaurer' }).click();
   await page.waitForSelector('#jeu-message.ok');
   await page.waitForSelector('#scene-ponton:not(.cache)');
-  db.exec("INSERT OR IGNORE INTO company_hand (company_id, card, drawn_at) SELECT id, 'o-sterne', founded_at FROM companies");
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
-  const offre = page.locator('#main .carte', { hasText: 'Une Sterne à Port-Sel' });
   assert((await offre.textContent()).includes('Pour le ponton : Sterne S-1'), "l'offre dit où va l'hydravion");
+  assert(!(await offre.textContent()).includes('Rien ne presse'), 'le ponton bâti, la carte ne dit plus d\'attendre');
   // Le prix s'écrit comme en français : « 3 850 F » (espace fine insécable).
   await offre.locator('button', { hasText: 'Acheter · 3\u202f850 F' }).click();
   await page.waitForSelector('#jeu-message.ok');

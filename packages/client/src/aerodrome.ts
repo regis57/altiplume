@@ -765,6 +765,9 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
           const need = state.pilotsMissing > 1 ? t('offer.needPilots').replace('{n}', formatNumber(state.pilotsMissing)) : t('offer.needPilot');
           li.append(el('p', 'aide', `${need} ${pilotComing(state.pilot)}`));
         }
+        // Pas encore : la carte peut attendre dans la main, elle n'expire pas — à côté du
+        // bouton « Laisser passer », c'est ce qu'il faut savoir avant de choisir.
+        if (state.canWait) li.append(el('p', 'aide', t('offer.canWait')));
         take.disabled = !state.canBuy;
       }
       // La fête se paie d'avance : sans les francs, le serveur refuse.

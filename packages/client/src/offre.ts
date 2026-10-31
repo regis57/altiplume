@@ -12,6 +12,11 @@
  * Le 31 octobre, deux Grives et un seul pilote : la carte ne disait pas qu'un avion
  * sans personne pour le mener reste au sol. Elle le dit maintenant, et dit d'où viendra
  * le pilote : le hangar attend son pilote (la règle du tirage, côté serveur).
+ *
+ * Le même jour, l'étude de la progression : un joueur qui garde la carte d'une Grive
+ * trop chère, le temps de réunir la somme, a son deuxième avion bien plus tôt que celui
+ * qui la laisse passer — et rien ne lui disait qu'elle pouvait attendre. La carte le dit
+ * quand c'est vrai (`canWait`).
  */
 
 const RUNWAY_ORDER: Readonly<Record<string, number>> = { clearing: 0, short: 1, medium: 2, long: 3, water: 4 };
@@ -92,6 +97,15 @@ export interface PlaneOffer {
   readonly runwayName: string | null;
   /** L'achat est possible : l'argent et la place (la piste n'avertit que). */
   readonly canBuy: boolean;
+  /**
+   * Pas encore, mais la carte peut attendre dans la main : l'argent ou la place manquent,
+   * et la place peut encore se gagner. Une occasion n'expire pas — au serveur (sim.ts),
+   * seuls l'achat et « Laisser passer » la retirent de la main ; le ménage du tirage ne
+   * touche que les contrats qu'aucun avion ne peut porter. Faux quand la place ne viendra
+   * jamais (hangar ou ponton à son dernier niveau, et plein : un avion ne se revend pas) :
+   * la garder n'y occuperait qu'une place.
+   */
+  readonly canWait: boolean;
   /** Si on l'achète : d'où viendra le prochain pilote, quand la compagnie n'a pas plus de pilotes que d'avions ; `null` sinon (n'avertit que). */
   readonly pilot: AwaitedPilot;
   /** Si on l'achète : les pilotes qui manqueront, un par avion sans pilote (il en vient un par tirage). */
@@ -107,6 +121,10 @@ export function planeOffer(world: OfferWorld, c: OfferCompany, modelId: string, 
   const capacity = seaplane ? level('ponton')?.seaplanes ?? 0 : level('hangar')?.planes ?? 1;
   const money = c.francs >= price;
   const place = sameKind < capacity;
+  // Un niveau plus haut du hangar (ou du ponton) aurait-il la place ?
+  const shelter = seaplane ? 'ponton' : 'hangar';
+  const placeLater = place || (zone(shelter)?.levels ?? [])
+    .some((l) => l.level > (c.zones[shelter] ?? 1) && ((seaplane ? l.seaplanes : l.planes) ?? 0) > sameKind);
   let runway = true;
   let runwayName: string | null = null;
   if (model && !seaplane) {
@@ -116,7 +134,7 @@ export function planeOffer(world: OfferWorld, c: OfferCompany, modelId: string, 
     runwayName = zone('runway')?.levels.find((l) => (RUNWAY_ORDER[l.runway ?? 'short'] ?? 0) >= (RUNWAY_ORDER[model.runway] ?? 9))?.name ?? null;
   }
   return {
-    seaplane, money, place, runway, runwayName, canBuy: money && place,
+    seaplane, money, place, runway, runwayName, canBuy: money && place, canWait: !(money && place) && placeLater,
     pilot: awaitedPilot(world, c, true), pilotsMissing: Math.max(0, c.planes.length + 1 - c.pilots.length),
   };
 }
