@@ -180,7 +180,6 @@
       "id": "grive",
       "range": 8,
       "runway": "short",
-      "price": 1800,
       "capacity": 2,
       "speed": 12,
       "upkeep": 6
@@ -189,7 +188,6 @@
       "id": "martinet",
       "range": 10,
       "runway": "medium",
-      "price": 3200,
       "capacity": 1,
       "speed": 24,
       "upkeep": 10
@@ -198,7 +196,6 @@
       "id": "heron",
       "range": 16,
       "runway": "long",
-      "price": 6500,
       "capacity": 5,
       "speed": 15,
       "upkeep": 16
@@ -207,7 +204,6 @@
       "id": "sterne",
       "range": 14,
       "runway": "water",
-      "price": 4725,
       "capacity": 3,
       "speed": 14,
       "upkeep": 14
@@ -216,7 +212,6 @@
       "id": "goeland",
       "range": 22,
       "runway": "water",
-      "price": 7800,
       "capacity": 4,
       "speed": 16,
       "upkeep": 18
@@ -225,7 +220,6 @@
       "id": "pic",
       "range": 12,
       "runway": "clearing",
-      "price": 3675,
       "capacity": 2,
       "speed": 13,
       "upkeep": 9
@@ -348,14 +342,17 @@
       "levels": [
         {
           "level": 1,
+          "cost": 0,
           "runway": "short"
         },
         {
           "level": 2,
+          "cost": 900,
           "runway": "medium"
         },
         {
           "level": 3,
+          "cost": 2400,
           "runway": "long"
         }
       ]
@@ -365,16 +362,19 @@
       "levels": [
         {
           "level": 1,
+          "cost": 0,
           "planes": 1,
           "maintenance": 1
         },
         {
           "level": 2,
+          "cost": 700,
           "planes": 2,
           "maintenance": 1.25
         },
         {
           "level": 3,
+          "cost": 2000,
           "planes": 3,
           "maintenance": 1.5
         }
@@ -385,14 +385,17 @@
       "levels": [
         {
           "level": 1,
+          "cost": 0,
           "seaplanes": 0
         },
         {
           "level": 2,
+          "cost": 1500,
           "seaplanes": 1
         },
         {
           "level": 3,
+          "cost": 2800,
           "seaplanes": 2
         }
       ]
@@ -401,15 +404,77 @@
       "id": "tour",
       "levels": [
         {
-          "level": 1
+          "level": 1,
+          "cost": 0
         },
         {
-          "level": 2
+          "level": 2,
+          "cost": 1200
         },
         {
-          "level": 3
+          "level": 3,
+          "cost": 3000
         }
       ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "o-martinet",
+      "kind": "opportunity",
+      "offer": {
+        "type": "plane",
+        "model": "martinet",
+        "price": 2600
+      }
+    },
+    {
+      "id": "o-grive",
+      "kind": "opportunity",
+      "offer": {
+        "type": "plane",
+        "model": "grive",
+        "price": 1500
+      }
+    },
+    {
+      "id": "o-heron",
+      "kind": "opportunity",
+      "offer": {
+        "type": "plane",
+        "model": "heron",
+        "price": 5600
+      }
+    },
+    {
+      "id": "o-sterne",
+      "kind": "opportunity",
+      "offer": {
+        "type": "plane",
+        "model": "sterne",
+        "price": 3850
+      },
+      "region": "saline"
+    },
+    {
+      "id": "o-goeland",
+      "kind": "opportunity",
+      "offer": {
+        "type": "plane",
+        "model": "goeland",
+        "price": 6600
+      },
+      "region": "archipel"
+    },
+    {
+      "id": "o-pic",
+      "kind": "opportunity",
+      "offer": {
+        "type": "plane",
+        "model": "pic",
+        "price": 3150
+      },
+      "region": "cuivre"
     }
   ],
   "stamps": [

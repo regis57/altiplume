@@ -15,8 +15,19 @@
  *    qu'il demande à l'aérodrome (place au hangar ou au ponton, piste plus longue),
  *    avec les mêmes règles que le serveur.
  *
- * Fonction pure : ni réseau, ni page. Elle rend des identifiants ; l'affichage
- * met les mots.
+ * Et un troisième, relevé le 31 octobre sur la partie de la Croisette (deux Grives,
+ * le hangar à deux places, le pré fauché) : le cap promettait le remède le moins cher,
+ * mais triait les avions sur leur prix de catalogue, que personne ne paie (un avion ne
+ * s'achète que par sa carte d'occasion, sim.ts, `playCard`), sans compter les
+ * chantiers. Pour Marais-Blanc, il désignait le Martinet (carte 2 600 F, piste roulée
+ * 900 F, atelier 2 000 F : 5 500 F) quand le Pic y va pour 5 150 F (carte 3 150 F,
+ * atelier 2 000 F ; il décolle du pré). Il proposait aussi « un pilote Longues
+ * routes », que le joueur ne choisit pas : la carte d'embauche prend toujours le
+ * suivant de la liste. Le cap trie maintenant sur ce qu'il faut vraiment réunir —
+ * la carte d'occasion, et les niveaux à bâtir — et dit chaque prix, et le total.
+ *
+ * Fonction pure : ni réseau, ni page. Elle rend des identifiants et des francs ;
+ * l'affichage met les mots.
  */
 
 /** Du plus court au plus long ; l'eau à part. Le même ordre que le serveur. */
@@ -25,11 +36,19 @@ const RUNWAY_ORDER: Readonly<Record<string, number>> = { clearing: 0, short: 1, 
 export interface CapWorld {
   readonly regions: readonly { readonly id: string; readonly page: string; readonly route?: { readonly requires: string; readonly cost: number } }[];
   readonly destinations: readonly { readonly id: string; readonly region: string; readonly distance: number; readonly runway: string }[];
-  readonly planes: readonly { readonly id: string; readonly range: number; readonly runway: string; readonly price: number }[];
+  /** Pas de prix ici : celui du catalogue n'est jamais payé. Le prix d'un avion est celui de sa carte. */
+  readonly planes: readonly { readonly id: string; readonly range: number; readonly runway: string }[];
   readonly pilots: readonly { readonly id: string; readonly traits: readonly string[] }[];
-  /** `range` : le facteur de portée d'un trait (« Longues routes »), s'il en a un. */
+  /** `range` : le facteur de portée d'un trait (« Longues routes »), s'il en a un : l'allonge des pilotes engagés. */
   readonly traits: readonly { readonly id: string; readonly range?: number }[];
-  readonly zones: readonly { readonly id: string; readonly levels: readonly { readonly level: number; readonly runway?: string; readonly planes?: number; readonly seaplanes?: number }[] }[];
+  /** `cost` : ce que coûte ce niveau, depuis le précédent ; on les bâtit un par un (sim.ts, `upgradeZone`). */
+  readonly zones: readonly { readonly id: string; readonly levels: readonly { readonly level: number; readonly cost: number; readonly runway?: string; readonly planes?: number; readonly seaplanes?: number }[] }[];
+  /**
+   * Les cartes : on n'y lit que les avions d'occasion (`offer.type === 'plane'`), seul
+   * moyen d'en acheter un, avec leur prix — et leur région : une carte de la Forêt ne
+   * vient au tirage qu'une fois la Forêt ouverte (sim.ts, `drawCards`).
+   */
+  readonly cards: readonly { readonly kind: string; readonly region?: string; readonly offer?: { readonly type: string; readonly model?: string; readonly price?: number } }[];
   readonly stamps: readonly { readonly id: string }[];
 }
 
@@ -53,17 +72,28 @@ export type Need =
   /** Une piste trop courte pour tous les avions de la flotte. */
   | 'strip';
 
-/** Ce que l'avion neuf demande à l'aérodrome. */
+/** Ce que l'avion demande à l'aérodrome. */
 export type Work = 'hangar' | 'pontoon' | 'runway';
+
+/** Un chantier qui manque, et son prix : tous les niveaux à bâtir jusqu'au premier qui suffit. */
+export interface WorkCost {
+  readonly work: Work;
+  readonly cost: number;
+}
 
 /** Des escales que la flotte ne peut pas livrer, pour la même raison et le même remède. */
 export interface Blocker {
   readonly need: Need;
-  /** Le modèle le moins cher qui y va ; `null` si aucun (ne doit pas arriver). */
+  /**
+   * L'avion à acheter : celui du remède le moins cher en tout. `null` quand un avion du
+   * hangar y va une fois sa piste bâtie, ou quand rien ne peut y aller.
+   */
   readonly plane: string | null;
-  readonly works: readonly Work[];
-  /** Un trait de pilote qui suffirait, avec un avion déjà au hangar ; sinon `null`. */
-  readonly pilotTrait: string | null;
+  /** Le prix de sa carte d'occasion ; 0 sans avion à acheter. */
+  readonly price: number;
+  readonly works: readonly WorkCost[];
+  /** Ce qu'il faut réunir en tout : la carte et les chantiers. */
+  readonly total: number;
   readonly stops: readonly string[];
 }
 
@@ -121,37 +151,97 @@ function levelOf(world: CapWorld, c: CapCompany, zone: string) {
   return world.zones.find((z) => z.id === zone)?.levels.find((l) => l.level === (c.zones[zone] ?? 1));
 }
 
-/** Ce que l'aérodrome doit avoir pour accueillir ce modèle : les règles d'achat et de départ du serveur. */
-function worksFor(world: CapWorld, c: CapCompany, fleet: Fleet, plane: Plane): Work[] {
-  const works: Work[] = [];
-  if (plane.runway === 'water') {
-    const berths = levelOf(world, c, 'ponton')?.seaplanes ?? 0;
-    if (fleet.owned.filter((m) => m.runway === 'water').length >= berths) works.push('pontoon');
-    return works;
+type Level = CapWorld['zones'][number]['levels'][number];
+
+/**
+ * Ce que coûte la zone jusqu'au premier niveau qui convient : 0 si le niveau actuel
+ * convient déjà, la somme des niveaux à bâtir sinon (on les bâtit un par un) ; `null`
+ * si aucun ne convient, même le dernier.
+ */
+function buildCost(world: CapWorld, c: CapCompany, zone: string, fits: (l: Level) => boolean): number | null {
+  const levels = [...(world.zones.find((z) => z.id === zone)?.levels ?? [])].sort((a, b) => a.level - b.level);
+  const current = c.zones[zone] ?? 1;
+  const here = levels.find((l) => l.level === current);
+  if (here && fits(here)) return 0;
+  let cost = 0;
+  for (const l of levels.filter((x) => x.level > current)) {
+    cost += l.cost;
+    if (fits(l)) return cost;
   }
-  const bays = levelOf(world, c, 'hangar')?.planes ?? 1;
-  if (fleet.owned.filter((m) => m.runway !== 'water').length >= bays) works.push('hangar');
-  const home = levelOf(world, c, 'runway')?.runway ?? 'short';
-  if ((RUNWAY_ORDER[plane.runway] ?? 0) > (RUNWAY_ORDER[home] ?? 0)) works.push('runway');
-  return works;
+  return null;
 }
 
-/** Pourquoi une escale est hors d'atteinte, et le remède le moins cher. */
+/** La piste qu'il faut à ce modèle pour décoller d'ici : la règle de départ du serveur (checkCrew). */
+function runwayFor(world: CapWorld, c: CapCompany, plane: Plane): WorkCost[] | null {
+  if (plane.runway === 'water') return [];
+  const cost = buildCost(world, c, 'runway', (l) => (RUNWAY_ORDER[l.runway ?? 'short'] ?? 0) >= (RUNWAY_ORDER[plane.runway] ?? 9));
+  return cost === null ? null : cost > 0 ? [{ work: 'runway', cost }] : [];
+}
+
+/**
+ * Ce que l'aérodrome doit bâtir pour accueillir un avion de plus, et le faire décoller :
+ * les règles d'achat (`playCard` : une place au hangar, ou au ponton pour un hydravion)
+ * et de départ du serveur. `null` si aucune place ne viendra jamais (zone au dernier
+ * niveau, et pleine : le serveur ne tire plus cette carte).
+ */
+function worksFor(world: CapWorld, c: CapCompany, fleet: Fleet, plane: Plane): WorkCost[] | null {
+  const seaplane = plane.runway === 'water';
+  const owned = fleet.owned.filter((m) => (m.runway === 'water') === seaplane).length;
+  const place = seaplane
+    ? buildCost(world, c, 'ponton', (l) => (l.seaplanes ?? 0) > owned)
+    : buildCost(world, c, 'hangar', (l) => (l.planes ?? 0) > owned);
+  const runway = runwayFor(world, c, plane);
+  if (place === null || runway === null) return null;
+  return [...(place > 0 ? [{ work: seaplane ? 'pontoon' as const : 'hangar' as const, cost: place }] : []), ...runway];
+}
+
+/**
+ * Les avions qu'une carte d'occasion peut apporter : la carte la moins chère de chaque
+ * modèle, si sa région est ouverte. Les deux autres règles de tirage du serveur
+ * (sim.ts, `drawCards`) sont déjà dans le chemin chiffré : pas d'avion sans place
+ * possible (`worksFor` rend `null`) ; pas d'avion à deux crans de piste de plus que
+ * l'aérodrome (`planeWithinReach`) — la carte du Héron ne sort pas sur le pré, mais son
+ * chemin compte la piste roulée puis la grande, et elle vient une fois la piste roulée
+ * bâtie. Le total est juste ; l'ordre, c'est la piste d'abord.
+ */
+function offers(world: CapWorld, c: CapCompany): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const k of world.cards) {
+    if (k.kind !== 'opportunity' || k.offer?.type !== 'plane' || !k.offer.model || k.offer.price === undefined) continue;
+    if (k.region && !c.regions.includes(k.region)) continue;
+    out.set(k.offer.model, Math.min(out.get(k.offer.model) ?? Infinity, k.offer.price));
+  }
+  return out;
+}
+
+type Remedy = Omit<Blocker, 'need' | 'stops'>;
+
+/**
+ * Pourquoi une escale est hors d'atteinte, et le remède le moins cher **en tout** : un
+ * avion du hangar qui y va mais ne décolle pas d'ici (sa piste seule), ou un avion
+ * d'occasion (sa carte, sa place, sa piste). À égalité, l'avion qu'on a déjà, puis
+ * l'ordre du monde.
+ */
 function blockerFor(world: CapWorld, c: CapCompany, fleet: Fleet, stop: Stop): Omit<Blocker, 'stops'> {
   const landers = fleet.models.filter((m) => canLand(m, stop));
   const need: Need = landers.length > 0 ? 'range'
     : stop.runway === 'water' ? 'water'
     : stop.runway === 'clearing' ? 'clearing'
     : 'strip';
-  const plane = [...world.planes].filter((m) => reaches(m, stop, fleet.reach)).sort((a, b) => a.price - b.price)[0] ?? null;
-  // Un pilote plus endurant suffirait-il, avec un avion qu'on a déjà ?
-  let pilotTrait: string | null = null;
-  if (need === 'range') {
-    const best = [...world.traits].filter((t) => (t.range ?? 1) > fleet.reach).sort((a, b) => (a.range ?? 1) - (b.range ?? 1))
-      .find((t) => landers.some((m) => reaches(m, stop, t.range ?? 1)));
-    pilotTrait = best?.id ?? null;
+  const remedies: Remedy[] = [];
+  // Le 18 octobre, un Martinet acheté sur le pré : il lui faut sa piste, pas un avion de plus.
+  for (const m of fleet.grounded) {
+    const works = reaches(m, stop, fleet.reach) ? runwayFor(world, c, m) : null;
+    if (works) remedies.push({ plane: null, price: 0, works, total: works.reduce((n, w) => n + w.cost, 0) });
   }
-  return { need, plane: plane?.id ?? null, works: plane ? worksFor(world, c, fleet, plane) : [], pilotTrait };
+  const forSale = offers(world, c);
+  for (const m of world.planes) {
+    const price = forSale.get(m.id);
+    const works = price !== undefined && reaches(m, stop, fleet.reach) ? worksFor(world, c, fleet, m) : null;
+    if (price !== undefined && works) remedies.push({ plane: m.id, price, works, total: price + works.reduce((n, w) => n + w.cost, 0) });
+  }
+  const best = remedies.reduce<Remedy | null>((a, b) => (a === null || b.total < a.total ? b : a), null);
+  return { need, ...(best ?? { plane: null, price: 0, works: [], total: 0 }) };
 }
 
 function routeCap(world: CapWorld, c: CapCompany, fleet: Fleet, region: CapWorld['regions'][number]): RouteCap & { sourceOpen: boolean } {
@@ -166,12 +256,9 @@ function routeCap(world: CapWorld, c: CapCompany, fleet: Fleet, region: CapWorld
   if (sourceOpen) {
     for (const stop of toDeliver) {
       if (fleet.models.some((m) => reaches(m, stop, fleet.reach))) continue;
-      // Un avion du hangar y va, mais ne décolle pas d'ici : il lui faut sa piste,
-      // pas un avion de plus (le 18 octobre, un Martinet acheté sur le pré).
-      const grounded = fleet.grounded.some((m) => reaches(m, stop, fleet.reach));
-      const found = blockerFor(world, c, fleet, stop);
-      const b = grounded ? { ...found, plane: null, works: ['runway' as const] } : found;
-      const same = blockers.find((x) => x.need === b.need && x.plane === b.plane && x.pilotTrait === b.pilotTrait && x.works.join() === b.works.join());
+      const b = blockerFor(world, c, fleet, stop);
+      const key = (x: Omit<Blocker, 'stops'>) => JSON.stringify([x.need, x.plane, x.works]);
+      const same = blockers.find((x) => key(x) === key(b));
       if (same) (same.stops as string[]).push(stop.id);
       else blockers.push({ ...b, stops: [stop.id] });
     }
