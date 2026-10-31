@@ -90,7 +90,7 @@ try {
   await page.reload();
   await page.waitForSelector('#aerodrome:not(.cache)');
   const news = await page.textContent('#nouvelles');
-  assert(/sont rentrés des Tilleuls · \+180 F/.test(news), `nouvelle accordée et contractée (${news})`);
+  assert(/sont rentrés des Tilleuls · \+226 F/.test(news), `nouvelle accordée et contractée (${news})`);
   assert(news.includes('Le premier convoi'), 'la page « Le premier convoi »');
   process.stdout.write('e2e convoi : tout est passé.\n');
 } finally {

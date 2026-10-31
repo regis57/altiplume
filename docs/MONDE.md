@@ -161,15 +161,15 @@ propre aléa, et un incident retarde tout le convoi ; chaque pilote se fatigue e
 en affinité pour lui-même. La récompense est versée une fois, à l'arrivée de la tête.
 Le premier convoi colle « Le premier convoi ».
 
-| Contrat | Escale | Sacs | Avions qui s'y posent | Récompense |
+| Contrat | Escale | Sacs | Avions qui s'y posent | Récompense + bonus |
 |---|---|---|---|---|
-| Sacs de farine | Moulin-Gris | 3 | Grive, Martinet, Pic (2 au plus) | 140 F + 25 |
-| Le pressoir des Tilleuls | Les Tilleuls | 3 | Grive, Pic (2) | 150 F + 30 |
-| La chaudière du dispensaire | Combe-aux-Rosées | 6 | dont le Héron (5) | 420 F + 60 |
-| Sel pour les quais | Port-Sel | 3 | Grive, Martinet, Pic (2) | 330 F + 40 |
-| Le treuil de la capitainerie | Port-Sel | 3 | Grive, Martinet, Pic (2) | 380 F + 50 |
-| Le bronze de la cloche | Sonnefeuille | 3 | le Pic seul (2) | 520 F + 70 |
-| La cloche de Sainte-Lueur | Sainte-Lueur | 6 | Sterne (3), Goéland (4) | 1 400 F + 160 |
+| Sacs de farine | Moulin-Gris | 3 | Grive, Martinet, Pic (2 au plus) | 175 F + 31 |
+| Le pressoir des Tilleuls | Les Tilleuls | 3 | Grive, Pic (2) | 188 F + 38 |
+| La chaudière du dispensaire | Combe-aux-Rosées | 6 | dont le Héron (5) | 525 F + 75 |
+| Sel pour les quais | Port-Sel | 3 | Grive, Martinet, Pic (2) | 413 F + 50 |
+| Le treuil de la capitainerie | Port-Sel | 3 | Grive, Martinet, Pic (2) | 475 F + 63 |
+| Le bronze de la cloche | Sonnefeuille | 3 | le Pic seul (2) | 650 F + 88 |
+| La cloche de Sainte-Lueur | Sainte-Lueur | 6 | Sterne (3), Goéland (4) | 1 750 F + 200 |
 
 **La cloche** est une chaîne : la cire pour le moule (un contrat ordinaire de
 Sonnefeuille), puis le bronze — qui ne se tire qu'une fois Sonnefeuille livrée, et
@@ -320,8 +320,17 @@ Le monde compte **105 cartes qui se tirent** (compté sur le monde chargé, le 1
 pour la Côte (dont 2 de fret lourd et 2 de saison), 13 pour l'Archipel et 13 pour la
 forêt (dont 1 de fret lourd chacun) —, **20 imprévus** (14 pour la vallée, dont 4 de
 saison ; 2 pour chacune des trois autres régions) et **13 opportunités** (6 pour la
-vallée, 2 pour la Côte, 2 pour l'Archipel, 3 pour la forêt). La liste ci-dessous est
-celle de la vallée, hors fret lourd et saisons, qui ont leurs sections.
+vallée, 2 pour la Côte, 2 pour l'Archipel, 3 pour la forêt).
+
+**Chaque contrat paie un quart de plus** (règle du 31/10) : la récompense et le bonus
+des 72 contrats qui se tirent — toutes régions, fret lourd et saisons compris — sont
+multipliés par 1,25 et arrondis au franc ; le journal du matin passe de 33 F + 8 à
+41 F + 10. Le tirage, lui, ne change pas : trois cartes par jour, cinq en main au plus ;
+c'est chaque carte qui vaut plus. La ligne régulière reste à 25 F sans bonus. Un vol
+déjà parti garde le tarif de son départ.
+
+La liste ci-dessous est celle de la vallée, hors fret lourd et saisons, qui ont leurs
+sections.
 
 - **La ligne régulière** : le sac de Pont-de-Brume, toujours disponible, jamais tirée,
   25 F sans bonus ni délai (elle ne compte donc jamais comme un délai tenu). La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le

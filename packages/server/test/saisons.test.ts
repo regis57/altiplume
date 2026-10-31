@@ -95,8 +95,8 @@ describe('les saisons — en vol', () => {
     const f = r.json().flights[0];
     // 5 min × 1,15 ; × 1,3 encore si l'aléa du vol a frappé.
     expect([Math.round(5 * 60_000 * 1.15), Math.round(Math.round(5 * 60_000 * 1.15) * 1.3)]).toContain(f.arrivesAt - f.departedAt);
-    // Le journal du matin vaut 33 F ; l'hiver, 40.
-    expect(f.reward).toBe(Math.round(33 * 1.2));
+    // Le journal du matin vaut 41 F ; l'hiver, 49.
+    expect(f.reward).toBe(Math.round(41 * 1.2));
     await t.app.close();
   });
 

@@ -55,8 +55,8 @@ describe('le fret lourd — le convoi', () => {
     t.advance(2 * 60 * 60_000);
     const after = await t.state();
     // Encaissé une seule fois : la récompense et la prime, pas deux fois.
-    expect(after.francs).toBe(s.francs + 150 + 30);
-    expect(after.francs - before).toBe(150 + 30 - spent);
+    expect(after.francs).toBe(s.francs + 188 + 38);
+    expect(after.francs - before).toBe(188 + 38 - spent);
     const arrived = after.news.filter((n: { kind: string }) => n.kind === 'flight.arrived');
     expect(arrived).toHaveLength(1);
     expect(arrived[0].wing.pilot).toBeTruthy();

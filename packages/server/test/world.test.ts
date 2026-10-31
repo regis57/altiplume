@@ -258,6 +258,30 @@ describe('le monde — intégrité', () => {
     for (let i = 1; i < byDistance.length; i += 1) expect(byDistance[i]!.avg).toBeGreaterThan(byDistance[i - 1]!.avg);
   });
 
+  it('paie chaque contrat un quart de plus (31/10), et laisse la ligne régulière à 25 F sans prime', () => {
+    // Décision du 31 octobre 2026 : la récompense et la prime des 72 contrats qui se tirent,
+    // × 1,25 et arrondies au franc le plus proche. La ligne régulière ne bouge pas.
+    const pay = (id: string) => {
+      const c = findCard(id);
+      return c?.kind === 'contract' ? [c.reward, c.bonus] : null;
+    };
+    expect(pay('c-journal')).toEqual([41, 10]); // 33 + 8 avant
+    expect(pay('c-urgent-pont')).toEqual([73, 31]); // 58 + 25
+    expect(pay('c-medicaments')).toEqual([156, 53]); // 125 + 42
+    expect(pay('c-capitainerie')).toEqual([160, 24]); // la Côte, 128 + 19
+    expect(pay('c-charbonniers')).toEqual([153, 21]); // la Forêt, 122 + 17
+    expect(pay('c-douze-lanternes')).toEqual([330, 28]); // l'Archipel, 264 + 22
+    expect(pay('c-etrennes')).toEqual([58, 13]); // un contrat de saison, 46 + 10
+    expect(pay('c-farine')).toEqual([175, 31]); // fret lourd, 140 + 25
+    expect(pay('c-cloche')).toEqual([1750, 200]); // 1 400 + 160
+    expect(pay('c-ligne-reguliere')).toEqual([25, 0]);
+    // Et le barème entier : qu'un seul des 72 garde l'ancien tarif, et les totaux le disent.
+    const tirables = WORLD.cards.flatMap((c) => (c.kind === 'contract' && !c.standing ? [c] : []));
+    expect(tirables).toHaveLength(72);
+    expect(tirables.reduce((s, c) => s + c.reward, 0)).toBe(17740); // 14 185 avant
+    expect(tirables.reduce((s, c) => s + c.bonus, 0)).toBe(2805); // 2 235 avant
+  });
+
   it('se lit dans une langue, sans les histoires ni les poids', () => {
     const fr = localizeWorld('fr');
     const en = localizeWorld('en');
