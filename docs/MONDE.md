@@ -212,7 +212,7 @@ bouton, seule la saison du jour choisit le thème.
 | Modèle | Anglais | Type | Portée | Sacs | Vitesse | Fiabilité | Piste | Prix |
 |---|---|---|---|---|---|---|---|---|
 | **Grive G-2** | Thrush G-2 | biplan courrier | 8 | 2 | 12 l/h | 94 % | courte | 1 800 F (la première est dans le hangar ; une seconde d'occasion, 1 500 F, à Moulin-Gris) |
-| **Martinet M-1** | Swift M-1 | monoplan rapide | 10 | 1 | 24 l/h | 86 % | moyenne | 3 200 F |
+| **Martinet M-1** | Swift M-1 | monoplan rapide | 10 | 1 | 24 l/h | 86 % | moyenne | 3 200 F (2 600 F en occasion, d'un pilote de Pont-de-Brume qui raccroche) |
 | **Héron H-3** | Heron H-3 | trimoteur | 16 | 5 | 15 l/h | 92 % | longue | 6 500 F (5 600 F en occasion, aux Messageries de Pont-de-Brume) |
 | **Sterne S-1** | Tern S-1 | hydravion | 14 | 3 | 14 l/h | 90 % | **eau** | 4 725 F (3 850 F en occasion, à Port-Sel) |
 | **Goéland G-4** | Gull G-4 | hydravion long-courrier | 22 | 4 | 16 l/h | 91 % | **eau** | 7 800 F (6 600 F en occasion, à Port-Sel) |
@@ -349,9 +349,11 @@ sections.
   25 F sans bonus ni délai (elle ne compte donc jamais comme un délai tenu). La main vide n'empêche jamais de faire voler quelqu'un (ajoutée le
   11/10 après la première partie de Régis : à 14 h, il n'avait plus rien à expédier).
   **La caisse vide non plus** (règle du 11/10 au soir, après une partie arrêtée à 3 F) :
-  la poste avance le salaire et le carburant, rien n'est débité au départ, et le tarif
-  moins l'avance est versé à l'arrivée — jamais moins que zéro. Avec Prosper et la Grive :
-  25 − 14 = 11 F nets par aller-retour. C'est le plancher du jeu, pas sa fortune.
+  la poste avance le salaire et l'entretien (carburant compris), rien n'est débité au
+  départ, et le tarif moins l'avance est versé à l'arrivée — jamais moins que zéro. Avec
+  Prosper et la Grive : 25 − 14 = 11 F nets par aller-retour ; 12 F (25 − 13) avec
+  l'établi du hangar, 13 F (25 − 12) avec l'atelier, qui baissent l'entretien (calculé le
+  31/10/2026 par le serveur, `planDispatch`). C'est le plancher du jeu, pas sa fortune.
 - **19 contrats** : une destination, un chargement, un nombre de sacs, une récompense,
   un délai souple (tenu → bonus ; dépassé → rien). Les lointains paient mieux ; chaque
   contrat couvre au moins le salaire et l'entretien d'un vol.

@@ -51,6 +51,39 @@ crépuscule, nuit — vivent dans `styles.css`. Pour juger avant de pousser :
 `node scripts/scene-preview.mjs dossier` écrit huit aperçus (nu / tout posé × quatre
 moments).
 
+## Les chiffres de l'économie
+
+Les chiffres du § 4.5 de la [Conception](docs/CONCEPTION.md) se rejouent avec
+`scripts/simulation.mjs` : des joueurs fictifs passent par le code du serveur (tirage,
+vols, imprévus, achats, chantiers, routes), chacun dans sa base en mémoire. Le tableau
+du § 4.4 (le hangar attend son pilote), lui, a été mesuré avant que chaque contrat paie
+un quart de plus, avec l'outil de l'étude dont celui-ci est tiré : l'outil du dépôt ne
+le rejoue pas au chiffre près.
+
+```
+npm run simulation -- --liste
+npm run simulation -- --profil une-heure --scenario neuf --joueurs 60 --jours 45
+```
+
+`--profil` dit quand le joueur passe, aux heures de Paris (`une-heure`, `deux-passages`,
+`realiste`…), `--scenario` d'où part la compagnie (`neuf`, ou une flotte figée : ni
+achat, ni embauche, ni chantier, ni route nouvelle), `--politique` ce qu'il achète,
+`--graine` quelle série de joueurs (le même nom rend le même résultat, au chiffre près).
+Le résultat est un JSON en français. Le robot joue sans jamais se tromper : **ses
+chiffres sont un plafond**, pas ceux d'un joueur ; seuls les écarts entre deux mesures
+se transposent. Une mesure de 60 joueurs prend de moins d'une minute (une Grive sur
+30 jours : 34 s) à plus de cinq minutes (60 jours, une flotte qui grandit : 5 min 24 s) :
+le temps croît avec les jours, la flotte et la longueur des passages (mesuré le 31 octobre
+2026 sur quatre cœurs, deux mesures à la fois). N'en lancez pas plus de deux à la fois
+sur une petite machine.
+
+`scripts/simulation.test.mjs` fige un résultat court (trois joueurs neufs, sept jours).
+S'il casse, une règle de l'économie a changé : re-mesurez les chiffres de la Conception
+avec l'outil, puis mettez à jour le test, dans la même pull request. L'inverse ne vaut
+pas : le test ne voit que ce qui joue dans la première semaine. Une règle qui joue plus
+tard (le prix du Pic, l'atelier, l'Archipel, l'hiver) ne le fait pas casser : après
+elle, re-mesurez le § 4.5 avec l'outil sans attendre le test.
+
 ## Licences des dépendances
 
 Seules MIT, BSD-2/3, Apache-2.0, ISC, 0BSD, CC0 et OFL sont acceptées. Une dépendance

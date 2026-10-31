@@ -64,12 +64,13 @@ Les noms de lieux sont en français dans la version française et ont des équiv
 ## 4. Systèmes
 
 ### 4.1 L'aérodrome
-Cinq zones à restaurer, chacune débloquant une capacité :
+Des zones à restaurer, chacune débloquant une capacité. Quatre existent dans le jeu (leurs niveaux et leurs prix sont dans le [Monde](Monde)) ; le café et l'atelier viendront plus tard :
 - **La piste** : longueur = types d'avions utilisables.
-- **Le hangar** : nombre d'avions, qualité de l'entretien.
+- **Le hangar** : nombre d'avions, qualité de l'entretien. Son troisième niveau s'appelle déjà « Atelier » : une place de plus, un entretien moins cher et plus rapide, rien d'autre.
+- **Le ponton** : les hydravions s'y amarrent, et partent pour la Côte et l'Archipel.
 - **La tour** : météo visible, vols de nuit.
-- **Le café** : recrutement des pilotes, moral, lieu des histoires.
-- **L'atelier** : améliorations d'avions, réparations rapides.
+- **Le café** (plus tard) : recrutement des pilotes, moral, lieu des histoires. Aujourd'hui, ce n'est pas une zone : les pilotes viennent par la carte « pilote de passage » (§4.2), et les tables du café sont une décoration.
+- **L'atelier** (plus tard) : améliorations d'avions, réparations rapides. Aujourd'hui, aucun avion ne s'améliore, et l'usure ne s'efface qu'au sol, avec le temps (§4.3).
 
 Puis la décoration pure : fleurs, bancs, drapeaux, enseigne, peintures du hangar. Sans effet sur le jeu, sauf un léger bonus de moral des pilotes. C'est le Stardew en nous.
 
@@ -91,7 +92,7 @@ Cinq archétypes au lancement complet, trois dans la première version :
 | Hydravion | moyenne | moyenne | lente | bonne | Obligatoire sur la Côte et l'Archipel |
 | Long-courrier | très longue | moyenne | moyenne | fragile | Grand Blanc, Désert |
 
-Usure à chaque vol, entretien au hangar : au sol, l'usure redescend de dix points par heure, une fois et quart plus vite avec l'établi, une fois et demie avec l'atelier (règle du 18 octobre 2026 ; un avion usé ne le reste pas, l'absence répare). Pièces améliorables à l'atelier (moteur, réservoir, soute, instruments).
+Usure à chaque vol, entretien au hangar : au sol, l'usure redescend de dix points par heure, une fois et quart plus vite avec l'établi, une fois et demie avec l'atelier (règle du 18 octobre 2026 ; un avion usé ne le reste pas, l'absence répare). Plus tard, des pièces améliorables à l'atelier (moteur, réservoir, soute, instruments) : rien de tel dans le jeu aujourd'hui (§4.1).
 
 ### 4.4 Les cartes
 Le moteur de variété du jeu, et l'héritage des démos de Tarot et de 8 américain.
@@ -108,7 +109,7 @@ Le tirage est **déterministe côté serveur** (graine par joueur et par jour) :
 
 **Le hangar attend son pilote** (31 octobre 2026) : tant que la compagnie a plus d'avions que de pilotes, la première carte du tirage est une carte d'embauche, sauf si l'une d'elles attend déjà en main. S'il y en a plusieurs dans le paquet (la Forêt et l'Archipel ont la leur), le tirage choisit au poids, avec la même graine. Le reste du tirage ne change pas, une main pleine ne reçoit toujours rien, et quand les dix pilotes sont engagés, il n'y a plus de carte d'embauche à tirer. Le constat de Régis, le 31 octobre : deux Grives au hangar, Prosper seul pour les mener, et dix jours sans carte pilote — or un pilote ne mène qu'un avion à la fois, et la seconde Grive restait au sol. Mesuré dans cet état (deux Grives, un pilote, Côte et Forêt ouvertes, main vide), avant la règle : la carte d'embauche ne sortait que 7,7 % des jours, et 45 % des joueurs passaient dix jours sans la voir ; ses dix jours étaient le cas ordinaire.
 
-Ce que la règle change, mesuré le 31 octobre 2026 par un robot qui joue les vraies règles du serveur sans jamais se tromper — ses chiffres sont **un plafond**, pas ceux d'un joueur —, 60 joueurs sur 45 jours, mêmes graines avant et après (l'outil de mesure n'est pas encore dans le dépôt) :
+Ce que la règle change, mesuré le 31 octobre 2026 par un robot qui joue les vraies règles du serveur sans jamais se tromper — ses chiffres sont **un plafond**, pas ceux d'un joueur —, 60 joueurs sur 45 jours, mêmes graines avant et après, avant que chaque contrat paie un quart de plus (l'outil de l'étude ; celui qui en est tiré est depuis dans le dépôt, §4.5, mais il ne rejoue pas ce tableau au chiffre près) :
 
 | Profil | Deux équipages volent : médiane des 60 joueurs | Pas encore au jour 30 (dont : jamais en 45 jours) | Jours avec un avion sans pilote, sur 45 (moyenne) | Gain net des vols par jour (recettes moins salaires et entretien) |
 |---|---|---|---|---|
@@ -125,18 +126,55 @@ Deux monnaies, deux rôles distincts :
 
 La rentabilité se joue sur le choix des lignes, l'adéquation avion/ligne, le repos des pilotes et l'entretien préventif. Pas de « timers d'énergie » à racheter.
 
-**Ce que rapporte une séance** (mesuré le 13 octobre 2026, simulation du vrai tirage). Le nombre de cartes est fixe, trois par jour ; ce qui change d'une région à l'autre, c'est ce que vaut chaque carte. Par contrat, les régions lointaines paient beaucoup plus ; par heure de vol, à peu près pareil, parce que leurs vols sont longs :
+**Ce que rapporte un contrat** (mesuré le 31 octobre 2026, sur les règles du jour : le hangar attend son pilote, chaque contrat paie un quart de plus). Le nombre de cartes est fixe, trois par jour ; ce qui change d'une région à l'autre, c'est ce que vaut chaque carte. Par contrat, les régions lointaines paient beaucoup plus ; par heure de vol, beaucoup moins d'écart, parce que leurs vols sont longs. Chaque ligne nomme l'avion qui a mené les contrats : la Grive n'atteint que deux escales de la Côte et deux de la Forêt, les trois escales sur l'eau demandent la Sterne, et l'Archipel un hydravion.
 
-| Région | Net moyen par contrat | Aller-retour | Par heure de vol |
-|---|---|---|---|
-| Vallées de Brume | 75 F | 29 min | 155 F |
-| Forêt de Cuivre | 190 F | 90 min | 127 F |
-| Côte de Saline | 191 F | 89 min | 128 F |
-| Archipel | 366 F | 126 min | 174 F |
+| Région | Avion | Net moyen par contrat | Aller-retour | Par heure de vol |
+|---|---|---|---|---|
+| Vallées de Brume | Grive | 90 F | 28 min | 190 F |
+| Forêt de Cuivre | Grive | 191 F | 75 min | 152 F |
+| Forêt de Cuivre | Pic | 255 F | 94 min | 163 F |
+| Côte de Saline | Grive | 194 F | 81 min | 144 F |
+| Côte de Saline | Sterne | 280 F | 103 min | 163 F |
+| Archipel | Sterne | 363 F | 116 min | 188 F |
+| Archipel | Goéland | 466 F | 122 min | 228 F |
 
-Ce qui fait grandir une séance d'une heure, c'est la **flotte**, parce qu'un vol lointain se lance en partant et rapporte pendant l'absence : environ **125 F** avec la Grive seule, **210 F** avec un Pic et un hangar à deux places, **235 F** avec un deuxième pilote, **330 F** avec la Côte et la Sterne, **460 F** avec l'Archipel, le Goéland et quatre pilotes (avant imprévus, hors prime d'hiver). Ouvrir une route sans l'avion qui va avec ne rapporte presque rien : la Grive seule n'atteint que deux escales de la Forêt.
+Le net, c'est la récompense, plus la prime quand le délai est tenu, moins le salaire et l'entretien (carburant compris). Hors ligne régulière (11 à 13 F nets, voir le [Monde](Monde)) et hors convois de fret lourd (330 F nets en moyenne, pour deux équipages). Mesuré sur la flotte figée `archipel-goeland` : une Grive, un Pic, une Sterne et un Goéland, quatre pilotes, la Côte livrée et l'Archipel ouvert ; profil `une-heure` ; 60 joueurs sur 30 jours d'automne. L'ancien tableau (13 octobre : 75 F et 29 min dans la vallée, 190 F pour la Forêt, 191 F pour la Côte) ne se rejouait pas. La farine était passée en fret lourd le 12 octobre, et ses lignes de la Forêt et de la Côte supposaient, sans le dire, le Pic et la Sterne.
 
-**Le premier mois** (crible du 14 octobre 2026). À une heure par jour, la vallée est livrée en cinq jours (neuf pour neuf joueurs sur dix) et la route suivante s'ouvre dans la foulée ; mais la Grive n'y atteint que deux escales, et le deuxième avion arrivait vers le jour 36. Trois à quatre semaines à rejouer la même vallée, c'était trop. Deux décisions : la **Grive d'occasion** (1 500 F, plus 700 F de hangar) passe deux fois plus souvent dans les cartes — avec son pilote, qui suit au tirage d'après depuis le 31 octobre (§4.4), deux équipages volent vers le jour 23 ; au jour 30, 13 joueurs sur 60 n'y sont pas encore, dont 5 qui n'y arrivent pas en 45 jours (re-mesuré le 31 octobre 2026 sur 60 joueurs, une heure par jour à 18 h, heure de Paris ; un plafond, le robot ne se trompe jamais) — et le cap la signale tant qu'on n'a qu'un avion ; le **Pic et la Sterne baissent d'un huitième** (3 675 F et 4 725 F ; 3 150 F et 3 850 F en occasion), ce qui ramène le Pic vers le jour 28 avec une Grive, plus tôt avec deux.
+**Ce qui fait grandir une séance** d'une heure, c'est la **flotte et ses pilotes** : un vol lointain se lance en partant et rapporte pendant l'absence, mais un pilote ne mène qu'un avion à la fois. Gain net des vols par jour, c'est-à-dire recettes moins salaires et entretien, avant imprévus, hors prime d'hiver. Mesuré le 31 octobre 2026 sur des flottes figées : ni achat, ni embauche, ni chantier, ni route nouvelle ; la vallée livrée, la Côte et la Forêt ouvertes, et l'Archipel seulement dans la dernière ligne ; profil `une-heure`, 60 joueurs sur 30 jours d'automne :
+
+| Flotte | Gain net par jour | Scénario |
+|---|---|---|
+| Une Grive, un pilote | 191 F | `grive-seule` |
+| Une Grive et un Pic, un pilote | 204 F | `grive-pic` |
+| Deux Grives, deux pilotes | 318 F | `deux-grives-deux-pilotes` |
+| Une Grive et un Pic, deux pilotes | 366 F | `grive-pic-deux-pilotes` |
+| Une Grive, un Pic et une Sterne, trois pilotes | 423 F | `grive-pic-sterne` |
+| La même, plus un Goéland et un quatrième pilote, la Côte livrée et l'Archipel ouvert dès le premier jour | 587 F | `archipel-goeland` |
+
+Un deuxième avion sans deuxième pilote ne rapporte presque rien de plus (+7 %) ; avec lui, presque le double (+91 %). L'ancienne échelle (13 octobre : environ 125 F avec la Grive seule, 210 F avec un Pic, 235 F avec un deuxième pilote, 330 F avec la Côte et la Sterne, 460 F avec l'Archipel, le Goéland et quatre pilotes) ne se rejouait pas, et elle donnait au deuxième pilote +12 % au lieu de +79 %.
+
+**Le premier mois** (crible du 14 octobre 2026, re-mesuré le 31 octobre). Le 14 octobre, à une heure par jour, la vallée était livrée en cinq jours et la route suivante s'ouvrait dans la foulée ; mais la Grive n'y atteint que deux escales, et le deuxième avion arrivait vers le jour 36. Trois à quatre semaines à rejouer la même vallée, c'était trop. Deux décisions : la **Grive d'occasion** (1 500 F, plus 700 F de hangar) passe deux fois plus souvent dans les cartes, et le cap la signale tant qu'on n'a qu'un avion ; le **Pic et la Sterne baissent d'un huitième** (3 675 F et 4 725 F ; 3 150 F et 3 850 F en occasion). Les chiffres de ce crible ne se rejouent pas, faute d'outil dans le dépôt à l'époque ; ceux qui suivent, si.
+
+Re-mesuré le 31 octobre 2026 : compagnie neuve, profil `une-heure`, 60 joueurs sur 45 jours, du 2 novembre au 16 décembre (60 jours pour le Pic : jusqu'au 31 décembre, les onze derniers en hiver). On donne la médiane, puis le jour après lequel arrive un joueur sur dix :
+- la vallée est livrée au jour 5 (un sur dix après le jour 8), et la Côte s'ouvre le même jour ;
+- le deuxième avion arrive au jour 19, et son pilote suit au tirage d'après (§4.4). Deux équipages volent au jour 20, un sur dix après le jour 36, et 3 joueurs sur 60 n'y sont pas au bout des 45 jours. C'était le jour 23 avant que chaque contrat paie un quart de plus ;
+- le Pic, quand on le vise sans deuxième Grive (politique `vise-le-pic-sans-grive` : la Forêt d'abord, la carte du Pic gardée en main), arrive au jour 27 ; 11 joueurs sur 60 ne l'ont pas au bout des 60 jours ;
+- en prenant la deuxième Grive quand elle passe (politique `vise-le-pic`, la même pour le reste), le Pic arrive au jour 31, **plus tard** et non plus tôt : quand la deuxième Grive est là avant lui, le hangar est plein, et il faut d'abord l'atelier (2 000 F). 8 joueurs sur 60 ne l'ont pas au bout des 60 jours.
+
+En deux passages courts par jour, la séance que promet le §2 (profil `deux-passages-courts` : cinq minutes à 8 h et à 18 h), les jalons sont les mêmes : la vallée au jour 5, deux équipages au jour 20 (2 joueurs sur 60 n'y sont pas au bout des 45 jours). Le gain net des vols est de 246 F par jour, contre 255 F à une heure par jour, et 261 F en deux passages de dix minutes (profil `deux-passages`) : deux passages de cinq minutes rapportent presque autant qu'une heure d'affilée.
+
+**Rejouer ces chiffres.** L'outil est `scripts/simulation.mjs` (son mode d'emploi est dans [CONTRIBUTING.md](https://github.com/regis57/altiplume/blob/main/CONTRIBUTING.md)). Ces mesures se rejouent ainsi, au chiffre près :
+
+```
+npm run simulation -- --profil une-heure --scenario archipel-goeland --jours 30
+npm run simulation -- --profil une-heure --scenario grive-seule --jours 30
+npm run simulation -- --profil une-heure --scenario neuf --jours 45
+npm run simulation -- --profil une-heure --scenario neuf --politique vise-le-pic-sans-grive --jours 60
+npm run simulation -- --profil une-heure --scenario neuf --politique vise-le-pic --jours 60
+npm run simulation -- --profil deux-passages-courts --scenario neuf --jours 45
+```
+
+La deuxième commande se répète pour chaque scénario du tableau des flottes, la dernière pour le profil `deux-passages`. Le profil `une-heure` joue une heure par jour, à 18 h, heure de Paris ; les jours se comptent depuis la fondation (jour 0) ; les simulations commencent le 2 novembre 2026. **Tous ces chiffres sont un plafond** : ce sont ceux d'un robot qui joue les vraies règles du serveur sans jamais se tromper. Un vrai joueur gagne moins et arrive plus tard ; seuls les écarts entre deux mesures se transposent.
 
 ### 4.6 Les saisons
 Les saisons suivent le vrai calendrier (printemps le 20 mars, été le 21 juin, automne le 23 septembre, hiver le 21 décembre) : quand il neige chez le joueur, il neige sur la Croisette. Chaque saison change une ou deux règles, jamais plus, et aucune ne punit l'absence : les semences au printemps, moins de brume et de vent de mer l'été, plus de brume l'automne, des vols plus longs mais mieux payés l'hiver. Deux contrats et un imprévu par saison ne se tirent qu'en leur temps ; la scène change de couleurs. Le détail est dans le [Monde](Monde). (L'ébauche d'origine — deux semaines par saison, des fêtes à événements — a été abandonnée le 12 octobre au profit du calendrier réel.)
