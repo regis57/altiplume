@@ -19,7 +19,7 @@ import { DEFAULT_TIMEZONE, isNight } from '../sim/heure.ts';
 import { seasonOf, type Season } from '../sim/saison.ts';
 import { deriveSeed, makeRng, type Rng } from '../sim/rng.ts';
 import { cardRegion, findCard, findDestination, findPilot, findPlane, findRegion, findTrait, flightDurationMs, REGION_PAGE, regionDestinations, WORLD } from '../world/index.ts';
-import type { ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Runway, SeasonDef, TraitId } from '../world/types.ts';
+import type { Card, ContractCard, Destination, PilotTemplate, PlaneModel, RegionId, Runway, SeasonDef, TraitId } from '../world/types.ts';
 
 export const HAND_SIZE = 5;
 export const DAILY_DRAW = 3;
@@ -307,6 +307,24 @@ function ledger(db: Database, companyId: string, now: number, kind: string, fran
 
 // ---- Le jour : tirage des cartes ----
 
+/** Une carte d'embauche : « Un pilote de passage », et ses deux cousines de la Forêt et de l'Archipel. */
+function isHire(c: Card | undefined): boolean {
+  return c?.kind === 'opportunity' && c.offer.type === 'pilot';
+}
+
+/**
+ * Le hangar attend son pilote : tant que la compagnie a plus d'avions que de pilotes, la
+ * première carte du tirage est une carte d'embauche, sauf si l'une d'elles attend déjà en
+ * main (ou, par principe, en vol : tout ce qui est exclu du tirage). Un pilote ne mène
+ * qu'un avion à la fois ; avec deux Grives et un pilote, Côte et Forêt ouvertes, main vide,
+ * la carte d'embauche ne sortait que 7,7 % des jours, et 45 % des joueurs passaient dix
+ * jours sans la voir, la seconde Grive au sol (mesuré le 31/10/2026). Quand les dix
+ * pilotes sont engagés, il n'y a plus de carte d'embauche à tirer : rien n'est forcé.
+ */
+export function pilotAwaited(fleet: Fleet | undefined, exclude: readonly string[]): boolean {
+  return fleet !== undefined && fleet.planes.length > fleet.pilots && !exclude.some((id) => isHire(findCard(id)));
+}
+
 /** Tire les cartes du jour, pondérées par rareté et par la chance des pilotes. */
 export function drawCards(
   rng: Rng, exclude: readonly string[], luck: number, count = DAILY_DRAW, regions: readonly RegionId[] = ['brume'], album: readonly string[] = [], season?: Season, fleet?: Fleet,
@@ -331,17 +349,33 @@ export function drawCards(
     && !(c.kind === 'event' && c.needsSeaplane === true && fleet !== undefined && !fleet.planes.some((m) => m.runway === 'water')));
   const seeds = WORLD.seasons.find((x) => x.id === season)?.effects.seedsWeight ?? 1;
   const waiting = (c: (typeof pool)[number]) => c.kind === 'contract' && !album.includes(`s-${c.destination}`);
+  // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
+  const weightOf = (c: (typeof pool)[number]) => {
+    let w = 1 / c.weight;
+    // Au printemps, les semences partent deux fois plus souvent.
+    if (c.kind === 'contract' && c.cargo === 'seeds') w *= seeds;
+    if (c.kind === 'opportunity') w *= luck;
+    if (c.kind === 'event') w /= luck;
+    return w;
+  };
+  // Une roue : un tirage de `rng`, un rang choisi au poids.
+  const spin = (weights: readonly number[]) => {
+    const total = weights.reduce((a, b) => a + b, 0);
+    let r = rng() * total;
+    let index = 0;
+    while (index < weights.length - 1 && r >= (weights[index] as number)) { r -= weights[index] as number; index += 1; }
+    return index;
+  };
   const out: string[] = [];
-  for (let i = 0; i < count && pool.length > 0; i += 1) {
-    // Poids inverse à la rareté ; la chance favorise les opportunités et défavorise les imprévus.
-    const weights = pool.map((c) => {
-      let w = 1 / c.weight;
-      // Au printemps, les semences partent deux fois plus souvent.
-      if (c.kind === 'contract' && c.cargo === 'seeds') w *= seeds;
-      if (c.kind === 'opportunity') w *= luck;
-      if (c.kind === 'event') w /= luck;
-      return w;
-    });
+  const take = (index: number) => { out.push((pool[index] as (typeof pool)[number]).id); pool.splice(index, 1); };
+  // Le hangar attend son pilote : la carte d'embauche passe en tête du tirage. S'il y en a
+  // plusieurs dans le paquet (la Forêt et l'Archipel ont la leur), la roue choisit, au poids.
+  if (count > 0 && pilotAwaited(fleet, exclude)) {
+    const hires = pool.flatMap((c, k) => (isHire(c) ? [k] : []));
+    if (hires.length > 0) take(hires[spin(hires.map((k) => weightOf(pool[k] as (typeof pool)[number])))] as number);
+  }
+  while (out.length < count && pool.length > 0) {
+    const weights = pool.map(weightOf);
     // L'escale attend sa lettre : parmi les contrats, ceux d'une escale qui n'a encore
     // rien reçu pèsent trois fois plus. Les contrats gardent ensemble le même poids,
     // donc ni plus ni moins d'imprévus et d'occasions qu'avant. Quand toutes les escales
@@ -352,12 +386,7 @@ export function drawCards(
       const after = pool.reduce((sum, c, k) => sum + (c.kind === 'contract' ? (weights[k] as number) * (waiting(c) ? WAITING_WEIGHT : 1) : 0), 0);
       pool.forEach((c, k) => { if (c.kind === 'contract') weights[k] = (weights[k] as number) * (waiting(c) ? WAITING_WEIGHT : 1) * (before / after); });
     }
-    const total = weights.reduce((a, b) => a + b, 0);
-    let r = rng() * total;
-    let index = 0;
-    while (index < pool.length - 1 && r >= (weights[index] as number)) { r -= weights[index] as number; index += 1; }
-    out.push((pool[index] as (typeof pool)[number]).id);
-    pool.splice(index, 1);
+    take(spin(weights));
   }
   return out;
 }

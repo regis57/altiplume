@@ -241,6 +241,17 @@ démente jamais le pilote qui arrive. Chacun a deux
 traits (qui changent des chiffres de la simulation, pas seulement une phrase) et une
 histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 
+**Le hangar attend son pilote** (règle du 31/10). Un pilote ne mène qu'un avion à la
+fois. Tant que la compagnie a plus d'avions que de pilotes, la première carte du tirage
+est l'une de ces trois cartes — celle de la vallée, ou, routes ouvertes, celle de la
+Forêt ou de l'Archipel, choisie au poids —, sauf si l'une d'elles attend déjà en main ;
+une main pleine ne reçoit aucune carte, celle-ci comprise. Le reste du temps, elles
+viennent au hasard du tirage. Avant la règle, avec deux Grives et Prosper seul, Côte et
+Forêt ouvertes et la main vide, une carte d'embauche ne sortait que 7,7 % des jours, et
+45 % des joueurs passaient dix jours sans en voir une. Quand les dix pilotes sont
+engagés, elles ne sortent plus du paquet. Les effets mesurés sont dans la
+[Conception](Conception), au §4.4.
+
 | Pilote | Âge | Origine | Traits | Histoire |
 |---|---|---|---|---|
 | **Prosper Chickenman** | 44 | Vallées de Brume | Météo dans la peau · Cœur de village | *Le premier jour de brume* — la croix du chemin, la brume qui lève au quart, la marque au crayon dans le hangar de Bastien |
@@ -255,8 +266,10 @@ histoire en trois scènes qui s'ouvrent à 3, 7 et 12 vols faits ensemble.
 | **Rosalie Martel** | 26 | Haut-Ferrand | Mains d'or · Cœur de village | *La marque au marteau* — ce qui sonne encore, le poinçon sur la lanterne de Solenn, la cloche de Sonnefeuille |
 
 Prosper est là dès le premier jour. Les autres passent au café et se recrutent
-avec une carte « pilote de passage ». **Bastien**, l'ancien propriétaire, est mort
-avant le début du jeu ; il n'apparaît que dans ce que les autres en disent.
+avec une carte « pilote de passage », ou ses cousines de la Forêt (une lettre de
+candidature) et de l'Archipel (un pilote qui attend près du hangar). **Bastien**,
+l'ancien propriétaire, est mort avant le début du jeu ; il n'apparaît que dans ce
+que les autres en disent.
 
 ### Les fils qui se rejoignent
 

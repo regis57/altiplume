@@ -10,7 +10,7 @@ import { convoyState } from './convoi.ts';
 import { nextCap } from './cap.ts';
 import { ablePlanes, bestFreeReach, crewEstimate, crewProblem, isResting, pickPlane, pilotFree, pilotReach } from './envoi.ts';
 import { foundingRefusal } from './fondation.ts';
-import { canAfford, planeOffer } from './offre.ts';
+import { awaitedPilot, canAfford, planeOffer, secondPlaneHint, type AwaitedPilot } from './offre.ts';
 import { formatRemaining, waitsOf } from './time.ts';
 import { musicIsOn, resumeMusicOnGesture, setMusicSeason, toggleMusic } from './music.ts';
 import { setupInstall, setupNotifications } from './notifications.ts';
@@ -145,6 +145,11 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   if (className) e.className = className;
   if (text !== undefined) e.textContent = text;
   return e;
+}
+
+/** D'où viendra le pilote d'un avion qui n'en a pas (offre.ts, `awaitedPilot`). */
+function pilotComing(awaited: Exclude<AwaitedPilot, null>): string {
+  return t({ nextDraw: 'pilot.nextDraw', handFull: 'pilot.handFull', inHand: 'pilot.inHand' }[awaited]);
 }
 
 /** Une ligne de condition : la marque (✓/✗), son sens pour le lecteur d'écran, le texte. */
@@ -334,12 +339,20 @@ function render(api: Api, setMessage: SetMessage, world: WorldView, c: CompanyVi
         cap.append(el('p', 'aide', text));
       }
       if (next.hasPage && next.enough) cap.append(el('p', 'aide', t('goal.ready').replace('{button}', quote(t('game.openRoute')))));
-      // Le palier du premier mois : tant qu'on n'a qu'un avion, le cap le dit.
-      if (c.planes.length === 1) cap.append(el('p', 'aide', t('goal.secondPlane')));
+      // Le palier du premier mois : tant qu'on n'a qu'un avion, le cap le dit — avec le
+      // pilote qu'il faudra pour le mener (le choix se fait dans `offre.ts`).
+      const hint = secondPlaneHint(world, c);
+      if (hint) {
+        cap.append(el('p', 'aide', hint === 'crew' ? t('goal.secondPlaneCrew')
+          : `${t('goal.secondPlane')} ${t(hint === 'inHand' ? 'pilot.inHand' : 'goal.pilotAfterPurchase')}`));
+      }
     } else {
       // Toutes les routes sont ouvertes : l'album devient le cap.
       cap.append(el('p', 'cap-titre', next.kind === 'album' ? t(plural(next.missing, 'goal.albumOne', 'goal.album')).replace('{n}', formatNumber(next.missing)) : t('goal.done')));
     }
+    // Le hangar attend son pilote : un avion de plus que de pilotes, le cap dit d'où il viendra.
+    const awaited = awaitedPilot(world, c);
+    if (awaited) cap.append(el('p', 'aide', `${t('goal.planeWaits')} ${pilotComing(awaited)}`));
   }
   void setupPasskeyInvitation(api, setMessage);
   void setupNotifications(api, setMessage);
@@ -746,6 +759,12 @@ function renderHand(api: Api, setMessage: SetMessage, world: WorldView, c: Compa
         if (state.runwayName) needs.append(conditionItem(state.runway, t('offer.needRunway').replace('{runway}', `${t('game.quoteOpen')}${state.runwayName}${t('game.quoteClose')}`)));
         li.append(needs);
         if (!state.runway) li.append(el('p', 'aide', t('offer.runwayLater')));
+        // Un pilote ne mène qu'un avion à la fois : si on l'achète, la carte dit qu'il en
+        // faudra un (ou combien il en manquera), et d'où viendra le prochain.
+        if (state.pilot) {
+          const need = state.pilotsMissing > 1 ? t('offer.needPilots').replace('{n}', formatNumber(state.pilotsMissing)) : t('offer.needPilot');
+          li.append(el('p', 'aide', `${need} ${pilotComing(state.pilot)}`));
+        }
         take.disabled = !state.canBuy;
       }
       // La fête se paie d'avance : sans les francs, le serveur refuse.
@@ -887,7 +906,9 @@ function dispatchForm(api: Api, setMessage: SetMessage, world: WorldView, c: Com
     const problem = leadProblem() ?? (wing && wingPlane.value ? crewProblem(world, c, wingPlane.value, reachOf(wingPilot.value), dest) : null);
     const nothing = !planeSelect.value ? 'card.noPlane' : !pilotSelect.value ? 'card.noPilot' : problem ? `error.${problem}` : state() === 'impossible' ? 'card.convoyNone' : null;
     go.disabled = nothing !== null;
-    if (nothing) { estimate.textContent = t(nothing); return; }
+    // Personne de libre, et un avion de plus que de pilotes : on dit d'où viendra le suivant.
+    const awaited = nothing === 'card.noPilot' ? awaitedPilot(world, c) : null;
+    if (nothing) { estimate.textContent = awaited ? `${t(nothing)} ${pilotComing(awaited)}` : t(nothing); return; }
     // Le calcul du serveur, traits des pilotes compris (envoi.ts).
     const lead = crewEstimate(world, c, planeSelect.value, pilotSelect.value, dest);
     const second = wing ? crewEstimate(world, c, wingPlane.value, wingPilot.value, dest) : null;
