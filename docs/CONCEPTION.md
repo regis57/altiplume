@@ -324,7 +324,7 @@ Cible : OWASP ASVS niveau 2.
 - **Secrets** : variables d'environnement sur le NAS, jamais dans Git ; gitleaks bloque tout commit fautif.
 - **Chaîne d'approvisionnement** : dépendances épinglées par hachage, Dependabot, audit automatique, liste blanche de licences (MIT, BSD, Apache-2.0, ISC, CC0, OFL), SBOM CycloneDX publié, image Docker signée (cosign) et vérifiée au démarrage, conteneurs non-root en lecture seule.
 - **Sauvegardes** chiffrées, quotidiennes, restauration testée chaque trimestre et consignée.
-- **Journalisation** structurée : une ligne par requête, avec la méthode, le chemin sans ce qui suit « ? » et l'adresse IP du visiteur ; Docker garde trois fichiers de 10 Mo, et la politique de confidentialité annonce 7 jours.
+- **Journalisation** structurée : une ligne par requête, avec la méthode, le chemin sans ce qui suit « ? » et l'adresse IP du visiteur ; Docker garde trois fichiers de 10 Mo, effacés à chaque mise à jour du jeu ; la politique de confidentialité le dit ainsi (pas de durée fixe, 30 Mo au plus, décision du 18 octobre 2026).
 - `SECURITY.md` avec contact et délai de réponse ; divulgation responsable bienvenue.
 
 ---
