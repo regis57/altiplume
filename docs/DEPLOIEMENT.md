@@ -251,8 +251,10 @@ dernières (`GARDER=3`, décidé le 14 octobre : voir ci-dessous). Le jeu ne s'a
 
 ### Combien de temps on garde (décidé le 14 octobre 2026)
 
-**Trois copies sur le NAS, trois versions sur le disque USB.** Un compte effacé disparaît
-donc des sauvegardes au plus tard 6 jours après (3 sur le NAS, puis 3 sur le disque) ; la
+**Trois copies sur le NAS, quatre versions sur le disque USB.** La rotation de Hyper Backup
+est réglée sur 3 versions, mais la liste en montre toujours 4 (constaté le 20 et le 31
+octobre 2026) ; décision du 31 octobre : on la laisse ainsi. Un compte effacé disparaît
+donc des sauvegardes au plus tard 7 jours après (3 sur le NAS, puis 4 sur le disque) ; la
 page de confidentialité et le registre le disent. Conséquence à connaître : on ne peut
 revenir qu'à trois jours en arrière. Un mal découvert plus tard n'a plus de copie saine.
 `GARDER=3` est dans `scripts/nas-backup.sh` ; **le script collé dans la tâche planifiée
@@ -308,7 +310,9 @@ Pour la refaire (nouveau disque, nouveau NAS) :
 6. **Rotation : « depuis les versions les plus anciennes », 3 versions.** Pas « Smart
    Recycle » : chaque version contient déjà les trois copies de la base ; Smart Recycle
    en garderait des versions pendant des mois, alors que la page de confidentialité annonce
-   6 jours au plus. Cette règle se relit contre la page de confidentialité à chaque changement.
+   7 jours au plus. Réglée sur 3, la tâche garde en pratique **4 versions** dans sa liste
+   (constaté le 20 et le 31 octobre 2026) : c'est ce chiffre que la page de confidentialité
+   compte. Cette règle se relit contre la page de confidentialité à chaque changement.
 7. Premier lancement, puis vérifier la taille (quelques kilo-octets, pas des gigaoctets :
    sinon trop de dossiers cochés) et la liste des versions (icône horloge).
 
@@ -343,6 +347,8 @@ où on en aura besoin. Noter la date du test ici :
 |---|---|---|
 | 14 octobre 2026 | Restauration d'essai depuis la tâche Hyper Backup `altiplume` (disque USB) | Réussi |
 | 14 octobre 2026 | Lecture de la fenêtre de la tâche : dossiers copiés, rotation | Seul `sauvegardes` est coché ; rotation « versions les plus anciennes », 3 versions |
+| 20 octobre 2026 | Liste des versions de la tâche, et relecture de la rotation | 4 versions (17 au 20 octobre) ; rotation toujours « versions les plus anciennes », 3 versions |
+| 31 octobre 2026 | Liste des versions de la tâche | 4 versions (28 au 31 octobre), toutes réussies ; décision : on garde ainsi, promesse portée à 7 jours |
 
 Une restauration réelle ramène aussi les comptes effacés depuis la copie : le jeu ne garde
 volontairement aucune liste de comptes effacés, donc on ne sait pas lesquels reviendraient.

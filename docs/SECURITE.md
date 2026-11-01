@@ -144,7 +144,8 @@ affichait une version qui les contient tous (`bc093e6`).
 
   Une sauvegarde faite avant le redéploiement du 18 octobre sort de la rotation en six
   jours au plus (trois copies sur le NAS, trois versions sur le disque USB), soit au
-  plus tard le 24 octobre. Contre-épreuve : les tests nouveaux de `comptes.test.ts`
+  plus tard le 24 octobre — en fait sept jours, soit le 25 : le disque USB garde quatre
+  versions (constaté les 20 et 31 octobre, voir le bilan des sauvegardes, point 8). Contre-épreuve : les tests nouveaux de `comptes.test.ts`
   échouent sur le code d'avant.
 
 **Le même jour, en fin d'après-midi (les décisions déléguées par l'auteur)** : trois
@@ -541,6 +542,15 @@ décidé de l'ouvrir.
    3 h 00 (284, 292 et 300 Ko). Les copies du 11 au 15 sont sorties de la rotation. La
    promesse des trois copies sur le NAS est tenue, mesurée après trois exécutions de la
    tâche corrigée. Côté disque USB, le nombre de versions **reste à constater** (point 5).
+8. **Constaté le 20 et le 31 octobre, côté disque USB : quatre versions.** La liste des
+   versions de la tâche en compte **4** les deux fois (du 17 au 20 octobre, puis du 28 au
+   31), toutes réussies, alors que la rotation est réglée sur 3 (relu le 20 octobre sur la
+   fenêtre des paramètres). Hyper Backup garde donc une version de plus que le réglage. La
+   promesse des 6 jours n'était pas tenue de un jour pour la copie USB. **Décision de
+   l'auteur, le 31 octobre : on garde quatre versions**, et la promesse devient **7 jours
+   au plus** (3 sur le NAS, puis 4 sur le disque) : la page de confidentialité (en français
+   et en anglais), le registre des traitements, le mode opératoire et les consignes du
+   dépôt le disent depuis le même jour. Le point 5 est levé.
 
 **La leçon.** Une copie qui n'a jamais été restaurée et une durée de conservation qu'on
 ne relit pas après l'avoir réglée sont deux intentions de plus. Désormais : la restauration

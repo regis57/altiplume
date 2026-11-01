@@ -92,9 +92,10 @@ et aucun autre document du dépôt ne le fait.
   sauvegarde » : après chaque modification du fichier, dire à l'auteur de le recoller,
   de **rouvrir la tâche et relire la ligne `GARDER=`**, puis de l'exécuter une fois.
   Le 14 octobre, un recollage non enregistré a été pris pour fait pendant un jour.
-- Conservation : **3** copies sur le NAS (`GARDER=3`), **3** versions sur le disque
-  USB (Hyper Backup, rotation « depuis les plus anciennes ») ; la page de
-  confidentialité promet **6 jours au plus**. Toute modification de l'un se relit
+- Conservation : **3** copies sur le NAS (`GARDER=3`), **4** versions sur le disque
+  USB (Hyper Backup, rotation « depuis les plus anciennes » réglée sur 3, qui en garde
+  4 en pratique : constaté les 20 et 31 octobre, gardé ainsi le 31) ; la page de
+  confidentialité promet **7 jours au plus**. Toute modification de l'un se relit
   contre l'autre et contre la page de confidentialité et le registre.
 - Le NAS redémarre **une fois par semaine** (décision du 17 octobre).
 
