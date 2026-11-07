@@ -14,6 +14,11 @@ export interface Config {
   readonly mail: { readonly apiKey: string | null; readonly from: string; readonly contact: string | null };
   /** Clés VAPID pour les notifications ; absentes, les notifications sont simplement indisponibles. */
   readonly push: { readonly publicKey: string; readonly privateKey: string; readonly subject: string } | null;
+  /**
+   * L'adresse de l'éditeur : la seule personne qui voit le compteur d'inscrits (`/v1/owner/counts`).
+   * Absente, la route n'existe pas. Elle vit dans le `.env` du NAS, jamais dans le dépôt.
+   */
+  readonly ownerEmail: string | null;
   /** Vrai derrière le tunnel Cloudflare : les en-têtes X-Forwarded-* sont fiables. */
   readonly trustProxy: boolean;
 }
@@ -55,6 +60,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     ? { publicKey: vapidPublic, privateKey: vapidPrivate, subject: env['VAPID_SUBJECT']?.trim() || `mailto:${env['MAIL_FROM'] ?? 'courrier@altiplume.com'}` }
     : null;
 
+  const ownerEmail = env['OWNER_EMAIL']?.trim().toLowerCase() || null;
+  // Une faute de frappe ne doit pas fermer la porte en silence : le serveur refuse de démarrer.
+  if (ownerEmail !== null && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail)) throw new ConfigError('OWNER_EMAIL doit être une adresse email');
+
   return {
     env: nodeEnv as Config['env'],
     host: env['HOST'] ?? '127.0.0.1',
@@ -63,6 +72,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     databasePath: env['DATABASE_PATH'] ?? './data/altiplume.db',
     mail: { apiKey, from: env['MAIL_FROM'] ?? 'courrier@altiplume.com', contact: env['MAIL_CONTACT']?.trim() || null },
     push,
+    ownerEmail,
     trustProxy: env['TRUST_PROXY'] === '1' || isProd,
   };
 }

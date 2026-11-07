@@ -433,6 +433,25 @@ async function renderPasskeys(): Promise<void> {
   translatePage();
 }
 
+/**
+ * Le compteur de l'éditeur, sur « Mon compte ». Le serveur répond « introuvable » à
+ * tout le monde sauf à l'éditeur : pour les autres, la section reste cachée et rien
+ * ne se voit.
+ */
+async function ownerCounts(): Promise<void> {
+  const section = $('proprietaire');
+  if (!section) return;
+  const r = await api('GET', '/v1/owner/counts').catch(() => null);
+  if (!r || r.status !== 200) return;
+  const fmt = (n: unknown) => Number(n ?? 0).toLocaleString(getLocale() === 'fr' ? 'fr-FR' : 'en-GB');
+  const set = (id: string, n: unknown) => { const el = $(id); if (el) el.textContent = fmt(n); };
+  set('owner-players', r.body['players']);
+  set('owner-companies', r.body['companies']);
+  set('owner-week', r.body['registeredLast7Days']);
+  set('owner-month', r.body['registeredLast30Days']);
+  section.classList.remove('cache');
+}
+
 async function pageCompte(): Promise<void> {
   const me = await api('GET', '/v1/account');
   if (me.status !== 200) {
@@ -449,6 +468,7 @@ async function pageCompte(): Promise<void> {
   translatePage();
   document.querySelectorAll('[data-when=anonymous]').forEach((el) => el.classList.add('cache'));
   document.querySelectorAll('[data-when=player]').forEach((el) => el.classList.remove('cache'));
+  if ((me.body as { owner?: boolean }).owner === true) void ownerCounts();
 
   const rename = $('rename') as HTMLFormElement | null;
   rename?.addEventListener('submit', async (event) => {

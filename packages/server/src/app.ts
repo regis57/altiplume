@@ -20,6 +20,7 @@ import { registerGameRoutes } from './game/routes.ts';
 import { registerHealth } from './routes/health.ts';
 import { registerWorldRoutes } from './routes/world.ts';
 import { registerStatsRoutes } from './routes/stats.ts';
+import { registerOwnerRoutes } from './routes/proprietaire.ts';
 import { APP_BUILT_AT, registerVersionRoutes } from './routes/version.ts';
 import { registerReferencementRoutes } from './routes/referencement.ts';
 import { registerContactRoutes } from './routes/contact.ts';
@@ -112,6 +113,7 @@ export async function buildApp(ctx: AppContext, options: BuildOptions = {}): Pro
   registerReferencementRoutes(app, ctx.config.publicOrigin, APP_BUILT_AT);
   registerWorldRoutes(app);
   registerStatsRoutes(app, ctx);
+  registerOwnerRoutes(app, ctx);
   registerContactRoutes(app, ctx);
   registerAuthRoutes(app, ctx);
   registerPasskeyRoutes(app, ctx);

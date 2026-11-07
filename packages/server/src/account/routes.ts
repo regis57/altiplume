@@ -33,7 +33,10 @@ const deleteSchema = {
 export function registerAccountRoutes(app: FastifyInstance, ctx: AppContext): void {
   app.get('/v1/account', { preHandler: requirePlayer }, async (request) => {
     const p = request.player!;
-    return { id: p.id, email: p.email, nickname: p.nickname, locale: p.locale, timezone: p.timezone, createdAt: p.createdAt, termsVersion: p.termsVersion };
+    // `owner` n'est écrit que pour l'éditeur : c'est ce qui fait demander son compteur à la
+    // page « Mon compte ». Pour tout le monde d'autre, la réponse est celle d'avant.
+    const owner = ctx.config.ownerEmail !== null && p.email.trim().toLowerCase() === ctx.config.ownerEmail;
+    return { id: p.id, email: p.email, nickname: p.nickname, locale: p.locale, timezone: p.timezone, createdAt: p.createdAt, termsVersion: p.termsVersion, ...(owner ? { owner: true } : {}) };
   });
 
   app.patch('/v1/account', { schema: patchSchema, preHandler: requirePlayer }, async (request, reply) => {
