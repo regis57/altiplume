@@ -193,6 +193,24 @@ Ensuite, sur l'aérodrome, le bouton **🔔 Me prévenir à l'arrivée** appara�
 iPhone et iPad, il faut d'abord installer Altiplume sur l'écran d'accueil (Partager →
 « Sur l'écran d'accueil ») : c'est une règle d'Apple, pas la nôtre.
 
+### Voir le nombre d'inscrits (une fois)
+
+Le jeu affiche au public un chiffre arrondi à la dizaine (`/v1/world/stats`). Pour le
+nombre **exact**, il y a un compteur que **vous seul** voyez, sur la page **Mon compte** :
+comptes inscrits, compagnies fondées, inscrits sur 7 jours et sur 30 jours. Que des
+nombres : aucun nom, aucune adresse. Pour toute autre personne, la section n'existe pas.
+
+1. Ouvrir `docker/altiplume/.env` (File Station → clic droit → Modifier).
+2. Ajouter à la fin une ligne `OWNER_EMAIL=` suivie de **l'adresse email avec laquelle
+   vous vous connectez au jeu**, sans espace ni guillemets. Une faute de frappe (une
+   adresse sans `@`) empêche le serveur de démarrer : c'est voulu, relire avant d'enregistrer.
+3. Enregistrer, puis lancer **Altiplume - redéployer**.
+4. Se connecter au jeu avec cette adresse, ouvrir **Mon compte** : la section « Le
+   compteur de l'éditeur » apparaît en haut de la page.
+
+Pour le retirer, supprimer la ligne et redéployer. Cette adresse est privée : elle reste
+dans le `.env`, jamais dans le dépôt.
+
 ## Revenir en arrière
 
 Chaque image porte aussi une étiquette `sha-xxxxxxxxxxxx` correspondant au commit
