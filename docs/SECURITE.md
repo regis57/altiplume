@@ -251,6 +251,19 @@ Paris), sur le commit `531879f`, avec ses trois jobs (contrôle externe, image p
 ZAP sur le site public) sur Ubuntu 26.04, et il est **vert**. Il est le premier
 capable d'échouer et le premier sur Ubuntu 26. Le détail de chaque alerte n'a pas été
 relu ce jour-là : seul le verdict des trois jobs est constaté.
+
+**Constaté le 7 novembre 2026 : le contrôle externe et ZAP ont échoué, arrêtés avant
+le jeu.** Lancé à la main à 18 h 53 UTC sur le commit `4ff257d`, le contrôle de sécurité
+a reçu des **403** là où le jeu répond 401, 404 ou 200 (le serveur ne répond jamais 403 à
+ces adresses : code relu), et des en-têtes qui ne sont pas les nôtres à l'accueil (plus de
+CSP ni de HSTS). Le contrôle de l'image (Trivy) est resté vert. Relu depuis un autre
+réseau le même jour, le site répond comme prévu, avec ses en-têtes. L'analyse de Cloudflare
+sur les 24 dernières heures compte **78 défis du « Bot Fight Mode »** et 2 pages de
+l'« AI Labyrinth » : c'est la piste, mais **le lien avec cette exécution reste à constater**
+(Cloudflare → Sécurité → Événements, à 18 h 53 UTC). Le contrôle dit désormais « défi de
+Cloudflare » au lieu de conseiller un redéploiement qui n'y changerait rien. **Reste à
+constater** : un contrôle vert depuis les machines de GitHub, après décision de l'auteur
+sur ce réglage.
 securityheaders.com et l'évaluateur CSP n'ont pas d'API : ils se relancent à la
 main.
 
