@@ -16,6 +16,8 @@
  * le mode du workflow hebdomadaire. securityheaders.com n'a pas d'API : il se
  * vérifie à la main (il suit Observatory de près).
  */
+import { ACTION_DEFI, defiCloudflare } from './securite-defi.mjs';
+
 const host = process.argv.find((a) => !a.startsWith('-') && !a.includes('/') && a.includes('.')) ?? 'altiplume.com';
 const strict = process.argv.includes('--strict');
 const rows = [];
@@ -133,6 +135,10 @@ try {
 try {
   const r = await fetch(`https://${host}/`, { headers: { 'user-agent': 'altiplume-securite-check' } });
   const h = r.headers;
+  // Si Cloudflare a répondu à la place du jeu, ses en-têtes ne sont pas les nôtres : on le dit,
+  // au lieu de conseiller un redéploiement qui n'y changerait rien. Le contrôle reste rouge.
+  const defi = defiCloudflare(r.status, h);
+  if (defi) row('En-têtes servis', 'tous ceux de security.ts', `non vérifiés : ${defi}`, false, ACTION_DEFI);
   const expected = {
     'content-security-policy': (v) => v?.includes("default-src 'none'") && v.includes("require-trusted-types-for 'script'"),
     'strict-transport-security': (v) => /max-age=31536000/.test(v ?? ''),
@@ -144,8 +150,10 @@ try {
     'cross-origin-resource-policy': (v) => v === 'same-origin',
   };
   const missing = Object.entries(expected).filter(([k, test]) => !test(h.get(k))).map(([k]) => k);
-  row('En-têtes servis', 'tous ceux de security.ts', missing.length ? `manquants ou différents : ${missing.join(', ')}` : 'tous présents', missing.length === 0,
-    missing.length ? 'Redéployer la dernière version (tâche NAS « redéployer »)' : '');
+  if (!defi) {
+    row('En-têtes servis', 'tous ceux de security.ts', missing.length ? `manquants ou différents : ${missing.join(', ')}` : 'tous présents', missing.length === 0,
+      missing.length ? 'Redéployer la dernière version (tâche NAS « redéployer »)' : '');
+  }
   const cookies = h.get('set-cookie');
   row('Cookies à l\'accueil', 'aucun', cookies ? 'un cookie posé avant connexion' : 'aucun', !cookies, '');
   const clear = await fetch(`http://${host}/`, { redirect: 'manual', headers: { 'user-agent': 'altiplume-securite-check' } });
