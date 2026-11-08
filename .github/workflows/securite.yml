@@ -4,6 +4,11 @@ name: Sécurité
 # gratuites voient d'altiplume.com, comparé à l'attendu. Chaque lundi matin et
 # à la demande. Échoue tant qu'un point est sous l'attendu — c'est le but.
 #
+# Depuis le 2 novembre 2026, le défi anti-robot de Cloudflare arrête les machines de
+# GitHub : « En-têtes servis » et « zap (altiplume.com) » sont rouges chaque lundi, et
+# c'est attendu (décision du 8 novembre). Lire lequel est normal : docs/SECURITE.md,
+# « Constaté le 8 novembre 2026 ».
+#
 # OWASP ZAP visite aussi le site en ligne, tel que le visiteur le reçoit (passif,
 # cible écrite en dur) : ici, le lundi, et jamais sur une PR.
 #

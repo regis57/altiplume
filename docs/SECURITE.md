@@ -37,7 +37,7 @@ et le contrôle hebdomadaire sonne quand un point redescend.
 | HTTP → HTTPS | contrôle externe (`scripts/securite-check.mjs`) | Premier saut en clair | 301 vers https | 200 sans redirection | Cloudflare + serveur | 301 vers `https://altiplume.com/` ; aucun cookie avant connexion | ✅ vérifié |
 | Courrier entrant | DNS (MX), test depuis une boîte externe | Que `@altiplume.com` reçoive, et par Cloudflare seulement | Aucun serveur de courrier attendu | Pas de MX : le domaine ne recevait rien | Cloudflare Email Routing (gratuit) : `bonjour@altiplume.com` redirigé vers la boîte de l'éditeur ; le contrôle hebdomadaire n'accepte que les MX `*.mx.cloudflare.net` et alerte sur tout autre | Trois MX Cloudflare ; message de test envoyé depuis une adresse externe et bien reçu (11/10) | ✅ vérifié |
 | Surface réseau | DNS ; [Shodan](https://www.shodan.io/) ou `nmap` sur l'adresse domestique | Ports ouverts chez l'auteur | Aucun service exposé | `altiplume.com` → Cloudflare seulement, pas de MX ; adresse domestique non publiée | — | DNS vérifié ; `nmap`/Shodan depuis l'extérieur (mode opératoire corrigé le 13/10, ci-dessous) | **13/10, GRC ShieldsUP depuis la maison, IPv4.** Premier balayage (19 h 16) : **2 ports ouverts, 80 et 443**, sur 1 056 testés ; corrigés, puis nouveau balayage (21 h 18) : **0 ouvert, 0 fermé, 1 056 invisibles, `TruStealth: PASSED`**, aucune réponse au ping. Test UPnP : aucune réponse aux sondes. Voir « Un constat du 13 octobre » plus bas | ✅ ports 0 à 1055 **et** 5000, 5001, 32400 (accès au NAS, service de médias), IPv4, après correction ; pas d'adresse IPv6 sur la box ; ❌ Shodan : non effectué |
-| Application web | [OWASP ZAP](https://www.zaproxy.org/) 2.17.0, passif | Injections évidentes, cookies, en-têtes, fuites, contenus réfléchis | Zéro alerte haute | — | 12/10 : ZAP en CI (`zap.yml`) sur l'image démarrée en production, à chaque PR, à chaque fusion et chaque lundi ; échec sur toute alerte moyenne ou haute non examinée | **0 haute, 0 moyenne réelle** sur 58 adresses (12/10, en local puis CI verte sur la PR #59 et sur `main`) ; 2 faux positifs justifiés, 2 informations | ✅ vérifié (CI) ; contre le site public : mis en place le 13/10, chaque lundi (job `zap-public` de `securite.yml` depuis le 14/10, pour ne plus apparaître « ignoré » dans les vérifications des PR) |
+| Application web | [OWASP ZAP](https://www.zaproxy.org/) 2.17.0, passif | Injections évidentes, cookies, en-têtes, fuites, contenus réfléchis | Zéro alerte haute | — | 12/10 : ZAP en CI (`zap.yml`) sur l'image démarrée en production, à chaque PR, à chaque fusion et chaque lundi ; échec sur toute alerte moyenne ou haute non examinée | **0 haute, 0 moyenne réelle** sur 58 adresses (12/10, en local puis CI verte sur la PR #59 et sur `main`) ; 2 faux positifs justifiés, 2 informations | ✅ vérifié (CI) ; contre le site public : mis en place le 13/10, chaque lundi (job `zap-public` de `securite.yml` depuis le 14/10, pour ne plus apparaître « ignoré » dans les vérifications des PR) ; arrêté par le défi de Cloudflare depuis le 2/11, rouge attendu (voir *Constaté le 8 novembre 2026*) |
 | Authentification | [webauthn.io](https://webauthn.io/), lecteur de passkeys du navigateur | Passkey liée à altiplume.com, découvrable, refuse un autre domaine | Clé liée au domaine | Tests de bout en bout (authenticateur virtuel) : `rpId`, seconde clé USB, refus d'un autre domaine — à chaque PR | — | Idem (CI) ; 13/10 : l'auteur confirme que la connexion par passkey fonctionne depuis le premier jour sur de vrais appareils, **Windows et iPhone** (constat manuel, sans outil) | ✅ vérifié (CI, appareils réels) |
 | Dépendances | `npm audit`, licences (CI) ; [Socket](https://socket.dev/) | Vulnérabilités connues, paquets suspects, licences | 0 vulnérabilité | 0 (CI, à chaque PR) | 12/10 : application GitHub Socket installée sur ce seul dépôt, `socket.yml` | 0 (CI du 12/10) ; Socket : rapport de projet ✅ sur `main` (12/10, 21 h 04) | ✅ vérifié (CI, Socket) ; OSV-Scanner écarté (redondant, voir plus bas) |
 | Image Docker | [Trivy](https://trivy.dev/) 0.69.3 ; `gh attestation verify` | Vulnérabilités de l'image, secrets, provenance | 0 critique ; attestation valide | Attestation signée à chaque publication (CI) | 12/10 : Trivy avant chaque publication (`release.yml`) et chaque lundi sur l'image publiée ; npm, npx, corepack et yarn retirés de l'image | **0 critique corrigeable** : verdict vert sur la PR #58 et à la publication du 12/10 (21 h 05) ; élevées listées dans le résumé du job *Release* | ✅ vérifié (CI) |
@@ -261,9 +261,39 @@ réseau le même jour, le site répond comme prévu, avec ses en-têtes. L'analy
 sur les 24 dernières heures compte **78 défis du « Bot Fight Mode »** et 2 pages de
 l'« AI Labyrinth » : c'est la piste, mais **le lien avec cette exécution reste à constater**
 (Cloudflare → Sécurité → Événements, à 18 h 53 UTC). Le contrôle dit désormais « défi de
-Cloudflare » au lieu de conseiller un redéploiement qui n'y changerait rien. **Reste à
-constater** : un contrôle vert depuis les machines de GitHub, après décision de l'auteur
-sur ce réglage.
+Cloudflare » au lieu de conseiller un redéploiement qui n'y changerait rien.
+
+**Constaté le 8 novembre 2026 : c'est un défi de Cloudflare.** Lancé à la main à 00 h 53
+UTC sur le commit `db8e4f2`, le contrôle externe a reçu à l'accueil un **403** portant
+`cf-mitigated : challenge` : Cloudflare a présenté un défi anti-robot à la machine de
+GitHub, et le jeu n'a pas reçu la demande. ZAP a reçu des 403 aux mêmes adresses
+que la veille. Les onze autres points du contrôle externe et Trivy sont verts. Le premier
+passage arrêté ainsi est celui du lundi 2 novembre (le dernier vert, celui du 26 octobre).
+**Reste à constater** : le service de Cloudflare qui pose ce défi (Sécurité → Événements),
+le « Bot Fight Mode » restant la piste.
+
+**Décision de l'auteur, le 8 novembre 2026 : le « Bot Fight Mode » reste actif**, et le
+rouge qu'il provoque chaque lundi est **attendu**. Sur l'offre gratuite de Cloudflare, ce
+réglage ne connaît pas d'exception : on le garde pour tout le site ou on le coupe pour tout
+le site. Le garder continue de défier les robots connus ; le prix est que, chaque lundi, deux points ne
+sont plus vérifiés depuis GitHub :
+
+- les **en-têtes servis**, comparés un à un à `security.ts` (la note d'Observatory, prise
+  depuis le réseau de Mozilla, continue, elle, de les noter chaque lundi) ;
+- **ZAP contre le site public** (ZAP contre l'image démarrée, `zap.yml`, continue à chaque
+  PR, à chaque fusion et chaque lundi).
+
+Comment lire le passage du lundi :
+
+| Ce que montre le résumé | Ce que c'est |
+|---|---|
+| *contrôle externe* rouge, avec **une seule** ligne ✗ : « En-têtes servis — non vérifiés : défi de Cloudflare » | **normal** (le défi) |
+| *zap (altiplume.com)* rouge, avec des « Received : 403 » et « status code returned : 403 » dans le journal | **normal** (le défi) |
+| toute **autre** ligne ✗ du contrôle externe | un vrai écart : suivre sa colonne « À faire » |
+| *image publiée (Trivy)* rouge | un vrai écart, jamais lié au défi |
+| ZAP qui va au bout et signale une alerte | un vrai écart : le lire, comme sur l'image |
+
+Si l'auteur coupe un jour ce réglage, le premier passage vert qui suit se date ici.
 securityheaders.com et l'évaluateur CSP n'ont pas d'API : ils se relancent à la
 main.
 
