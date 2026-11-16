@@ -33,10 +33,11 @@ parcours dans un vrai Chromium : *aucune requête tierce* (`scripts/e2e-tiers.mj
 *mise en page* (`scripts/e2e-mise-en-page.mjs`) et *accessibilité*
 (`scripts/e2e-accessibilite.mjs`, axe-core).
 
-`npm run e2e` joue les sept parcours de bout en bout : les trois de la CI, et quatre
+`npm run e2e` joue les huit parcours de bout en bout : les trois de la CI, et cinq
 qui ne tournent qu'à la main — celui des passkeys et de la connexion par QR (avec un
-authenticateur virtuel), celui du courrier, celui de la Côte de Saline (route, ponton,
-Sterne, amerrissage) et celui du convoi de fret lourd. Il faut un Chromium
+authenticateur virtuel), celui du courrier, celui de l'éditeur (le compteur d'inscrits,
+visible de lui seul), celui de la Côte de Saline (route, ponton, Sterne, amerrissage)
+et celui du convoi de fret lourd. Il faut un Chromium
 (`CHROMIUM_PATH=/chemin/vers/chromium`, ou `npx playwright install chromium`).
 Lancez-le avant toute PR qui touche au client ou au serveur.
 
