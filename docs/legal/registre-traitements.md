@@ -1,7 +1,7 @@
 # Registre des activités de traitement
 
 Tenu au titre de l'article 30 du RGPD. Responsable du traitement : l'éditeur
-d'Altiplume (personne physique, France). Version du 18 octobre 2026.
+d'Altiplume (personne physique, France). Version du 17 novembre 2026 (traitement 7 : mesure de fréquentation ; précédente : 18 octobre 2026).
 
 ## Traitement 1 — Comptes de joueurs
 
@@ -67,6 +67,18 @@ d'Altiplume (personne physique, France). Version du 18 octobre 2026.
 | **Transferts hors UE** | Cloudflare, Inc. (acheminement du courriel entrant) et Google Ireland/LLC (Gmail) — clauses contractuelles types. |
 | **Mesures** | Destinataire fixé par la configuration du serveur, jamais par le navigateur (pas de relais ouvert) ; champ-piège et délai minimum de rédaction contre les robots ; trois envois par heure et par adresse IP ; longueurs bornées ; sujet et adresse nettoyés de tout caractère de contrôle (pas d'injection d'en-tête) ; message échappé dans la version HTML. |
 
+## Traitement 7 — Mesure de fréquentation
+
+| | |
+|---|---|
+| **Finalité** | Savoir combien de personnes visitent le site et quelles pages, sans compter les robots. |
+| **Base légale** | Intérêt légitime. Aucun cookie, rien d'enregistré sur l'appareil. |
+| **Personnes concernées** | Toute personne qui affiche une page du site. |
+| **Données** | Page vue, page de provenance, type de navigateur et d'appareil, pays, temps de chargement, collectés par le script de Cloudflare Web Analytics que Cloudflare ajoute aux pages. Pas de cookie ; d'après Cloudflare, pas d'empreinte du navigateur ni d'adresse IP conservée. |
+| **Destinataires** | L'éditeur, qui ne voit que des totaux dans le tableau de bord Cloudflare. |
+| **Durée** | Celle de Cloudflare Web Analytics ; l'éditeur ne télécharge ni ne copie ces données. |
+| **Transferts hors UE** | Cloudflare, Inc. (États-Unis) — clauses contractuelles types. |
+
 ## Sous-traitants
 
 | Sous-traitant | Rôle | Localisation | Encadrement |
@@ -74,6 +86,7 @@ d'Altiplume (personne physique, France). Version du 18 octobre 2026.
 | Cloudflare, Inc. | Acheminement, protection DDoS, certificat TLS | États-Unis (points de présence mondiaux) | Clauses contractuelles types, DPA Cloudflare |
 | Sendinblue SAS (Brevo) | Envoi des emails de connexion et des messages du formulaire de contact | France | DPA Brevo |
 | Cloudflare, Inc. | Réception du courrier de `@altiplume.com` et redirection (Email Routing) | États-Unis | Clauses contractuelles types, DPA Cloudflare |
+| Cloudflare, Inc. | Mesure de fréquentation sans cookie (Web Analytics) | États-Unis | Clauses contractuelles types, DPA Cloudflare |
 | Google Ireland Ltd. | Boîte email de l'éditeur (Gmail), destinataire final des messages | Irlande / États-Unis | Clauses contractuelles types |
 
 ## Traitements prévus, non encore actifs
