@@ -16,14 +16,21 @@ import type { FastifyInstance } from 'fastify';
  *    d'injection (innerHTML, register du service worker…) qui ne passe pas par
  *    la politique « altiplume » du client — l'injection DOM devient inopérante
  *    même si une faille XSS existait.
+ *
+ * Une seule origine extérieure, depuis le 17 novembre 2026 : le compteur de visites
+ * de Cloudflare (Web Analytics). Cloudflare insère lui-même son script dans les pages
+ * qu'il sert ; il ne pose aucun cookie et n'écrit rien dans les puits surveillés par
+ * Trusted Types. Il envoie ses mesures à `/cdn-cgi/rum`, sur notre propre domaine
+ * (`'self'`), ou à `cloudflareinsights.com`. Le dépôt ne contient ni ce script ni
+ * son jeton : en local et en CI, il n'existe pas.
  */
 export const CONTENT_SECURITY_POLICY = [
   "default-src 'none'",
-  "script-src 'self'",
+  "script-src 'self' https://static.cloudflareinsights.com",
   "style-src 'self'",
   "img-src 'self' data:",
   "font-src 'self'",
-  "connect-src 'self'",
+  "connect-src 'self' https://cloudflareinsights.com",
   "manifest-src 'self'",
   "worker-src 'self'",
   "frame-ancestors 'none'",
