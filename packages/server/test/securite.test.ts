@@ -21,6 +21,16 @@ describe('le durcissement — interlude sécurité du 11 octobre', () => {
     expect(CONTENT_SECURITY_POLICY).not.toContain('unsafe');
   });
 
+  it("n'ouvre qu'une origine extérieure : le compteur de visites de Cloudflare", () => {
+    const directive = (nom: string) =>
+      CONTENT_SECURITY_POLICY.split('; ').find((d) => d.startsWith(`${nom} `));
+    expect(directive('script-src')).toBe("script-src 'self' https://static.cloudflareinsights.com");
+    expect(directive('connect-src')).toBe("connect-src 'self' https://cloudflareinsights.com");
+    for (const nom of ['style-src', 'img-src', 'font-src', 'manifest-src', 'worker-src']) {
+      expect(directive(nom)).not.toContain('https:');
+    }
+  });
+
   it('isole le document des autres origines (COOP, COEP, CORP)', async () => {
     const app = await bare(false);
     const r = await app.inject({ method: 'GET', url: '/aerodrome' });
