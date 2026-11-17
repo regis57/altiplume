@@ -36,3 +36,21 @@ describe('la durée des journaux techniques', () => {
     expect(page).toContain('wiped every time the game is updated');
   });
 });
+
+/**
+ * CONTRIBUTING.md disait « sept parcours » quand `npm run e2e` en jouait huit
+ * (le parcours de l'éditeur, ajouté le 7 novembre, n'y était pas).
+ */
+describe('le nombre de parcours de bout en bout', () => {
+  const NOMBRES = ['un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix'];
+  const lance = /node scripts\/e2e-[a-z-]+\.mjs/g;
+  const total = (lire('package.json').match(/"e2e": "([^"]*)"/)?.[1] ?? '').match(lance)?.length ?? 0;
+  const enCi = (lire('.github/workflows/ci.yml').match(lance) ?? []).length;
+  const contributing = lire('CONTRIBUTING.md');
+
+  it('CONTRIBUTING.md dit combien `npm run e2e` en joue, et combien tournent en CI', () => {
+    expect(total).toBeGreaterThan(0);
+    expect(contributing).toContain(`joue les ${NOMBRES[total - 1]} parcours`);
+    expect(contributing).toContain(`les ${NOMBRES[enCi - 1]} de la CI, et ${NOMBRES[total - enCi - 1]}\nqui ne tournent`);
+  });
+});
