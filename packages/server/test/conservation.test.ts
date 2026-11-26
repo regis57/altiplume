@@ -54,3 +54,18 @@ describe('le nombre de parcours de bout en bout', () => {
     expect(contributing).toContain(`les ${NOMBRES[enCi - 1]} de la CI, et ${NOMBRES[total - enCi - 1]}\nqui ne tournent`);
   });
 });
+
+/**
+ * Le manifeste citait axe-core 4.14.0 quand le dépôt mesurait avec la 4.14.1
+ * (mise à jour du 26 novembre). La version écrite est celle de package.json.
+ */
+describe("la version d'axe-core citée dans le manifeste", () => {
+  const version = (JSON.parse(lire('package.json')) as { devDependencies: Record<string, string> }).devDependencies['axe-core'];
+  const citees = [...lire('docs/SECURITE.md').matchAll(/axe-core(?:\]\([^)]*\))? (\d+\.\d+\.\d+)/g)].map((m) => m[1]);
+
+  it('docs/SECURITE.md nomme la version installée, partout où il en nomme une', () => {
+    expect(version).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(citees.length).toBeGreaterThan(0);
+    for (const citee of citees) expect(citee).toBe(version);
+  });
+});
